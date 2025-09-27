@@ -1,0 +1,369 @@
+"""Unit tests for DebounceMiddleware."""
+
+import asyncio
+import pytest
+from unittest.mock import AsyncMock, MagicMock, patch
+
+from aiogram_sentinel.middlewares.debouncing import DebounceMiddleware
+
+
+@pytest.mark.unit
+class TestDebounceMiddleware:
+    """Test DebounceMiddleware functionality."""
+
+    @pytest.mark.asyncio
+    async def test_first_message_passes(self, mock_debounce_backend, mock_handler, mock_message, mock_data):
+        """Test that first message passes through."""
+        # Mock non-debounced message
+        mock_debounce_backend.is_debounced.return_value = False
+        mock_debounce_backend.get_debounce.return_value = None
+        mock_debounce_backend.get_debounce.return_value = None
+        
+        middleware = DebounceMiddleware(mock_debounce_backend, default_delay=1.0)
+        
+        # Process event
+        result = await middleware(mock_handler, mock_message, mock_data)
+        
+        # Should call handler and return result
+        assert result == "handler_result"
+        mock_handler.assert_called_once_with(mock_message, mock_data)
+        
+        # Should not set debounced flag
+        assert "sentinel_debounced" not in mock_data
+
+    @pytest.mark.asyncio
+    async def test_duplicate_message_blocked(self, mock_debounce_backend, mock_handler, mock_message, mock_data):
+        """Test that duplicate messages are blocked."""
+        # Mock debounced message
+        mock_debounce_backend.is_debounced.return_value = True
+        mock_debounce_backend.get_debounce.return_value = 1000.0
+        
+        middleware = DebounceMiddleware(mock_debounce_backend, default_delay=1.0)
+        
+        # Process event
+        result = await middleware(mock_handler, mock_message, mock_data)
+        
+        # Should not call handler
+        mock_handler.assert_not_called()
+        
+        # Should return None (blocked)
+        assert result is None
+        
+        # Should set debounced flag
+        assert mock_data["sentinel_debounced"] is True
+
+    @pytest.mark.asyncio
+    async def test_debounce_key_generation(self, mock_debounce_backend, mock_handler, mock_message, mock_data):
+        """Test debounce key generation."""
+        # Mock non-debounced message
+        mock_debounce_backend.is_debounced.return_value = False
+        mock_debounce_backend.get_debounce.return_value = None
+        mock_debounce_backend.get_debounce.return_value = None
+        
+        middleware = DebounceMiddleware(mock_debounce_backend, default_delay=1.0)
+        
+        # Process event
+        await middleware(mock_handler, mock_message, mock_data)
+        
+        # Should check debounce with generated key
+        mock_debounce_backend.is_debounced.assert_called_once()
+        call_args = mock_debounce_backend.is_debounced.call_args[0]
+        assert len(call_args) == 1
+        key = call_args[0]
+        
+        # Key should contain user ID and handler name
+        assert "12345" in key  # User ID from mock_message
+        assert "test_handler" in key  # Handler name from mock_handler
+
+    @pytest.mark.asyncio
+    async def test_debounce_with_custom_delay(self, mock_debounce_backend, mock_handler, mock_message, mock_data):
+        """Test debouncing with custom delay from decorator."""
+        # Mock non-debounced message
+        mock_debounce_backend.is_debounced.return_value = False
+        mock_debounce_backend.get_debounce.return_value = None
+        mock_debounce_backend.get_debounce.return_value = None
+        
+        # Set custom delay on handler
+        mock_handler._sentinel_debounce = {"delay": 5.0}
+        
+        middleware = DebounceMiddleware(mock_debounce_backend, default_delay=1.0)
+        
+        # Process event
+        await middleware(mock_handler, mock_message, mock_data)
+        
+        # Should set debounce with custom delay
+        mock_debounce_backend.set_debounce.assert_called_once()
+        call_args = mock_debounce_backend.set_debounce.call_args[0]
+        assert call_args[1] == 5.0  # Custom delay
+
+    @pytest.mark.asyncio
+    async def test_debounce_with_default_delay(self, mock_debounce_backend, mock_handler, mock_message, mock_data):
+        """Test debouncing with default delay."""
+        # Mock non-debounced message
+        mock_debounce_backend.is_debounced.return_value = False
+        mock_debounce_backend.get_debounce.return_value = None
+        mock_debounce_backend.get_debounce.return_value = None
+        
+        middleware = DebounceMiddleware(mock_debounce_backend, default_delay=2.0)
+        
+        # Process event
+        await middleware(mock_handler, mock_message, mock_data)
+        
+        # Should set debounce with default delay
+        mock_debounce_backend.set_debounce.assert_called_once()
+        call_args = mock_debounce_backend.set_debounce.call_args[0]
+        assert call_args[1] == 2.0  # Default delay
+
+    @pytest.mark.asyncio
+    async def test_debounce_with_callback_query(self, mock_debounce_backend, mock_handler, mock_callback_query, mock_data):
+        """Test debouncing with callback query."""
+        # Mock non-debounced callback
+        mock_debounce_backend.is_debounced.return_value = False
+        mock_debounce_backend.get_debounce.return_value = None
+        
+        middleware = DebounceMiddleware(mock_debounce_backend, default_delay=1.0)
+        
+        # Process event
+        result = await middleware(mock_handler, mock_callback_query, mock_data)
+        
+        # Should call handler and return result
+        assert result == "handler_result"
+        mock_handler.assert_called_once_with(mock_callback_query, mock_data)
+
+    @pytest.mark.asyncio
+    async def test_debounce_key_with_fingerprint(self, mock_debounce_backend, mock_handler, mock_message, mock_data):
+        """Test debounce key generation with message fingerprint."""
+        # Mock non-debounced message
+        mock_debounce_backend.is_debounced.return_value = False
+        mock_debounce_backend.get_debounce.return_value = None
+        mock_debounce_backend.get_debounce.return_value = None
+        
+        middleware = DebounceMiddleware(mock_debounce_backend, default_delay=1.0)
+        
+        # Process event
+        await middleware(mock_handler, mock_message, mock_data)
+        
+        # Should check debounce with key containing fingerprint
+        mock_debounce_backend.is_debounced.assert_called_once()
+        call_args = mock_debounce_backend.is_debounced.call_args[0]
+        key = call_args[0]
+        
+        # Key should contain fingerprint of message text
+        assert "fingerprint" in key
+        assert "test" in key  # Message text
+
+    @pytest.mark.asyncio
+    async def test_debounce_key_with_callback_data(self, mock_debounce_backend, mock_handler, mock_callback_query, mock_data):
+        """Test debounce key generation with callback data."""
+        # Mock non-debounced callback
+        mock_debounce_backend.is_debounced.return_value = False
+        mock_debounce_backend.get_debounce.return_value = None
+        
+        middleware = DebounceMiddleware(mock_debounce_backend, default_delay=1.0)
+        
+        # Process event
+        await middleware(mock_handler, mock_callback_query, mock_data)
+        
+        # Should check debounce with key containing callback data
+        mock_debounce_backend.is_debounced.assert_called_once()
+        call_args = mock_debounce_backend.is_debounced.call_args[0]
+        key = call_args[0]
+        
+        # Key should contain fingerprint of callback data
+        assert "fingerprint" in key
+        assert "test_data" in key  # Callback data
+
+    @pytest.mark.asyncio
+    async def test_debounce_backend_error(self, mock_debounce_backend, mock_handler, mock_message, mock_data):
+        """Test handling when debounce backend raises an error."""
+        # Mock backend error
+        mock_debounce_backend.is_debounced.side_effect = Exception("Backend error")
+        
+        middleware = DebounceMiddleware(mock_debounce_backend, default_delay=1.0)
+        
+        # Should raise the error
+        with pytest.raises(Exception, match="Backend error"):
+            await middleware(mock_handler, mock_message, mock_data)
+
+    @pytest.mark.asyncio
+    async def test_handler_error_propagation(self, mock_debounce_backend, mock_handler, mock_message, mock_data):
+        """Test that handler errors are propagated."""
+        # Mock non-debounced message
+        mock_debounce_backend.is_debounced.return_value = False
+        mock_debounce_backend.get_debounce.return_value = None
+        mock_debounce_backend.get_debounce.return_value = None
+        
+        # Mock handler error
+        mock_handler.side_effect = Exception("Handler error")
+        
+        middleware = DebounceMiddleware(mock_debounce_backend, default_delay=1.0)
+        
+        # Should propagate handler error
+        with pytest.raises(Exception, match="Handler error"):
+            await middleware(mock_handler, mock_message, mock_data)
+
+    @pytest.mark.asyncio
+    async def test_data_preservation(self, mock_debounce_backend, mock_handler, mock_message, mock_data):
+        """Test that data dictionary is preserved."""
+        # Mock non-debounced message
+        mock_debounce_backend.is_debounced.return_value = False
+        mock_debounce_backend.get_debounce.return_value = None
+        mock_debounce_backend.get_debounce.return_value = None
+        
+        # Add some data
+        mock_data["existing_key"] = "existing_value"
+        
+        middleware = DebounceMiddleware(mock_debounce_backend, default_delay=1.0)
+        
+        # Process event
+        await middleware(mock_handler, mock_message, mock_data)
+        
+        # Should preserve existing data
+        assert mock_data["existing_key"] == "existing_value"
+
+    @pytest.mark.asyncio
+    async def test_debounced_flag_preservation(self, mock_debounce_backend, mock_handler, mock_message, mock_data):
+        """Test that existing debounced flag is preserved."""
+        # Mock debounced message
+        mock_debounce_backend.is_debounced.return_value = True
+        mock_debounce_backend.get_debounce.return_value = 1000.0
+        
+        # Set existing debounced flag
+        mock_data["sentinel_debounced"] = "existing_value"
+        
+        middleware = DebounceMiddleware(mock_debounce_backend, default_delay=1.0)
+        
+        # Process event
+        await middleware(mock_handler, mock_message, mock_data)
+        
+        # Should preserve existing flag
+        assert mock_data["sentinel_debounced"] == "existing_value"
+
+    @pytest.mark.asyncio
+    async def test_multiple_events_same_content(self, mock_debounce_backend, mock_handler, mock_data):
+        """Test processing multiple events with same content."""
+        # Mock first message as non-debounced, second as debounced
+        mock_debounce_backend.is_debounced.side_effect = [False, True]
+        mock_debounce_backend.get_debounce.side_effect = [None, 1000.0]
+        
+        middleware = DebounceMiddleware(mock_debounce_backend, default_delay=1.0)
+        
+        # Create two messages with same content
+        mock_message1 = MagicMock()
+        mock_message1.from_user.id = 12345
+        mock_message1.text = "same text"
+        
+        mock_message2 = MagicMock()
+        mock_message2.from_user.id = 12345
+        mock_message2.text = "same text"
+        
+        # Process first message
+        result1 = await middleware(mock_handler, mock_message1, mock_data)
+        assert result1 == "handler_result"
+        
+        # Process second message
+        result2 = await middleware(mock_handler, mock_message2, mock_data)
+        assert result2 is None
+        assert mock_data["sentinel_debounced"] is True
+
+    @pytest.mark.asyncio
+    async def test_different_users_same_content(self, mock_debounce_backend, mock_handler, mock_data):
+        """Test processing events for different users with same content."""
+        # Mock non-debounced messages
+        mock_debounce_backend.is_debounced.return_value = False
+        mock_debounce_backend.get_debounce.return_value = None
+        
+        middleware = DebounceMiddleware(mock_debounce_backend, default_delay=1.0)
+        
+        # Create messages for different users with same content
+        user_ids = [12345, 67890]
+        events = []
+        
+        for user_id in user_ids:
+            mock_event = MagicMock()
+            mock_event.from_user.id = user_id
+            mock_event.text = "same text"
+            events.append(mock_event)
+        
+        # Process all events
+        for event in events:
+            result = await middleware(mock_handler, event, mock_data)
+            assert result == "handler_result"
+        
+        # Should check debounce for each user
+        assert mock_debounce_backend.is_debounced.call_count == 2
+
+    @pytest.mark.asyncio
+    async def test_middleware_initialization(self, mock_debounce_backend):
+        """Test middleware initialization."""
+        middleware = DebounceMiddleware(mock_debounce_backend, default_delay=1.0)
+        
+        # Should store the backend and delay
+        assert middleware._debounce_backend is mock_debounce_backend
+        assert middleware._default_delay == 1.0
+
+    @pytest.mark.asyncio
+    async def test_edge_case_empty_message_text(self, mock_debounce_backend, mock_handler, mock_data):
+        """Test handling with empty message text."""
+        # Mock non-debounced message
+        mock_debounce_backend.is_debounced.return_value = False
+        mock_debounce_backend.get_debounce.return_value = None
+        mock_debounce_backend.get_debounce.return_value = None
+        
+        middleware = DebounceMiddleware(mock_debounce_backend, default_delay=1.0)
+        
+        # Create message with empty text
+        mock_message = MagicMock()
+        mock_message.from_user.id = 12345
+        mock_message.text = ""
+        
+        # Process event
+        result = await middleware(mock_handler, mock_message, mock_data)
+        
+        # Should work normally
+        assert result == "handler_result"
+        mock_handler.assert_called_once_with(mock_message, mock_data)
+
+    @pytest.mark.asyncio
+    async def test_edge_case_none_message_text(self, mock_debounce_backend, mock_handler, mock_data):
+        """Test handling with None message text."""
+        # Mock non-debounced message
+        mock_debounce_backend.is_debounced.return_value = False
+        mock_debounce_backend.get_debounce.return_value = None
+        mock_debounce_backend.get_debounce.return_value = None
+        
+        middleware = DebounceMiddleware(mock_debounce_backend, default_delay=1.0)
+        
+        # Create message with None text
+        mock_message = MagicMock()
+        mock_message.from_user.id = 12345
+        mock_message.text = None
+        
+        # Process event
+        result = await middleware(mock_handler, mock_message, mock_data)
+        
+        # Should work normally
+        assert result == "handler_result"
+        mock_handler.assert_called_once_with(mock_message, mock_data)
+
+    @pytest.mark.asyncio
+    async def test_edge_case_no_user_id(self, mock_debounce_backend, mock_handler, mock_data):
+        """Test handling when no user ID is available."""
+        # Mock non-debounced message
+        mock_debounce_backend.is_debounced.return_value = False
+        mock_debounce_backend.get_debounce.return_value = None
+        mock_debounce_backend.get_debounce.return_value = None
+        
+        middleware = DebounceMiddleware(mock_debounce_backend, default_delay=1.0)
+        
+        # Create event with no user information
+        mock_event = MagicMock()
+        mock_event.from_user = None
+        mock_event.text = "test"
+        
+        # Process event
+        result = await middleware(mock_handler, mock_event, mock_data)
+        
+        # Should work normally (use 0 as user ID)
+        assert result == "handler_result"
+        mock_handler.assert_called_once_with(mock_event, mock_data)
