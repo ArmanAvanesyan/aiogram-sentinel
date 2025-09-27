@@ -1,4 +1,21 @@
 """aiogram-sentinel: Edge hygiene library for aiogram v3."""
 
-# Empty exports for now - will be populated as the library develops
-__all__: list[str] = []
+from .config import SentinelConfig
+from .storage.base import (
+    BlocklistBackend,
+    DebounceBackend,
+    RateLimiterBackend,
+    UserRepo,
+)
+from .types import BackendsBundle
+from .version import __version__
+
+__all__: list[str] = [
+    "__version__",
+    "SentinelConfig",
+    "BackendsBundle",
+    "RateLimiterBackend",
+    "DebounceBackend",
+    "BlocklistBackend",
+    "UserRepo",
+]
