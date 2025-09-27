@@ -46,6 +46,14 @@ class AuthMiddleware(BaseMiddleware):
         # Ensure minimal user record exists
         await self._ensure_user(user_id, username)
         
+        # Check if handler requires registration
+        if hasattr(handler, "_sentinel_require_registered"):  # type: ignore
+            is_registered = await self._user_repo.is_registered(user_id)
+            if not is_registered:
+                # User not registered and handler requires registration
+                data["sentinel_auth_required"] = True
+                return
+        
         # Call optional resolve_user hook
         if self._resolve_user:
             user_context = await self._resolve_user(event, data)
