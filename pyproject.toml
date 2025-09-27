@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling>=1.0.0"]
+build-backend = "hatchling.build"
 
 [project]
 name = "aiogram-sentinel"
@@ -35,8 +35,11 @@ dev = [
     "pytest-asyncio>=0.21.0",
     "black>=23.0.0",
     "isort>=5.12.0",
-    "mypy>=1.0.0",
+    "pyright>=1.1.0",
     "ruff>=0.1.0",
+]
+redis = [
+    "redis>=5.0",
 ]
 
 [project.urls]
@@ -44,11 +47,8 @@ Homepage = "https://github.com/aiogram-sentinel/aiogram-sentinel"
 Repository = "https://github.com/aiogram-sentinel/aiogram-sentinel"
 Issues = "https://github.com/aiogram-sentinel/aiogram-sentinel/issues"
 
-[tool.setuptools.packages.find]
-where = ["src"]
-
-[tool.setuptools.package-dir]
-"" = "src"
+[tool.hatch.build.targets.wheel]
+packages = ["src/aiogram_sentinel"]
 
 [tool.black]
 line-length = 88
@@ -74,20 +74,17 @@ multi_line_output = 3
 line_length = 88
 known_first_party = ["aiogram_sentinel"]
 
-[tool.mypy]
-python_version = "3.10"
-warn_return_any = true
-warn_unused_configs = true
-disallow_untyped_defs = true
-disallow_incomplete_defs = true
-check_untyped_defs = true
-disallow_untyped_decorators = true
-no_implicit_optional = true
-warn_redundant_casts = true
-warn_unused_ignores = true
-warn_no_return = true
-warn_unreachable = true
-strict_equality = true
+[tool.pyright]
+pythonVersion = "3.10"
+typeCheckingMode = "strict"
+useLibraryCodeForTypes = true
+strictListInference = true
+strictDictionaryInference = true
+strictSetInference = true
+strictParameterNoneValue = true
+strictReturn = true
+strictVariableTypes = true
+strictTypeChecking = true
 
 [tool.ruff]
 target-version = "py310"
@@ -112,3 +109,8 @@ minversion = "7.0"
 addopts = "-ra -q --strict-markers"
 testpaths = ["tests"]
 asyncio_mode = "auto"
+
+[dependency-groups]
+dev = [
+    "pyright>=1.1.405",
+]
