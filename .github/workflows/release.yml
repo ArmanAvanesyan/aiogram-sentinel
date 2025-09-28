@@ -64,7 +64,24 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Build package for tag release
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+        run: |
+          uv run python -m hatchling build
+
+      - name: Check package
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+        run: |
+          uv tool run --from twine twine check dist/*
+
+      - name: Publish to PyPI
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          skip-existing: true
+
       - name: Create GitHub Release from Tag
+        id: create_release
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
         run: |
           # Extract version from tag (e.g., v0.2.0 -> 0.2.0)
@@ -77,6 +94,17 @@ jobs:
             --generate-notes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload release assets
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/
+          asset_name: dist
+          asset_content_type: application/zip
 
       - name: Semantic Release (Manual - Patch)
         if: github.event.inputs.version_type == 'patch' && (github.event_name != 'push' || !startsWith(github.ref, 'refs/tags/'))
