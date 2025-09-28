@@ -139,7 +139,7 @@ class TestThrottlingMiddleware:
         # Should increment rate limit with custom window
         mock_rate_limiter.allow.assert_called_once()
         call_args = mock_rate_limiter.allow.call_args[0]
-        _key, max_events, per_seconds = call_args
+        _key, _max_events, per_seconds = call_args
         assert per_seconds == 30  # Custom window
 
     @pytest.mark.asyncio
@@ -168,7 +168,7 @@ class TestThrottlingMiddleware:
         # Should increment rate limit with default window
         mock_rate_limiter.allow.assert_called_once()
         call_args = mock_rate_limiter.allow.call_args[0]
-        _key, max_events, per_seconds = call_args
+        _key, _max_events, per_seconds = call_args
         assert per_seconds == 120  # Default window
 
     @pytest.mark.asyncio

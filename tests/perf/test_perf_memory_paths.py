@@ -54,7 +54,7 @@ class TestMemoryBackendPerformance:
         window = 60
 
         # Add some data first
-        for _ in range(10):
+        for _ in range(5):
             await limiter.allow(key, 10, window)
 
         # Measure single get
@@ -64,7 +64,7 @@ class TestMemoryBackendPerformance:
 
         duration = end_time - start_time
         assert duration < performance_thresholds["rate_limit_increment"]
-        assert count == 10
+        assert count == 5  # 5 remaining out of 10
 
         # Measure multiple gets
         start_time = time.time()

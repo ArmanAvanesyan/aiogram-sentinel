@@ -83,12 +83,12 @@ class ThrottlingMiddleware(BaseMiddleware):
         # Check if handler has rate limit configuration
         if hasattr(handler, "sentinel_rate_limit"):  # type: ignore
             config = handler.sentinel_rate_limit  # type: ignore
-            if isinstance(config, (tuple, list)) and len(config) >= 2:
-                return int(config[0]), int(config[1])
+            if isinstance(config, (tuple, list)) and len(config) >= 2:  # type: ignore
+                return int(config[0]), int(config[1])  # type: ignore
             elif isinstance(config, dict):
-                return config.get(
-                    "limit", self._cfg.throttling_default_max
-                ), config.get("window", self._cfg.throttling_default_per_seconds)
+                limit = config.get("limit", self._cfg.throttling_default_max)  # type: ignore
+                window = config.get("window", self._cfg.throttling_default_per_seconds)  # type: ignore
+                return int(limit), int(window)  # type: ignore
 
         # Check data for rate limit configuration
         if "sentinel_rate_limit" in data:
