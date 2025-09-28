@@ -103,7 +103,10 @@ class MemoryUserRepo(UserRepo):
         """Ensure user exists, creating if necessary."""
         async with self._lock:
             if user_id not in self._users:
-                self._users[user_id] = {"user_id": user_id, "registered_at": time.monotonic()}
+                self._users[user_id] = {
+                    "user_id": user_id,
+                    "registered_at": time.monotonic(),
+                }
             if username:
                 self._users[user_id]["username"] = username
 
@@ -116,7 +119,10 @@ class MemoryUserRepo(UserRepo):
         """Register a user with optional data."""
         async with self._lock:
             if user_id not in self._users:
-                self._users[user_id] = {"user_id": user_id, "registered_at": time.monotonic()}
+                self._users[user_id] = {
+                    "user_id": user_id,
+                    "registered_at": time.monotonic(),
+                }
             # Update with provided data
             for key, value in kwargs.items():
                 self._users[user_id][key] = value

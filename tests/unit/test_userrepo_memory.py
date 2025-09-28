@@ -22,7 +22,9 @@ class TestMemoryUserRepo:
         assert is_registered is False
 
     @pytest.mark.asyncio
-    async def test_register_user(self, user_repo: MemoryUserRepo, mock_time: Mock) -> None:
+    async def test_register_user(
+        self, user_repo: MemoryUserRepo, mock_time: Mock
+    ) -> None:
         """Test registering a new user."""
         user_id = 12345
         username = "testuser"
@@ -59,7 +61,9 @@ class TestMemoryUserRepo:
         assert user_data is None
 
     @pytest.mark.asyncio
-    async def test_register_user_idempotency(self, user_repo: MemoryUserRepo, mock_time: Mock) -> None:
+    async def test_register_user_idempotency(
+        self, user_repo: MemoryUserRepo, mock_time: Mock
+    ) -> None:
         """Test that registering the same user multiple times is idempotent."""
         user_id = 12345
         username = "testuser"
@@ -79,7 +83,9 @@ class TestMemoryUserRepo:
         assert user_data["username"] == username
 
     @pytest.mark.asyncio
-    async def test_register_user_with_different_data(self, user_repo: MemoryUserRepo, mock_time: Mock) -> None:
+    async def test_register_user_with_different_data(
+        self, user_repo: MemoryUserRepo, mock_time: Mock
+    ) -> None:
         """Test registering user with different data updates existing entry."""
         user_id = 12345
 
@@ -99,7 +105,9 @@ class TestMemoryUserRepo:
         assert user_data["last_name"] == "User"
 
     @pytest.mark.asyncio
-    async def test_register_user_minimal_data(self, user_repo: MemoryUserRepo, mock_time: Mock) -> None:
+    async def test_register_user_minimal_data(
+        self, user_repo: MemoryUserRepo, mock_time: Mock
+    ) -> None:
         """Test registering user with minimal data."""
         user_id = 12345
 
@@ -118,7 +126,9 @@ class TestMemoryUserRepo:
         assert len(user_data) == 2  # registered_at and user_id
 
     @pytest.mark.asyncio
-    async def test_register_user_with_all_fields(self, user_repo: MemoryUserRepo, mock_time: Mock) -> None:
+    async def test_register_user_with_all_fields(
+        self, user_repo: MemoryUserRepo, mock_time: Mock
+    ) -> None:
         """Test registering user with all possible fields."""
         user_id = 12345
         user_data = {
@@ -148,7 +158,9 @@ class TestMemoryUserRepo:
         assert "registered_at" in retrieved_data
 
     @pytest.mark.asyncio
-    async def test_multiple_users(self, user_repo: MemoryUserRepo, mock_time: Mock) -> None:
+    async def test_multiple_users(
+        self, user_repo: MemoryUserRepo, mock_time: Mock
+    ) -> None:
         """Test handling multiple users."""
         users = [
             (12345, "user1", "User", "One"),
@@ -174,7 +186,9 @@ class TestMemoryUserRepo:
             assert user_data["last_name"] == last_name
 
     @pytest.mark.asyncio
-    async def test_edge_case_zero_user_id(self, user_repo: MemoryUserRepo, mock_time: Mock) -> None:
+    async def test_edge_case_zero_user_id(
+        self, user_repo: MemoryUserRepo, mock_time: Mock
+    ) -> None:
         """Test edge case with zero user ID."""
         user_id = 0
 
@@ -190,7 +204,9 @@ class TestMemoryUserRepo:
         assert user_data["username"] == "zerouser"
 
     @pytest.mark.asyncio
-    async def test_edge_case_negative_user_id(self, user_repo: MemoryUserRepo, mock_time: Mock) -> None:
+    async def test_edge_case_negative_user_id(
+        self, user_repo: MemoryUserRepo, mock_time: Mock
+    ) -> None:
         """Test edge case with negative user ID."""
         user_id = -12345
 
@@ -206,7 +222,9 @@ class TestMemoryUserRepo:
         assert user_data["username"] == "neguser"
 
     @pytest.mark.asyncio
-    async def test_edge_case_large_user_id(self, user_repo: MemoryUserRepo, mock_time: Mock) -> None:
+    async def test_edge_case_large_user_id(
+        self, user_repo: MemoryUserRepo, mock_time: Mock
+    ) -> None:
         """Test edge case with large user ID."""
         user_id = 999999999999
 
@@ -222,7 +240,9 @@ class TestMemoryUserRepo:
         assert user_data["username"] == "largeuser"
 
     @pytest.mark.asyncio
-    async def test_concurrent_register_operations(self, user_repo: MemoryUserRepo, mock_time: Mock) -> None:
+    async def test_concurrent_register_operations(
+        self, user_repo: MemoryUserRepo, mock_time: Mock
+    ) -> None:
         """Test concurrent register operations."""
         user_id = 12345
 
@@ -243,7 +263,9 @@ class TestMemoryUserRepo:
         assert user_data is not None
 
     @pytest.mark.asyncio
-    async def test_concurrent_get_operations(self, user_repo: MemoryUserRepo, mock_time: Mock) -> None:
+    async def test_concurrent_get_operations(
+        self, user_repo: MemoryUserRepo, mock_time: Mock
+    ) -> None:
         """Test concurrent get operations."""
         user_id = 12345
 
@@ -264,7 +286,9 @@ class TestMemoryUserRepo:
             assert result["username"] == "testuser"
 
     @pytest.mark.asyncio
-    async def test_user_data_types(self, user_repo: MemoryUserRepo, mock_time: Mock) -> None:
+    async def test_user_data_types(
+        self, user_repo: MemoryUserRepo, mock_time: Mock
+    ) -> None:
         """Test user data with different types."""
         user_id = 12345
         user_data = {
@@ -292,7 +316,9 @@ class TestMemoryUserRepo:
         assert retrieved_data["none_field"] is None
 
     @pytest.mark.asyncio
-    async def test_registered_at_timestamp(self, user_repo: MemoryUserRepo, mock_time: Mock) -> None:
+    async def test_registered_at_timestamp(
+        self, user_repo: MemoryUserRepo, mock_time: Mock
+    ) -> None:
         """Test that registered_at timestamp is set correctly."""
         user_id = 12345
 
@@ -306,7 +332,9 @@ class TestMemoryUserRepo:
         assert user_data["registered_at"] == 1000.0  # From mock_time fixture
 
     @pytest.mark.asyncio
-    async def test_user_isolation(self, user_repo: MemoryUserRepo, mock_time: Mock) -> None:
+    async def test_user_isolation(
+        self, user_repo: MemoryUserRepo, mock_time: Mock
+    ) -> None:
         """Test that user data is isolated per user."""
         user1 = 12345
         user2 = 67890
