@@ -79,6 +79,8 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           skip-existing: true
+        environment:
+          name: pypi
 
       - name: Create GitHub Release from Tag
         id: create_release
