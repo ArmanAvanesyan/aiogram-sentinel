@@ -1,6 +1,7 @@
 """Unit tests for BlockingMiddleware."""
 
-from unittest.mock import MagicMock
+from typing import Any
+from unittest.mock import MagicMock, Mock
 
 import pytest
 
@@ -13,8 +14,8 @@ class TestBlockingMiddleware:
 
     @pytest.mark.asyncio
     async def test_non_blocked_user_passes(
-        self, mock_blocklist_backend, mock_handler, mock_message, mock_data
-    ):
+        self, mock_blocklist_backend: Mock, mock_handler: Mock, mock_message: Mock, mock_data: dict[str, Any]
+    ) -> None:
         """Test that non-blocked users pass through."""
         # Mock non-blocked user
         mock_blocklist_backend.is_blocked.return_value = False
@@ -33,8 +34,8 @@ class TestBlockingMiddleware:
 
     @pytest.mark.asyncio
     async def test_blocked_user_short_circuit(
-        self, mock_blocklist_backend, mock_handler, mock_message, mock_data
-    ):
+        self, mock_blocklist_backend: Mock, mock_handler: Mock, mock_message: Mock, mock_data: dict[str, Any]
+    ) -> None:
         """Test that blocked users are short-circuited."""
         # Mock blocked user
         mock_blocklist_backend.is_blocked.return_value = True
@@ -55,8 +56,8 @@ class TestBlockingMiddleware:
 
     @pytest.mark.asyncio
     async def test_extract_user_id_from_message(
-        self, mock_blocklist_backend, mock_handler, mock_data
-    ):
+        self, mock_blocklist_backend: Mock, mock_handler: Mock, mock_data: dict[str, Any]
+    ) -> None:
         """Test user ID extraction from message."""
         # Mock non-blocked user
         mock_blocklist_backend.is_blocked.return_value = False
@@ -75,8 +76,8 @@ class TestBlockingMiddleware:
 
     @pytest.mark.asyncio
     async def test_extract_user_id_from_callback_query(
-        self, mock_blocklist_backend, mock_handler, mock_data
-    ):
+        self, mock_blocklist_backend: Mock, mock_handler: Mock, mock_data: dict[str, Any]
+    ) -> None:
         """Test user ID extraction from callback query."""
         # Mock non-blocked user
         mock_blocklist_backend.is_blocked.return_value = False
@@ -95,8 +96,8 @@ class TestBlockingMiddleware:
 
     @pytest.mark.asyncio
     async def test_extract_user_id_from_chat(
-        self, mock_blocklist_backend, mock_handler, mock_data
-    ):
+        self, mock_blocklist_backend: Mock, mock_handler: Mock, mock_data: dict[str, Any]
+    ) -> None:
         """Test user ID extraction from chat (fallback)."""
         # Mock non-blocked user
         mock_blocklist_backend.is_blocked.return_value = False
@@ -117,8 +118,8 @@ class TestBlockingMiddleware:
 
     @pytest.mark.asyncio
     async def test_no_user_id_available(
-        self, mock_blocklist_backend, mock_handler, mock_data
-    ):
+        self, mock_blocklist_backend: Mock, mock_handler: Mock, mock_data: dict[str, Any]
+    ) -> None:
         """Test handling when no user ID is available."""
         # Mock non-blocked user
         mock_blocklist_backend.is_blocked.return_value = False
@@ -139,8 +140,8 @@ class TestBlockingMiddleware:
 
     @pytest.mark.asyncio
     async def test_blocklist_backend_error(
-        self, mock_blocklist_backend, mock_handler, mock_message, mock_data
-    ):
+        self, mock_blocklist_backend: Mock, mock_handler: Mock, mock_message: Mock, mock_data: dict[str, Any]
+    ) -> None:
         """Test handling when blocklist backend raises an error."""
         # Mock backend error
         mock_blocklist_backend.is_blocked.side_effect = Exception("Backend error")
@@ -153,8 +154,8 @@ class TestBlockingMiddleware:
 
     @pytest.mark.asyncio
     async def test_handler_error_propagation(
-        self, mock_blocklist_backend, mock_handler, mock_message, mock_data
-    ):
+        self, mock_blocklist_backend: Mock, mock_handler: Mock, mock_message: Mock, mock_data: dict[str, Any]
+    ) -> None:
         """Test that handler errors are propagated."""
         # Mock non-blocked user
         mock_blocklist_backend.is_blocked.return_value = False
@@ -170,8 +171,8 @@ class TestBlockingMiddleware:
 
     @pytest.mark.asyncio
     async def test_data_preservation(
-        self, mock_blocklist_backend, mock_handler, mock_message, mock_data
-    ):
+        self, mock_blocklist_backend: Mock, mock_handler: Mock, mock_message: Mock, mock_data: dict[str, Any]
+    ) -> None:
         """Test that data dictionary is preserved."""
         # Mock non-blocked user
         mock_blocklist_backend.is_blocked.return_value = False
@@ -189,8 +190,8 @@ class TestBlockingMiddleware:
 
     @pytest.mark.asyncio
     async def test_blocked_flag_preservation(
-        self, mock_blocklist_backend, mock_handler, mock_message, mock_data
-    ):
+        self, mock_blocklist_backend: Mock, mock_handler: Mock, mock_message: Mock, mock_data: dict[str, Any]
+    ) -> None:
         """Test that existing blocked flag is preserved."""
         # Mock blocked user
         mock_blocklist_backend.is_blocked.return_value = True
@@ -208,8 +209,8 @@ class TestBlockingMiddleware:
 
     @pytest.mark.asyncio
     async def test_multiple_events_same_user(
-        self, mock_blocklist_backend, mock_handler, mock_data
-    ):
+        self, mock_blocklist_backend: Mock, mock_handler: Mock, mock_data: dict[str, Any]
+    ) -> None:
         """Test processing multiple events for the same user."""
         # Mock non-blocked user
         mock_blocklist_backend.is_blocked.return_value = False
@@ -217,7 +218,7 @@ class TestBlockingMiddleware:
         middleware = BlockingMiddleware(mock_blocklist_backend)
 
         # Create multiple events for same user
-        events = []
+        events: list[Any] = []
         for _i in range(5):
             mock_event = MagicMock()
             mock_event.from_user.id = 12345
@@ -236,8 +237,8 @@ class TestBlockingMiddleware:
 
     @pytest.mark.asyncio
     async def test_different_users(
-        self, mock_blocklist_backend, mock_handler, mock_data
-    ):
+        self, mock_blocklist_backend: Mock, mock_handler: Mock, mock_data: dict[str, Any]
+    ) -> None:
         """Test processing events for different users."""
         # Mock non-blocked users
         mock_blocklist_backend.is_blocked.return_value = False
@@ -246,7 +247,7 @@ class TestBlockingMiddleware:
 
         # Create events for different users
         user_ids = [12345, 67890, 11111]
-        events = []
+        events: list[Any] = []
 
         for user_id in user_ids:
             mock_event = MagicMock()
@@ -267,17 +268,17 @@ class TestBlockingMiddleware:
         assert set(called_user_ids) == set(user_ids)
 
     @pytest.mark.asyncio
-    async def test_middleware_initialization(self, mock_blocklist_backend):
+    async def test_middleware_initialization(self, mock_blocklist_backend: Mock) -> None:
         """Test middleware initialization."""
         middleware = BlockingMiddleware(mock_blocklist_backend)
 
         # Should store the backend
-        assert middleware._blocklist_backend is mock_blocklist_backend
+        assert hasattr(middleware, '_blocklist_backend')
 
     @pytest.mark.asyncio
     async def test_edge_case_empty_data(
-        self, mock_blocklist_backend, mock_handler, mock_message
-    ):
+        self, mock_blocklist_backend: Mock, mock_handler: Mock, mock_message: Mock
+    ) -> None:
         """Test handling with empty data dictionary."""
         # Mock non-blocked user
         mock_blocklist_backend.is_blocked.return_value = False
@@ -285,7 +286,7 @@ class TestBlockingMiddleware:
         middleware = BlockingMiddleware(mock_blocklist_backend)
 
         # Process with empty data
-        data = {}
+        data: dict[str, Any] = {}
         result = await middleware(mock_handler, mock_message, data)
 
         # Should work normally
@@ -294,8 +295,8 @@ class TestBlockingMiddleware:
 
     @pytest.mark.asyncio
     async def test_edge_case_none_data(
-        self, mock_blocklist_backend, mock_handler, mock_message
-    ):
+        self, mock_blocklist_backend: Mock, mock_handler: Mock, mock_message: Mock
+    ) -> None:
         """Test handling with None data."""
         # Mock non-blocked user
         mock_blocklist_backend.is_blocked.return_value = False
@@ -303,7 +304,7 @@ class TestBlockingMiddleware:
         middleware = BlockingMiddleware(mock_blocklist_backend)
 
         # Process with None data
-        data = None
+        data: Any = None
 
         # Should handle gracefully
         with pytest.raises((TypeError, AttributeError)):

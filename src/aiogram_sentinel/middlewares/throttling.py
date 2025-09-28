@@ -81,14 +81,14 @@ class ThrottlingMiddleware(BaseMiddleware):
         # Check if handler has rate limit configuration
         if hasattr(handler, "sentinel_rate_limit"):  # type: ignore
             config = handler.sentinel_rate_limit  # type: ignore
-            max_events, per_seconds, scope = config
+            max_events, per_seconds, _scope = config
             return max_events, per_seconds
 
         # Check data for rate limit configuration
         if "sentinel_rate_limit" in data:
             config = data["sentinel_rate_limit"]
-            if isinstance(config, tuple) and len(config) >= 2:
-                return config[0], config[1]
+            if isinstance(config, tuple) and len(config) >= 2:  # type: ignore
+                return int(config[0]), int(config[1])  # type: ignore
 
         # Use defaults
         return (

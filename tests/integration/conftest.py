@@ -1,33 +1,34 @@
 """Integration test configuration and fixtures."""
 
 import os
+from typing import AsyncGenerator
 
 import pytest
 from redis.asyncio import Redis
 
 
 @pytest.fixture
-def redis_url():
+def redis_url() -> str:
     """Get Redis URL from environment or use default."""
     return os.getenv("TEST_REDIS_URL", "redis://localhost:6379/1")
 
 
 @pytest.fixture
-async def redis_client(redis_url):
+async def redis_client(redis_url: str) -> AsyncGenerator[Redis, None]:
     """Create Redis client for integration tests."""
-    client = Redis.from_url(redis_url)
-    await client.flushdb()  # Clean database before each test
+    client = Redis.from_url(redis_url)  # type: ignore
+    await client.flushdb()  # type: ignore
     yield client
-    await client.flushdb()  # Clean database after each test
+    await client.flushdb()  # type: ignore
     await client.close()
 
 
 @pytest.fixture
-async def redis_available(redis_url):
+async def redis_available(redis_url: str) -> bool:
     """Check if Redis is available for integration tests."""
     try:
-        client = Redis.from_url(redis_url)
-        await client.ping()
+        client = Redis.from_url(redis_url)  # type: ignore
+        await client.ping()  # type: ignore
         await client.close()
         return True
     except Exception:

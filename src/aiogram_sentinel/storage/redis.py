@@ -149,9 +149,9 @@ class RedisUserRepo(UserRepo):
                 return None
             # Convert bytes to strings and parse types
             result: dict[str, Any] = {}
-            for key, value in data.items():
-                key_str = key.decode() if isinstance(key, bytes) else key
-                value_str = value.decode() if isinstance(value, bytes) else value
+            for key, value in data.items():  # type: ignore
+                key_str = key.decode() if isinstance(key, bytes) else str(key)  # type: ignore
+                value_str = value.decode() if isinstance(value, bytes) else str(value)  # type: ignore
                 # Try to parse as int/float, otherwise keep as string
                 if value_str.isdigit():
                     result[key_str] = int(value_str)

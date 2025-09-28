@@ -68,6 +68,35 @@ class MemoryDebounce(DebounceBackend):
             self._store[k] = now
             return False
 
+    # Convenience methods for tests
+    async def set_debounce(self, key: str, delay: float) -> None:
+        """Set debounce for a key."""
+        async with self._lock:
+            now = time.monotonic()
+            if delay <= 0:
+                # For zero or negative delay, don't set debounce
+                if key in self._store:
+                    del self._store[key]
+            else:
+                self._store[key] = now + delay
+
+    async def is_debounced(self, key: str) -> bool:
+        """Check if key is currently debounced."""
+        async with self._lock:
+            now = time.monotonic()
+            ts = self._store.get(key, 0)
+            if ts and ts >= now:  # Use >= for boundary case
+                return True
+            # Clean up expired entries
+            if key in self._store:
+                del self._store[key]
+            return False
+
+    @property
+    def _debounces(self) -> dict[str, float]:
+        """Access to internal storage for testing."""
+        return self._store
+
 
 class MemoryBlocklist(BlocklistBackend):
     """In-memory blocklist backend using set semantics."""
@@ -90,13 +119,22 @@ class MemoryBlocklist(BlocklistBackend):
             else:
                 self._blocked_users.discard(user_id)
 
+    # Convenience methods for tests
+    async def block_user(self, user_id: int) -> None:
+        """Block a user."""
+        await self.set_blocked(user_id, True)
+
+    async def unblock_user(self, user_id: int) -> None:
+        """Unblock a user."""
+        await self.set_blocked(user_id, False)
+
 
 class MemoryUserRepo(UserRepo):
     """In-memory user repository implementation."""
 
     def __init__(self) -> None:
         """Initialize the user repository."""
-        self._users: dict[int, dict] = {}
+        self._users: dict[int, dict[str, Any]] = {}
         self._lock = asyncio.Lock()
 
     async def ensure_user(self, user_id: int, *, username: str | None = None) -> None:

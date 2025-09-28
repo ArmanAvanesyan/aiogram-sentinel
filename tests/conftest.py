@@ -2,6 +2,7 @@
 
 import asyncio
 import time
+from typing import Any
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -86,11 +87,12 @@ def mock_chat():
 
 
 @pytest.fixture
-def mock_message(mock_user, mock_chat):
+def mock_message(mock_user: User, mock_chat: Chat) -> Message:
     """Create a mock Telegram message."""
+    from datetime import datetime
     return Message(
         message_id=1,
-        date=int(time.time()),
+        date=datetime.fromtimestamp(int(time.time())),
         chat=mock_chat,
         from_user=mock_user,
         text="/test",
@@ -98,7 +100,7 @@ def mock_message(mock_user, mock_chat):
 
 
 @pytest.fixture
-def mock_callback_query(mock_user, mock_chat):
+def mock_callback_query(mock_user: User, mock_chat: Chat) -> CallbackQuery:
     """Create a mock Telegram callback query."""
     return CallbackQuery(
         id="test_callback_id",
@@ -109,43 +111,43 @@ def mock_callback_query(mock_user, mock_chat):
 
 
 @pytest.fixture
-def mock_handler():
+def mock_handler() -> AsyncMock:
     """Create a mock async handler function."""
     return AsyncMock(return_value="handler_result")
 
 
 @pytest.fixture
-def mock_data():
+def mock_data() -> dict[str, Any]:
     """Create a mock middleware data dictionary."""
     return {}
 
 
 @pytest.fixture
-def rate_limiter():
+def rate_limiter() -> MemoryRateLimiter:
     """Create a MemoryRateLimiter instance."""
     return MemoryRateLimiter()
 
 
 @pytest.fixture
-def debounce():
+def debounce() -> MemoryDebounce:
     """Create a MemoryDebounce instance."""
     return MemoryDebounce()
 
 
 @pytest.fixture
-def blocklist():
+def blocklist() -> MemoryBlocklist:
     """Create a MemoryBlocklist instance."""
     return MemoryBlocklist()
 
 
 @pytest.fixture
-def user_repo():
+def user_repo() -> MemoryUserRepo:
     """Create a MemoryUserRepo instance."""
     return MemoryUserRepo()
 
 
 @pytest.fixture
-def mock_redis():
+def mock_redis() -> AsyncMock:
     """Create a mock Redis connection."""
     mock_redis = AsyncMock()
     mock_redis.pipeline.return_value = AsyncMock()
@@ -157,7 +159,7 @@ def mock_redis():
 
 
 @pytest.fixture
-def mock_blocklist_backend():
+def mock_blocklist_backend() -> AsyncMock:
     """Create a mock blocklist backend."""
     backend = AsyncMock()
     backend.is_blocked.return_value = False
@@ -167,7 +169,7 @@ def mock_blocklist_backend():
 
 
 @pytest.fixture
-def mock_user_repo():
+def mock_user_repo() -> AsyncMock:
     """Create a mock user repository."""
     repo = AsyncMock()
     repo.is_registered.return_value = False
@@ -177,7 +179,7 @@ def mock_user_repo():
 
 
 @pytest.fixture
-def mock_rate_limiter():
+def mock_rate_limiter() -> AsyncMock:
     """Create a mock rate limiter."""
     limiter = AsyncMock()
     limiter.increment_rate_limit.return_value = 1
@@ -187,7 +189,7 @@ def mock_rate_limiter():
 
 
 @pytest.fixture
-def mock_debounce_backend():
+def mock_debounce_backend() -> AsyncMock:
     """Create a mock debounce backend."""
     backend = AsyncMock()
     backend.is_debounced.return_value = False
@@ -196,10 +198,10 @@ def mock_debounce_backend():
 
 
 @pytest.fixture
-def mock_resolve_user():
+def mock_resolve_user() -> Any:
     """Create a mock resolve_user hook."""
 
-    async def resolve_user(event, data):
+    async def resolve_user(event: Any, data: Any) -> dict[str, Any] | None:
         if hasattr(event, "from_user") and event.from_user:
             return {
                 "user_id": event.from_user.id,
@@ -211,26 +213,26 @@ def mock_resolve_user():
 
 
 @pytest.fixture
-def mock_on_rate_limited():
+def mock_on_rate_limited() -> AsyncMock:
     """Create a mock on_rate_limited hook."""
     return AsyncMock()
 
 
 @pytest.fixture
-def mock_on_block():
+def mock_on_block() -> AsyncMock:
     """Create a mock on_block hook."""
     return AsyncMock()
 
 
 @pytest.fixture
-def mock_on_unblock():
+def mock_on_unblock() -> AsyncMock:
     """Create a mock on_unblock hook."""
     return AsyncMock()
 
 
 # Performance test fixtures
 @pytest.fixture
-def performance_thresholds():
+def performance_thresholds() -> dict[str, float]:
     """Define performance thresholds for tests."""
     return {
         "rate_limit_increment": 0.001,  # 1ms
@@ -242,20 +244,20 @@ def performance_thresholds():
 
 
 @pytest.fixture
-def large_user_set():
+def large_user_set() -> set[int]:
     """Create a large set of user IDs for performance testing."""
     return set(range(1000, 2000))
 
 
 @pytest.fixture
-def many_handlers():
+def many_handlers() -> list[str]:
     """Create many handler names for performance testing."""
     return [f"handler_{i}" for i in range(100)]
 
 
 # Async test configuration
 @pytest.fixture(scope="session")
-def event_loop():
+def event_loop() -> Any:
     """Create an event loop for the test session."""
     loop = asyncio.new_event_loop()
     yield loop
@@ -263,7 +265,7 @@ def event_loop():
 
 
 # Test markers
-def pytest_configure(config):
+def pytest_configure(config: Any) -> None:
     """Configure pytest markers."""
     config.addinivalue_line("markers", "unit: Unit tests")
     config.addinivalue_line("markers", "perf: Performance tests")
@@ -272,7 +274,7 @@ def pytest_configure(config):
 
 
 # Test collection
-def pytest_collection_modifyitems(config, items):
+def pytest_collection_modifyitems(config: Any, items: Any) -> None:
     """Modify test collection to add markers."""
     for item in items:
         # Add unit marker to unit tests

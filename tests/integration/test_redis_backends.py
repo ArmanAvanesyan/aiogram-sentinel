@@ -1,6 +1,7 @@
 """Integration tests for Redis backends."""
 
 import os
+from typing import Any
 
 import pytest
 
@@ -17,17 +18,17 @@ class TestRedisBackends:
     """Integration tests for Redis backends."""
 
     @pytest.fixture
-    def redis_url(self):
+    def redis_url(self) -> str:
         """Get Redis URL from environment or use default."""
         return os.getenv("TEST_REDIS_URL", "redis://localhost:6379/1")
 
     @pytest.fixture
-    async def redis_backends(self, redis_url):
+    async def redis_backends(self, redis_url: str) -> Any:
         """Create Redis backend instances."""
         from redis.asyncio import Redis
 
-        redis_client = Redis.from_url(redis_url)
-        await redis_client.flushdb()  # Clean database
+        redis_client = Redis.from_url(redis_url)  # type: ignore
+        await redis_client.flushdb()  # type: ignore
 
         backends = {
             "rate_limiter": RedisRateLimiter(redis_client, "test:"),
@@ -39,11 +40,11 @@ class TestRedisBackends:
         yield backends
 
         # Cleanup
-        await redis_client.flushdb()
+        await redis_client.flushdb()  # type: ignore
         await redis_client.close()
 
     @pytest.mark.asyncio
-    async def test_redis_rate_limiter_integration(self, redis_backends):
+    async def test_redis_rate_limiter_integration(self, redis_backends: Any) -> None:
         """Test Redis rate limiter integration."""
         rate_limiter = redis_backends["rate_limiter"]
         key = "user:123:handler"
@@ -68,7 +69,7 @@ class TestRedisBackends:
         assert count == 0
 
     @pytest.mark.asyncio
-    async def test_redis_debounce_integration(self, redis_backends):
+    async def test_redis_debounce_integration(self, redis_backends: Any) -> None:
         """Test Redis debounce integration."""
         debounce = redis_backends["debounce"]
         key = "user:123:handler"
@@ -89,7 +90,7 @@ class TestRedisBackends:
         assert is_debounced is False
 
     @pytest.mark.asyncio
-    async def test_redis_blocklist_integration(self, redis_backends):
+    async def test_redis_blocklist_integration(self, redis_backends: Any) -> None:
         """Test Redis blocklist integration."""
         blocklist = redis_backends["blocklist"]
         user_id = 12345
@@ -109,7 +110,7 @@ class TestRedisBackends:
         assert is_blocked is False
 
     @pytest.mark.asyncio
-    async def test_redis_user_repo_integration(self, redis_backends):
+    async def test_redis_user_repo_integration(self, redis_backends: Any) -> None:
         """Test Redis user repository integration."""
         user_repo = redis_backends["user_repo"]
         user_id = 12345
@@ -133,16 +134,16 @@ class TestRedisBackends:
         assert "registered_at" in user_data
 
     @pytest.mark.asyncio
-    async def test_redis_connection_error_handling(self, redis_url):
+    async def test_redis_connection_error_handling(self, redis_url: str) -> None:
         """Test Redis connection error handling."""
         from redis.asyncio import Redis
 
         # Use invalid Redis URL
-        invalid_redis = Redis.from_url("redis://localhost:9999/1")
+        invalid_redis = Redis.from_url("redis://localhost:9999/1")  # type: ignore
 
         try:
             # This should raise a connection error
-            await invalid_redis.ping()
+            await invalid_redis.ping()  # type: ignore
             pytest.fail("Expected connection error")
         except Exception:
             # Expected behavior
@@ -151,7 +152,7 @@ class TestRedisBackends:
             await invalid_redis.close()
 
     @pytest.mark.asyncio
-    async def test_redis_namespacing(self, redis_backends):
+    async def test_redis_namespacing(self, redis_backends: Any) -> None:
         """Test Redis key namespacing."""
         rate_limiter = redis_backends["rate_limiter"]
         key = "user:123:handler"
@@ -164,16 +165,16 @@ class TestRedisBackends:
         from redis.asyncio import Redis
 
         redis_url = os.getenv("TEST_REDIS_URL", "redis://localhost:6379/1")
-        redis_client = Redis.from_url(redis_url)
+        redis_client = Redis.from_url(redis_url)  # type: ignore
 
-        keys = await redis_client.keys("test:*")
+        keys = await redis_client.keys("test:*")  # type: ignore
         assert len(keys) > 0
         assert all(key.decode().startswith("test:") for key in keys)
 
         await redis_client.close()
 
     @pytest.mark.asyncio
-    async def test_redis_concurrent_operations(self, redis_backends):
+    async def test_redis_concurrent_operations(self, redis_backends: Any) -> None:
         """Test Redis concurrent operations."""
         import asyncio
 
@@ -182,12 +183,12 @@ class TestRedisBackends:
         window = 60
 
         # Run concurrent increments
-        tasks = []
+        tasks: list[Any] = []
         for _i in range(10):
             task = rate_limiter.increment_rate_limit(key, window)
             tasks.append(task)
 
-        results = await asyncio.gather(*tasks)
+        results: list[Any] = await asyncio.gather(*tasks)
 
         # All should return sequential counts
         expected_counts = list(range(1, 11))

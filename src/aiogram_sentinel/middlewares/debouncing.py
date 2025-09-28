@@ -63,14 +63,14 @@ class DebounceMiddleware(BaseMiddleware):
         # Check if handler has debounce configuration
         if hasattr(handler, "sentinel_debounce"):  # type: ignore
             config = handler.sentinel_debounce  # type: ignore
-            window_seconds, scope = config
+            window_seconds, _scope = config
             return window_seconds
 
         # Check data for debounce configuration
         if "sentinel_debounce" in data:
             config = data["sentinel_debounce"]
-            if isinstance(config, tuple) and len(config) >= 1:
-                return config[0]
+            if isinstance(config, tuple) and len(config) >= 1:  # type: ignore
+                return int(config[0])  # type: ignore
 
         # Use default
         return self._cfg.debounce_default_window

@@ -78,7 +78,7 @@ async def test_concurrent_operations(benchmark: Any) -> None:
     user_repo = MemoryUserRepo()
 
     async def benchmark_fn() -> None:
-        tasks = []
+        tasks: list[Any] = []
         for i in range(100):
             # Mix of operations
             tasks.append(rate_limiter.allow(f"user:{i}", max_events=10, per_seconds=60))
