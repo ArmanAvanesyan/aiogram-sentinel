@@ -90,11 +90,16 @@ jobs:
           # Extract version from tag (e.g., v0.2.0 -> 0.2.0)
           VERSION=${GITHUB_REF#refs/tags/v}
           
-          # Create GitHub release
-          gh release create $GITHUB_REF \
+          # Create GitHub release and capture upload URL
+          RESPONSE=$(gh release create $GITHUB_REF \
             --title "Release v$VERSION" \
             --notes "Release v$VERSION" \
-            --generate-notes
+            --generate-notes \
+            --json upload_url)
+          
+          # Extract upload URL from response
+          UPLOAD_URL=$(echo "$RESPONSE" | jq -r '.upload_url')
+          echo "upload_url=$UPLOAD_URL" >> $GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
