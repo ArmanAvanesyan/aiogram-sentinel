@@ -1,8 +1,10 @@
 # aiogram-sentinel
 
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![CI](https://img.shields.io/github/actions/workflow/status/ArmanAvanesyan/aiogram-sentinel/ci.yml?branch=main&label=CI)](../../actions)
+[![PyPI](https://img.shields.io/pypi/v/aiogram-sentinel.svg)](https://pypi.org/project/aiogram-sentinel/)
+[![Python](https://img.shields.io/pypi/pyversions/aiogram-sentinel.svg)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Ruff](https://img.shields.io/badge/lint-ruff-informational)](https://github.com/astral-sh/ruff)
 
 **Edge hygiene library for aiogram v3** - Protect your Telegram bots from spam, abuse, and unwanted behavior with powerful middleware and storage backends.
 

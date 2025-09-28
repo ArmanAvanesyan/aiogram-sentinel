@@ -157,5 +157,6 @@ exclude_lines = [
 
 [dependency-groups]
 dev = [
+    "hatchling>=1.27.0",
     "pyright>=1.1.405",
 ]
