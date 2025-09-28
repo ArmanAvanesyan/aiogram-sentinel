@@ -14,7 +14,11 @@ class TestAuthMiddleware:
 
     @pytest.mark.asyncio
     async def test_anonymous_user_passes(
-        self, mock_user_repo: Mock, mock_blocklist_backend: Mock, mock_handler: Mock, mock_data: dict[str, Any]
+        self,
+        mock_user_repo: Mock,
+        mock_blocklist_backend: Mock,
+        mock_handler: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test that anonymous users (user_id=0) pass through."""
         middleware = AuthMiddleware(mock_user_repo)
@@ -170,9 +174,7 @@ class TestAuthMiddleware:
         # Mock registered user
         mock_user_repo.is_registered.return_value = True
 
-        middleware = AuthMiddleware(
-            mock_user_repo, resolve_user=mock_resolve_user
-        )
+        middleware = AuthMiddleware(mock_user_repo, resolve_user=mock_resolve_user)
 
         # Process event
         result = await middleware(mock_handler, mock_message, mock_data)
@@ -206,9 +208,7 @@ class TestAuthMiddleware:
         async def vetoing_resolver(event: Any, data: dict[str, Any]) -> None:
             return None  # Veto the request
 
-        middleware = AuthMiddleware(
-            mock_user_repo, resolve_user=vetoing_resolver
-        )
+        middleware = AuthMiddleware(mock_user_repo, resolve_user=vetoing_resolver)
 
         # Process event
         result = await middleware(mock_handler, mock_message, mock_data)
@@ -239,9 +239,7 @@ class TestAuthMiddleware:
         async def erroring_resolver(event: Any, data: dict[str, Any]) -> None:
             raise Exception("Resolver error")
 
-        middleware = AuthMiddleware(
-            mock_user_repo, resolve_user=erroring_resolver
-        )
+        middleware = AuthMiddleware(mock_user_repo, resolve_user=erroring_resolver)
 
         # Should raise the error
         with pytest.raises(Exception, match="Resolver error"):
@@ -249,7 +247,11 @@ class TestAuthMiddleware:
 
     @pytest.mark.asyncio
     async def test_extract_user_info_from_message(
-        self, mock_user_repo: Mock, mock_blocklist_backend: Mock, mock_handler: Mock, mock_data: dict[str, Any]
+        self,
+        mock_user_repo: Mock,
+        mock_blocklist_backend: Mock,
+        mock_handler: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test user info extraction from message."""
         # Mock registered user
@@ -273,7 +275,11 @@ class TestAuthMiddleware:
 
     @pytest.mark.asyncio
     async def test_extract_user_info_from_callback_query(
-        self, mock_user_repo: Mock, mock_blocklist_backend: Mock, mock_handler: Mock, mock_data: dict[str, Any]
+        self,
+        mock_user_repo: Mock,
+        mock_blocklist_backend: Mock,
+        mock_handler: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test user info extraction from callback query."""
         # Mock registered user
@@ -297,7 +303,11 @@ class TestAuthMiddleware:
 
     @pytest.mark.asyncio
     async def test_extract_user_info_from_chat(
-        self, mock_user_repo: Mock, mock_blocklist_backend: Mock, mock_handler: Mock, mock_data: dict[str, Any]
+        self,
+        mock_user_repo: Mock,
+        mock_blocklist_backend: Mock,
+        mock_handler: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test user info extraction from chat (fallback)."""
         # Mock registered user
@@ -323,7 +333,11 @@ class TestAuthMiddleware:
 
     @pytest.mark.asyncio
     async def test_no_user_info_available(
-        self, mock_user_repo: Mock, mock_blocklist_backend: Mock, mock_handler: Mock, mock_data: dict[str, Any]
+        self,
+        mock_user_repo: Mock,
+        mock_blocklist_backend: Mock,
+        mock_handler: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test handling when no user info is available."""
         middleware = AuthMiddleware(mock_user_repo)
@@ -440,25 +454,30 @@ class TestAuthMiddleware:
         middleware = AuthMiddleware(mock_user_repo)
 
         # Should store the backends
-        assert hasattr(middleware, '_user_repo')
-        assert hasattr(middleware, '_blocklist_backend')
-        assert hasattr(middleware, '_resolve_user')
+        assert hasattr(middleware, "_user_repo")
+        assert hasattr(middleware, "_blocklist_backend")
+        assert hasattr(middleware, "_resolve_user")
 
     @pytest.mark.asyncio
     async def test_middleware_initialization_with_resolver(
-        self, mock_user_repo: Mock, mock_blocklist_backend: Mock, mock_resolve_user: Mock
+        self,
+        mock_user_repo: Mock,
+        mock_blocklist_backend: Mock,
+        mock_resolve_user: Mock,
     ) -> None:
         """Test middleware initialization with resolver."""
-        middleware = AuthMiddleware(
-            mock_user_repo, resolve_user=mock_resolve_user
-        )
+        middleware = AuthMiddleware(mock_user_repo, resolve_user=mock_resolve_user)
 
         # Should store the resolver
-        assert hasattr(middleware, '_resolve_user')
+        assert hasattr(middleware, "_resolve_user")
 
     @pytest.mark.asyncio
     async def test_edge_case_empty_username(
-        self, mock_user_repo: Mock, mock_blocklist_backend: Mock, mock_handler: Mock, mock_data: dict[str, Any]
+        self,
+        mock_user_repo: Mock,
+        mock_blocklist_backend: Mock,
+        mock_handler: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test handling with empty username."""
         # Mock registered user
@@ -480,7 +499,11 @@ class TestAuthMiddleware:
 
     @pytest.mark.asyncio
     async def test_edge_case_none_username(
-        self, mock_user_repo: Mock, mock_blocklist_backend: Mock, mock_handler: Mock, mock_data: dict[str, Any]
+        self,
+        mock_user_repo: Mock,
+        mock_blocklist_backend: Mock,
+        mock_handler: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test handling with None username."""
         # Mock registered user

@@ -34,7 +34,9 @@ class TestMemoryDebounce:
         assert is_debounced is True
 
     @pytest.mark.asyncio
-    async def test_debounce_expiration(self, debounce: MemoryDebounce, mock_time_advance: Mock):
+    async def test_debounce_expiration(
+        self, debounce: MemoryDebounce, mock_time_advance: Mock
+    ):
         """Test debounce expiration after delay."""
         key = "user:123:handler"
         delay = 5.0
@@ -54,7 +56,9 @@ class TestMemoryDebounce:
         assert is_debounced is False
 
     @pytest.mark.asyncio
-    async def test_debounce_boundary(self, debounce: MemoryDebounce, mock_time_advance: Mock):
+    async def test_debounce_boundary(
+        self, debounce: MemoryDebounce, mock_time_advance: Mock
+    ):
         """Test debounce at exact boundary."""
         key = "user:123:handler"
         delay = 5.0
@@ -92,7 +96,9 @@ class TestMemoryDebounce:
         assert await debounce.is_debounced(key2) is True
 
     @pytest.mark.asyncio
-    async def test_debounce_override(self, debounce: MemoryDebounce, mock_time_advance: Mock):
+    async def test_debounce_override(
+        self, debounce: MemoryDebounce, mock_time_advance: Mock
+    ):
         """Test overriding existing debounce."""
         key = "user:123:handler"
         delay1 = 5.0
@@ -129,7 +135,9 @@ class TestMemoryDebounce:
         assert is_debounced is False
 
     @pytest.mark.asyncio
-    async def test_edge_case_zero_delay(self, debounce: MemoryDebounce, mock_time: Mock):
+    async def test_edge_case_zero_delay(
+        self, debounce: MemoryDebounce, mock_time: Mock
+    ):
         """Test edge case with zero delay."""
         key = "user:123:handler"
         delay = 0.0
@@ -142,7 +150,9 @@ class TestMemoryDebounce:
         assert is_debounced is False
 
     @pytest.mark.asyncio
-    async def test_edge_case_negative_delay(self, debounce: MemoryDebounce, mock_time: Mock):
+    async def test_edge_case_negative_delay(
+        self, debounce: MemoryDebounce, mock_time: Mock
+    ):
         """Test edge case with negative delay."""
         key = "user:123:handler"
         delay = -1.0
@@ -168,7 +178,9 @@ class TestMemoryDebounce:
         assert is_debounced is True
 
     @pytest.mark.asyncio
-    async def test_memory_cleanup(self, debounce: MemoryDebounce, mock_time_advance: Mock):
+    async def test_memory_cleanup(
+        self, debounce: MemoryDebounce, mock_time_advance: Mock
+    ):
         """Test memory cleanup of expired entries."""
         key = "user:123:handler"
         delay = 5.0
@@ -187,7 +199,9 @@ class TestMemoryDebounce:
         assert key not in debounce._debounces  # type: ignore
 
     @pytest.mark.asyncio
-    async def test_concurrent_debounce_operations(self, debounce: MemoryDebounce, mock_time: Mock):
+    async def test_concurrent_debounce_operations(
+        self, debounce: MemoryDebounce, mock_time: Mock
+    ):
         """Test concurrent debounce operations."""
         key = "user:123:handler"
         delay = 5.0
@@ -205,7 +219,9 @@ class TestMemoryDebounce:
         assert is_debounced is True
 
     @pytest.mark.asyncio
-    async def test_debounce_precision(self, debounce: MemoryDebounce, mock_time_advance: Mock):
+    async def test_debounce_precision(
+        self, debounce: MemoryDebounce, mock_time_advance: Mock
+    ):
         """Test debounce timing precision."""
         key = "user:123:handler"
         delay = 0.1  # 100ms
@@ -232,7 +248,9 @@ class TestMemoryDebounce:
         assert is_debounced is False
 
     @pytest.mark.asyncio
-    async def test_debounce_with_different_delays(self, debounce: MemoryDebounce, mock_time_advance: Mock):
+    async def test_debounce_with_different_delays(
+        self, debounce: MemoryDebounce, mock_time_advance: Mock
+    ):
         """Test debouncing with different delay values."""
         key1 = "user:123:handler1"
         key2 = "user:123:handler2"

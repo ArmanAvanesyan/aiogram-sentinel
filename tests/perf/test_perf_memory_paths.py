@@ -19,7 +19,9 @@ class TestMemoryBackendPerformance:
     """Performance tests for memory backends."""
 
     @pytest.mark.asyncio
-    async def test_rate_limiter_increment_performance(self, performance_thresholds: dict[str, float]) -> None:
+    async def test_rate_limiter_increment_performance(
+        self, performance_thresholds: dict[str, float]
+    ) -> None:
         """Test rate limiter increment performance."""
         limiter = MemoryRateLimiter()
         key = "user:123:handler"
@@ -43,7 +45,9 @@ class TestMemoryBackendPerformance:
         assert avg_duration < performance_thresholds["rate_limit_increment"]
 
     @pytest.mark.asyncio
-    async def test_rate_limiter_get_performance(self, performance_thresholds: dict[str, float]) -> None:
+    async def test_rate_limiter_get_performance(
+        self, performance_thresholds: dict[str, float]
+    ) -> None:
         """Test rate limiter get performance."""
         limiter = MemoryRateLimiter()
         key = "user:123:handler"
@@ -72,7 +76,9 @@ class TestMemoryBackendPerformance:
         assert avg_duration < performance_thresholds["rate_limit_increment"]
 
     @pytest.mark.asyncio
-    async def test_debounce_check_performance(self, performance_thresholds: dict[str, float]) -> None:
+    async def test_debounce_check_performance(
+        self, performance_thresholds: dict[str, float]
+    ) -> None:
         """Test debounce check performance."""
         debounce = MemoryDebounce()
         key = "user:123:handler"
@@ -99,7 +105,9 @@ class TestMemoryBackendPerformance:
         assert avg_duration < performance_thresholds["debounce_check"]
 
     @pytest.mark.asyncio
-    async def test_debounce_set_performance(self, performance_thresholds: dict[str, float]) -> None:
+    async def test_debounce_set_performance(
+        self, performance_thresholds: dict[str, float]
+    ) -> None:
         """Test debounce set performance."""
         debounce = MemoryDebounce()
         key = "user:123:handler"
@@ -122,7 +130,9 @@ class TestMemoryBackendPerformance:
         assert avg_duration < performance_thresholds["debounce_check"]
 
     @pytest.mark.asyncio
-    async def test_blocklist_check_performance(self, performance_thresholds: dict[str, float]) -> None:
+    async def test_blocklist_check_performance(
+        self, performance_thresholds: dict[str, float]
+    ) -> None:
         """Test blocklist check performance."""
         blocklist = MemoryBlocklist()
         user_id = 12345
@@ -149,7 +159,9 @@ class TestMemoryBackendPerformance:
         assert avg_duration < performance_thresholds["blocklist_check"]
 
     @pytest.mark.asyncio
-    async def test_blocklist_operations_performance(self, performance_thresholds: dict[str, float]) -> None:
+    async def test_blocklist_operations_performance(
+        self, performance_thresholds: dict[str, float]
+    ) -> None:
         """Test blocklist operations performance."""
         blocklist = MemoryBlocklist()
 
@@ -172,7 +184,9 @@ class TestMemoryBackendPerformance:
         assert avg_duration < performance_thresholds["blocklist_check"]
 
     @pytest.mark.asyncio
-    async def test_user_repo_operations_performance(self, performance_thresholds: dict[str, float]) -> None:
+    async def test_user_repo_operations_performance(
+        self, performance_thresholds: dict[str, float]
+    ) -> None:
         """Test user repository operations performance."""
         user_repo = MemoryUserRepo()
 
@@ -204,7 +218,9 @@ class TestMemoryBackendPerformance:
         assert avg_duration < performance_thresholds["user_repo_operation"]
 
     @pytest.mark.asyncio
-    async def test_concurrent_operations_performance(self, performance_thresholds: dict[str, float]) -> None:
+    async def test_concurrent_operations_performance(
+        self, performance_thresholds: dict[str, float]
+    ) -> None:
         """Test concurrent operations performance."""
         limiter = MemoryRateLimiter()
         debounce = MemoryDebounce()
@@ -246,7 +262,9 @@ class TestMemoryBackendPerformance:
         assert total_duration < 1.0  # Should complete in under 1 second
 
     @pytest.mark.asyncio
-    async def test_large_dataset_performance(self, performance_thresholds: dict[str, float]) -> None:
+    async def test_large_dataset_performance(
+        self, performance_thresholds: dict[str, float]
+    ) -> None:
         """Test performance with large datasets."""
         limiter = MemoryRateLimiter()
         blocklist = MemoryBlocklist()
@@ -309,7 +327,9 @@ class TestMemoryBackendPerformance:
         assert avg_duration < 0.001  # Should still be under 1ms
 
     @pytest.mark.asyncio
-    async def test_window_cleanup_performance(self, performance_thresholds: dict[str, float]) -> None:
+    async def test_window_cleanup_performance(
+        self, performance_thresholds: dict[str, float]
+    ) -> None:
         """Test performance of window cleanup operations."""
         limiter = MemoryRateLimiter()
         debounce = MemoryDebounce()
@@ -336,7 +356,9 @@ class TestMemoryBackendPerformance:
             assert avg_duration < performance_thresholds["rate_limit_increment"]
 
     @pytest.mark.asyncio
-    async def test_edge_case_performance(self, performance_thresholds: dict[str, float]) -> None:
+    async def test_edge_case_performance(
+        self, performance_thresholds: dict[str, float]
+    ) -> None:
         """Test performance of edge cases."""
         limiter = MemoryRateLimiter()
         debounce = MemoryDebounce()

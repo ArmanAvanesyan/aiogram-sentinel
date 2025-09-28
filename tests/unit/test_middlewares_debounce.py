@@ -14,7 +14,11 @@ class TestDebounceMiddleware:
 
     @pytest.mark.asyncio
     async def test_first_message_passes(
-        self, mock_debounce_backend: Mock, mock_handler: Mock, mock_message: Mock, mock_data: dict[str, Any]
+        self,
+        mock_debounce_backend: Mock,
+        mock_handler: Mock,
+        mock_message: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test that first message passes through."""
         # Mock non-debounced message
@@ -37,7 +41,11 @@ class TestDebounceMiddleware:
 
     @pytest.mark.asyncio
     async def test_duplicate_message_blocked(
-        self, mock_debounce_backend: Mock, mock_handler: Mock, mock_message: Mock, mock_data: dict[str, Any]
+        self,
+        mock_debounce_backend: Mock,
+        mock_handler: Mock,
+        mock_message: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test that duplicate messages are blocked."""
         # Mock debounced message
@@ -62,7 +70,11 @@ class TestDebounceMiddleware:
 
     @pytest.mark.asyncio
     async def test_debounce_key_generation(
-        self, mock_debounce_backend: Mock, mock_handler: Mock, mock_message: Mock, mock_data: dict[str, Any]
+        self,
+        mock_debounce_backend: Mock,
+        mock_handler: Mock,
+        mock_message: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test debounce key generation."""
         # Mock non-debounced message
@@ -88,7 +100,11 @@ class TestDebounceMiddleware:
 
     @pytest.mark.asyncio
     async def test_debounce_with_custom_delay(
-        self, mock_debounce_backend: Mock, mock_handler: Mock, mock_message: Mock, mock_data: dict[str, Any]
+        self,
+        mock_debounce_backend: Mock,
+        mock_handler: Mock,
+        mock_message: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test debouncing with custom delay from decorator."""
         # Mock non-debounced message
@@ -112,13 +128,18 @@ class TestDebounceMiddleware:
 
     @pytest.mark.asyncio
     async def test_debounce_with_default_delay(
-        self, mock_debounce_backend: Mock, mock_handler: Mock, mock_message: Mock, mock_data: dict[str, Any]
+        self,
+        mock_debounce_backend: Mock,
+        mock_handler: Mock,
+        mock_message: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test debouncing with default delay."""
         # Mock non-debounced message
         mock_debounce_backend.seen.return_value = False
 
         from aiogram_sentinel.config import SentinelConfig
+
         cfg = SentinelConfig(debounce_default_window=2)
         middleware = DebounceMiddleware(mock_debounce_backend, cfg)
 
@@ -132,7 +153,11 @@ class TestDebounceMiddleware:
 
     @pytest.mark.asyncio
     async def test_debounce_with_callback_query(
-        self, mock_debounce_backend: Mock, mock_handler: Mock, mock_callback_query: Mock, mock_data: dict[str, Any]
+        self,
+        mock_debounce_backend: Mock,
+        mock_handler: Mock,
+        mock_callback_query: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test debouncing with callback query."""
         # Mock non-debounced callback
@@ -153,7 +178,11 @@ class TestDebounceMiddleware:
 
     @pytest.mark.asyncio
     async def test_debounce_key_with_fingerprint(
-        self, mock_debounce_backend: Mock, mock_handler: Mock, mock_message: Mock, mock_data: dict[str, Any]
+        self,
+        mock_debounce_backend: Mock,
+        mock_handler: Mock,
+        mock_message: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test debounce key generation with message fingerprint."""
         # Mock non-debounced message
@@ -178,7 +207,11 @@ class TestDebounceMiddleware:
 
     @pytest.mark.asyncio
     async def test_debounce_key_with_callback_data(
-        self, mock_debounce_backend: Mock, mock_handler: Mock, mock_callback_query: Mock, mock_data: dict[str, Any]
+        self,
+        mock_debounce_backend: Mock,
+        mock_handler: Mock,
+        mock_callback_query: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test debounce key generation with callback data."""
         # Mock non-debounced callback
@@ -204,7 +237,11 @@ class TestDebounceMiddleware:
 
     @pytest.mark.asyncio
     async def test_debounce_backend_error(
-        self, mock_debounce_backend: Mock, mock_handler: Mock, mock_message: Mock, mock_data: dict[str, Any]
+        self,
+        mock_debounce_backend: Mock,
+        mock_handler: Mock,
+        mock_message: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test handling when debounce backend raises an error."""
         # Mock backend error
@@ -221,7 +258,11 @@ class TestDebounceMiddleware:
 
     @pytest.mark.asyncio
     async def test_handler_error_propagation(
-        self, mock_debounce_backend: Mock, mock_handler: Mock, mock_message: Mock, mock_data: dict[str, Any]
+        self,
+        mock_debounce_backend: Mock,
+        mock_handler: Mock,
+        mock_message: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test that handler errors are propagated."""
         # Mock non-debounced message
@@ -241,7 +282,11 @@ class TestDebounceMiddleware:
 
     @pytest.mark.asyncio
     async def test_data_preservation(
-        self, mock_debounce_backend: Mock, mock_handler: Mock, mock_message: Mock, mock_data: dict[str, Any]
+        self,
+        mock_debounce_backend: Mock,
+        mock_handler: Mock,
+        mock_message: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test that data dictionary is preserved."""
         # Mock non-debounced message
@@ -263,7 +308,11 @@ class TestDebounceMiddleware:
 
     @pytest.mark.asyncio
     async def test_debounced_flag_preservation(
-        self, mock_debounce_backend: Mock, mock_handler: Mock, mock_message: Mock, mock_data: dict[str, Any]
+        self,
+        mock_debounce_backend: Mock,
+        mock_handler: Mock,
+        mock_message: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test that existing debounced flag is preserved."""
         # Mock debounced message
@@ -356,8 +405,8 @@ class TestDebounceMiddleware:
         middleware = DebounceMiddleware(mock_debounce_backend, cfg)
 
         # Should store the backend and delay
-        assert hasattr(middleware, '_debounce_backend')
-        assert hasattr(middleware, '_default_delay')
+        assert hasattr(middleware, "_debounce_backend")
+        assert hasattr(middleware, "_default_delay")
 
     @pytest.mark.asyncio
     async def test_edge_case_empty_message_text(

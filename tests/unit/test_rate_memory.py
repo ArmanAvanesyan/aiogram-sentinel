@@ -43,7 +43,9 @@ class TestMemoryRateLimiter:
         assert remaining == 4
 
     @pytest.mark.asyncio
-    async def test_rate_limit_exceeded(self, rate_limiter: Any, mock_time: Mock) -> None:
+    async def test_rate_limit_exceeded(
+        self, rate_limiter: Any, mock_time: Mock
+    ) -> None:
         """Test rate limit exceeded behavior."""
         key = "user:123:handler"
         max_events = 2
@@ -60,7 +62,9 @@ class TestMemoryRateLimiter:
         assert allowed3 is False
 
     @pytest.mark.asyncio
-    async def test_window_expiration(self, rate_limiter: Any, mock_time_advance: Mock) -> None:
+    async def test_window_expiration(
+        self, rate_limiter: Any, mock_time_advance: Mock
+    ) -> None:
         """Test rate limit window expiration."""
         key = "user:123:handler"
         max_events = 2
@@ -102,7 +106,9 @@ class TestMemoryRateLimiter:
         assert remaining2 == 4
 
     @pytest.mark.asyncio
-    async def test_sliding_window_behavior(self, rate_limiter: Any, mock_time_advance: Mock) -> None:
+    async def test_sliding_window_behavior(
+        self, rate_limiter: Any, mock_time_advance: Mock
+    ) -> None:
         """Test sliding window behavior."""
         key = "user:123:handler"
         max_events = 5
@@ -129,7 +135,9 @@ class TestMemoryRateLimiter:
         assert remaining == 5
 
     @pytest.mark.asyncio
-    async def test_concurrent_increments(self, rate_limiter: Any, mock_time: Mock) -> None:
+    async def test_concurrent_increments(
+        self, rate_limiter: Any, mock_time: Mock
+    ) -> None:
         """Test concurrent rate limit increments."""
         key = "user:123:handler"
         max_events = 10
@@ -151,7 +159,9 @@ class TestMemoryRateLimiter:
         assert remaining == 0
 
     @pytest.mark.asyncio
-    async def test_edge_case_empty_key(self, rate_limiter: Any, mock_time: Mock) -> None:
+    async def test_edge_case_empty_key(
+        self, rate_limiter: Any, mock_time: Mock
+    ) -> None:
         """Test edge case with empty key."""
         key = ""
         max_events = 5
@@ -164,7 +174,9 @@ class TestMemoryRateLimiter:
         assert remaining == 4
 
     @pytest.mark.asyncio
-    async def test_edge_case_zero_window(self, rate_limiter: Any, mock_time: Mock) -> None:
+    async def test_edge_case_zero_window(
+        self, rate_limiter: Any, mock_time: Mock
+    ) -> None:
         """Test edge case with zero window."""
         key = "user:123:handler"
         window = 0
@@ -177,7 +189,9 @@ class TestMemoryRateLimiter:
         assert count == 1
 
     @pytest.mark.asyncio
-    async def test_edge_case_negative_window(self, rate_limiter: Any, mock_time: Mock) -> None:
+    async def test_edge_case_negative_window(
+        self, rate_limiter: Any, mock_time: Mock
+    ) -> None:
         """Test edge case with negative window."""
         key = "user:123:handler"
         window = -1
@@ -190,7 +204,9 @@ class TestMemoryRateLimiter:
         assert count == 1
 
     @pytest.mark.asyncio
-    async def test_memory_cleanup(self, rate_limiter: Any, mock_time_advance: Mock) -> None:
+    async def test_memory_cleanup(
+        self, rate_limiter: Any, mock_time_advance: Mock
+    ) -> None:
         """Test memory cleanup of expired entries."""
         key = "user:123:handler"
         window = 10
@@ -209,7 +225,9 @@ class TestMemoryRateLimiter:
         assert len(rate_limiter._counters[key]) == 0
 
     @pytest.mark.asyncio
-    async def test_reset_nonexistent_key(self, rate_limiter: Any, mock_time: Mock) -> None:
+    async def test_reset_nonexistent_key(
+        self, rate_limiter: Any, mock_time: Mock
+    ) -> None:
         """Test resetting a non-existent key."""
         key = "nonexistent:key"
 

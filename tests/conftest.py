@@ -90,6 +90,7 @@ def mock_chat():
 def mock_message(mock_user: User, mock_chat: Chat) -> Message:
     """Create a mock Telegram message."""
     from datetime import datetime
+
     return Message(
         message_id=1,
         date=datetime.fromtimestamp(int(time.time())),

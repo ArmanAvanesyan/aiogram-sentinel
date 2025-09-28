@@ -14,7 +14,11 @@ class TestThrottlingMiddleware:
 
     @pytest.mark.asyncio
     async def test_allowed_request_passes(
-        self, mock_rate_limiter: Mock, mock_handler: Mock, mock_message: Mock, mock_data: dict[str, Any]
+        self,
+        mock_rate_limiter: Mock,
+        mock_handler: Mock,
+        mock_message: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test that allowed requests pass through."""
         # Mock allowed request
@@ -40,7 +44,11 @@ class TestThrottlingMiddleware:
 
     @pytest.mark.asyncio
     async def test_rate_limited_request_blocked(
-        self, mock_rate_limiter: Mock, mock_handler: Mock, mock_message: Mock, mock_data: dict[str, Any]
+        self,
+        mock_rate_limiter: Mock,
+        mock_handler: Mock,
+        mock_message: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test that rate limited requests are blocked."""
         # Mock rate limited request
@@ -68,7 +76,11 @@ class TestThrottlingMiddleware:
 
     @pytest.mark.asyncio
     async def test_rate_limit_key_generation(
-        self, mock_rate_limiter: Mock, mock_handler: Mock, mock_message: Mock, mock_data: dict[str, Any]
+        self,
+        mock_rate_limiter: Mock,
+        mock_handler: Mock,
+        mock_message: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test rate limit key generation."""
         # Mock allowed request
@@ -100,7 +112,11 @@ class TestThrottlingMiddleware:
 
     @pytest.mark.asyncio
     async def test_rate_limit_with_custom_config(
-        self, mock_rate_limiter: Mock, mock_handler: Mock, mock_message: Mock, mock_data: dict[str, Any]
+        self,
+        mock_rate_limiter: Mock,
+        mock_handler: Mock,
+        mock_message: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test rate limiting with custom config from decorator."""
         # Mock allowed request
@@ -127,7 +143,11 @@ class TestThrottlingMiddleware:
 
     @pytest.mark.asyncio
     async def test_rate_limit_with_default_config(
-        self, mock_rate_limiter: Mock, mock_handler: Mock, mock_message: Mock, mock_data: dict[str, Any]
+        self,
+        mock_rate_limiter: Mock,
+        mock_handler: Mock,
+        mock_message: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test rate limiting with default config."""
         # Mock allowed request
@@ -135,7 +155,10 @@ class TestThrottlingMiddleware:
         mock_rate_limiter.get_rate_limit.return_value = 5
 
         from aiogram_sentinel.config import SentinelConfig
-        cfg = SentinelConfig(throttling_default_max=20, throttling_default_per_seconds=120)
+
+        cfg = SentinelConfig(
+            throttling_default_max=20, throttling_default_per_seconds=120
+        )
         middleware = ThrottlingMiddleware(mock_rate_limiter, cfg)
 
         # Process event
@@ -162,8 +185,13 @@ class TestThrottlingMiddleware:
         mock_rate_limiter.get_remaining.return_value = 0  # No remaining
 
         from aiogram_sentinel.config import SentinelConfig
-        cfg = SentinelConfig(throttling_default_max=10, throttling_default_per_seconds=60)
-        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg, on_rate_limited=mock_on_rate_limited)
+
+        cfg = SentinelConfig(
+            throttling_default_max=10, throttling_default_per_seconds=60
+        )
+        middleware = ThrottlingMiddleware(
+            mock_rate_limiter, cfg, on_rate_limited=mock_on_rate_limited
+        )
 
         # Process event
         await middleware(mock_handler, mock_message, mock_data)
@@ -194,8 +222,13 @@ class TestThrottlingMiddleware:
         mock_rate_limiter.get_rate_limit.return_value = 5
 
         from aiogram_sentinel.config import SentinelConfig
-        cfg = SentinelConfig(throttling_default_max=10, throttling_default_per_seconds=60)
-        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg, on_rate_limited=mock_on_rate_limited)
+
+        cfg = SentinelConfig(
+            throttling_default_max=10, throttling_default_per_seconds=60
+        )
+        middleware = ThrottlingMiddleware(
+            mock_rate_limiter, cfg, on_rate_limited=mock_on_rate_limited
+        )
 
         # Process event
         await middleware(mock_handler, mock_message, mock_data)
@@ -220,8 +253,13 @@ class TestThrottlingMiddleware:
         mock_on_rate_limited.side_effect = Exception("Hook error")
 
         from aiogram_sentinel.config import SentinelConfig
-        cfg = SentinelConfig(throttling_default_max=10, throttling_default_per_seconds=60)
-        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg, on_rate_limited=mock_on_rate_limited)
+
+        cfg = SentinelConfig(
+            throttling_default_max=10, throttling_default_per_seconds=60
+        )
+        middleware = ThrottlingMiddleware(
+            mock_rate_limiter, cfg, on_rate_limited=mock_on_rate_limited
+        )
 
         # Should not raise error
         result = await middleware(mock_handler, mock_message, mock_data)
@@ -230,7 +268,11 @@ class TestThrottlingMiddleware:
 
     @pytest.mark.asyncio
     async def test_rate_limiter_backend_error(
-        self, mock_rate_limiter: Mock, mock_handler: Mock, mock_message: Mock, mock_data: dict[str, Any]
+        self,
+        mock_rate_limiter: Mock,
+        mock_handler: Mock,
+        mock_message: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test handling when rate limiter backend raises an error."""
         # Mock backend error
@@ -249,7 +291,11 @@ class TestThrottlingMiddleware:
 
     @pytest.mark.asyncio
     async def test_handler_error_propagation(
-        self, mock_rate_limiter: Mock, mock_handler: Mock, mock_message: Mock, mock_data: dict[str, Any]
+        self,
+        mock_rate_limiter: Mock,
+        mock_handler: Mock,
+        mock_message: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test that handler errors are propagated."""
         # Mock allowed request
@@ -272,7 +318,11 @@ class TestThrottlingMiddleware:
 
     @pytest.mark.asyncio
     async def test_data_preservation(
-        self, mock_rate_limiter: Mock, mock_handler: Mock, mock_message: Mock, mock_data: dict[str, Any]
+        self,
+        mock_rate_limiter: Mock,
+        mock_handler: Mock,
+        mock_message: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test that data dictionary is preserved."""
         # Mock allowed request
@@ -297,7 +347,11 @@ class TestThrottlingMiddleware:
 
     @pytest.mark.asyncio
     async def test_rate_limited_flag_preservation(
-        self, mock_rate_limiter: Mock, mock_handler: Mock, mock_message: Mock, mock_data: dict[str, Any]
+        self,
+        mock_rate_limiter: Mock,
+        mock_handler: Mock,
+        mock_message: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test that existing rate limited flag is preserved."""
         # Mock rate limited request
@@ -350,7 +404,9 @@ class TestThrottlingMiddleware:
         assert mock_rate_limiter.increment_rate_limit.call_count == 5
 
     @pytest.mark.asyncio
-    async def test_different_users(self, mock_rate_limiter: Mock, mock_handler: Mock, mock_data: dict[str, Any]) -> None:
+    async def test_different_users(
+        self, mock_rate_limiter: Mock, mock_handler: Mock, mock_data: dict[str, Any]
+    ) -> None:
         """Test processing events for different users."""
         # Mock requests under limit
         mock_rate_limiter.increment_rate_limit.return_value = 5
@@ -390,9 +446,9 @@ class TestThrottlingMiddleware:
         middleware = ThrottlingMiddleware(mock_rate_limiter, cfg)
 
         # Should store the backend and config
-        assert hasattr(middleware, '_rate_limiter')
-        assert hasattr(middleware, '_default_limit')
-        assert hasattr(middleware, '_default_window')
+        assert hasattr(middleware, "_rate_limiter")
+        assert hasattr(middleware, "_default_limit")
+        assert hasattr(middleware, "_default_window")
 
     @pytest.mark.asyncio
     async def test_edge_case_no_user_id(
@@ -423,14 +479,21 @@ class TestThrottlingMiddleware:
 
     @pytest.mark.asyncio
     async def test_edge_case_zero_limit(
-        self, mock_rate_limiter: Mock, mock_handler: Mock, mock_message: Mock, mock_data: dict[str, Any]
+        self,
+        mock_rate_limiter: Mock,
+        mock_handler: Mock,
+        mock_message: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test handling with zero rate limit."""
         # Mock rate limited request
         mock_rate_limiter.increment_rate_limit.return_value = 1
 
         from aiogram_sentinel.config import SentinelConfig
-        cfg = SentinelConfig(throttling_default_max=0, throttling_default_per_seconds=60)
+
+        cfg = SentinelConfig(
+            throttling_default_max=0, throttling_default_per_seconds=60
+        )
         middleware = ThrottlingMiddleware(mock_rate_limiter, cfg)
 
         # Process event
@@ -442,14 +505,21 @@ class TestThrottlingMiddleware:
 
     @pytest.mark.asyncio
     async def test_edge_case_negative_limit(
-        self, mock_rate_limiter: Mock, mock_handler: Mock, mock_message: Mock, mock_data: dict[str, Any]
+        self,
+        mock_rate_limiter: Mock,
+        mock_handler: Mock,
+        mock_message: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test handling with negative rate limit."""
         # Mock rate limited request
         mock_rate_limiter.increment_rate_limit.return_value = 1
 
         from aiogram_sentinel.config import SentinelConfig
-        cfg = SentinelConfig(throttling_default_max=-1, throttling_default_per_seconds=60)
+
+        cfg = SentinelConfig(
+            throttling_default_max=-1, throttling_default_per_seconds=60
+        )
         middleware = ThrottlingMiddleware(mock_rate_limiter, cfg)
 
         # Process event
@@ -461,7 +531,11 @@ class TestThrottlingMiddleware:
 
     @pytest.mark.asyncio
     async def test_edge_case_zero_window(
-        self, mock_rate_limiter: Mock, mock_handler: Mock, mock_message: Mock, mock_data: dict[str, Any]
+        self,
+        mock_rate_limiter: Mock,
+        mock_handler: Mock,
+        mock_message: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test handling with zero window."""
         # Mock allowed request
@@ -469,7 +543,10 @@ class TestThrottlingMiddleware:
         mock_rate_limiter.get_rate_limit.return_value = 5
 
         from aiogram_sentinel.config import SentinelConfig
-        cfg = SentinelConfig(throttling_default_max=10, throttling_default_per_seconds=0)
+
+        cfg = SentinelConfig(
+            throttling_default_max=10, throttling_default_per_seconds=0
+        )
         middleware = ThrottlingMiddleware(mock_rate_limiter, cfg)
 
         # Process event

@@ -14,7 +14,11 @@ class TestBlockingMiddleware:
 
     @pytest.mark.asyncio
     async def test_non_blocked_user_passes(
-        self, mock_blocklist_backend: Mock, mock_handler: Mock, mock_message: Mock, mock_data: dict[str, Any]
+        self,
+        mock_blocklist_backend: Mock,
+        mock_handler: Mock,
+        mock_message: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test that non-blocked users pass through."""
         # Mock non-blocked user
@@ -34,7 +38,11 @@ class TestBlockingMiddleware:
 
     @pytest.mark.asyncio
     async def test_blocked_user_short_circuit(
-        self, mock_blocklist_backend: Mock, mock_handler: Mock, mock_message: Mock, mock_data: dict[str, Any]
+        self,
+        mock_blocklist_backend: Mock,
+        mock_handler: Mock,
+        mock_message: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test that blocked users are short-circuited."""
         # Mock blocked user
@@ -56,7 +64,10 @@ class TestBlockingMiddleware:
 
     @pytest.mark.asyncio
     async def test_extract_user_id_from_message(
-        self, mock_blocklist_backend: Mock, mock_handler: Mock, mock_data: dict[str, Any]
+        self,
+        mock_blocklist_backend: Mock,
+        mock_handler: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test user ID extraction from message."""
         # Mock non-blocked user
@@ -76,7 +87,10 @@ class TestBlockingMiddleware:
 
     @pytest.mark.asyncio
     async def test_extract_user_id_from_callback_query(
-        self, mock_blocklist_backend: Mock, mock_handler: Mock, mock_data: dict[str, Any]
+        self,
+        mock_blocklist_backend: Mock,
+        mock_handler: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test user ID extraction from callback query."""
         # Mock non-blocked user
@@ -96,7 +110,10 @@ class TestBlockingMiddleware:
 
     @pytest.mark.asyncio
     async def test_extract_user_id_from_chat(
-        self, mock_blocklist_backend: Mock, mock_handler: Mock, mock_data: dict[str, Any]
+        self,
+        mock_blocklist_backend: Mock,
+        mock_handler: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test user ID extraction from chat (fallback)."""
         # Mock non-blocked user
@@ -118,7 +135,10 @@ class TestBlockingMiddleware:
 
     @pytest.mark.asyncio
     async def test_no_user_id_available(
-        self, mock_blocklist_backend: Mock, mock_handler: Mock, mock_data: dict[str, Any]
+        self,
+        mock_blocklist_backend: Mock,
+        mock_handler: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test handling when no user ID is available."""
         # Mock non-blocked user
@@ -140,7 +160,11 @@ class TestBlockingMiddleware:
 
     @pytest.mark.asyncio
     async def test_blocklist_backend_error(
-        self, mock_blocklist_backend: Mock, mock_handler: Mock, mock_message: Mock, mock_data: dict[str, Any]
+        self,
+        mock_blocklist_backend: Mock,
+        mock_handler: Mock,
+        mock_message: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test handling when blocklist backend raises an error."""
         # Mock backend error
@@ -154,7 +178,11 @@ class TestBlockingMiddleware:
 
     @pytest.mark.asyncio
     async def test_handler_error_propagation(
-        self, mock_blocklist_backend: Mock, mock_handler: Mock, mock_message: Mock, mock_data: dict[str, Any]
+        self,
+        mock_blocklist_backend: Mock,
+        mock_handler: Mock,
+        mock_message: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test that handler errors are propagated."""
         # Mock non-blocked user
@@ -171,7 +199,11 @@ class TestBlockingMiddleware:
 
     @pytest.mark.asyncio
     async def test_data_preservation(
-        self, mock_blocklist_backend: Mock, mock_handler: Mock, mock_message: Mock, mock_data: dict[str, Any]
+        self,
+        mock_blocklist_backend: Mock,
+        mock_handler: Mock,
+        mock_message: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test that data dictionary is preserved."""
         # Mock non-blocked user
@@ -190,7 +222,11 @@ class TestBlockingMiddleware:
 
     @pytest.mark.asyncio
     async def test_blocked_flag_preservation(
-        self, mock_blocklist_backend: Mock, mock_handler: Mock, mock_message: Mock, mock_data: dict[str, Any]
+        self,
+        mock_blocklist_backend: Mock,
+        mock_handler: Mock,
+        mock_message: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test that existing blocked flag is preserved."""
         # Mock blocked user
@@ -209,7 +245,10 @@ class TestBlockingMiddleware:
 
     @pytest.mark.asyncio
     async def test_multiple_events_same_user(
-        self, mock_blocklist_backend: Mock, mock_handler: Mock, mock_data: dict[str, Any]
+        self,
+        mock_blocklist_backend: Mock,
+        mock_handler: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test processing multiple events for the same user."""
         # Mock non-blocked user
@@ -237,7 +276,10 @@ class TestBlockingMiddleware:
 
     @pytest.mark.asyncio
     async def test_different_users(
-        self, mock_blocklist_backend: Mock, mock_handler: Mock, mock_data: dict[str, Any]
+        self,
+        mock_blocklist_backend: Mock,
+        mock_handler: Mock,
+        mock_data: dict[str, Any],
     ) -> None:
         """Test processing events for different users."""
         # Mock non-blocked users
@@ -268,12 +310,14 @@ class TestBlockingMiddleware:
         assert set(called_user_ids) == set(user_ids)
 
     @pytest.mark.asyncio
-    async def test_middleware_initialization(self, mock_blocklist_backend: Mock) -> None:
+    async def test_middleware_initialization(
+        self, mock_blocklist_backend: Mock
+    ) -> None:
         """Test middleware initialization."""
         middleware = BlockingMiddleware(mock_blocklist_backend)
 
         # Should store the backend
-        assert hasattr(middleware, '_blocklist_backend')
+        assert hasattr(middleware, "_blocklist_backend")
 
     @pytest.mark.asyncio
     async def test_edge_case_empty_data(
