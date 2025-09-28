@@ -139,8 +139,8 @@ class TestThrottlingMiddleware:
         # Should increment rate limit with custom window
         mock_rate_limiter.allow.assert_called_once()
         call_args = mock_rate_limiter.allow.call_args[0]
-        _key, window = call_args
-        assert window == 30  # Custom window
+        _key, max_events, per_seconds = call_args
+        assert per_seconds == 30  # Custom window
 
     @pytest.mark.asyncio
     async def test_rate_limit_with_default_config(
@@ -168,8 +168,8 @@ class TestThrottlingMiddleware:
         # Should increment rate limit with default window
         mock_rate_limiter.allow.assert_called_once()
         call_args = mock_rate_limiter.allow.call_args[0]
-        _key, window = call_args
-        assert window == 120  # Default window
+        _key, max_events, per_seconds = call_args
+        assert per_seconds == 120  # Default window
 
     @pytest.mark.asyncio
     async def test_on_rate_limited_hook_called(
@@ -248,7 +248,7 @@ class TestThrottlingMiddleware:
     ) -> None:
         """Test that hook errors don't break middleware."""
         # Mock rate limited request
-        mock_rate_limiter.increment_rate_limit.return_value = 11
+        mock_rate_limiter.allow.return_value = False
 
         # Mock hook error
         mock_on_rate_limited.side_effect = Exception("Hook error")
@@ -277,7 +277,7 @@ class TestThrottlingMiddleware:
     ) -> None:
         """Test handling when rate limiter backend raises an error."""
         # Mock backend error
-        mock_rate_limiter.increment_rate_limit.side_effect = Exception("Backend error")
+        mock_rate_limiter.allow.side_effect = Exception("Backend error")
 
         from aiogram_sentinel.config import SentinelConfig
 
@@ -488,21 +488,16 @@ class TestThrottlingMiddleware:
     ) -> None:
         """Test handling with zero rate limit."""
         # Mock rate limited request
-        mock_rate_limiter.increment_rate_limit.return_value = 1
+        mock_rate_limiter.allow.return_value = False
 
         from aiogram_sentinel.config import SentinelConfig
+        from aiogram_sentinel.exceptions import ConfigurationError
 
-        cfg = SentinelConfig(
-            throttling_default_max=0, throttling_default_per_seconds=60
-        )
-        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg)
-
-        # Process event
-        result = await middleware(mock_handler, mock_message, mock_data)
-
-        # Should be rate limited
-        assert result is None
-        assert mock_data["sentinel_rate_limited"] is True
+        # Should raise configuration error for zero limit
+        with pytest.raises(ConfigurationError, match="throttling_default_max must be positive"):
+            SentinelConfig(
+                throttling_default_max=0, throttling_default_per_seconds=60
+            )
 
     @pytest.mark.asyncio
     async def test_edge_case_negative_limit(
@@ -513,22 +508,14 @@ class TestThrottlingMiddleware:
         mock_data: dict[str, Any],
     ) -> None:
         """Test handling with negative rate limit."""
-        # Mock rate limited request
-        mock_rate_limiter.increment_rate_limit.return_value = 1
-
         from aiogram_sentinel.config import SentinelConfig
+        from aiogram_sentinel.exceptions import ConfigurationError
 
-        cfg = SentinelConfig(
-            throttling_default_max=-1, throttling_default_per_seconds=60
-        )
-        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg)
-
-        # Process event
-        result = await middleware(mock_handler, mock_message, mock_data)
-
-        # Should be rate limited
-        assert result is None
-        assert mock_data["sentinel_rate_limited"] is True
+        # Should raise configuration error for negative limit
+        with pytest.raises(ConfigurationError, match="throttling_default_max must be positive"):
+            SentinelConfig(
+                throttling_default_max=-1, throttling_default_per_seconds=60
+            )
 
     @pytest.mark.asyncio
     async def test_edge_case_zero_window(
@@ -539,26 +526,12 @@ class TestThrottlingMiddleware:
         mock_data: dict[str, Any],
     ) -> None:
         """Test handling with zero window."""
-        # Mock allowed request
-        mock_rate_limiter.increment_rate_limit.return_value = 5
-        mock_rate_limiter.get_rate_limit.return_value = 5
-
         from aiogram_sentinel.config import SentinelConfig
+        from aiogram_sentinel.exceptions import ConfigurationError
 
-        cfg = SentinelConfig(
-            throttling_default_max=10, throttling_default_per_seconds=0
-        )
-        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg)
+        # Should raise configuration error for zero window
+        with pytest.raises(ConfigurationError, match="throttling_default_per_seconds must be positive"):
+            SentinelConfig(
+                throttling_default_max=10, throttling_default_per_seconds=0
+            )
 
-        # Process event
-        result = await middleware(mock_handler, mock_message, mock_data)
-
-        # Should work normally
-        assert result == "handler_result"
-        mock_handler.assert_called_once_with(mock_message, mock_data)
-
-        # Should use zero window
-        mock_rate_limiter.allow.assert_called_once()
-        call_args = mock_rate_limiter.allow.call_args[0]
-        _key, window = call_args
-        assert window == 0

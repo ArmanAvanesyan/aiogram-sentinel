@@ -43,6 +43,10 @@ def handler_scope(handler_name: str, **kwargs: Any) -> str:
 
 def fingerprint(text: str) -> str:
     """Create a stable fingerprint for text content."""
+    # Handle None, empty strings, and non-string types
+    if not text or not isinstance(text, str):
+        text = str(text) if text is not None else ""
+    
     return hashlib.sha256(text.encode()).hexdigest()[:16]
 
 

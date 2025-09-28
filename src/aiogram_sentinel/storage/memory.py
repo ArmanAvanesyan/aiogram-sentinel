@@ -62,6 +62,9 @@ class MemoryRateLimiter(RateLimiterBackend):
     async def get_rate_limit(self, key: str) -> int:
         """Get current rate limit count for key."""
         async with self._lock:
+            now = time.monotonic()
+            # Clean up old entries (use a reasonable default window)
+            self._cleanup_old_entries(key, now, 60)  # 60 second default window
             return len(self._counters[key])
 
     async def reset_rate_limit(self, key: str) -> None:

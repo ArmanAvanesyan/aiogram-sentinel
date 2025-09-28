@@ -161,8 +161,7 @@ class TestDebounceMiddleware:
     ) -> None:
         """Test debouncing with callback query."""
         # Mock non-debounced callback
-        mock_debounce_backend.is_debounced.return_value = False
-        mock_debounce_backend.get_debounce.return_value = None
+        mock_debounce_backend.seen.return_value = False
 
         from aiogram_sentinel.config import SentinelConfig
 
@@ -197,13 +196,13 @@ class TestDebounceMiddleware:
         await middleware(mock_handler, mock_message, mock_data)
 
         # Should check debounce with key containing fingerprint
-        mock_debounce_backend.is_debounced.assert_called_once()
-        call_args = mock_debounce_backend.is_debounced.call_args[0]
+        mock_debounce_backend.seen.assert_called_once()
+        call_args = mock_debounce_backend.seen.call_args[0]
         key = call_args[0]
 
-        # Key should contain fingerprint of message text
-        assert "fingerprint" in key
-        assert "test" in key  # Message text
+        # Key should contain user ID and handler name
+        assert "12345" in key  # User ID
+        assert "AsyncMock" in key  # Handler name
 
     @pytest.mark.asyncio
     async def test_debounce_key_with_callback_data(
@@ -227,13 +226,13 @@ class TestDebounceMiddleware:
         await middleware(mock_handler, mock_callback_query, mock_data)
 
         # Should check debounce with key containing callback data
-        mock_debounce_backend.is_debounced.assert_called_once()
-        call_args = mock_debounce_backend.is_debounced.call_args[0]
+        mock_debounce_backend.seen.assert_called_once()
+        call_args = mock_debounce_backend.seen.call_args[0]
         key = call_args[0]
 
-        # Key should contain fingerprint of callback data
-        assert "fingerprint" in key
-        assert "test_data" in key  # Callback data
+        # Key should contain user ID and handler name
+        assert "12345" in key  # User ID
+        assert "AsyncMock" in key  # Handler name
 
     @pytest.mark.asyncio
     async def test_debounce_backend_error(
@@ -245,7 +244,7 @@ class TestDebounceMiddleware:
     ) -> None:
         """Test handling when debounce backend raises an error."""
         # Mock backend error
-        mock_debounce_backend.is_debounced.side_effect = Exception("Backend error")
+        mock_debounce_backend.seen.side_effect = Exception("Backend error")
 
         from aiogram_sentinel.config import SentinelConfig
 
@@ -329,8 +328,8 @@ class TestDebounceMiddleware:
         # Process event
         await middleware(mock_handler, mock_message, mock_data)
 
-        # Should preserve existing flag
-        assert mock_data["sentinel_debounced"] == "existing_value"
+        # Should overwrite the flag when message is debounced
+        assert mock_data["sentinel_debounced"] is True
 
     @pytest.mark.asyncio
     async def test_multiple_events_same_content(
@@ -338,8 +337,7 @@ class TestDebounceMiddleware:
     ) -> None:
         """Test processing multiple events with same content."""
         # Mock first message as non-debounced, second as debounced
-        mock_debounce_backend.is_debounced.side_effect = [False, True]
-        mock_debounce_backend.get_debounce.side_effect = [None, 1000.0]
+        mock_debounce_backend.seen.side_effect = [False, True]
 
         from aiogram_sentinel.config import SentinelConfig
 
@@ -370,8 +368,7 @@ class TestDebounceMiddleware:
     ) -> None:
         """Test processing events for different users with same content."""
         # Mock non-debounced messages
-        mock_debounce_backend.is_debounced.return_value = False
-        mock_debounce_backend.get_debounce.return_value = None
+        mock_debounce_backend.seen.return_value = False
 
         from aiogram_sentinel.config import SentinelConfig
 
@@ -394,7 +391,7 @@ class TestDebounceMiddleware:
             assert result == "handler_result"
 
         # Should check debounce for each user
-        assert mock_debounce_backend.is_debounced.call_count == 2
+        assert mock_debounce_backend.seen.call_count == 2
 
     @pytest.mark.asyncio
     async def test_middleware_initialization(self, mock_debounce_backend: Mock) -> None:
