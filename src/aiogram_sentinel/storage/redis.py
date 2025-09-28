@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import time
+from typing import Any
 
 from redis.asyncio import Redis
 from redis.exceptions import RedisError
@@ -125,3 +126,39 @@ class RedisUserRepo(UserRepo):
             return bool(result)  # type: ignore
         except RedisError as e:
             raise BackendOperationError(f"Failed to check registration: {e}") from e
+
+    async def register_user(self, user_id: int, **kwargs: Any) -> None:
+        """Register a user with optional data."""
+        try:
+            redis_key = _k(self._prefix, "user", str(user_id))
+            # Set user_id and timestamp
+            await self._redis.hset(redis_key, "user_id", str(user_id))  # type: ignore
+            await self._redis.hset(redis_key, "registered_at", str(time.time()))  # type: ignore
+            # Set additional fields
+            for key, value in kwargs.items():
+                await self._redis.hset(redis_key, key, str(value))  # type: ignore
+        except RedisError as e:
+            raise BackendOperationError(f"Failed to register user: {e}") from e
+
+    async def get_user(self, user_id: int) -> dict[str, Any] | None:
+        """Get user data by ID."""
+        try:
+            redis_key = _k(self._prefix, "user", str(user_id))
+            data = await self._redis.hgetall(redis_key)  # type: ignore
+            if not data:
+                return None
+            # Convert bytes to strings and parse types
+            result: dict[str, Any] = {}
+            for key, value in data.items():
+                key_str = key.decode() if isinstance(key, bytes) else key
+                value_str = value.decode() if isinstance(value, bytes) else value
+                # Try to parse as int/float, otherwise keep as string
+                if value_str.isdigit():
+                    result[key_str] = int(value_str)
+                elif value_str.replace(".", "").isdigit():
+                    result[key_str] = float(value_str)
+                else:
+                    result[key_str] = value_str
+            return result
+        except RedisError as e:
+            raise BackendOperationError(f"Failed to get user: {e}") from e

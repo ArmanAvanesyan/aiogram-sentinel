@@ -1,8 +1,12 @@
 """Unit tests for MemoryUserRepo."""
 
 import asyncio
+from typing import Any
+from unittest.mock import Mock
 
 import pytest
+
+from aiogram_sentinel.storage.memory import MemoryUserRepo
 
 
 @pytest.mark.unit
@@ -10,7 +14,7 @@ class TestMemoryUserRepo:
     """Test MemoryUserRepo functionality."""
 
     @pytest.mark.asyncio
-    async def test_is_registered_false(self, user_repo):
+    async def test_is_registered_false(self, user_repo: MemoryUserRepo) -> None:
         """Test is_registered returns False for new user."""
         user_id = 12345
 
@@ -18,7 +22,7 @@ class TestMemoryUserRepo:
         assert is_registered is False
 
     @pytest.mark.asyncio
-    async def test_register_user(self, user_repo, mock_time):
+    async def test_register_user(self, user_repo: MemoryUserRepo, mock_time: Mock) -> None:
         """Test registering a new user."""
         user_id = 12345
         username = "testuser"
@@ -30,7 +34,7 @@ class TestMemoryUserRepo:
         assert is_registered is True
 
     @pytest.mark.asyncio
-    async def test_get_user(self, user_repo, mock_time):
+    async def test_get_user(self, user_repo: MemoryUserRepo, mock_time: Mock) -> None:
         """Test getting user data."""
         user_id = 12345
         username = "testuser"
@@ -47,7 +51,7 @@ class TestMemoryUserRepo:
         assert "registered_at" in user_data
 
     @pytest.mark.asyncio
-    async def test_get_nonexistent_user(self, user_repo):
+    async def test_get_nonexistent_user(self, user_repo: MemoryUserRepo) -> None:
         """Test getting data for non-existent user."""
         user_id = 12345
 
@@ -55,7 +59,7 @@ class TestMemoryUserRepo:
         assert user_data is None
 
     @pytest.mark.asyncio
-    async def test_register_user_idempotency(self, user_repo, mock_time):
+    async def test_register_user_idempotency(self, user_repo: MemoryUserRepo, mock_time: Mock) -> None:
         """Test that registering the same user multiple times is idempotent."""
         user_id = 12345
         username = "testuser"
@@ -75,7 +79,7 @@ class TestMemoryUserRepo:
         assert user_data["username"] == username
 
     @pytest.mark.asyncio
-    async def test_register_user_with_different_data(self, user_repo, mock_time):
+    async def test_register_user_with_different_data(self, user_repo: MemoryUserRepo, mock_time: Mock) -> None:
         """Test registering user with different data updates existing entry."""
         user_id = 12345
 
@@ -89,12 +93,13 @@ class TestMemoryUserRepo:
 
         # Should have updated data
         user_data = await user_repo.get_user(user_id)
+        assert user_data is not None
         assert user_data["username"] == "newuser"
         assert user_data["first_name"] == "New"
         assert user_data["last_name"] == "User"
 
     @pytest.mark.asyncio
-    async def test_register_user_minimal_data(self, user_repo, mock_time):
+    async def test_register_user_minimal_data(self, user_repo: MemoryUserRepo, mock_time: Mock) -> None:
         """Test registering user with minimal data."""
         user_id = 12345
 
@@ -113,7 +118,7 @@ class TestMemoryUserRepo:
         assert len(user_data) == 2  # registered_at and user_id
 
     @pytest.mark.asyncio
-    async def test_register_user_with_all_fields(self, user_repo, mock_time):
+    async def test_register_user_with_all_fields(self, user_repo: MemoryUserRepo, mock_time: Mock) -> None:
         """Test registering user with all possible fields."""
         user_id = 12345
         user_data = {
@@ -143,7 +148,7 @@ class TestMemoryUserRepo:
         assert "registered_at" in retrieved_data
 
     @pytest.mark.asyncio
-    async def test_multiple_users(self, user_repo, mock_time):
+    async def test_multiple_users(self, user_repo: MemoryUserRepo, mock_time: Mock) -> None:
         """Test handling multiple users."""
         users = [
             (12345, "user1", "User", "One"),
@@ -163,12 +168,13 @@ class TestMemoryUserRepo:
             assert is_registered is True
 
             user_data = await user_repo.get_user(user_id)
+            assert user_data is not None
             assert user_data["username"] == username
             assert user_data["first_name"] == first_name
             assert user_data["last_name"] == last_name
 
     @pytest.mark.asyncio
-    async def test_edge_case_zero_user_id(self, user_repo, mock_time):
+    async def test_edge_case_zero_user_id(self, user_repo: MemoryUserRepo, mock_time: Mock) -> None:
         """Test edge case with zero user ID."""
         user_id = 0
 
@@ -180,10 +186,11 @@ class TestMemoryUserRepo:
         assert is_registered is True
 
         user_data = await user_repo.get_user(user_id)
+        assert user_data is not None
         assert user_data["username"] == "zerouser"
 
     @pytest.mark.asyncio
-    async def test_edge_case_negative_user_id(self, user_repo, mock_time):
+    async def test_edge_case_negative_user_id(self, user_repo: MemoryUserRepo, mock_time: Mock) -> None:
         """Test edge case with negative user ID."""
         user_id = -12345
 
@@ -195,10 +202,11 @@ class TestMemoryUserRepo:
         assert is_registered is True
 
         user_data = await user_repo.get_user(user_id)
+        assert user_data is not None
         assert user_data["username"] == "neguser"
 
     @pytest.mark.asyncio
-    async def test_edge_case_large_user_id(self, user_repo, mock_time):
+    async def test_edge_case_large_user_id(self, user_repo: MemoryUserRepo, mock_time: Mock) -> None:
         """Test edge case with large user ID."""
         user_id = 999999999999
 
@@ -210,15 +218,16 @@ class TestMemoryUserRepo:
         assert is_registered is True
 
         user_data = await user_repo.get_user(user_id)
+        assert user_data is not None
         assert user_data["username"] == "largeuser"
 
     @pytest.mark.asyncio
-    async def test_concurrent_register_operations(self, user_repo, mock_time):
+    async def test_concurrent_register_operations(self, user_repo: MemoryUserRepo, mock_time: Mock) -> None:
         """Test concurrent register operations."""
         user_id = 12345
 
         # Simulate concurrent register operations
-        tasks = []
+        tasks: list[Any] = []
         for i in range(10):
             task = user_repo.register_user(user_id, username=f"user{i}")
             tasks.append(task)
@@ -234,7 +243,7 @@ class TestMemoryUserRepo:
         assert user_data is not None
 
     @pytest.mark.asyncio
-    async def test_concurrent_get_operations(self, user_repo, mock_time):
+    async def test_concurrent_get_operations(self, user_repo: MemoryUserRepo, mock_time: Mock) -> None:
         """Test concurrent get operations."""
         user_id = 12345
 
@@ -242,12 +251,12 @@ class TestMemoryUserRepo:
         await user_repo.register_user(user_id, username="testuser")
 
         # Simulate concurrent get operations
-        tasks = []
+        tasks: list[Any] = []
         for _ in range(10):
             task = user_repo.get_user(user_id)
             tasks.append(task)
 
-        results = await asyncio.gather(*tasks)
+        results: list[Any] = await asyncio.gather(*tasks)
 
         # All should return the same data
         for result in results:
@@ -255,7 +264,7 @@ class TestMemoryUserRepo:
             assert result["username"] == "testuser"
 
     @pytest.mark.asyncio
-    async def test_user_data_types(self, user_repo, mock_time):
+    async def test_user_data_types(self, user_repo: MemoryUserRepo, mock_time: Mock) -> None:
         """Test user data with different types."""
         user_id = 12345
         user_data = {
@@ -273,6 +282,7 @@ class TestMemoryUserRepo:
 
         # Retrieve and verify types
         retrieved_data = await user_repo.get_user(user_id)
+        assert retrieved_data is not None
         assert retrieved_data["string_field"] == "string_value"
         assert retrieved_data["int_field"] == 42
         assert retrieved_data["float_field"] == 3.14
@@ -282,7 +292,7 @@ class TestMemoryUserRepo:
         assert retrieved_data["none_field"] is None
 
     @pytest.mark.asyncio
-    async def test_registered_at_timestamp(self, user_repo, mock_time):
+    async def test_registered_at_timestamp(self, user_repo: MemoryUserRepo, mock_time: Mock) -> None:
         """Test that registered_at timestamp is set correctly."""
         user_id = 12345
 
@@ -291,11 +301,12 @@ class TestMemoryUserRepo:
 
         # Check timestamp
         user_data = await user_repo.get_user(user_id)
+        assert user_data is not None
         assert "registered_at" in user_data
         assert user_data["registered_at"] == 1000.0  # From mock_time fixture
 
     @pytest.mark.asyncio
-    async def test_user_isolation(self, user_repo, mock_time):
+    async def test_user_isolation(self, user_repo: MemoryUserRepo, mock_time: Mock) -> None:
         """Test that user data is isolated per user."""
         user1 = 12345
         user2 = 67890
@@ -309,8 +320,10 @@ class TestMemoryUserRepo:
         data2 = await user_repo.get_user(user2)
 
         # Data should be different
+        assert data1 is not None
         assert data1["username"] == "user1"
         assert data1["first_name"] == "User1"
+        assert data2 is not None
         assert data2["username"] == "user2"
         assert data2["first_name"] == "User2"
 

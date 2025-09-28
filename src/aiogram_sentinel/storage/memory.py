@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import time
 from collections import defaultdict, deque
+from typing import Any
 
 from .base import BlocklistBackend, DebounceBackend, RateLimiterBackend, UserRepo
 
@@ -95,15 +96,32 @@ class MemoryUserRepo(UserRepo):
 
     def __init__(self) -> None:
         """Initialize the user repository."""
-        self._users: set[int] = set()
+        self._users: dict[int, dict] = {}
         self._lock = asyncio.Lock()
 
     async def ensure_user(self, user_id: int, *, username: str | None = None) -> None:
         """Ensure user exists, creating if necessary."""
         async with self._lock:
-            self._users.add(user_id)
+            if user_id not in self._users:
+                self._users[user_id] = {"user_id": user_id, "registered_at": time.monotonic()}
+            if username:
+                self._users[user_id]["username"] = username
 
     async def is_registered(self, user_id: int) -> bool:
         """Check if user is registered."""
         async with self._lock:
             return user_id in self._users
+
+    async def register_user(self, user_id: int, **kwargs: Any) -> None:
+        """Register a user with optional data."""
+        async with self._lock:
+            if user_id not in self._users:
+                self._users[user_id] = {"user_id": user_id, "registered_at": time.monotonic()}
+            # Update with provided data
+            for key, value in kwargs.items():
+                self._users[user_id][key] = value
+
+    async def get_user(self, user_id: int) -> dict[str, Any] | None:
+        """Get user data by ID."""
+        async with self._lock:
+            return self._users.get(user_id)
