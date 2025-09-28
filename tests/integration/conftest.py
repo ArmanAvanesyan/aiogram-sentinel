@@ -1,7 +1,7 @@
 """Integration test configuration and fixtures."""
 
 import os
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator
 
 import pytest
 from redis.asyncio import Redis
