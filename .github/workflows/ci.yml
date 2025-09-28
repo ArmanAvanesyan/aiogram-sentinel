@@ -116,7 +116,7 @@ jobs:
     
     - name: Start Redis (integration tests only)
       if: matrix.test-type == 'integration' && matrix.os == 'ubuntu-latest'
-      uses: supercharge/redis-github-action@1.2.0
+      uses: supercharge/redis-github-action@1.8.0
       with:
         redis-version: '7'
     
