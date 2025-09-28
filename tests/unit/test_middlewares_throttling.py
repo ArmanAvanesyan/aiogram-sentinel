@@ -494,10 +494,10 @@ class TestThrottlingMiddleware:
         from aiogram_sentinel.exceptions import ConfigurationError
 
         # Should raise configuration error for zero limit
-        with pytest.raises(ConfigurationError, match="throttling_default_max must be positive"):
-            SentinelConfig(
-                throttling_default_max=0, throttling_default_per_seconds=60
-            )
+        with pytest.raises(
+            ConfigurationError, match="throttling_default_max must be positive"
+        ):
+            SentinelConfig(throttling_default_max=0, throttling_default_per_seconds=60)
 
     @pytest.mark.asyncio
     async def test_edge_case_negative_limit(
@@ -512,10 +512,10 @@ class TestThrottlingMiddleware:
         from aiogram_sentinel.exceptions import ConfigurationError
 
         # Should raise configuration error for negative limit
-        with pytest.raises(ConfigurationError, match="throttling_default_max must be positive"):
-            SentinelConfig(
-                throttling_default_max=-1, throttling_default_per_seconds=60
-            )
+        with pytest.raises(
+            ConfigurationError, match="throttling_default_max must be positive"
+        ):
+            SentinelConfig(throttling_default_max=-1, throttling_default_per_seconds=60)
 
     @pytest.mark.asyncio
     async def test_edge_case_zero_window(
@@ -530,8 +530,7 @@ class TestThrottlingMiddleware:
         from aiogram_sentinel.exceptions import ConfigurationError
 
         # Should raise configuration error for zero window
-        with pytest.raises(ConfigurationError, match="throttling_default_per_seconds must be positive"):
-            SentinelConfig(
-                throttling_default_max=10, throttling_default_per_seconds=0
-            )
-
+        with pytest.raises(
+            ConfigurationError, match="throttling_default_per_seconds must be positive"
+        ):
+            SentinelConfig(throttling_default_max=10, throttling_default_per_seconds=0)

@@ -86,7 +86,9 @@ class ThrottlingMiddleware(BaseMiddleware):
             if isinstance(config, (tuple, list)) and len(config) >= 2:
                 return int(config[0]), int(config[1])
             elif isinstance(config, dict):
-                return config.get("limit", self._cfg.throttling_default_max), config.get("window", self._cfg.throttling_default_per_seconds)
+                return config.get(
+                    "limit", self._cfg.throttling_default_max
+                ), config.get("window", self._cfg.throttling_default_per_seconds)
 
         # Check data for rate limit configuration
         if "sentinel_rate_limit" in data:
