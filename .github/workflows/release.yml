@@ -3,6 +3,7 @@ name: Release
 on:
   push:
     branches: [main]
+    tags: ['v*.*.*']
   workflow_dispatch:
     inputs:
       version_type:
@@ -50,20 +51,35 @@ jobs:
           uv sync --all-extras --dev
 
       - name: Run quality checks
+        if: github.event_name != 'push' || !startsWith(github.ref, 'refs/tags/')
         run: |
           uv run ruff check .
           uv run pyright
           uv run pytest tests/unit/
 
       - name: Semantic Release (Auto)
-        if: github.event.inputs.version_type == 'auto'
+        if: github.event.inputs.version_type == 'auto' && (github.event_name != 'push' || !startsWith(github.ref, 'refs/tags/'))
         run: |
           uv run semantic-release publish
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Create GitHub Release from Tag
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+        run: |
+          # Extract version from tag (e.g., v0.2.0 -> 0.2.0)
+          VERSION=${GITHUB_REF#refs/tags/v}
+          
+          # Create GitHub release
+          gh release create $GITHUB_REF \
+            --title "Release v$VERSION" \
+            --notes "Release v$VERSION" \
+            --generate-notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Semantic Release (Manual - Patch)
-        if: github.event.inputs.version_type == 'patch'
+        if: github.event.inputs.version_type == 'patch' && (github.event_name != 'push' || !startsWith(github.ref, 'refs/tags/'))
         run: |
           uv run semantic-release version --patch
           uv run semantic-release publish
@@ -71,7 +87,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Semantic Release (Manual - Minor)
-        if: github.event.inputs.version_type == 'minor'
+        if: github.event.inputs.version_type == 'minor' && (github.event_name != 'push' || !startsWith(github.ref, 'refs/tags/'))
         run: |
           uv run semantic-release version --minor
           uv run semantic-release publish
@@ -79,7 +95,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Semantic Release (Manual - Major)
-        if: github.event.inputs.version_type == 'major'
+        if: github.event.inputs.version_type == 'major' && (github.event_name != 'push' || !startsWith(github.ref, 'refs/tags/'))
         run: |
           uv run semantic-release version --major
           uv run semantic-release publish
@@ -87,7 +103,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Force Release
-        if: github.event.inputs.force_release == 'true'
+        if: github.event.inputs.force_release == 'true' && (github.event_name != 'push' || !startsWith(github.ref, 'refs/tags/'))
         run: |
           uv run semantic-release publish --force
         env:
