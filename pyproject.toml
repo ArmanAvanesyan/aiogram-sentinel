@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "aiogram-sentinel"
-version = "0.2.0"
+version = "0.3.0"
 description = "Edge hygiene library for aiogram v3 with middlewares, router, and storage backends"
 readme = "README.md"
 license = {text = "MIT"}
