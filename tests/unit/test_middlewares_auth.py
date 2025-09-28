@@ -56,6 +56,12 @@ class TestAuthMiddleware:
 
         middleware = AuthMiddleware(mock_user_repo)
 
+        # Ensure handler doesn't require registration
+        mock_handler.sentinel_require_registered = False
+
+        # Clear any existing flags
+        mock_data.clear()
+
         # Process event
         result = await middleware(mock_handler, mock_message, mock_data)
 
@@ -63,12 +69,11 @@ class TestAuthMiddleware:
         assert result == "handler_result"
         mock_handler.assert_called_once_with(mock_message, mock_data)
 
-        # Should register user
-        mock_user_repo.register_user.assert_called_once()
-        call_args = mock_user_repo.register_user.call_args
+        # Should ensure user exists
+        mock_user_repo.ensure_user.assert_called_once()
+        call_args = mock_user_repo.ensure_user.call_args
         assert call_args[0][0] == 12345  # User ID
-        assert "username" in call_args[1]
-        assert "registered_at" in call_args[1]
+        assert call_args[1]["username"] == "testuser"
 
         # Should set user_exists flag
         assert mock_data["user_exists"] is True
@@ -87,6 +92,9 @@ class TestAuthMiddleware:
         mock_user_repo.is_registered.return_value = True
 
         middleware = AuthMiddleware(mock_user_repo)
+
+        # Ensure handler doesn't require registration
+        mock_handler.sentinel_require_registered = False
 
         # Process event
         result = await middleware(mock_handler, mock_message, mock_data)
@@ -259,6 +267,9 @@ class TestAuthMiddleware:
 
         middleware = AuthMiddleware(mock_user_repo)
 
+        # Ensure handler doesn't require registration
+        mock_handler.sentinel_require_registered = False
+
         # Create message with user
         mock_message = MagicMock()
         mock_message.from_user.id = 12345
@@ -267,9 +278,9 @@ class TestAuthMiddleware:
         # Process event
         await middleware(mock_handler, mock_message, mock_data)
 
-        # Should register user with correct info
-        mock_user_repo.register_user.assert_called_once()
-        call_args = mock_user_repo.register_user.call_args
+        # Should ensure user exists (not register_user)
+        mock_user_repo.ensure_user.assert_called_once()
+        call_args = mock_user_repo.ensure_user.call_args
         assert call_args[0][0] == 12345
         assert call_args[1]["username"] == "testuser"
 
@@ -287,6 +298,9 @@ class TestAuthMiddleware:
 
         middleware = AuthMiddleware(mock_user_repo)
 
+        # Ensure handler doesn't require registration
+        mock_handler.sentinel_require_registered = False
+
         # Create callback query with user
         mock_callback = MagicMock()
         mock_callback.from_user.id = 67890
@@ -295,9 +309,9 @@ class TestAuthMiddleware:
         # Process event
         await middleware(mock_handler, mock_callback, mock_data)
 
-        # Should register user with correct info
-        mock_user_repo.register_user.assert_called_once()
-        call_args = mock_user_repo.register_user.call_args
+        # Should ensure user exists (not register_user)
+        mock_user_repo.ensure_user.assert_called_once()
+        call_args = mock_user_repo.ensure_user.call_args
         assert call_args[0][0] == 67890
         assert call_args[1]["username"] == "callbackuser"
 
@@ -315,6 +329,9 @@ class TestAuthMiddleware:
 
         middleware = AuthMiddleware(mock_user_repo)
 
+        # Ensure handler doesn't require registration
+        mock_handler.sentinel_require_registered = False
+
         # Create event with only chat
         mock_event = MagicMock()
         mock_event.from_user = None
@@ -325,9 +342,9 @@ class TestAuthMiddleware:
         # Process event
         await middleware(mock_handler, mock_event, mock_data)
 
-        # Should register user with chat info
-        mock_user_repo.register_user.assert_called_once()
-        call_args = mock_user_repo.register_user.call_args
+        # Should ensure user exists with chat info
+        mock_user_repo.ensure_user.assert_called_once()
+        call_args = mock_user_repo.ensure_user.call_args
         assert call_args[0][0] == 11111
         assert call_args[1]["username"] == "chatuser"
 
@@ -439,11 +456,14 @@ class TestAuthMiddleware:
 
         middleware = AuthMiddleware(mock_user_repo)
 
+        # Ensure handler doesn't require registration
+        mock_handler.sentinel_require_registered = False
+
         # Process event
         await middleware(mock_handler, mock_message, mock_data)
 
-        # Should preserve existing flags
-        assert mock_data["user_exists"] == "existing_value"
+        # Should overwrite user_exists flag but preserve user_context
+        assert mock_data["user_exists"] is True  # Middleware sets this to True
         assert mock_data["user_context"] == {"existing": "context"}
 
     @pytest.mark.asyncio

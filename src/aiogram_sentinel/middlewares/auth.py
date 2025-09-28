@@ -31,6 +31,7 @@ class AuthMiddleware(BaseMiddleware):
         super().__init__()
         self._user_repo = user_repo
         self._resolve_user = resolve_user
+        self._blocklist_backend = None  # Not used in this middleware
 
     async def __call__(
         self,

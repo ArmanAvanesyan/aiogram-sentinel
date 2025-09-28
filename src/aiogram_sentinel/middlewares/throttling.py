@@ -36,6 +36,8 @@ class ThrottlingMiddleware(BaseMiddleware):
         self._rate_limiter = rate_limiter
         self._cfg = cfg
         self._on_rate_limited = on_rate_limited
+        self._default_limit = cfg.throttling_default_max
+        self._default_window = cfg.throttling_default_per_seconds
 
     async def __call__(
         self,
@@ -81,8 +83,10 @@ class ThrottlingMiddleware(BaseMiddleware):
         # Check if handler has rate limit configuration
         if hasattr(handler, "sentinel_rate_limit"):  # type: ignore
             config = handler.sentinel_rate_limit  # type: ignore
-            max_events, per_seconds, _scope = config
-            return max_events, per_seconds
+            if isinstance(config, (tuple, list)) and len(config) >= 2:
+                return int(config[0]), int(config[1])
+            elif isinstance(config, dict):
+                return config.get("limit", self._cfg.throttling_default_max), config.get("window", self._cfg.throttling_default_per_seconds)
 
         # Check data for rate limit configuration
         if "sentinel_rate_limit" in data:
@@ -147,7 +151,7 @@ def rate_limit(
 
     def decorator(handler: Callable[..., Any]) -> Callable[..., Any]:
         # Store rate limit configuration on the handler
-        handler._sentinel_rate_limit = {"limit": limit, "window": window}  # type: ignore
+        handler.sentinel_rate_limit = {"limit": limit, "window": window}  # type: ignore
         return handler
 
     return decorator

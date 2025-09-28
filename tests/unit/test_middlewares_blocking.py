@@ -153,10 +153,12 @@ class TestBlockingMiddleware:
         mock_event.chat = None
 
         # Process event
-        await middleware(mock_handler, mock_event, mock_data)
+        result = await middleware(mock_handler, mock_event, mock_data)
 
-        # Should check blocklist with 0 (no user)
-        mock_blocklist_backend.is_blocked.assert_called_once_with(0)
+        # Should skip blocking check for anonymous users and call handler
+        mock_blocklist_backend.is_blocked.assert_not_called()
+        mock_handler.assert_called_once_with(mock_event, mock_data)
+        assert result == "handler_result"
 
     @pytest.mark.asyncio
     async def test_blocklist_backend_error(
@@ -240,8 +242,8 @@ class TestBlockingMiddleware:
         # Process event
         await middleware(mock_handler, mock_message, mock_data)
 
-        # Should preserve existing flag
-        assert mock_data["sentinel_blocked"] == "existing_value"
+        # Should overwrite the flag when user is blocked
+        assert mock_data["sentinel_blocked"] is True
 
     @pytest.mark.asyncio
     async def test_multiple_events_same_user(
@@ -342,14 +344,14 @@ class TestBlockingMiddleware:
         self, mock_blocklist_backend: Mock, mock_handler: Mock, mock_message: Mock
     ) -> None:
         """Test handling with None data."""
-        # Mock non-blocked user
-        mock_blocklist_backend.is_blocked.return_value = False
+        # Mock blocked user to trigger data access
+        mock_blocklist_backend.is_blocked.return_value = True
 
         middleware = BlockingMiddleware(mock_blocklist_backend)
 
         # Process with None data
         data: Any = None
 
-        # Should handle gracefully
-        with pytest.raises((TypeError, AttributeError)):
+        # Should raise error when trying to set data["sentinel_blocked"]
+        with pytest.raises(TypeError):
             await middleware(mock_handler, mock_message, data)

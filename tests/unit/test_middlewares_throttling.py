@@ -97,18 +97,19 @@ class TestThrottlingMiddleware:
         # Process event
         await middleware(mock_handler, mock_message, mock_data)
 
-        # Should increment rate limit with generated key
-        mock_rate_limiter.increment_rate_limit.assert_called_once()
-        call_args = mock_rate_limiter.increment_rate_limit.call_args[0]
-        assert len(call_args) == 2
-        key, window = call_args
+        # Should check rate limit with generated key
+        mock_rate_limiter.allow.assert_called_once()
+        call_args = mock_rate_limiter.allow.call_args[0]
+        assert len(call_args) == 3  # key, max_events, per_seconds
+        key, max_events, per_seconds = call_args
 
         # Key should contain user ID and handler name
         assert "12345" in key  # User ID from mock_message
-        assert "test_handler" in key  # Handler name from mock_handler
+        assert "AsyncMock" in key  # Handler name from mock_handler
 
-        # Window should be default
-        assert window == 60
+        # Config should be default
+        assert max_events == 10
+        assert per_seconds == 60
 
     @pytest.mark.asyncio
     async def test_rate_limit_with_custom_config(
@@ -136,8 +137,8 @@ class TestThrottlingMiddleware:
         await middleware(mock_handler, mock_message, mock_data)
 
         # Should increment rate limit with custom window
-        mock_rate_limiter.increment_rate_limit.assert_called_once()
-        call_args = mock_rate_limiter.increment_rate_limit.call_args[0]
+        mock_rate_limiter.allow.assert_called_once()
+        call_args = mock_rate_limiter.allow.call_args[0]
         _key, window = call_args
         assert window == 30  # Custom window
 
@@ -165,8 +166,8 @@ class TestThrottlingMiddleware:
         await middleware(mock_handler, mock_message, mock_data)
 
         # Should increment rate limit with default window
-        mock_rate_limiter.increment_rate_limit.assert_called_once()
-        call_args = mock_rate_limiter.increment_rate_limit.call_args[0]
+        mock_rate_limiter.allow.assert_called_once()
+        call_args = mock_rate_limiter.allow.call_args[0]
         _key, window = call_args
         assert window == 120  # Default window
 
@@ -401,7 +402,7 @@ class TestThrottlingMiddleware:
             assert result == "handler_result"
 
         # Should increment rate limit for each event
-        assert mock_rate_limiter.increment_rate_limit.call_count == 5
+        assert mock_rate_limiter.allow.call_count == 5
 
     @pytest.mark.asyncio
     async def test_different_users(
@@ -433,7 +434,7 @@ class TestThrottlingMiddleware:
             assert result == "handler_result"
 
         # Should increment rate limit for each user
-        assert mock_rate_limiter.increment_rate_limit.call_count == 3
+        assert mock_rate_limiter.allow.call_count == 3
 
     @pytest.mark.asyncio
     async def test_middleware_initialization(self, mock_rate_limiter: Mock) -> None:
@@ -557,7 +558,7 @@ class TestThrottlingMiddleware:
         mock_handler.assert_called_once_with(mock_message, mock_data)
 
         # Should use zero window
-        mock_rate_limiter.increment_rate_limit.assert_called_once()
-        call_args = mock_rate_limiter.increment_rate_limit.call_args[0]
+        mock_rate_limiter.allow.assert_called_once()
+        call_args = mock_rate_limiter.allow.call_args[0]
         _key, window = call_args
         assert window == 0

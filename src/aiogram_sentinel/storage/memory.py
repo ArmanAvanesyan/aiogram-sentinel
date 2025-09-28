@@ -48,6 +48,28 @@ class MemoryRateLimiter(RateLimiterBackend):
         while counter and counter[0] < window_start:
             counter.popleft()
 
+    # Convenience methods for tests
+    async def increment_rate_limit(self, key: str, window: int) -> int:
+        """Increment rate limit counter and return current count."""
+        async with self._lock:
+            now = time.monotonic()
+            # Clean up old entries
+            self._cleanup_old_entries(key, now, window)
+            # Add current timestamp
+            self._counters[key].append(now)
+            return len(self._counters[key])
+
+    async def get_rate_limit(self, key: str) -> int:
+        """Get current rate limit count for key."""
+        async with self._lock:
+            return len(self._counters[key])
+
+    async def reset_rate_limit(self, key: str) -> None:
+        """Reset rate limit for key."""
+        async with self._lock:
+            if key in self._counters:
+                self._counters[key].clear()
+
 
 class MemoryDebounce(DebounceBackend):
     """In-memory debounce backend using monotonic time."""

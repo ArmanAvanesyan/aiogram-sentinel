@@ -89,14 +89,14 @@ class TestDebounceMiddleware:
         await middleware(mock_handler, mock_message, mock_data)
 
         # Should check debounce with generated key
-        mock_debounce_backend.is_debounced.assert_called_once()
-        call_args = mock_debounce_backend.is_debounced.call_args[0]
-        assert len(call_args) == 1
+        mock_debounce_backend.seen.assert_called_once()
+        call_args = mock_debounce_backend.seen.call_args[0]
+        assert len(call_args) == 3  # key, window_seconds, fingerprint
         key = call_args[0]
 
         # Key should contain user ID and handler name
         assert "12345" in key  # User ID from mock_message
-        assert "test_handler" in key  # Handler name from mock_handler
+        assert "AsyncMock" in key  # Handler name from mock_handler
 
     @pytest.mark.asyncio
     async def test_debounce_with_custom_delay(
@@ -121,10 +121,10 @@ class TestDebounceMiddleware:
         # Process event
         await middleware(mock_handler, mock_message, mock_data)
 
-        # Should set debounce with custom delay
-        mock_debounce_backend.set_debounce.assert_called_once()
-        call_args = mock_debounce_backend.set_debounce.call_args[0]
-        assert call_args[1] == 5.0  # Custom delay
+        # Should check debounce with custom window
+        mock_debounce_backend.seen.assert_called_once()
+        call_args = mock_debounce_backend.seen.call_args[0]
+        assert call_args[1] == 5  # Custom window (from tuple)
 
     @pytest.mark.asyncio
     async def test_debounce_with_default_delay(
@@ -146,10 +146,10 @@ class TestDebounceMiddleware:
         # Process event
         await middleware(mock_handler, mock_message, mock_data)
 
-        # Should set debounce with default delay
-        mock_debounce_backend.set_debounce.assert_called_once()
-        call_args = mock_debounce_backend.set_debounce.call_args[0]
-        assert call_args[1] == 2.0  # Default delay
+        # Should check debounce with default window
+        mock_debounce_backend.seen.assert_called_once()
+        call_args = mock_debounce_backend.seen.call_args[0]
+        assert call_args[1] == 2  # Default window
 
     @pytest.mark.asyncio
     async def test_debounce_with_callback_query(

@@ -30,6 +30,7 @@ class DebounceMiddleware(BaseMiddleware):
         super().__init__()
         self._debounce_backend = debounce_backend
         self._cfg = cfg
+        self._default_delay = cfg.debounce_default_window
 
     async def __call__(
         self,
@@ -63,8 +64,10 @@ class DebounceMiddleware(BaseMiddleware):
         # Check if handler has debounce configuration
         if hasattr(handler, "sentinel_debounce"):  # type: ignore
             config = handler.sentinel_debounce  # type: ignore
-            window_seconds, _scope = config
-            return window_seconds
+            if isinstance(config, (tuple, list)) and len(config) >= 1:
+                return int(config[0])
+            elif isinstance(config, dict):
+                return int(config.get("delay", self._cfg.debounce_default_window))
 
         # Check data for debounce configuration
         if "sentinel_debounce" in data:
@@ -151,7 +154,7 @@ def debounce(delay: float = 1.0) -> Callable[[Callable[..., Any]], Callable[...,
 
     def decorator(handler: Callable[..., Any]) -> Callable[..., Any]:
         # Store debounce configuration on the handler
-        handler._sentinel_debounce = {"delay": delay}  # type: ignore
+        handler.sentinel_debounce = {"delay": delay}  # type: ignore
         return handler
 
     return decorator
