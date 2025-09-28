@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request: {}
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        python: ["3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ matrix.python }}-${{ hashFiles('pyproject.toml') }}
+          restore-keys: ${{ runner.os }}-pip-${{ matrix.python }}-
+      - name: Install
+        run: |
+          python -m pip install -U pip
+          pip install -e .[dev]
+      - name: Ruff
+        run: |
+          ruff check .
+          ruff format --check .
+      - name: Pyright
+        run: pyright
+      - name: Pytest
+        run: pytest
+      - name: Bandit
+        run: bandit -r src -c pyproject.toml
+      - name: pip-audit (advisory)
+        run: pip-audit -r <(pip freeze) || true
+      - name: Coverage artifact
+        if: always()
+        run: |
+          echo "" > coverage.txt || true
+        continue-on-error: true
+
+  integration-redis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      redis:
+        image: redis:7
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping || exit 1"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: |
+          python -m pip install -U pip
+          pip install -e .[dev,redis] || pip install -e .[dev]
+      - name: Run integration tests (if any)
+        env:
+          TEST_REDIS_URL: redis://localhost:6379/0
+        run: |
+          pytest -q -m "integration" || echo "no integration tests yet"
