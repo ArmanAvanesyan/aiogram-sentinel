@@ -34,10 +34,14 @@ dev = [
     "pytest>=7.0.0",
     "pytest-asyncio>=0.21.0",
     "pytest-mock>=3.10.0",
+    "pytest-cov>=4.0.0",
+    "pytest-benchmark>=4.0.0",
     "black>=23.0.0",
     "isort>=5.12.0",
     "pyright>=1.1.0",
     "ruff>=0.1.0",
+    "bandit>=1.7.0",
+    "pip-audit>=2.0.0",
 ]
 redis = [
     "redis>=5.0",
@@ -116,6 +120,11 @@ markers = [
     "integration: Integration tests",
     "slow: Slow tests",
     "asyncio: Async tests",
+    "benchmark: Performance benchmarks",
+]
+filterwarnings = [
+    "error",
+    "ignore::DeprecationWarning",
 ]
 
 [tool.bandit]
