@@ -10,7 +10,6 @@ on:
     - cron: '0 6 * * 1'
 
 env:
-  PYTHON_VERSION: '3.11'
   UV_VERSION: '0.4.0'
 
 jobs:
@@ -20,7 +19,7 @@ jobs:
     timeout-minutes: 15
     strategy:
       matrix:
-        python-version: ['3.10', '3.11', '3.12']
+        python-version: ['3.10', '3.11', '3.12', '3.13']
     
     steps:
     - name: Checkout code
@@ -76,14 +75,16 @@ jobs:
 
   tests:
     name: Tests
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     needs: quality-checks
     timeout-minutes: 20
     
     strategy:
+      fail-fast: false
       matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
         test-type: ['unit', 'integration']
-        python-version: ['3.11']  # Primary version for tests
+        python-version: ['3.10', '3.11', '3.12', '3.13']
     
     steps:
     - name: Checkout code
@@ -114,7 +115,7 @@ jobs:
         uv sync --all-extras --dev
     
     - name: Start Redis (integration tests only)
-      if: matrix.test-type == 'integration'
+      if: matrix.test-type == 'integration' && matrix.os == 'ubuntu-latest'
       uses: supercharge/redis-github-action@1.2.0
       with:
         redis-version: '7'
@@ -125,11 +126,16 @@ jobs:
         uv run pytest tests/unit/ -v --cov=src/aiogram_sentinel --cov-report=xml --cov-report=html
     
     - name: Run integration tests
-      if: matrix.test-type == 'integration'
+      if: matrix.test-type == 'integration' && matrix.os == 'ubuntu-latest'
       env:
         TEST_REDIS_URL: redis://localhost:6379/0
       run: |
         uv run pytest tests/integration/ -v -m "integration"
+    
+    - name: Skip integration tests on non-Ubuntu
+      if: matrix.test-type == 'integration' && matrix.os != 'ubuntu-latest'
+      run: |
+        echo "Integration tests skipped on ${{ matrix.os }} (Redis not available)"
     
     - name: Upload coverage reports
       if: matrix.test-type == 'unit'
@@ -152,6 +158,10 @@ jobs:
     timeout-minutes: 10
     if: github.event_name == 'schedule' || github.event_name == 'push'
     
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.11', '3.12', '3.13']
+    
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -161,10 +171,10 @@ jobs:
       with:
         version: ${{ env.UV_VERSION }}
     
-    - name: Set up Python
+    - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
-        python-version: ${{ env.PYTHON_VERSION }}
+        python-version: ${{ matrix.python-version }}
     
     - name: Cache UV dependencies
       uses: actions/cache@v4
@@ -172,9 +182,9 @@ jobs:
         path: |
           ~/.cache/uv
           .venv
-        key: ${{ runner.os }}-uv-${{ env.PYTHON_VERSION }}-${{ hashFiles('**/pyproject.toml') }}
+        key: ${{ runner.os }}-uv-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
         restore-keys: |
-          ${{ runner.os }}-uv-${{ env.PYTHON_VERSION }}-
+          ${{ runner.os }}-uv-${{ matrix.python-version }}-
     
     - name: Install dependencies
       run: |
@@ -182,15 +192,59 @@ jobs:
     
     - name: Run pip-audit
       run: |
-        uv run pip-audit --format json --output pip-audit-report.json
+        uv run pip-audit --format json --output pip-audit-report-${{ matrix.python-version }}.json
       continue-on-error: true
     
     - name: Upload vulnerability report
       uses: actions/upload-artifact@v4
       with:
-        name: pip-audit-report
-        path: pip-audit-report.json
+        name: pip-audit-report-${{ matrix.python-version }}
+        path: pip-audit-report-${{ matrix.python-version }}.json
       if: always()
+
+  pypy-tests:
+    name: PyPy Tests
+    runs-on: ${{ matrix.os }}
+    needs: tests
+    timeout-minutes: 20
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: ["pypy3.9", "pypy3.10"]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }} on ${{ matrix.os }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install UV
+      uses: astral-sh/setup-uv@v2
+      with:
+        version: ${{ env.UV_VERSION }}
+
+    - name: Cache UV dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/uv
+          .venv
+        key: ${{ runner.os }}-uv-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-uv-${{ matrix.python-version }}-
+
+    - name: Install dependencies
+      run: |
+        uv sync --all-extras --dev
+
+    - name: Run unit tests
+      run: |
+        uv run pytest tests/unit/ -v
 
   performance-benchmark:
     name: Performance Benchmark
@@ -199,6 +253,10 @@ jobs:
     timeout-minutes: 15
     if: github.ref == 'refs/heads/main'
     
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.11', '3.12', '3.13']
+    
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -208,10 +266,10 @@ jobs:
       with:
         version: ${{ env.UV_VERSION }}
     
-    - name: Set up Python
+    - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
-        python-version: ${{ env.PYTHON_VERSION }}
+        python-version: ${{ matrix.python-version }}
     
     - name: Cache UV dependencies
       uses: actions/cache@v4
@@ -219,9 +277,9 @@ jobs:
         path: |
           ~/.cache/uv
           .venv
-        key: ${{ runner.os }}-uv-${{ env.PYTHON_VERSION }}-${{ hashFiles('**/pyproject.toml') }}
+        key: ${{ runner.os }}-uv-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
         restore-keys: |
-          ${{ runner.os }}-uv-${{ env.PYTHON_VERSION }}-
+          ${{ runner.os }}-uv-${{ matrix.python-version }}-
     
     - name: Install dependencies
       run: |
@@ -229,12 +287,12 @@ jobs:
     
     - name: Run performance benchmarks
       run: |
-        uv run pytest tests/perf/ -v --benchmark-only --benchmark-json=benchmark-results.json
+        uv run pytest tests/perf/ -v --benchmark-only --benchmark-json=benchmark-results-${{ matrix.python-version }}.json
       continue-on-error: true
     
     - name: Upload benchmark results
       uses: actions/upload-artifact@v4
       with:
-        name: benchmark-results
-        path: benchmark-results.json
+        name: benchmark-results-${{ matrix.python-version }}
+        path: benchmark-results-${{ matrix.python-version }}.json
       if: always()

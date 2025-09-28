@@ -20,6 +20,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Communications :: Chat",
 ]
@@ -160,3 +161,41 @@ dev = [
     "hatchling>=1.27.0",
     "pyright>=1.1.405",
 ]
+
+[tool.towncrier]
+package = "aiogram_sentinel"
+package_dir = "src"
+filename = "CHANGELOG.md"
+directory = "CHANGES"
+# template = "CHANGES/.template.rst.jinja2"
+start_string = "<!-- towncrier release notes start -->\n"
+title_format = "## [{version}] - {project_date}"
+issue_format = "[#{issue}](https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/{issue})"
+underlines = ["", "", ""]
+wrap = true
+all_bullets = true
+
+[[tool.towncrier.type]]
+directory = "feature"
+name = "Features"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "bugfix"
+name = "Bugfixes"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "doc"
+name = "Documentation"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "removal"
+name = "Removals"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "misc"
+name = "Miscellaneous"
+showcontent = true

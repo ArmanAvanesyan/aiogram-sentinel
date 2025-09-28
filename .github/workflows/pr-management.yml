@@ -1,0 +1,161 @@
+name: PR Management
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - labeled
+      - unlabeled
+    branches:
+      - main
+
+jobs:
+  label-pr:
+    name: Auto-label PR
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Auto-label based on files changed
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+            });
+
+            const labels = new Set();
+            
+            // Type labels based on changed files
+            const hasCodeChanges = files.some(file => 
+              file.filename.startsWith('src/') || 
+              file.filename.startsWith('tests/') ||
+              file.filename === 'pyproject.toml'
+            );
+            
+            const hasDocsChanges = files.some(file => 
+              file.filename.startsWith('docs/') || 
+              file.filename === 'README.md' ||
+              file.filename === 'CONTRIBUTING.md'
+            );
+            
+            const hasCICChanges = files.some(file => 
+              file.filename.startsWith('.github/workflows/') ||
+              file.filename === '.github/dependabot.yml'
+            );
+
+            if (hasDocsChanges && !hasCodeChanges && !hasCICChanges) {
+              labels.add('type:docs');
+            } else if (hasCodeChanges) {
+              labels.add('type:code');
+            } else if (hasCICChanges) {
+              labels.add('type:ci');
+            } else {
+              labels.add('type:misc');
+            }
+
+            // Area labels
+            if (files.some(file => file.filename.startsWith('src/aiogram_sentinel/middlewares/'))) {
+              labels.add('area:middleware');
+            }
+            if (files.some(file => file.filename.startsWith('src/aiogram_sentinel/storage/'))) {
+              labels.add('area:storage');
+            }
+            if (files.some(file => file.filename.startsWith('src/aiogram_sentinel/routers/'))) {
+              labels.add('area:router');
+            }
+            if (files.some(file => file.filename.startsWith('src/aiogram_sentinel/utils/'))) {
+              labels.add('area:utils');
+            }
+
+            // Priority labels based on title/body
+            const title = context.payload.pull_request.title.toLowerCase();
+            const body = (context.payload.pull_request.body || '').toLowerCase();
+            const text = `${title} ${body}`;
+
+            if (text.includes('critical') || text.includes('urgent') || text.includes('blocker')) {
+              labels.add('priority:p0');
+            } else if (text.includes('important') || text.includes('major')) {
+              labels.add('priority:p1');
+            } else if (text.includes('minor') || text.includes('enhancement')) {
+              labels.add('priority:p2');
+            }
+
+            // Apply labels
+            if (labels.size > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: Array.from(labels),
+              });
+            }
+
+  changelog-check:
+    name: Check Changelog
+    runs-on: ubuntu-latest
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'skip news') }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: '0'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "0.4.0"
+
+      - name: Install towncrier
+        run: uv tool install towncrier
+
+      - name: Check changelog
+        env:
+          BASE_BRANCH: ${{ github.base_ref }}
+        run: |
+          git fetch --no-tags origin +refs/heads/${BASE_BRANCH}:refs/remotes/origin/${BASE_BRANCH}
+          uv tool run towncrier check --compare-with origin/${BASE_BRANCH}
+
+      - name: Find bot comment
+        if: always()
+        uses: peter-evans/find-comment@v3
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: 'Changelog check'
+
+      - name: Create or update comment
+        if: always()
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ## Changelog check
+
+            ${{ job.status == 'success' && '✅ Changelog is up to date!' || '❌ Changelog is missing or outdated.' }}
+
+            ${{ job.status == 'failure' && 'Please add a changelog entry in the `CHANGES/` directory. See [CHANGES/README.md](CHANGES/README.md) for instructions.' || '' }}
+
+            ${{ job.status == 'failure' && 'If this PR does not require a changelog entry, add the `skip news` label.' || '' }}
+          edit-mode: replace

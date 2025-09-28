@@ -1,0 +1,136 @@
+# Quickstart Guide
+
+Get up and running with aiogram-sentinel in 5 minutes.
+
+## Prerequisites
+
+- Python 3.10 or higher
+- Basic knowledge of aiogram v3
+- A Telegram bot token
+
+## Installation
+
+Install aiogram-sentinel using pip:
+
+```bash
+pip install aiogram-sentinel
+```
+
+Or using uv (recommended):
+
+```bash
+uv add aiogram-sentinel
+```
+
+For Redis storage support:
+
+```bash
+pip install aiogram-sentinel[redis]
+```
+
+## Minimal Example
+
+Here's a complete bot with basic protection:
+
+```python
+import asyncio
+from aiogram import Bot, Dispatcher
+from aiogram.types import Message
+from aiogram_sentinel import Sentinel
+
+# Initialize bot and dispatcher
+bot = Bot(token="YOUR_BOT_TOKEN")
+dp = Dispatcher()
+
+# Create Sentinel instance with default configuration
+sentinel = Sentinel()
+
+# Register middleware
+dp.message.middleware(sentinel.middleware)
+
+@dp.message()
+async def handle_message(message: Message):
+    """Handle all messages with protection."""
+    await message.answer(f"Hello! Your message: {message.text}")
+
+async def main():
+    """Start the bot."""
+    await dp.start_polling(bot)
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+## What This Does
+
+The minimal example above provides:
+
+- **Rate limiting**: Prevents spam by limiting message frequency
+- **User blocking**: Blocks users who are on the blocklist
+- **Authentication**: Automatically registers new users
+- **Debouncing**: Prevents duplicate message processing
+
+## Configuration
+
+Customize protection settings:
+
+```python
+from aiogram_sentinel import Sentinel, SentinelConfig
+
+# Create custom configuration
+config = SentinelConfig(
+    throttling_default_max=5,      # 5 messages
+    throttling_default_per_seconds=60,  # per minute
+    debounce_default_window=2,     # 2 second debounce
+)
+
+# Create Sentinel with custom config
+sentinel = Sentinel(config=config)
+```
+
+## Storage Backends
+
+Choose your storage backend:
+
+```python
+from aiogram_sentinel import Sentinel
+from aiogram_sentinel.storage import MemoryStorage, RedisStorage
+
+# In-memory storage (default, good for development)
+sentinel = Sentinel(storage=MemoryStorage())
+
+# Redis storage (recommended for production)
+sentinel = Sentinel(storage=RedisStorage("redis://localhost:6379"))
+```
+
+## Next Steps
+
+1. **Learn more**: Read the [Architecture Guide](architecture.md)
+2. **Explore examples**: Check out [examples/](../examples/)
+3. **Configure protection**: See [Configuration Guide](configuration.md)
+4. **Build tutorials**: Follow [Tutorials](tutorials/)
+
+## Troubleshooting
+
+### Common Issues
+
+**Bot not responding**: Check your bot token and network connection.
+
+**Rate limiting too strict**: Adjust `throttling_default_max` in your configuration.
+
+**Redis connection errors**: Ensure Redis is running and accessible.
+
+### Getting Help
+
+- Check the [Troubleshooting Guide](troubleshooting.md) for detailed solutions
+- Look at the [FAQ](faq.md) for common questions
+- Open an issue on [GitHub](https://github.com/ArmanAvanesyan/aiogram-sentinel/issues)
+
+## What's Next?
+
+Now that you have a basic bot running, explore:
+
+- [Tutorials](tutorials/) - Step-by-step guides for common tasks
+- [API Reference](api/) - Complete API documentation
+- [Configuration](configuration.md) - Advanced configuration options
+- [Examples](../examples/) - Real-world usage examples

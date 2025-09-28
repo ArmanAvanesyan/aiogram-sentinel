@@ -1,0 +1,173 @@
+name: Performance Issue
+description: Report performance problems or suggest optimizations
+title: "[PERF] "
+labels: ["performance"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a performance issue! Please fill out the form below to help us understand and investigate the problem.
+
+  - type: textarea
+    id: issue-description
+    attributes:
+      label: Performance Issue Description
+      description: A clear and concise description of the performance problem.
+      placeholder: Describe the performance issue...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: issue-type
+    attributes:
+      label: Issue Type
+      description: What type of performance issue is this?
+      options:
+        - "Slow execution"
+        - "High memory usage"
+        - "Memory leak"
+        - "CPU intensive"
+        - "Network latency"
+        - "Database performance"
+        - "Concurrency issues"
+        - "Other (please specify)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: affected-component
+    attributes:
+      label: Affected Component
+      description: Which component or feature is experiencing performance issues?
+      placeholder: e.g., RateLimiter, DebounceMiddleware, Redis backend, etc.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: Steps to Reproduce
+      description: Detailed steps to reproduce the performance issue.
+      placeholder: |
+        1. Set up the following configuration...
+        2. Run the following code...
+        3. Observe the performance issue...
+    validations:
+      required: true
+
+  - type: textarea
+    id: code-example
+    attributes:
+      label: Code Example
+      description: Provide a minimal code example that demonstrates the performance issue.
+      placeholder: |
+        ```python
+        # Code that demonstrates the performance issue
+        import time
+        from aiogram_sentinel import SomeComponent
+        
+        # Your code here
+        ```
+      render: python
+    validations:
+      required: true
+
+  - type: textarea
+    id: performance-metrics
+    attributes:
+      label: Performance Metrics
+      description: Provide specific performance measurements (execution time, memory usage, etc.).
+      placeholder: |
+        - Execution time: X seconds
+        - Memory usage: X MB
+        - CPU usage: X%
+        - Number of operations: X
+        - Throughput: X ops/sec
+
+  - type: textarea
+    id: expected-performance
+    attributes:
+      label: Expected Performance
+      description: What performance do you expect or consider acceptable?
+      placeholder: |
+        - Expected execution time: X seconds
+        - Expected memory usage: X MB
+        - Expected throughput: X ops/sec
+
+  - type: textarea
+    id: environment-details
+    attributes:
+      label: Environment Details
+      description: Provide details about your environment that might affect performance.
+      placeholder: |
+        - Python version: X.X.X
+        - aiogram-sentinel version: X.X.X
+        - Operating system: X
+        - Hardware specs: CPU, RAM, etc.
+        - Storage backend: Memory/Redis/etc.
+        - Load conditions: Number of concurrent users, request rate, etc.
+
+  - type: textarea
+    id: profiling-results
+    attributes:
+      label: Profiling Results (if available)
+      description: If you've done any profiling, share the results here.
+      placeholder: |
+        ```python
+        # Profiling code and results
+        import cProfile
+        import pstats
+        
+        # Your profiling code here
+        ```
+      render: python
+
+  - type: textarea
+    id: workarounds
+    attributes:
+      label: Workarounds
+      description: Have you found any workarounds or temporary solutions?
+      placeholder: |
+        Describe any workarounds or temporary solutions you've implemented.
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: How severe is this performance issue?
+      options:
+        - "Low - Minor impact"
+        - "Medium - Noticeable impact"
+        - "High - Significant impact"
+        - "Critical - Blocks production use"
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context about the performance issue here.
+      placeholder: |
+        Add any other context, logs, or information about the performance issue.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      description: Please confirm the following
+      options:
+        - label: I have searched existing issues to ensure this is not a duplicate
+          required: true
+        - label: I have provided a clear description of the performance issue
+          required: true
+        - label: I have included reproduction steps
+          required: true
+        - label: I have provided a minimal code example
+          required: true
+        - label: I have included performance metrics (if available)
+          required: false
+        - label: I have described the expected performance
+          required: true

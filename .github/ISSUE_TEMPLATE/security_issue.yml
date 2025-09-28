@@ -1,0 +1,175 @@
+name: Security Issue
+description: Report security vulnerabilities or concerns
+title: "[SECURITY] "
+labels: ["security"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **⚠️ SECURITY NOTICE**  
+        Thank you for reporting a security issue! Please follow the guidelines below to ensure proper handling of security vulnerabilities.
+
+  - type: markdown
+    attributes:
+      value: |
+        ## Reporting Guidelines
+        
+        - **DO NOT** create a public issue for security vulnerabilities
+        - **DO** use this template to report security issues privately
+        - **DO** provide detailed information to help us understand and fix the issue
+        - **DO** allow reasonable time for us to address the issue before public disclosure
+
+  - type: textarea
+    id: vulnerability-description
+    attributes:
+      label: Vulnerability Description
+      description: A clear and concise description of the security vulnerability.
+      placeholder: Describe the security issue...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: vulnerability-type
+    attributes:
+      label: Vulnerability Type
+      description: What type of security vulnerability is this?
+      options:
+        - "Authentication bypass"
+        - "Authorization flaw"
+        - "Input validation"
+        - "Injection attack"
+        - "Information disclosure"
+        - "Denial of service"
+        - "Cryptographic weakness"
+        - "Race condition"
+        - "Memory corruption"
+        - "Other (please specify)"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity Level
+      description: How severe is this security vulnerability?
+      options:
+        - "Low - Minor security issue"
+        - "Medium - Moderate security risk"
+        - "High - Significant security risk"
+        - "Critical - Severe security risk"
+    validations:
+      required: true
+
+  - type: textarea
+    id: affected-components
+    attributes:
+      label: Affected Components
+      description: Which components or features are affected by this vulnerability?
+      placeholder: e.g., RateLimiter, AuthMiddleware, Redis backend, etc.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: Steps to Reproduce
+      description: Detailed steps to reproduce the security vulnerability.
+      placeholder: |
+        1. Set up the following configuration...
+        2. Execute the following code...
+        3. Observe the security issue...
+    validations:
+      required: true
+
+  - type: textarea
+    id: proof-of-concept
+    attributes:
+      label: Proof of Concept
+      description: Provide a minimal proof of concept that demonstrates the vulnerability.
+      placeholder: |
+        ```python
+        # Proof of concept code (be careful not to include actual exploits)
+        # Focus on demonstrating the vulnerability, not exploiting it
+        ```
+      render: python
+
+  - type: textarea
+    id: impact-assessment
+    attributes:
+      label: Impact Assessment
+      description: What is the potential impact of this vulnerability?
+      placeholder: |
+        - What data could be compromised?
+        - What actions could an attacker perform?
+        - What systems could be affected?
+        - What are the potential consequences?
+
+  - type: textarea
+    id: environment-details
+    attributes:
+      label: Environment Details
+      description: Provide details about the environment where the vulnerability was discovered.
+      placeholder: |
+        - Python version: X.X.X
+        - aiogram-sentinel version: X.X.X
+        - Operating system: X
+        - Dependencies: List relevant dependencies and versions
+        - Configuration: Any relevant configuration details
+
+  - type: textarea
+    id: suggested-fix
+    attributes:
+      label: Suggested Fix
+      description: If you have suggestions for how to fix this vulnerability, please provide them.
+      placeholder: |
+        Describe potential fixes or mitigation strategies you've identified.
+
+  - type: textarea
+    id: disclosure-timeline
+    attributes:
+      label: Disclosure Timeline
+      description: What is your preferred timeline for disclosure?
+      placeholder: |
+        - When would you like this issue to be resolved?
+        - Are there any deadlines or constraints?
+        - Do you plan to disclose this publicly? If so, when?
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context about the security issue here.
+      placeholder: |
+        Add any other context, references, or information about the security issue.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Security Reporting Checklist
+      description: Please confirm the following
+      options:
+        - label: I have not disclosed this vulnerability publicly
+          required: true
+        - label: I have provided a clear description of the vulnerability
+          required: true
+        - label: I have identified the affected components
+          required: true
+        - label: I have provided reproduction steps
+          required: true
+        - label: I have included a proof of concept (if applicable)
+          required: false
+        - label: I have assessed the potential impact
+          required: true
+        - label: I understand this will be handled confidentially
+          required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ## Contact Information
+        
+        If you need to discuss this security issue privately, you can also contact us at:
+        - Email: [security@example.com](mailto:security@example.com)
+        - GitHub Security Advisories: [Create a private security advisory](../../security/advisories/new)

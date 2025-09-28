@@ -2,6 +2,96 @@
 
 This document explains the system design and architecture of aiogram-sentinel.
 
+## Goals & Non-Goals
+
+### Goals
+
+**Primary Goals:**
+- **Drop-in Protection**: Easy integration with existing aiogram v3 bots
+- **Production Ready**: Scalable, reliable, and performant for real-world usage
+- **Developer Experience**: Clear APIs, good defaults, comprehensive documentation
+- **Flexibility**: Configurable protection levels and extensible architecture
+- **Type Safety**: Full type annotations and runtime validation
+
+**Secondary Goals:**
+- **Zero Dependencies**: Core functionality works without external services
+- **Battery Included**: Sensible defaults that work out of the box
+- **Observability**: Hooks and metrics for monitoring and debugging
+- **Security**: Protection against common attack vectors and data leaks
+
+### Non-Goals
+
+**Explicitly Out of Scope:**
+- **AI/ML Spam Detection**: No machine learning or content analysis
+- **Database Integration**: No direct database connections (use Redis or custom backends)
+- **Bot Framework**: Not a replacement for aiogram, just protection middleware
+- **GUI/Admin Interface**: No web interfaces or management dashboards
+- **Multi-Platform**: Telegram-only, no support for other messaging platforms
+- **Real-time Analytics**: No built-in analytics or reporting features
+
+## High-Level Architecture
+
+```mermaid
+graph TB
+    subgraph "aiogram Bot"
+        DP[Dispatcher]
+        H[Handlers]
+    end
+    
+    subgraph "aiogram-sentinel"
+        subgraph "Middleware Chain"
+            BM[BlockingMiddleware]
+            AM[AuthMiddleware]
+            DM[DebouncingMiddleware]
+            TM[ThrottlingMiddleware]
+        end
+        
+        subgraph "Storage Layer"
+            MB[Memory Backend]
+            RB[Redis Backend]
+            FB[Future Backends]
+        end
+        
+        subgraph "Configuration"
+            SC[SentinelConfig]
+            SF[Storage Factory]
+        end
+        
+        subgraph "Router"
+            MR[Membership Router]
+        end
+    end
+    
+    subgraph "External Services"
+        R[Redis Server]
+    end
+    
+    DP --> BM
+    BM --> AM
+    AM --> DM
+    DM --> TM
+    TM --> H
+    
+    BM --> MB
+    AM --> MB
+    DM --> MB
+    TM --> MB
+    
+    BM --> RB
+    AM --> RB
+    DM --> RB
+    TM --> RB
+    
+    RB --> R
+    
+    SC --> SF
+    SF --> MB
+    SF --> RB
+    
+    MR --> MB
+    MR --> RB
+```
+
 ## Overview
 
 aiogram-sentinel is designed as a modular edge hygiene library for aiogram v3 bots. It provides protection against spam, abuse, and unwanted behavior through a combination of middleware, storage backends, and event hooks.
@@ -117,6 +207,92 @@ Sentinel.add_hooks(router, backends, config, **hooks)
 4. DebounceMiddleware → Check duplicates
 5. ThrottlingMiddleware → Check rate limits
 6. Handler execution
+```
+
+## Lifecycle & Sequence Diagrams
+
+### Message Processing Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant TG as Telegram
+    participant DP as Dispatcher
+    participant BM as BlockingMiddleware
+    participant AM as AuthMiddleware
+    participant DM as DebouncingMiddleware
+    participant TM as ThrottlingMiddleware
+    participant H as Handler
+    participant SB as Storage Backend
+
+    U->>TG: Send message
+    TG->>DP: Webhook/Polling event
+    DP->>BM: Process event
+    
+    BM->>SB: Check if user blocked
+    SB-->>BM: Block status
+    alt User is blocked
+        BM-->>DP: Block event
+        DP-->>TG: No response
+    else User not blocked
+        BM->>AM: Continue to auth
+        AM->>SB: Ensure user exists
+        SB-->>AM: User data
+        AM->>DM: Continue to debounce
+        DM->>SB: Check message fingerprint
+        SB-->>DM: Duplicate status
+        alt Message is duplicate
+            DM-->>DP: Skip event
+        else Message is new
+            DM->>TM: Continue to throttle
+            TM->>SB: Check rate limit
+            SB-->>TM: Rate limit status
+            alt Rate limit exceeded
+                TM-->>DP: Rate limit event
+            else Rate limit OK
+                TM->>H: Execute handler
+                H-->>TM: Handler response
+                TM-->>DP: Success
+            end
+        end
+    end
+```
+
+### User Registration Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant AM as AuthMiddleware
+    participant SB as Storage Backend
+    participant H as Handler
+
+    U->>AM: First message
+    AM->>SB: Check user exists
+    SB-->>AM: User not found
+    AM->>SB: Create user record
+    SB-->>AM: User created
+    AM->>H: Continue to handler
+    H-->>U: Welcome message
+```
+
+### Blocklist Synchronization Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant TG as Telegram
+    participant MR as Membership Router
+    participant SB as Storage Backend
+    participant H as Hook Handler
+
+    U->>TG: Block bot
+    TG->>MR: my_chat_member event
+    MR->>SB: Add user to blocklist
+    SB-->>MR: Blocked
+    MR->>H: on_block hook
+    H-->>MR: Hook processed
+    MR-->>TG: Event handled
 ```
 
 ### Key Generation

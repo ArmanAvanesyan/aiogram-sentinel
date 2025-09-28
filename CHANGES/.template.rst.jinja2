@@ -1,0 +1,20 @@
+{% for section_name, section_content in sections.items() %}
+{% set underline = underlines[0] -%}
+{% if section_name %}
+{{ section_name }}
+{{ underline * section_name|length }}
+
+{% endif %}
+{% for type_, type_content in section_content.items() %}
+{% set underline = underlines[1] -%}
+{% if type_content %}
+{{ types[type_].name }}
+{{ underline * types[type_].name|length }}
+
+{% for text, values in type_content.items() %}
+- {{ text }}{% if values %} ({% for issue, pull in values.items() %}{{ issue }}{% if not loop.last %}, {% endif %}{% endfor %}){% endif %}
+{% endfor %}
+
+{% endif %}
+{% endfor %}
+{% endfor %}

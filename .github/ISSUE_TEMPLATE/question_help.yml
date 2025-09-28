@@ -1,0 +1,166 @@
+name: Question / Help
+description: Ask a question or request help with using aiogram-sentinel
+title: "[QUESTION] "
+labels: ["question", "help"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for asking a question! Please fill out the form below to help us provide the best assistance.
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: What is your question or what help do you need?
+      placeholder: Describe your question or the help you need...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: question-type
+    attributes:
+      label: Question Type
+      description: What type of question is this?
+      options:
+        - "How to use a feature"
+        - "Configuration help"
+        - "Integration help"
+        - "Troubleshooting"
+        - "Best practices"
+        - "API usage"
+        - "Performance optimization"
+        - "Other (please specify)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Provide context about your use case or situation.
+      placeholder: |
+        - What are you trying to achieve?
+        - What is your use case?
+        - What problem are you trying to solve?
+    validations:
+      required: true
+
+  - type: textarea
+    id: code-example
+    attributes:
+      label: Code Example
+      description: If applicable, provide a code example that demonstrates your question.
+      placeholder: |
+        ```python
+        # Your code example here
+        from aiogram_sentinel import SomeComponent
+        
+        # Your code
+        ```
+      render: python
+
+  - type: textarea
+    id: error-messages
+    attributes:
+      label: Error Messages (if applicable)
+      description: If you're encountering errors, paste the error messages here.
+      placeholder: |
+        ```
+        # Error messages here
+        ```
+      render: shell
+
+  - type: dropdown
+    id: python-version
+    attributes:
+      label: Python Version
+      description: What Python version are you using?
+      options:
+        - "3.10"
+        - "3.11"
+        - "3.12"
+        - "3.13"
+        - "Other (please specify)"
+    validations:
+      required: true
+
+  - type: input
+    id: aiogram-sentinel-version
+    attributes:
+      label: aiogram-sentinel Version
+      description: What version of aiogram-sentinel are you using?
+      placeholder: e.g., 0.1.0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: operating-system
+    attributes:
+      label: Operating System
+      description: What operating system are you using?
+      options:
+        - "Windows"
+        - "macOS"
+        - "Linux"
+        - "Other (please specify)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-youve-tried
+    attributes:
+      label: What You've Tried
+      description: What have you already tried to solve this problem?
+      placeholder: |
+        - What solutions have you attempted?
+        - What resources have you consulted?
+        - What approaches have you considered?
+
+  - type: textarea
+    id: expected-outcome
+    attributes:
+      label: Expected Outcome
+      description: What outcome are you expecting or hoping for?
+      placeholder: |
+        Describe what you expect to happen or what you're trying to achieve.
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context, screenshots, or information that might be helpful.
+      placeholder: |
+        Add any other context, screenshots, or information that might help us understand your question.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      description: Please confirm the following
+      options:
+        - label: I have searched existing issues and discussions
+          required: true
+        - label: I have checked the documentation
+          required: true
+        - label: I have provided a clear question
+          required: true
+        - label: I have included relevant context
+          required: true
+        - label: I have included a code example (if applicable)
+          required: false
+        - label: I have described what I've already tried
+          required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ## Additional Resources
+        
+        Before asking your question, you might want to check:
+        - [Documentation](docs/)
+        - [Examples](examples/)
+        - [GitHub Discussions](../../discussions)
+        - [Existing Issues](../../issues)

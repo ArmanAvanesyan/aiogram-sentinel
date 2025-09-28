@@ -18,13 +18,14 @@ Thank you for your interest in contributing to aiogram-sentinel! This document p
    cd aiogram-sentinel
    ```
 
-2. Install the package in development mode:
+2. Set up development environment:
    ```bash
-   # Using uv (recommended)
-   uv sync --dev
+   # Create virtual environment
+   uv venv
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
    
-   # Or using pip
-   pip install -e .[dev]
+   # Install in development mode
+   uv pip install -e ".[dev]"
    ```
 
 3. Install pre-commit hooks (optional but recommended):
