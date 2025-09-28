@@ -48,7 +48,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv sync --all-extras
+          uv sync --all-extras --group dev
 
       - name: Run quality checks
         if: github.event_name != 'push' || !startsWith(github.ref, 'refs/tags/')
