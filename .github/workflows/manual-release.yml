@@ -1,0 +1,126 @@
+name: Manual Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., 0.1.0)'
+        required: true
+        type: string
+      release_notes:
+        description: 'Release notes (optional)'
+        required: false
+        type: string
+        default: ''
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  manual-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "0.4.0"
+
+      - name: Install dependencies
+        run: |
+          uv sync --all-extras --dev
+
+      - name: Run quality checks
+        run: |
+          uv run ruff check .
+          uv run pyright
+          uv run pytest tests/unit/
+
+      - name: Update version
+        run: |
+          # Update pyproject.toml
+          sed -i "s/version = \".*\"/version = \"${{ github.event.inputs.version }}\"/" pyproject.toml
+          
+          # Update version.py
+          sed -i "s/__version__ = \".*\"/__version__ = \"${{ github.event.inputs.version }}\"/" src/aiogram_sentinel/version.py
+
+      - name: Update changelog
+        run: |
+          # Get current date
+          DATE=$(date +%Y-%m-%d)
+          
+          # Update CHANGELOG.md
+          if grep -q "## \[${{ github.event.inputs.version }}\] - TBD" CHANGELOG.md; then
+            sed -i "s/## \[${{ github.event.inputs.version }}\] - TBD/## [${{ github.event.inputs.version }}] - $DATE/" CHANGELOG.md
+          elif grep -q "## \[${{ github.event.inputs.version }}\]" CHANGELOG.md; then
+            echo "Version ${{ github.event.inputs.version }} already has a date in CHANGELOG.md"
+          else
+            echo "Warning: Version ${{ github.event.inputs.version }} not found in CHANGELOG.md"
+          fi
+
+      - name: Build package
+        run: |
+          uv run python -m hatchling build
+
+      - name: Check package
+        run: |
+          uv tool run --from twine twine check dist/*
+
+      - name: Commit and tag
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "chore(release): ${{ github.event.inputs.version }} [skip ci]"
+          git tag -a "v${{ github.event.inputs.version }}" -m "Release v${{ github.event.inputs.version }}"
+          git push origin main
+          git push origin "v${{ github.event.inputs.version }}"
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          skip-existing: true
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ github.event.inputs.version }}
+          release_name: Release v${{ github.event.inputs.version }}
+          body: |
+            ${{ github.event.inputs.release_notes }}
+            
+            ## Installation
+            
+            ```bash
+            pip install aiogram-sentinel==${{ github.event.inputs.version }}
+            ```
+            
+            ## Links
+            - [Documentation](https://aiogram-sentinel.readthedocs.io/)
+            - [GitHub Repository](https://github.com/ArmanAvanesyan/aiogram-sentinel)
+            - [PyPI Package](https://pypi.org/project/aiogram-sentinel/)
+          draft: false
+          prerelease: false
+
+      - name: Upload release assets
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/
+          asset_name: dist
+          asset_content_type: application/zip
