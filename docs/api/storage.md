@@ -2,11 +2,39 @@
 
 ## Storage Backends
 
-::: aiogram_sentinel.storage.MemoryStorage
+### Memory Backends
+
+::: aiogram_sentinel.storage.MemoryRateLimiter
     options:
       show_source: true
 
-::: aiogram_sentinel.storage.RedisStorage
+::: aiogram_sentinel.storage.MemoryDebounce
+    options:
+      show_source: true
+
+::: aiogram_sentinel.storage.MemoryBlocklist
+    options:
+      show_source: true
+
+::: aiogram_sentinel.storage.MemoryUserRepo
+    options:
+      show_source: true
+
+### Redis Backends
+
+::: aiogram_sentinel.storage.RedisRateLimiter
+    options:
+      show_source: true
+
+::: aiogram_sentinel.storage.RedisDebounce
+    options:
+      show_source: true
+
+::: aiogram_sentinel.storage.RedisBlocklist
+    options:
+      show_source: true
+
+::: aiogram_sentinel.storage.RedisUserRepo
     options:
       show_source: true
 

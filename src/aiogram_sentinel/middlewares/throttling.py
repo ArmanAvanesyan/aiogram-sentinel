@@ -66,7 +66,7 @@ class ThrottlingMiddleware(BaseMiddleware):
             if self._on_rate_limited:
                 try:
                     await self._on_rate_limited(event, data, retry_after)
-                except Exception:
+                except Exception:  # nosec B110
                     # Log error but don't fail the middleware
                     pass
 

@@ -44,7 +44,7 @@ nav:
   - Architecture:
     - Overview: ARCHITECTURE.md
     - Performance: performance.md
-    - Design Decisions: design-decisions/
+    - Design Decisions: design-decisions/index.md
   - Migration Guides:
     - Overview: migration-guides/README.md
     - v0.1.0 to v0.2.0: migration-guides/v0.1.0-to-v0.2.0.md
@@ -55,7 +55,6 @@ nav:
   - Help:
     - FAQ: faq.md
     - Troubleshooting: troubleshooting.md
-    - Security: SECURITY.md
   - Development:
     - Contributing: CONTRIBUTING.md
     - Testing: TESTING.md

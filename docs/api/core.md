@@ -32,7 +32,7 @@
     options:
       show_source: true
 
-::: aiogram_sentinel.middlewares.DebouncingMiddleware
+::: aiogram_sentinel.middlewares.DebounceMiddleware
     options:
       show_source: true
 
@@ -48,7 +48,11 @@
 
 ### Key Generation
 
-::: aiogram_sentinel.utils.keys.generate_key
+::: aiogram_sentinel.utils.keys.rate_key
+    options:
+      show_source: true
+
+::: aiogram_sentinel.utils.keys.debounce_key
     options:
       show_source: true
 
@@ -62,14 +66,14 @@
 
 ### Decorators
 
-::: aiogram_sentinel.decorators.sentinel_rate_limit
+::: aiogram_sentinel.decorators.rate_limit
     options:
       show_source: true
 
-::: aiogram_sentinel.decorators.sentinel_debounce
+::: aiogram_sentinel.decorators.debounce
     options:
       show_source: true
 
-::: aiogram_sentinel.decorators.sentinel_require_registered
+::: aiogram_sentinel.decorators.require_registered
     options:
       show_source: true

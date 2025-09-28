@@ -105,7 +105,7 @@ sentinel = Sentinel(storage=RedisStorage("redis://localhost:6379"))
 
 ## Next Steps
 
-1. **Learn more**: Read the [Architecture Guide](architecture.md)
+1. **Learn more**: Read the [Architecture Guide](ARCHITECTURE.md)
 2. **Explore examples**: Check out [examples/](../examples/)
 3. **Configure protection**: See [Configuration Guide](configuration.md)
 4. **Build tutorials**: Follow [Tutorials](tutorials/)

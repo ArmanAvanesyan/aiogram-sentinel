@@ -65,7 +65,7 @@ def make_sentinel_router(
                             "chat": event.chat,
                         },
                     )
-                except Exception:
+                except Exception:  # nosec B110
                     # Log error but don't fail the router
                     pass
 
@@ -86,7 +86,7 @@ def make_sentinel_router(
                             "chat": event.chat,
                         },
                     )
-                except Exception:
+                except Exception:  # nosec B110
                     # Log error but don't fail the router
                     pass
 
@@ -114,7 +114,7 @@ def create_block_hook(
         """Block hook with error handling."""
         try:
             await callback(user_id, username, data)
-        except Exception:
+        except Exception:  # nosec B110
             # Log error but don't fail the router
             pass
 
@@ -130,7 +130,7 @@ def create_unblock_hook(
         """Unblock hook with error handling."""
         try:
             await callback(user_id, username, data)
-        except Exception:
+        except Exception:  # nosec B110
             # Log error but don't fail the router
             pass
 

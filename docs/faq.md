@@ -149,15 +149,15 @@ For advanced usage examples, see the [Tutorials](tutorials/) and [API Reference]
 
 ## Security
 
-For security information, see the [Security Policy](../SECURITY.md).
+For security information, see the [Security Policy](SECURITY.md).
 
 ### Q: Is aiogram-sentinel secure?
 
-**A**: Yes, aiogram-sentinel is designed with security in mind. See the [Security Policy](../SECURITY.md) for details.
+**A**: Yes, aiogram-sentinel is designed with security in mind. See the [Security Policy](SECURITY.md) for details.
 
 ### Q: How do I secure Redis connections?
 
-**A**: See the [Security Policy](../SECURITY.md) for Redis security guidelines.
+**A**: See the [Security Policy](SECURITY.md) for Redis security guidelines.
 
 ### Q: Can I audit user actions?
 
@@ -171,7 +171,7 @@ For security information, see the [Security Policy](../SECURITY.md).
 
 ### Q: What's the versioning policy?
 
-**A**: aiogram-sentinel follows semantic versioning. See the [Changelog](../CHANGELOG.md) for details.
+**A**: aiogram-sentinel follows semantic versioning. See the [Changelog](CHANGELOG.md) for details.
 
 ### Q: How do I check the current version?
 
@@ -192,4 +192,4 @@ For security information, see the [Security Policy](../SECURITY.md).
 
 ### Q: Can I contribute to the project?
 
-**A**: Yes! See [CONTRIBUTING.md](../CONTRIBUTING.md) for details.
+**A**: Yes! See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
