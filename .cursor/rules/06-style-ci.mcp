@@ -1,0 +1,17 @@
+---
+description: CI and tests conventions
+globs: ".github/workflows/**/*.yml, tests/**/*.py, pyproject.toml"
+alwaysApply: true
+---
+
+# CI & Tests Style
+
+## CI
+- GitHub Actions matrix: Python 3.10–3.12.
+- Redis service for integration tests.
+- Steps: install with extras, ruff check, mypy (soft-fail acceptable), pytest.
+
+## Tests
+- Unit: memory backends (rate/debounce/blocklist/user repo) + middleware flags/short-circuit.
+- Optional: Redis integration guarded by service availability.
+- No network or Telegram API calls in tests.

@@ -1,0 +1,21 @@
+---
+description: Security, privacy, and key namespace discipline
+globs: "src/**/*.py"
+alwaysApply: true
+---
+
+# Coding Style — Security & Privacy
+
+## Data Handling
+- Do **not** log PII (raw texts, phone, exact usernames) from library code.
+- Never store secrets/tokens in code or tests.
+
+## Namespacing
+- All Redis keys **must** be prefixed with `SentinelConfig.redis_prefix`.
+
+## Input Validation
+- Validate config on init; raise typed exceptions on invalid/empty values.
+- Treat external inputs as untrusted; sanitize if used in keys (hash where needed).
+
+## Dependencies
+- Optional extras (e.g., `redis`) only imported in specific modules; guard imports with clear error messages.

@@ -1,0 +1,12 @@
+---
+description: Security and privacy guardrails
+globs: "src/**/*.py"
+alwaysApply: true
+---
+
+# Security Style
+
+- Do not log PII from library code.
+- Fail closed on misconfig (e.g., backend='redis' without redis_url) with clear exceptions.
+- Namespace keys to avoid cross-env collisions.
+- Avoid broad `except:`; raise typed library exceptions or rethrow after logging.

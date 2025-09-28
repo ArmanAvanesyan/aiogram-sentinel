@@ -1,0 +1,28 @@
+---
+description: Python style and typing standards
+globs: "src/**/*.py, tests/**/*.py, examples/**/*.py"
+alwaysApply: true
+---
+
+# Python Style
+
+## Language & Types
+- Python ≥ 3.10; full type hints on public functions/classes.
+- Protocols for interfaces; dataclasses where suitable.
+- Prefer explicit imports; avoid wildcard.
+- Use time.monotonic() for windows; never time.sleep() in async code.
+
+## Naming
+- snake_case: funcs/vars/modules; PascalCase: classes/exceptions; UPPER_SNAKE_CASE: constants.
+- Prefix internal helpers with _.
+
+## Structure
+- Small, pure functions; O(1) operations for hot paths (middlewares).
+- Localize optional deps: import `redis` only inside redis impl/factory.
+
+## Errors
+- Raise library exceptions from exceptions.py for config/backend issues.
+- No user-facing strings in lib; funnel UX via hooks.
+
+## Docs
+- Short docstrings; document async behavior and side effects succinctly.

@@ -7,7 +7,7 @@ from .throttling import ThrottlingMiddleware
 
 __all__ = [
     "AuthMiddleware",
-    "BlockingMiddleware", 
+    "BlockingMiddleware",
     "DebounceMiddleware",
     "ThrottlingMiddleware",
 ]

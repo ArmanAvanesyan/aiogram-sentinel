@@ -52,12 +52,12 @@ dp = Dispatcher()
 # Configure aiogram-sentinel
 config = SentinelConfig(
     backend="memory",  # or "redis" for production
-    default_rate_limit=10,  # 10 messages per window
-    default_rate_window=60,  # 60 second window
+    throttling_default_max=10,  # 10 messages per window
+    throttling_default_per_seconds=60,  # 60 second window
 )
 
 # Setup with one call
-router, backends = Sentinel.setup(dp, config)
+router, backends = await Sentinel.setup(dp, config)
 
 # Start your bot
 await dp.start_polling(bot)
@@ -69,9 +69,9 @@ await dp.start_polling(bot)
 from aiogram_sentinel import rate_limit, debounce, require_registered
 from aiogram.types import Message
 
-@rate_limit(limit=5, window=30)  # 5 messages per 30 seconds
-@debounce(delay=1.0)             # 1 second debounce
-@require_registered()            # Requires user registration
+@rate_limit(5, 30)  # 5 messages per 30 seconds
+@debounce(1)        # 1 second debounce
+@require_registered()  # Requires user registration
 async def protected_handler(message: Message):
     await message.answer("This is a protected command!")
 ```
@@ -89,9 +89,12 @@ async def resolve_user(event, data):
         return None  # Block bot users
     return {"user_id": event.from_user.id, "username": event.from_user.username}
 
-# Setup with hooks
-router, backends = Sentinel.setup(
-    dp, config,
+# Basic setup first
+router, backends = await Sentinel.setup(dp, config)
+
+# Add hooks for advanced functionality
+Sentinel.add_hooks(
+    router, backends, config,
     on_rate_limited=on_rate_limited,
     resolve_user=resolve_user,
 )
@@ -110,7 +113,7 @@ router, backends = Sentinel.setup(
 ### **Spam Protection**
 ```python
 # Block users who send too many messages
-@rate_limit(limit=3, window=60)
+@rate_limit(3, 60)
 async def message_handler(message: Message):
     await message.answer("Message received!")
 ```
@@ -118,7 +121,7 @@ async def message_handler(message: Message):
 ### **Duplicate Prevention**
 ```python
 # Prevent processing duplicate messages
-@debounce(delay=2.0)
+@debounce(2)
 async def command_handler(message: Message):
     await message.answer("Command processed!")
 ```
@@ -145,9 +148,9 @@ async def on_user_blocked(user_id: int, username: str, data: dict):
 ```python
 config = SentinelConfig(
     backend="memory",
-    default_rate_limit=10,
-    default_rate_window=60,
-    default_debounce_delay=1.0,
+    throttling_default_max=10,
+    throttling_default_per_seconds=60,
+    debounce_default_window=2,
 )
 ```
 
@@ -157,8 +160,9 @@ config = SentinelConfig(
     backend="redis",
     redis_url="redis://localhost:6379",
     redis_prefix="my_bot:",
-    default_rate_limit=20,
-    default_rate_window=60,
+    throttling_default_max=20,
+    throttling_default_per_seconds=60,
+    debounce_default_window=2,
 )
 ```
 

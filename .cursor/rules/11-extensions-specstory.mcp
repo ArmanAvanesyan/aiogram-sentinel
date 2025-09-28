@@ -1,0 +1,21 @@
+---
+description: SpecStory (or similar) conversation capture — use and boundaries
+globs: "**/*"
+alwaysApply: false
+---
+
+# SpecStory Extension — Usage & Boundaries
+
+## Purpose
+- Capture AI coding conversations to persist rationale and context over time.
+- Store artifacts under `.specstory/` (kept in git).
+
+## Boundaries
+- Logs are **internal planning**; never copied into library code or docs verbatim.
+- Sanitize secrets and PII before saving.
+- Prefer short, titled sessions per task/PR.
+
+## Conventions
+- File naming: `.specstory/YYYY-MM-DD/<short-topic>.md`
+- Include: goal, constraints, links to PR/issues, key decisions, TODOs
+- Exclude: tokens, production URLs, user data

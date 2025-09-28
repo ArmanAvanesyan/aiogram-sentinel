@@ -1,0 +1,24 @@
+{
+    "$schema": "https://cursor.com/mcp.schema.json",
+    "mcpServers": {
+      "bash-local": {
+        "command": "bash",
+        "args": ["-lc", "python - <<'PY'\nprint('Bash MCP placeholder ready')\nPY"],
+        "disabled": true,
+        "description": "Example placeholder. Replace with a real MCP server binary when ready."
+      },
+      "files": {
+        "command": "node",
+        "args": ["./tools/mcp-filesystem/index.js"],
+        "disabled": true,
+        "description": "Filesystem MCP (example). Enables read-only file queries for planning."
+      },
+      "http": {
+        "command": "node",
+        "args": ["./tools/mcp-http/index.js"],
+        "disabled": true,
+        "description": "HTTP MCP (example). For fetching public docs during planning (read-only)."
+      }
+    }
+  }
+  

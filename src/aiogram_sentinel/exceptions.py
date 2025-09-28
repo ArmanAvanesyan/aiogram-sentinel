@@ -1,7 +1,5 @@
 """Custom exceptions for aiogram-sentinel."""
 
-from typing import Any
-
 
 class SentinelError(Exception):
     """Base exception for aiogram-sentinel."""

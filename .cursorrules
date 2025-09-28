@@ -1,0 +1,20 @@
+---
+description: Entry point for aiogram-sentinel rules. Actual rules are split under ./.cursor/rules
+globs: "**/*"
+alwaysApply: false
+---
+
+# aiogram-sentinel — Cursor Rules Index
+
+Rules are modularized under `./.cursor/rules/` to stay small, testable, and team-friendly.
+See each `.mcp` file for its scope. Follow public API limits and middleware order strictly.
+
+Quick map:
+- 00-foundation.mcp — scope, public API, guardrails
+- 01-architecture.mcp — layout & boundaries
+- 02-style-python.mcp — code style & typing
+- 03-style-aiogram.mcp — aiogram v3 middleware/router patterns
+- 04-style-storage.mcp — storage & keying
+- 05-style-docs.mcp — docs requirements & tone
+- 06-style-ci.mcp — CI & tests conventions
+- 07-style-security.mcp — security & privacy

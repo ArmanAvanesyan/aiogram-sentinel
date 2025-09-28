@@ -1,0 +1,20 @@
+---
+description: Public API stability and semver discipline
+globs: "src/aiogram_sentinel/**/*.py, README.md, docs/**/*.md"
+alwaysApply: true
+---
+
+# Coding Style — API Stability
+
+## Stable Surface
+- Public API includes:
+  `SentinelConfig`, `Sentinel.setup`, `build_backends`,
+  middlewares (`BlockingMiddleware`, `AuthMiddleware`, `DebounceMiddleware`, `ThrottlingMiddleware`),
+  router (`make_sentinel_router`),
+  decorators (`rate_limit`, `debounce`, `require_registered`),
+  storage protocols & `BackendsBundle`, `__version__`.
+
+## Changes
+- Backward-compatible additions ⇒ **minor** bump.
+- Breaking changes ⇒ **major** bump + migration notes in README.
+- Any change to public API must be reflected in docs and examples.

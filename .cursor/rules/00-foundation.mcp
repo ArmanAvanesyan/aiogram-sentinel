@@ -1,0 +1,29 @@
+---
+description: Project scope, public API, and immovable guardrails for aiogram-sentinel
+globs: "**/*"
+alwaysApply: true
+---
+
+# Foundation
+
+## Scope (DO)
+- Edge hygiene library for aiogram v3:
+  - Middlewares: Blocking, Auth(bootstrap+resolver), Debouncing, Throttling(notifier)
+  - Router: my_chat_member sync with on_block/on_unblock hooks
+  - Backends: memory & redis via SentinelConfig (with redis_prefix)
+  - Setup helper: Sentinel.setup(dp, cfg, router=None)
+  - Decorators: @rate_limit, @debounce, @require_registered
+
+## Non-Goals (DON’T)
+- No DB session lifecycle, domain services, i18n copy, logging policy, or user-facing strings.
+- No blocking I/O or heavy network calls in middlewares/router.
+- No expansion beyond aiogram v3 middlewares + router + storage.
+
+## Public API (STABLE)
+SentinelConfig, Sentinel.setup, build_backends,
+BlockingMiddleware, AuthMiddleware, DebounceMiddleware, ThrottlingMiddleware,
+make_sentinel_router, rate_limit, debounce, require_registered,
+RateLimiterBackend, DebounceBackend, BlocklistBackend, UserRepo,
+BackendsBundle, __version__.
+
+Changing any above ⇒ update README + bump semver.

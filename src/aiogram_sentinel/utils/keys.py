@@ -10,11 +10,11 @@ def rate_key(user_id: int, handler_name: str, **kwargs: Any) -> str:
     """Build rate limiting key from user ID and handler scope."""
     # Create a stable key from user_id and handler_name
     key_parts = [str(user_id), handler_name]
-    
+
     # Add any additional scope parameters
     for key, value in sorted(kwargs.items()):
         key_parts.append(f"{key}:{value}")
-    
+
     return ":".join(key_parts)
 
 
@@ -22,22 +22,22 @@ def debounce_key(user_id: int, handler_name: str, **kwargs: Any) -> str:
     """Build debounce key from user ID and handler scope."""
     # Create a stable key from user_id and handler_name
     key_parts = [str(user_id), handler_name]
-    
+
     # Add any additional scope parameters
     for key, value in sorted(kwargs.items()):
         key_parts.append(f"{key}:{value}")
-    
+
     return ":".join(key_parts)
 
 
 def handler_scope(handler_name: str, **kwargs: Any) -> str:
     """Build handler scope string for consistent key generation."""
     scope_parts = [handler_name]
-    
+
     # Add any additional scope parameters
     for key, value in sorted(kwargs.items()):
         scope_parts.append(f"{key}:{value}")
-    
+
     return ":".join(scope_parts)
 
 

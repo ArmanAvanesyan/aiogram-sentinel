@@ -2,8 +2,7 @@
 
 import asyncio
 import time
-from typing import Any, Dict, Optional
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 from aiogram.types import CallbackQuery, Chat, Message, User
@@ -19,7 +18,7 @@ from aiogram_sentinel.storage.memory import (
 @pytest.fixture
 def mock_time():
     """Mock time.monotonic() for deterministic testing."""
-    with patch('time.monotonic') as mock:
+    with patch("time.monotonic") as mock:
         mock.return_value = 1000.0
         yield mock
 
@@ -28,15 +27,15 @@ def mock_time():
 def mock_time_advance():
     """Mock time.monotonic() that can be advanced for testing."""
     current_time = 1000.0
-    
+
     def advance(seconds: float) -> None:
         nonlocal current_time
         current_time += seconds
-    
+
     def get_time() -> float:
         return current_time
-    
-    with patch('time.monotonic', side_effect=get_time) as mock:
+
+    with patch("time.monotonic", side_effect=get_time) as mock:
         mock.advance = advance
         yield mock
 
@@ -199,6 +198,7 @@ def mock_debounce_backend():
 @pytest.fixture
 def mock_resolve_user():
     """Create a mock resolve_user hook."""
+
     async def resolve_user(event, data):
         if hasattr(event, "from_user") and event.from_user:
             return {
@@ -206,7 +206,7 @@ def mock_resolve_user():
                 "username": event.from_user.username,
             }
         return None
-    
+
     return resolve_user
 
 
@@ -234,10 +234,10 @@ def performance_thresholds():
     """Define performance thresholds for tests."""
     return {
         "rate_limit_increment": 0.001,  # 1ms
-        "debounce_check": 0.001,        # 1ms
-        "blocklist_check": 0.001,       # 1ms
-        "user_repo_operation": 0.001,   # 1ms
-        "middleware_overhead": 0.005,   # 5ms
+        "debounce_check": 0.001,  # 1ms
+        "blocklist_check": 0.001,  # 1ms
+        "user_repo_operation": 0.001,  # 1ms
+        "middleware_overhead": 0.005,  # 5ms
     }
 
 
@@ -278,11 +278,11 @@ def pytest_collection_modifyitems(config, items):
         # Add unit marker to unit tests
         if "unit" in item.nodeid:
             item.add_marker(pytest.mark.unit)
-        
+
         # Add perf marker to performance tests
         if "perf" in item.nodeid:
             item.add_marker(pytest.mark.perf)
-        
+
         # Add slow marker to performance tests
         if "perf" in item.nodeid:
             item.add_marker(pytest.mark.slow)

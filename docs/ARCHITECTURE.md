@@ -90,17 +90,21 @@ The membership router (`routers/my_chat_member.py`) handles bot membership chang
 
 ### 4. Setup Helper
 
-The setup helper (`sentinel.py`) provides a one-call configuration:
+The setup helper (`sentinel.py`) provides a simplified one-call configuration:
 
 ```python
-router, backends = Sentinel.setup(dp, config, **hooks)
+# Basic setup
+router, backends = await Sentinel.setup(dp, config)
+
+# Advanced setup with hooks
+Sentinel.add_hooks(router, backends, config, **hooks)
 ```
 
 **Features**:
 - Automatic middleware registration
 - Backend instantiation
 - Router inclusion
-- Hook wiring
+- Separated hook configuration for advanced users
 
 ## Data Flow
 
@@ -171,10 +175,10 @@ Centralized configuration for all components:
 class SentinelConfig:
     backend: str = "memory"  # "memory" or "redis"
     redis_url: str = "redis://localhost:6379"
-    redis_prefix: str = "aiogram_sentinel:"
-    default_rate_limit: int = 10
-    default_rate_window: int = 60
-    default_debounce_delay: float = 1.0
+    redis_prefix: str = "sentinel"
+    throttling_default_max: int = 5
+    throttling_default_per_seconds: int = 10
+    debounce_default_window: int = 2
     # ... validation and defaults
 ```
 

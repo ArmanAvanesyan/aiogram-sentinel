@@ -53,7 +53,7 @@ def _build_redis_backends(config: SentinelConfig) -> BackendsBundle:
     try:
         # Create Redis connection
         redis: Redis = Redis.from_url(config.redis_url)  # type: ignore
-        
+
         return BackendsBundle(
             rate_limiter=RedisRateLimiter(redis, config.redis_prefix),
             debounce=RedisDebounce(redis, config.redis_prefix),

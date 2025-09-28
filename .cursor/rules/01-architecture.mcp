@@ -1,0 +1,30 @@
+---
+description: Architecture and file boundaries
+globs: "src/**, tests/**, examples/**, docs/**"
+alwaysApply: true
+---
+
+# Architecture
+
+## Layout (src-layout)
+- src/aiogram_sentinel/
+  - version.py, config.py, exceptions.py, types.py, decorators.py, sentinel.py
+  - utils/keys.py
+  - storage/{base.py,memory.py,redis.py,factory.py}
+  - middlewares/{blocking.py,auth.py,debouncing.py,throttling.py}
+  - routers/my_chat_member.py
+- examples/minimal_bot.py
+- tests/*
+- docs/*
+
+## Boundaries (hard)
+- storage/base.py: Protocols only (no aiogram/redis imports).
+- storage/memory.py: asyncio-only; no redis.
+- storage/redis.py: redis.asyncio only; **namespaced keys**.
+- storage/factory.py: selects backend; guarded imports; helpful errors.
+- middlewares/*: pure aiogram; no DB; no user-facing strings.
+- routers/my_chat_member.py: sync blocklist + call hooks only.
+- sentinel.py: wire order; include router; no logic duplication.
+
+## Middleware Order (MUST)
+Blocking → Auth → Debouncing → Throttling → Handlers

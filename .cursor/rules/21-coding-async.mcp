@@ -1,0 +1,21 @@
+---
+description: Async/await standards for non-blocking aiogram middlewares and storage
+globs: "src/**/*.py"
+alwaysApply: true
+---
+
+# Coding Style — Async
+
+## Core Principles
+- **Never** block the event loop in middlewares or router code.
+- Use `await` for all I/O; prefer `async with` for resource mgmt.
+- Use `time.monotonic()` for windows and timing; avoid `sleep` in request path.
+
+## Concurrency
+- Use `asyncio.Lock` for in-memory shared structures.
+- Use `asyncio.gather(..., return_exceptions=False)` only when parallel work is safe.
+- Avoid background tasks in the lib; push to app hooks. If unavoidable, track and cancel on shutdown.
+
+## Fire-and-Forget
+- **Avoid** `asyncio.create_task` in library code.
+- If used (rare), ensure exception handling and lifecycle management (cancel on teardown).

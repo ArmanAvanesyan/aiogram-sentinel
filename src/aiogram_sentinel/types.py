@@ -3,20 +3,24 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
 
-from .storage.base import BlocklistBackend, DebounceBackend, RateLimiterBackend, UserRepo
+from .storage.base import (
+    BlocklistBackend,
+    DebounceBackend,
+    RateLimiterBackend,
+    UserRepo,
+)
 
 
 @dataclass
 class BackendsBundle:
     """Bundle of storage backends for aiogram-sentinel."""
-    
+
     rate_limiter: RateLimiterBackend
     debounce: DebounceBackend
     blocklist: BlocklistBackend
     user_repo: UserRepo
-    
+
     def __post_init__(self) -> None:
         """Validate that all backends are provided."""
         if not self.rate_limiter:

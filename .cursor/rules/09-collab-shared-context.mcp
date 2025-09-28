@@ -1,0 +1,18 @@
+---
+description: Shared context rules — keep a living hub under .notes for planning and discovery
+globs: ".notes/**/*.md"
+alwaysApply: true
+---
+
+# Shared Context Rules
+
+## Required files
+- `.notes/project_overview.md` — elevator pitch, goals, architecture sketch, key tech
+- `.notes/task_list.md` — prioritized tasks (High/Med/Low/Done) with owners and notes
+- `.notes/directory_structure.md` — generated tree (keep updated)
+- `.notes/meeting_notes.md` — short dated bullets of decisions and context
+
+## Editing expectations
+- Keep entries concise and current; prefer checklists and bullets
+- Update `task_list.md` when opening/merging PRs or changing scope
+- Regenerate `directory_structure.md` after significant structure changes

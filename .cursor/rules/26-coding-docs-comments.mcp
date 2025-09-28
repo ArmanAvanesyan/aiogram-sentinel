@@ -1,0 +1,21 @@
+---
+description: Documentation standards for public API and examples
+globs: "README.md, docs/**/*.md, examples/**/*.py, src/**/*.py"
+alwaysApply: true
+---
+
+# Coding Style — Documentation
+
+## Public API
+- Every public class/function has a short docstring:
+  - purpose in one sentence,
+  - parameters & returns (types),
+  - async behavior (if relevant).
+
+## README & Docs
+- README must show: install, quickstart, middlewares order, hooks, backends, setup helper.
+- Keep `docs/` synced with public API.
+- Examples must be runnable and **must not** contain secrets.
+
+## Commenting
+- Prefer **why** over **what**; remove stale comments during changes.

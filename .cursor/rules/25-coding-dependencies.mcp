@@ -1,0 +1,18 @@
+---
+description: Dependency policy — minimal core, optional extras, import discipline
+globs: "pyproject.toml, src/**/*.py"
+alwaysApply: true
+---
+
+# Coding Style — Dependencies
+
+## Philosophy
+- Keep core lightweight. Only essential runtime deps in `[project.dependencies]`.
+- Put Redis client under `[project.optional-dependencies].redis`.
+
+## Imports
+- No optional imports at package top-level.
+- Validate presence of extras at **runtime** when chosen via config; raise a helpful exception if missing.
+
+## Versioning
+- Pin lower bounds only; avoid strict upper pins unless necessary for security/compatibility.

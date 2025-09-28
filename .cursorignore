@@ -1,0 +1,25 @@
+# build and caches
+build/
+dist/
+.eggs/
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# environments
+.venv/
+.env
+.env.*
+
+# node and misc
+node_modules/
+.DS_Store
+
+# project artifacts not needed in prompts
+.specstory/
+tmp/
+.cache/
+
+# vendor or large assets (none expected, but future-proof)
+assets/

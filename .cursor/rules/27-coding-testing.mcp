@@ -1,0 +1,21 @@
+---
+description: Testing standards — coverage targets, async patterns, and isolation
+globs: "tests/**/*.py, pyproject.toml, .github/workflows/**/*.yml"
+alwaysApply: true
+---
+
+# Coding Style — Testing
+
+## Scope
+- Unit tests for:
+  - memory backends (rate/debounce/blocklist/user repo),
+  - middlewares (short-circuit and `data[...]` flags),
+- Optional integration tests for Redis backend (service container in CI).
+
+## Patterns
+- Use `pytest` + `pytest-asyncio`.
+- Avoid network/Telegram API calls; tests must be isolated/deterministic.
+- Use fixtures for backends; avoid sleeping for timing—mock monotonic time if needed.
+
+## Coverage
+- Target meaningful coverage on storage logic and middleware decision branches.

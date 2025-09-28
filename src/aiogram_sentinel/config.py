@@ -14,27 +14,24 @@ class SentinelConfig:
 
     # Backend selection
     backend: Literal["memory", "redis"] = "memory"
-    
+
     # Redis configuration (used when backend="redis")
     redis_url: str = "redis://localhost:6379"
-    redis_prefix: str = "aiogram_sentinel:"
-    
+    redis_prefix: str = "sentinel"
+
     # Rate limiting defaults
-    default_rate_limit: int = 10
-    default_rate_window: int = 60
-    
+    throttling_default_max: int = 5
+    throttling_default_per_seconds: int = 10
+
     # Debouncing defaults
-    default_debounce_delay: float = 1.0
-    
-    # Throttling defaults
-    default_throttle_delay: float = 0.5
-    
+    debounce_default_window: int = 2
+
     # Auth configuration
     require_registration: bool = False
-    
+
     # Blocking configuration
     auto_block_on_limit: bool = True
-    
+
     # Internal settings
     _validated: bool = field(default=False, init=False)
 
@@ -47,22 +44,19 @@ class SentinelConfig:
         """Validate configuration values."""
         if self.backend not in ("memory", "redis"):
             raise ConfigurationError(f"Invalid backend: {self.backend}")
-        
+
         if self.backend == "redis" and not self.redis_url:
             raise ConfigurationError("redis_url is required when backend='redis'")
-        
-        if self.default_rate_limit <= 0:
-            raise ConfigurationError("default_rate_limit must be positive")
-        
-        if self.default_rate_window <= 0:
-            raise ConfigurationError("default_rate_window must be positive")
-        
-        if self.default_debounce_delay < 0:
-            raise ConfigurationError("default_debounce_delay must be non-negative")
-        
-        if self.default_throttle_delay < 0:
-            raise ConfigurationError("default_throttle_delay must be non-negative")
-        
+
+        if self.throttling_default_max <= 0:
+            raise ConfigurationError("throttling_default_max must be positive")
+
+        if self.throttling_default_per_seconds <= 0:
+            raise ConfigurationError("throttling_default_per_seconds must be positive")
+
+        if self.debounce_default_window <= 0:
+            raise ConfigurationError("debounce_default_window must be positive")
+
         if not self.redis_prefix.endswith(":"):
             self.redis_prefix += ":"
 

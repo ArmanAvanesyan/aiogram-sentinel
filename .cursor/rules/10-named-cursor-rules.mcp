@@ -1,0 +1,39 @@
+---
+description: Naming conventions and patterns for Cursor rules to improve sharing and troubleshooting
+globs: "**/*"
+alwaysApply: false
+---
+
+# Named Cursor Rules — Conventions
+
+## Goals
+- Make each rule discoverable, self-explanatory, and easy to discuss in PRs/issues.
+- Use **numeric prefixes** for ordering and **short slugs** for purpose.
+
+## File name pattern
+`NN-category-purpose.mcp`
+- `NN`: 2-digit sort order (00–99)
+- `category`: foundation | architecture | style | ci | docs | security | storage | aiogram | collab
+- `purpose`: 1–3 short words
+
+### Examples (good)
+- 00-foundation.mcp
+- 01-architecture.mcp
+- 02-style-python.mcp
+- 03-style-aiogram.mcp
+- 04-style-storage.mcp
+- 05-style-docs.mcp
+- 06-style-ci.mcp
+- 07-style-security.mcp
+- 08-collab-operational-protocol.mcp
+- 09-collab-shared-context.mcp
+
+### Anti-examples (avoid)
+- rules.mcp
+- misc.mcp
+- temp-guidelines.mcp
+
+## Rule anatomy
+- Keep each rule **≤ 150 lines**; split if larger.
+- Prefer **specific globs** over global `**/*` unless necessary.
+- Use `alwaysApply: true` **only** for non-negotiable constraints (e.g., public API, security).

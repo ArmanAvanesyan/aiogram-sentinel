@@ -23,7 +23,7 @@ from .redis import (
 __all__ = [
     # Protocols
     "BlocklistBackend",
-    "DebounceBackend", 
+    "DebounceBackend",
     "RateLimiterBackend",
     "UserRepo",
     # Factory
@@ -31,7 +31,7 @@ __all__ = [
     # Memory implementations
     "MemoryBlocklist",
     "MemoryDebounce",
-    "MemoryRateLimiter", 
+    "MemoryRateLimiter",
     "MemoryUserRepo",
     # Redis implementations
     "RedisBlocklist",

@@ -1,0 +1,20 @@
+---
+description: Commit and PR hygiene for maintainable history and changelogs
+globs: "**/*"
+alwaysApply: false
+---
+
+# Coding Style — Commits & PRs
+
+## Conventional Commits
+- Use prefixes: `feat:`, `fix:`, `docs:`, `test:`, `ci:`, `build:`, `refactor:`, `chore:`.
+- Imperative mood; concise scope (e.g., `feat(storage): redis rate limiter`).
+
+## PRs
+- Small, focused diffs.
+- Include: rationale, scope, tests/docs changes.
+- Ensure CI green before merge.
+- Update README/docs if public API changes; bump semver.
+
+## Tags/Releases
+- Tag as `vX.Y.Z` in sync with `version.py`.

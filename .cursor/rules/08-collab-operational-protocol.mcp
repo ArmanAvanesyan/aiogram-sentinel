@@ -1,0 +1,38 @@
+---
+description: Collaboration protocol for AI helpers — MECE tasking, safety, and execution modes
+globs: "**/*"
+alwaysApply: false
+---
+
+# Collaboration Protocol
+
+## Context Initialization (before any action)
+- ALWAYS read `.notes/project_overview.md` (overview/goals/arch)
+- ALWAYS read `.notes/task_list.md` (current priorities and statuses)
+- IF present, prefer `.notes/directory_structure.md` to locate files quickly
+
+## Operational Protocol
+- Before changing code, produce a **MECE plan**:
+  1) Clarify objective & acceptance criteria
+  2) Identify impacted modules/files
+  3) Outline minimal diff(s) to achieve objective
+  4) Consider tests & docs updates
+- During edits:
+  - Read relevant code sections **fully** before editing
+  - Preserve existing behavior unless explicitly requested
+  - Maintain type safety and async non-blocking guarantees
+  - Keep changes **small and reversible**
+
+## Safety Requirements
+- NEVER break type safety or public API without semver update + docs
+- ALWAYS preserve error handling; prefer raising typed library exceptions
+- ALWAYS document new public functions/classes with concise docstrings
+
+## Priorities (tie-breakers)
+- Prefer `.notes/` content for intent & requirements
+- Prefer existing patterns in `src/aiogram_sentinel/` for consistency
+- Defer app-specific logic to hooks; keep library generic
+
+## Modes
+- base: routine edits; minimal refactor; follow current patterns
+- enhanced: complex tasks; allow small refactors if they reduce complexity and are covered by tests

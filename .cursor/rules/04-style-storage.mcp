@@ -1,0 +1,31 @@
+---
+description: Storage backends and key strategy
+globs: "src/aiogram_sentinel/storage/**/*.py, src/aiogram_sentinel/utils/keys.py, src/aiogram_sentinel/config.py"
+alwaysApply: true
+---
+
+# Storage Style
+
+## Protocols
+- RateLimiterBackend.allow/get_remaining
+- DebounceBackend.seen
+- BlocklistBackend.is_blocked/set_blocked
+- UserRepo.ensure_user/is_registered
+
+## Memory Impl
+- Async locks; monotonic windows; simple sets/maps; no disk/network.
+
+## Redis Impl
+- Rate: INCR + EXPIRE window; ensure first INCR sets TTL.
+- Debounce: SET NX EX with sha256 fingerprint.
+- Blocklist: SADD/SREM/SISMEMBER.
+- UserRepo: HSETNX registered=1; HSET username optional.
+- All keys **namespaced** by cfg.redis_prefix:
+  prefix:rate:{key}
+  prefix:debounce:{key}:{fp}
+  prefix:blocklist
+  prefix:user:{user_id}
+
+## Keys & Scopes
+- Build stable keys in utils/keys.py from user_id + handler scope.
+- Raw text is only for **fingerprint**, not for scope.

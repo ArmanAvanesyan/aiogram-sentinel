@@ -1,0 +1,16 @@
+---
+description: Documentation style and required files
+globs: "README.md, docs/**/*.md, examples/**/*.py"
+alwaysApply: true
+---
+
+# Docs Style
+
+## Must Provide
+- README: features, install, quickstart, hooks, middleware order, backends, setup helper.
+- docs/: ARCHITECTURE.md, HOOKS.md, SECURITY.md, TESTING.md, ROADMAP.md.
+- examples/minimal_bot.py: memory backend; shows resolver/notifier hooks; no secrets.
+
+## Tone & Clarity
+- Concise, actionable, runnable snippets.
+- Update docs immediately when public API changes.

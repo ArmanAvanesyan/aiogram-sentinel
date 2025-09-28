@@ -2,23 +2,19 @@
 
 from __future__ import annotations
 
-from typing import Any, Protocol, runtime_checkable
+from typing import Protocol, runtime_checkable
 
 
 @runtime_checkable
 class RateLimiterBackend(Protocol):
     """Protocol for rate limiting storage backend."""
 
-    async def get_rate_limit(self, key: str) -> int:
-        """Get current rate limit count for key."""
+    async def allow(self, key: str, max_events: int, per_seconds: int) -> bool:
+        """Check if request is allowed and increment counter."""
         ...
 
-    async def increment_rate_limit(self, key: str, window: int) -> int:
-        """Increment rate limit count and return new count."""
-        ...
-
-    async def reset_rate_limit(self, key: str) -> None:
-        """Reset rate limit count for key."""
+    async def get_remaining(self, key: str, max_events: int, per_seconds: int) -> int:
+        """Get remaining requests in current window."""
         ...
 
 
@@ -26,16 +22,8 @@ class RateLimiterBackend(Protocol):
 class DebounceBackend(Protocol):
     """Protocol for debouncing storage backend."""
 
-    async def get_debounce(self, key: str) -> float | None:
-        """Get last debounce timestamp for key."""
-        ...
-
-    async def set_debounce(self, key: str, timestamp: float) -> None:
-        """Set debounce timestamp for key."""
-        ...
-
-    async def clear_debounce(self, key: str) -> None:
-        """Clear debounce timestamp for key."""
+    async def seen(self, key: str, window_seconds: int, fingerprint: str) -> bool:
+        """Check if fingerprint was seen within window and record it."""
         ...
 
 
@@ -47,16 +35,8 @@ class BlocklistBackend(Protocol):
         """Check if user is blocked."""
         ...
 
-    async def block_user(self, user_id: int) -> None:
-        """Block a user."""
-        ...
-
-    async def unblock_user(self, user_id: int) -> None:
-        """Unblock a user."""
-        ...
-
-    async def get_blocked_users(self) -> set[int]:
-        """Get all blocked user IDs."""
+    async def set_blocked(self, user_id: int, blocked: bool) -> None:
+        """Set user blocked status."""
         ...
 
 
@@ -64,18 +44,10 @@ class BlocklistBackend(Protocol):
 class UserRepo(Protocol):
     """Protocol for user repository."""
 
+    async def ensure_user(self, user_id: int, *, username: str | None = None) -> None:
+        """Ensure user exists, creating if necessary."""
+        ...
+
     async def is_registered(self, user_id: int) -> bool:
         """Check if user is registered."""
-        ...
-
-    async def register_user(self, user_id: int, **kwargs: Any) -> None:
-        """Register a new user."""
-        ...
-
-    async def get_user(self, user_id: int) -> dict[str, Any] | None:
-        """Get user data."""
-        ...
-
-    async def update_user(self, user_id: int, **kwargs: Any) -> None:
-        """Update user data."""
         ...

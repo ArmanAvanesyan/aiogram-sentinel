@@ -1,0 +1,18 @@
+---
+description: Performance constraints for hot-path middleware & storage
+globs: "src/**/*.py"
+alwaysApply: true
+---
+
+# Coding Style — Performance
+
+## Complexity
+- Hot-path operations (middlewares, storage) must be **O(1)**.
+- Avoid per-update allocations of large objects or regexes; precompute where feasible.
+
+## I/O Policy
+- No network I/O inside middlewares (storage backends are allowed to call Redis).
+- Debounce fingerprints: use `sha256` on minimal strings (text/data), not entire payloads.
+
+## Memory
+- Clean up in-memory maps opportunistically; prefer TTL caches where applicable.
