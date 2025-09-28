@@ -86,22 +86,24 @@ jobs:
       - name: Create GitHub Release from Tag
         id: create_release
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
-        run: |
-          # Extract version from tag (e.g., v0.2.0 -> 0.2.0)
-          VERSION=${GITHUB_REF#refs/tags/v}
-          
-          # Create GitHub release and capture upload URL
-          RESPONSE=$(gh release create $GITHUB_REF \
-            --title "Release v$VERSION" \
-            --notes "Release v$VERSION" \
-            --generate-notes \
-            --json upload_url)
-          
-          # Extract upload URL from response
-          UPLOAD_URL=$(echo "$RESPONSE" | jq -r '.upload_url')
-          echo "upload_url=$UPLOAD_URL" >> $GITHUB_OUTPUT
+        uses: actions/create-release@v1
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
+          body: |
+            Release ${{ github.ref_name }}
+            
+            Initial release of aiogram-sentinel with core features:
+            - Rate limiting middleware
+            - Debouncing middleware
+            - Authentication middleware
+            - Blocking middleware
+            - Memory and Redis storage backends
+            - Comprehensive documentation and CI/CD
+          draft: false
+          prerelease: false
 
       - name: Upload release assets
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
