@@ -69,7 +69,7 @@ jobs:
     - name: Upload security report
       uses: actions/upload-artifact@v4
       with:
-        name: bandit-report-${{ matrix.python-version }}
+        name: bandit-report-quality-${{ matrix.python-version }}
         path: bandit-report.json
       if: always()
 
@@ -141,7 +141,7 @@ jobs:
       if: matrix.test-type == 'unit'
       uses: actions/upload-artifact@v4
       with:
-        name: coverage-report-${{ matrix.python-version }}
+        name: coverage-report-${{ matrix.os }}-${{ matrix.python-version }}
         path: htmlcov/
     
     - name: Upload coverage to Codecov
@@ -198,7 +198,7 @@ jobs:
     - name: Upload vulnerability report
       uses: actions/upload-artifact@v4
       with:
-        name: pip-audit-report-${{ matrix.python-version }}
+        name: pip-audit-report-security-${{ matrix.python-version }}
         path: pip-audit-report-${{ matrix.python-version }}.json
       if: always()
 
@@ -293,6 +293,6 @@ jobs:
     - name: Upload benchmark results
       uses: actions/upload-artifact@v4
       with:
-        name: benchmark-results-${{ matrix.python-version }}
+        name: benchmark-results-perf-${{ matrix.python-version }}
         path: benchmark-results-${{ matrix.python-version }}.json
       if: always()
