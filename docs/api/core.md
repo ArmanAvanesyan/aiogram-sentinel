@@ -6,14 +6,8 @@
     options:
       show_source: true
       members:
-        - __init__
-        - middleware
-        - config
-        - storage
-        - rate_limiter_backend
-        - debounce_backend
-        - blocklist_backend
-        - user_repo
+        - setup
+        - add_hooks
 
 ::: aiogram_sentinel.SentinelConfig
     options:
@@ -23,8 +17,9 @@
         - throttling_default_max
         - throttling_default_per_seconds
         - debounce_default_window
-        - blocklist_enabled
-        - auth_required
+        - backend
+        - redis_url
+        - redis_prefix
 
 ## Middleware
 
@@ -36,11 +31,13 @@
     options:
       show_source: true
 
-::: aiogram_sentinel.middlewares.AuthMiddleware
+## Decorators
+
+::: aiogram_sentinel.decorators.rate_limit
     options:
       show_source: true
 
-::: aiogram_sentinel.middlewares.BlockingMiddleware
+::: aiogram_sentinel.decorators.debounce
     options:
       show_source: true
 
@@ -60,20 +57,5 @@
     options:
       show_source: true
 
-::: aiogram_sentinel.utils.keys.user_key
-    options:
-      show_source: true
 
-### Decorators
 
-::: aiogram_sentinel.decorators.rate_limit
-    options:
-      show_source: true
-
-::: aiogram_sentinel.decorators.debounce
-    options:
-      show_source: true
-
-::: aiogram_sentinel.decorators.require_registered
-    options:
-      show_source: true

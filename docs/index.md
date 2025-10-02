@@ -1,12 +1,13 @@
 # aiogram-sentinel
 
-**Drop-in middlewares for aiogram v3 with batteries included** - Protect your Telegram bots from spam, abuse, and unwanted behavior with powerful middleware and storage backends.
+**Rate limiting and debouncing middleware for aiogram v3** - Protect your Telegram bots from spam and abuse with powerful middleware and storage backends.
 
 ## Quick Start
 
 ```python
 from aiogram import Bot, Dispatcher
-from aiogram_sentinel import Sentinel, SentinelConfig
+from aiogram.types import Message
+from aiogram_sentinel import Sentinel, SentinelConfig, rate_limit, debounce
 
 # Create bot and dispatcher
 bot = Bot(token="YOUR_BOT_TOKEN")
@@ -16,17 +17,18 @@ dp = Dispatcher()
 config = SentinelConfig(
     throttling_default_max=10,  # 10 messages per window
     throttling_default_per_seconds=60,  # 60 second window
+    debounce_default_window=2,  # 2 second debounce
 )
 
 # Setup with one call - wires all middleware in recommended order
-sentinel = Sentinel(config=config)
-dp.message.middleware(sentinel.middleware)
+router, infra = await Sentinel.setup(dp, config)
 
-# Your handlers now have access to user context
-@dp.message()
-async def handle_message(message, data):
-    user_context = data["user_context"]  # Available after auth middleware
-    await message.answer(f"Hello {user_context['username']}!")
+# Your handlers with protection
+@router.message()
+@rate_limit(5, 60)  # 5 messages per minute
+@debounce(1.0)      # 1 second debounce
+async def handle_message(message: Message):
+    await message.answer(f"Hello! Your message: {message.text}")
 
 # Start your bot
 await dp.start_polling(bot)
@@ -34,12 +36,12 @@ await dp.start_polling(bot)
 
 ## Features
 
-* **Auth bootstrap** with pluggable resolver → expose `data["user_context"]` without locking you to a DB.
-* **Blocking:** deny early if user is blocked; auto-sync block/unblock via `my_chat_member`, with `on_block` / `on_unblock` hooks.
-* **Debouncing:** suppress duplicate messages/callbacks within a window.
-* **Throttling:** per-user/handler scopes; notifier hook for UX.
-* **Backends:** memory (single worker) or redis (multi-worker), with configurable `redis_prefix`.
-* **Setup helper:** `Sentinel.setup(dp, cfg)` wires recommended order and membership router.
+* **Rate Limiting:** Per-user/handler scopes with sliding window algorithm
+* **Debouncing:** Suppress duplicate messages/callbacks within a configurable window
+* **Storage Backends:** Memory (single worker) or Redis (multi-worker) with configurable prefixes
+* **Decorators:** `@rate_limit` and `@debounce` for easy handler configuration
+* **Hooks:** Optional `on_rate_limited` callback for custom user feedback
+* **Setup Helper:** `Sentinel.setup(dp, cfg)` wires middleware in recommended order
 * **Typed, async-first, production-ready.**
 
 ## Installation
@@ -59,8 +61,6 @@ pip install aiogram-sentinel[redis]
 - **[API Reference](api/)** - Full API documentation
 - **[Tutorials](tutorials/)** - Step-by-step guides
 - **[Performance](performance.md)** - Benchmarks and optimization
-- **[Migration Guides](migration-guides/)** - Upgrade instructions
-- **[Roadmap](roadmap.md)** - Future plans and features
 - **[Examples](../examples/)** - Complete working examples
 
 ## Contributing

@@ -1,0 +1,1 @@
+Simplified documentation structure by removing ADR artifacts, migration guides, and complex design decision documents.

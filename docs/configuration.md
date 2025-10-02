@@ -23,23 +23,24 @@ config = SentinelConfig(
     throttling_default_max=5,      # 5 messages
     throttling_default_per_seconds=60,  # per minute
     debounce_default_window=3,     # 3 second debounce
-    blocklist_enabled=True,        # Enable user blocking
-    auth_required=False,           # Don't require registration
+    backend="memory",              # Use memory storage
 )
 
-# Create Sentinel with custom config
-sentinel = Sentinel(config=config)
+# Setup with custom config
+router, infra = await Sentinel.setup(dp, config)
 ```
 
 ### Configuration Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `throttling_default_max` | `int` | `10` | Maximum messages per window |
-| `throttling_default_per_seconds` | `int` | `60` | Time window in seconds |
-| `debounce_default_window` | `int` | `5` | Debounce delay in seconds |
-| `blocklist_enabled` | `bool` | `True` | Enable user blocking |
-| `auth_required` | `bool` | `False` | Require user registration |
+| `throttling_default_max` | `int` | `5` | Maximum messages per window |
+| `throttling_default_per_seconds` | `int` | `10` | Time window in seconds |
+| `debounce_default_window` | `int` | `2` | Debounce delay in seconds |
+| `backend` | `str` | `"memory"` | Storage backend ("memory" or "redis") |
+| `redis_url` | `str` | `"redis://localhost:6379"` | Redis connection URL |
+| `redis_prefix` | `str` | `"sentinel"` | Redis key prefix |
+| `auto_block_on_limit` | `bool` | `True` | Auto-block users who exceed limits (unused) |
 
 ## Environment Variables
 
@@ -53,11 +54,10 @@ export THROTTLING_WINDOW=60
 # Debounce
 export DEBOUNCE_WINDOW=3
 
-# Blocklist
-export BLOCKLIST_ENABLED=true
-
-# Authentication
-export AUTH_REQUIRED=false
+# Backend
+export BACKEND=redis
+export REDIS_URL=redis://localhost:6379
+export REDIS_PREFIX=mybot:
 ```
 
 ```python
@@ -66,11 +66,12 @@ from aiogram_sentinel import SentinelConfig
 
 def create_config_from_env():
     return SentinelConfig(
-        throttling_default_max=int(os.getenv("THROTTLING_MAX", "10")),
-        throttling_default_per_seconds=int(os.getenv("THROTTLING_WINDOW", "60")),
-        debounce_default_window=int(os.getenv("DEBOUNCE_WINDOW", "5")),
-        blocklist_enabled=os.getenv("BLOCKLIST_ENABLED", "true").lower() == "true",
-        auth_required=os.getenv("AUTH_REQUIRED", "false").lower() == "true",
+        throttling_default_max=int(os.getenv("THROTTLING_MAX", "5")),
+        throttling_default_per_seconds=int(os.getenv("THROTTLING_WINDOW", "10")),
+        debounce_default_window=int(os.getenv("DEBOUNCE_WINDOW", "2")),
+        backend=os.getenv("BACKEND", "memory"),
+        redis_url=os.getenv("REDIS_URL", "redis://localhost:6379"),
+        redis_prefix=os.getenv("REDIS_PREFIX", "sentinel"),
     )
 ```
 
@@ -83,10 +84,11 @@ Create `config.json`:
 ```json
 {
   "throttling_default_max": 5,
-  "throttling_default_per_seconds": 60,
-  "debounce_default_window": 3,
-  "blocklist_enabled": true,
-  "auth_required": false
+  "throttling_default_per_seconds": 10,
+  "debounce_default_window": 2,
+  "backend": "redis",
+  "redis_url": "redis://localhost:6379",
+  "redis_prefix": "mybot"
 }
 ```
 
@@ -107,10 +109,11 @@ Create `config.yaml`:
 
 ```yaml
 throttling_default_max: 5
-throttling_default_per_seconds: 60
-debounce_default_window: 3
-blocklist_enabled: true
-auth_required: false
+throttling_default_per_seconds: 10
+debounce_default_window: 2
+backend: redis
+redis_url: redis://localhost:6379
+redis_prefix: mybot
 ```
 
 ```python
@@ -129,38 +132,31 @@ def load_config_from_yaml(filename: str) -> SentinelConfig:
 ### Memory Storage
 
 ```python
-from aiogram_sentinel import Sentinel
-from aiogram_sentinel.storage import MemoryStorage
+from aiogram_sentinel import Sentinel, SentinelConfig
 
 # Default memory storage
-sentinel = Sentinel()
-
-# Explicit memory storage
-storage = MemoryStorage()
-sentinel = Sentinel(storage=storage)
+config = SentinelConfig(backend="memory")
+router, infra = await Sentinel.setup(dp, config)
 ```
 
 ### Redis Storage
 
 ```python
-from aiogram_sentinel import Sentinel
-from aiogram_sentinel.storage import RedisStorage
+from aiogram_sentinel import Sentinel, SentinelConfig
 
 # Basic Redis configuration
-storage = RedisStorage("redis://localhost:6379")
-sentinel = Sentinel(storage=storage)
+config = SentinelConfig(
+    backend="redis",
+    redis_url="redis://localhost:6379",
+    redis_prefix="mybot",
+)
+router, infra = await Sentinel.setup(dp, config)
 
 # Advanced Redis configuration
-storage = RedisStorage(
-    url="redis://localhost:6379",
-    namespace="my_bot",
-    key_prefix="protection:",
-    db=1,
-    password="your_password",
-    socket_timeout=5,
-    socket_connect_timeout=5,
-    retry_on_timeout=True,
-    health_check_interval=30,
+config = SentinelConfig(
+    backend="redis",
+    redis_url="redis://username:password@localhost:6379/1",
+    redis_prefix="mybot:prod",
 )
 ```
 
@@ -168,42 +164,43 @@ storage = RedisStorage(
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `url` | `str` | `"redis://localhost:6379"` | Redis connection URL |
-| `namespace` | `str` | `"aiogram_sentinel"` | Key namespace |
-| `key_prefix` | `str` | `"protection:"` | Key prefix |
-| `db` | `int` | `0` | Redis database number |
-| `password` | `str` | `None` | Redis password |
-| `socket_timeout` | `int` | `5` | Socket timeout in seconds |
-| `socket_connect_timeout` | `int` | `5` | Connection timeout in seconds |
-| `retry_on_timeout` | `bool` | `True` | Retry on timeout |
-| `health_check_interval` | `int` | `30` | Health check interval in seconds |
+| `redis_url` | `str` | `"redis://localhost:6379"` | Redis connection URL |
+| `redis_prefix` | `str` | `"sentinel"` | Key prefix for all Redis keys |
 
 ## Handler-Specific Configuration
 
 ### Using Decorators
 
 ```python
-from aiogram_sentinel.decorators import sentinel_rate_limit, sentinel_debounce
+from aiogram_sentinel import rate_limit, debounce
 
-@dp.message(Command("start"))
-@sentinel_rate_limit(limit=3, window=60)
+@router.message()
+@rate_limit(3, 60)  # 3 messages per minute
+@debounce(2.0)      # 2 second debounce
 async def start_handler(message: Message):
     await message.answer("Welcome!")
 
-@dp.message(Command("help"))
-@sentinel_debounce(delay=2)
+@router.message()
+@rate_limit(10, 60)  # 10 messages per minute
+@debounce(1.0)       # 1 second debounce
 async def help_handler(message: Message):
     await message.answer("Help information")
 ```
 
-### Using Handler Attributes
+### Using Scopes
 
 ```python
-@dp.message(Command("admin"))
-async def admin_handler(message: Message):
-    # Set custom rate limit
-    message.sentinel_rate_limit = {"limit": 20, "window": 60}
-    await message.answer("Admin panel")
+@router.message()
+@rate_limit(5, 60, scope="commands")  # Shared limit for all commands
+@debounce(1.0, scope="commands")
+async def command_handler(message: Message):
+    await message.answer("Command executed!")
+
+@router.message()
+@rate_limit(5, 60, scope="commands")  # Same scope = shared limit
+@debounce(1.0, scope="commands")
+async def another_command_handler(message: Message):
+    await message.answer("Another command!")
 ```
 
 ## Environment-Specific Configuration
@@ -216,10 +213,9 @@ from aiogram_sentinel import SentinelConfig
 
 DEV_CONFIG = SentinelConfig(
     throttling_default_max=100,  # Very lenient for development
-    throttling_default_per_seconds=60,
+    throttling_default_per_seconds=10,
     debounce_default_window=1,   # Short debounce
-    blocklist_enabled=False,     # Disable blocking
-    auth_required=False,         # No auth required
+    backend="memory",            # Use memory for development
 )
 ```
 
@@ -231,10 +227,11 @@ from aiogram_sentinel import SentinelConfig
 
 PROD_CONFIG = SentinelConfig(
     throttling_default_max=5,    # Strict rate limiting
-    throttling_default_per_seconds=60,
-    debounce_default_window=5,   # Longer debounce
-    blocklist_enabled=True,      # Enable blocking
-    auth_required=True,          # Require auth
+    throttling_default_per_seconds=10,
+    debounce_default_window=2,   # Standard debounce
+    backend="redis",             # Use Redis for production
+    redis_url="redis://localhost:6379",
+    redis_prefix="mybot:prod",
 )
 ```
 
@@ -246,10 +243,9 @@ from aiogram_sentinel import SentinelConfig
 
 TEST_CONFIG = SentinelConfig(
     throttling_default_max=1000, # Very high limits for testing
-    throttling_default_per_seconds=60,
+    throttling_default_per_seconds=10,
     debounce_default_window=0,   # No debounce
-    blocklist_enabled=False,     # No blocking
-    auth_required=False,         # No auth
+    backend="memory",            # Use memory for testing
 )
 ```
 
@@ -305,9 +301,44 @@ Configuration is applied in this order (later overrides earlier):
 # 2. Environment: THROTTLING_MAX=5
 # 3. Config file: throttling_default_max = 3
 # 4. Code: SentinelConfig(throttling_default_max=1)
-# 5. Handler: @sentinel_rate_limit(limit=0)
+# 5. Handler: @rate_limit(0, 60)
 
 # Final result: limit=0 (handler-specific wins)
+```
+
+## Hooks Configuration
+
+### Rate Limiting Hook
+
+```python
+async def on_rate_limited(event, data, retry_after):
+    """Called when rate limit is exceeded."""
+    await event.answer(f"⏰ Rate limited! Try again in {int(retry_after)} seconds.")
+
+# Add the hook
+Sentinel.add_hooks(router, infra, config, on_rate_limited=on_rate_limited)
+```
+
+### Custom Hook Example
+
+```python
+import logging
+
+logger = logging.getLogger(__name__)
+
+async def on_rate_limited(event, data, retry_after):
+    """Custom rate limiting hook with logging."""
+    user_id = getattr(event, 'from_user', {}).id if hasattr(event, 'from_user') else 'unknown'
+    handler_name = data.get('handler', 'unknown')
+    
+    logger.warning(f"Rate limited: user={user_id}, handler={handler_name}, retry_after={retry_after}")
+    
+    # Send custom message
+    if hasattr(event, 'answer'):
+        await event.answer(f"🚫 Rate limited! Try again in {int(retry_after)} seconds.")
+
+# Add the hook
+Sentinel.add_hooks(router, infra, config, on_rate_limited=on_rate_limited)
 ```
 
 ## Hot Reloading
@@ -343,7 +374,7 @@ class HotReloadConfig(SentinelConfig):
 
 ```python
 config = HotReloadConfig("config.json")
-sentinel = Sentinel(config=config)
+router, infra = await Sentinel.setup(dp, config)
 
 # Reload configuration without restart
 await config.reload()
@@ -356,9 +387,10 @@ await config.reload()
 ```python
 import os
 
-storage = RedisStorage(
-    url=os.getenv("REDIS_URL", "redis://localhost:6379"),
-    password=os.getenv("REDIS_PASSWORD"),
+config = SentinelConfig(
+    backend="redis",
+    redis_url=os.getenv("REDIS_URL", "redis://localhost:6379"),
+    redis_prefix=os.getenv("REDIS_PREFIX", "sentinel"),
 )
 ```
 
@@ -368,7 +400,7 @@ storage = RedisStorage(
 def create_sentinel():
     try:
         config = load_config()
-        return Sentinel(config=config)
+        return Sentinel.setup(dp, config)
     except ConfigurationError as e:
         logging.error(f"Invalid configuration: {e}")
         raise
@@ -398,11 +430,12 @@ def get_config():
 Configuration for aiogram-sentinel bot.
 
 Environment Variables:
-- THROTTLING_MAX: Maximum messages per window (default: 10)
-- THROTTLING_WINDOW: Time window in seconds (default: 60)
-- DEBOUNCE_WINDOW: Debounce delay in seconds (default: 5)
-- BLOCKLIST_ENABLED: Enable user blocking (default: true)
-- AUTH_REQUIRED: Require user registration (default: false)
+- THROTTLING_MAX: Maximum messages per window (default: 5)
+- THROTTLING_WINDOW: Time window in seconds (default: 10)
+- DEBOUNCE_WINDOW: Debounce delay in seconds (default: 2)
+- BACKEND: Storage backend ("memory" or "redis", default: "memory")
+- REDIS_URL: Redis connection URL (default: "redis://localhost:6379")
+- REDIS_PREFIX: Redis key prefix (default: "sentinel")
 """
 ```
 
@@ -429,4 +462,71 @@ logging.basicConfig(level=logging.DEBUG)
 # Log configuration
 config = SentinelConfig()
 logging.info(f"Configuration: {config.__dict__}")
+```
+
+## Advanced Configuration Examples
+
+### Multi-Environment Setup
+
+```python
+import os
+from aiogram_sentinel import Sentinel, SentinelConfig
+
+def create_config():
+    env = os.getenv("ENVIRONMENT", "development")
+    
+    if env == "production":
+        return SentinelConfig(
+            backend="redis",
+            redis_url=os.getenv("REDIS_URL"),
+            redis_prefix="mybot:prod",
+            throttling_default_max=5,
+            throttling_default_per_seconds=10,
+            debounce_default_window=2,
+        )
+    elif env == "staging":
+        return SentinelConfig(
+            backend="redis",
+            redis_url=os.getenv("REDIS_URL"),
+            redis_prefix="mybot:staging",
+            throttling_default_max=10,
+            throttling_default_per_seconds=10,
+            debounce_default_window=2,
+        )
+    else:  # development
+        return SentinelConfig(
+            backend="memory",
+            throttling_default_max=100,
+            throttling_default_per_seconds=10,
+            debounce_default_window=1,
+        )
+
+# Use the configuration
+config = create_config()
+router, infra = await Sentinel.setup(dp, config)
+```
+
+### Dynamic Configuration
+
+```python
+class DynamicConfig(SentinelConfig):
+    """Configuration that can be updated at runtime."""
+    
+    def __init__(self):
+        super().__init__()
+        self._rate_limits: dict[str, tuple] = {}
+    
+    def set_rate_limit(self, handler_name: str, limit: int, window: int):
+        """Set rate limit for specific handler."""
+        self._rate_limits[handler_name] = (limit, window)
+    
+    def get_rate_limit(self, handler_name: str) -> tuple[int, int]:
+        """Get rate limit for handler."""
+        return self._rate_limits.get(handler_name, (self.throttling_default_max, self.throttling_default_per_seconds))
+
+# Use dynamic configuration
+config = DynamicConfig()
+config.set_rate_limit("start", 3, 60)
+config.set_rate_limit("help", 5, 60)
+router, infra = await Sentinel.setup(dp, config)
 ```

@@ -153,11 +153,14 @@ aiogram-sentinel provides built-in rate limiting to prevent:
 - **DDoS attacks**: Overwhelming the bot with requests
 - **Resource exhaustion**: Preventing system overload
 
-### 2. User Blocking
+### 2. Rate Limiting Protection
 
 ```python
-# Block malicious users
-await sentinel.blocklist_backend.set_blocked(user_id, True)
+# Rate limiting provides protection against spam and abuse
+config = SentinelConfig(
+    throttling_default_max=5,      # Limit messages per window
+    throttling_default_per_seconds=60,  # Time window
+)
 ```
 
 ### 3. Input Sanitization
@@ -204,10 +207,10 @@ async def security_monitor(user_id: int, action: str):
     # Log security events
     logging.warning(f"Security event: User {user_id} performed {action}")
     
-    # Implement automatic blocking for repeated violations
-    if action == "rate_limit_exceeded":
-        # Block user after multiple violations
-        pass
+# Implement automatic rate limiting for repeated violations
+if action == "rate_limit_exceeded":
+    # Rate limit user after multiple violations
+    pass
 ```
 
 ## Compliance
@@ -262,11 +265,10 @@ pip-sync requirements.txt
 # Automatic response to security incidents
 async def handle_security_incident(user_id: int, incident_type: str):
     if incident_type == "rate_limit_exceeded":
-        # Temporarily block user
-        await sentinel.blocklist_backend.set_blocked(user_id, True)
-        
         # Log incident
         logging.warning(f"Security incident: User {user_id} rate limited")
+        
+        # Additional security measures can be implemented here
 ```
 
 ### 3. Recovery

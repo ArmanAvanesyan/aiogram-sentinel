@@ -51,17 +51,13 @@ See the [Configuration Guide](configuration.md) for detailed examples and option
 
 For detailed usage examples, see the [Tutorials](tutorials/) and [API Reference](api/).
 
-### Q: How do I block a user programmatically?
-
-**A**: Use the blocklist backend. See the [API Reference](api/storage.md) for detailed examples.
-
 ### Q: How do I check if a user is rate limited?
 
-**A**: Check the rate limiter. See the [API Reference](api/storage.md) for detailed examples.
+**A**: Check the rate limiter backend. See the [API Reference](api/storage.md) for detailed examples.
 
-### Q: How do I get user information?
+### Q: How do I check if a message was debounced?
 
-**A**: Use the user repository. See the [API Reference](api/storage.md) for detailed examples.
+**A**: Check the debounce backend. See the [API Reference](api/storage.md) for detailed examples.
 
 ### Q: How do I handle rate limit exceeded events?
 
@@ -103,7 +99,7 @@ For detailed troubleshooting information, see the [Troubleshooting Guide](troubl
 
 **A**: See the [Troubleshooting Guide](troubleshooting.md) for step-by-step diagnosis.
 
-### Q: Users are getting blocked unexpectedly
+### Q: Users are getting rate limited unexpectedly
 
 **A**: See the [Troubleshooting Guide](troubleshooting.md) for rate limiting issues.
 
@@ -143,9 +139,9 @@ For advanced usage examples, see the [Tutorials](tutorials/) and [API Reference]
 
 **A**: See the [Tutorials](tutorials/) for custom middleware examples.
 
-### Q: How do I handle different user types?
+### Q: How do I handle different scopes for rate limiting?
 
-**A**: See the [Tutorials](tutorials/) for user type handling examples.
+**A**: Use the `scope` parameter in decorators. See the [Tutorials](tutorials/) for scope handling examples.
 
 ## Security
 
@@ -159,9 +155,9 @@ For security information, see the [Security Policy](SECURITY.md).
 
 **A**: See the [Security Policy](SECURITY.md) for Redis security guidelines.
 
-### Q: Can I audit user actions?
+### Q: Can I monitor rate limiting events?
 
-**A**: See the [Configuration Guide](configuration.md) for audit hook examples.
+**A**: Use the `on_rate_limited` hook. See the [Configuration Guide](configuration.md) for hook examples.
 
 ## Versioning & Updates
 

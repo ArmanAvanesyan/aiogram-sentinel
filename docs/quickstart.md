@@ -36,19 +36,25 @@ Here's a complete bot with basic protection:
 import asyncio
 from aiogram import Bot, Dispatcher
 from aiogram.types import Message
-from aiogram_sentinel import Sentinel
+from aiogram_sentinel import Sentinel, SentinelConfig, rate_limit, debounce
 
 # Initialize bot and dispatcher
 bot = Bot(token="YOUR_BOT_TOKEN")
 dp = Dispatcher()
 
-# Create Sentinel instance with default configuration
-sentinel = Sentinel()
+# Configure aiogram-sentinel
+config = SentinelConfig(
+    throttling_default_max=10,  # 10 messages per window
+    throttling_default_per_seconds=60,  # 60 second window
+    debounce_default_window=2,  # 2 second debounce
+)
 
-# Register middleware
-dp.message.middleware(sentinel.middleware)
+# Setup with one call - wires all middleware in recommended order
+router, infra = await Sentinel.setup(dp, config)
 
-@dp.message()
+@router.message()
+@rate_limit(5, 60)  # 5 messages per minute
+@debounce(1.0)      # 1 second debounce
 async def handle_message(message: Message):
     """Handle all messages with protection."""
     await message.answer(f"Hello! Your message: {message.text}")
@@ -66,9 +72,9 @@ if __name__ == "__main__":
 The minimal example above provides:
 
 - **Rate limiting**: Prevents spam by limiting message frequency
-- **User blocking**: Blocks users who are on the blocklist
-- **Authentication**: Automatically registers new users
 - **Debouncing**: Prevents duplicate message processing
+- **Configurable protection**: Customizable limits and windows
+- **Easy setup**: One call to configure all middleware
 
 ## Configuration
 
@@ -84,8 +90,8 @@ config = SentinelConfig(
     debounce_default_window=2,     # 2 second debounce
 )
 
-# Create Sentinel with custom config
-sentinel = Sentinel(config=config)
+# Setup with custom config
+router, infra = await Sentinel.setup(dp, config)
 ```
 
 ## Storage Backends
@@ -93,14 +99,19 @@ sentinel = Sentinel(config=config)
 Choose your storage backend:
 
 ```python
-from aiogram_sentinel import Sentinel
-from aiogram_sentinel.storage import MemoryStorage, RedisStorage
+from aiogram_sentinel import Sentinel, SentinelConfig
 
-# In-memory storage (default, good for development)
-sentinel = Sentinel(storage=MemoryStorage())
+# Memory storage (default, good for development)
+config = SentinelConfig(backend="memory")
+router, infra = await Sentinel.setup(dp, config)
 
 # Redis storage (recommended for production)
-sentinel = Sentinel(storage=RedisStorage("redis://localhost:6379"))
+config = SentinelConfig(
+    backend="redis",
+    redis_url="redis://localhost:6379",
+    redis_prefix="mybot:"
+)
+router, infra = await Sentinel.setup(dp, config)
 ```
 
 ## Next Steps

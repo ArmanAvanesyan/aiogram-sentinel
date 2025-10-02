@@ -46,36 +46,47 @@ You should see `PONG` response.
 ## Step 3: Install Redis Python Client
 
 ```bash
+pip install aiogram-sentinel[redis]
+```
+
+Or install redis separately:
+
+```bash
 pip install redis
 ```
 
-## Step 4: Create Redis-Enabled Bot
+## Step 4: Basic Redis Configuration
 
-Create `redis_bot.py`:
+Create `bot.py` with Redis storage:
 
 ```python
 import asyncio
 from aiogram import Bot, Dispatcher
 from aiogram.types import Message
-from aiogram_sentinel import Sentinel
-from aiogram_sentinel.storage import RedisStorage
+from aiogram_sentinel import Sentinel, SentinelConfig, rate_limit, debounce
 
 # Initialize bot and dispatcher
 bot = Bot(token="YOUR_BOT_TOKEN")
 dp = Dispatcher()
 
-# Create Redis storage
-redis_storage = RedisStorage("redis://localhost:6379")
+# Configure aiogram-sentinel with Redis
+config = SentinelConfig(
+    backend="redis",
+    redis_url="redis://localhost:6379",
+    redis_prefix="mybot:",
+    throttling_default_max=10,
+    throttling_default_per_seconds=60,
+    debounce_default_window=2,
+)
 
-# Create Sentinel with Redis storage
-sentinel = Sentinel(storage=redis_storage)
+# Setup with one call
+router, infra = await Sentinel.setup(dp, config)
 
-# Register middleware
-dp.message.middleware(sentinel.middleware)
-
-@dp.message()
+@router.message()
+@rate_limit(5, 60)
+@debounce(1.0)
 async def handle_message(message: Message):
-    """Handle all messages with Redis-backed protection."""
+    """Handle all messages with protection."""
     await message.answer(f"Hello! Your message: {message.text}")
 
 async def main():
@@ -86,143 +97,324 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-## Step 5: Test Redis Persistence
+## Step 5: Redis Connection Options
 
-1. **Start your bot**:
-   ```bash
-   python redis_bot.py
-   ```
-
-2. **Send some messages** to trigger rate limiting
-
-3. **Stop the bot** (Ctrl+C)
-
-4. **Restart the bot** and send more messages
-
-5. **Verify**: Rate limiting should persist across restarts
-
-## Step 6: Monitor Redis Data
-
-Check what's stored in Redis:
-
-```bash
-redis-cli
-```
-
-```redis
-# List all keys
-KEYS *
-
-# Check rate limit data
-GET "aiogram_sentinel:rate_limit:user:12345:handler"
-
-# Check blocklist
-SISMEMBER "aiogram_sentinel:blocklist" "12345"
-
-# Check debounce data
-GET "aiogram_sentinel:debounce:user:12345:handler"
-```
-
-## Step 7: Configure Redis Connection
-
-Customize Redis connection settings:
-
+### Basic Connection
 ```python
-from aiogram_sentinel.storage import RedisStorage
-
-# Custom Redis configuration
-redis_storage = RedisStorage(
-    url="redis://localhost:6379",
-    namespace="my_bot",  # Custom namespace
-    key_prefix="protection:",  # Custom key prefix
-    db=1,  # Use database 1
-    password="your_password",  # If Redis has auth
-    socket_timeout=5,
-    socket_connect_timeout=5,
-    retry_on_timeout=True,
-    health_check_interval=30,
+config = SentinelConfig(
+    backend="redis",
+    redis_url="redis://localhost:6379",
 )
 ```
 
-## Step 8: Add Redis Health Check
-
-Add a command to check Redis connection:
-
+### With Authentication
 ```python
-@dp.message(Command("redis_status"))
-async def redis_status(message: Message):
-    """Check Redis connection status."""
-    try:
-        # Test Redis connection
-        await sentinel.rate_limiter_backend.get_rate_limit("test_key")
-        await message.answer("✅ Redis connection is healthy")
-    except Exception as e:
-        await message.answer(f"❌ Redis connection error: {e}")
+config = SentinelConfig(
+    backend="redis",
+    redis_url="redis://username:password@localhost:6379",
+)
 ```
 
-## Step 9: Handle Redis Connection Errors
+### With Database Selection
+```python
+config = SentinelConfig(
+    backend="redis",
+    redis_url="redis://localhost:6379/1",  # Use database 1
+)
+```
 
-Add error handling for Redis connection issues:
+### With SSL/TLS
+```python
+config = SentinelConfig(
+    backend="redis",
+    redis_url="rediss://localhost:6380",  # SSL connection
+)
+```
+
+## Step 6: Key Prefixing
+
+Use prefixes to avoid key conflicts:
+
+```python
+config = SentinelConfig(
+    backend="redis",
+    redis_url="redis://localhost:6379",
+    redis_prefix="mybot:prod:",  # All keys will start with this
+)
+```
+
+This creates keys like:
+- `mybot:prod:rate:12345:handler_name`
+- `mybot:prod:debounce:12345:handler_name:hash`
+
+## Step 7: Connection Pooling
+
+For high-traffic bots, configure connection pooling:
+
+```python
+import redis.asyncio as redis
+
+# Create custom Redis connection
+redis_client = redis.ConnectionPool.from_url(
+    "redis://localhost:6379",
+    max_connections=20,
+    retry_on_timeout=True,
+)
+
+# Use with aiogram-sentinel
+config = SentinelConfig(
+    backend="redis",
+    redis_url="redis://localhost:6379",
+    redis_prefix="mybot:",
+)
+```
+
+## Step 8: Monitoring Redis Usage
+
+### Check Key Count
+```bash
+redis-cli dbsize
+```
+
+### List Keys
+```bash
+redis-cli keys "mybot:*"
+```
+
+### Monitor Commands
+```bash
+redis-cli monitor
+```
+
+### Check Memory Usage
+```bash
+redis-cli info memory
+```
+
+## Step 9: Production Configuration
+
+For production, use these settings:
+
+```python
+config = SentinelConfig(
+    backend="redis",
+    redis_url="redis://localhost:6379",
+    redis_prefix="mybot:prod:",
+    throttling_default_max=20,
+    throttling_default_per_seconds=60,
+    debounce_default_window=1,
+)
+```
+
+### Environment Variables
+```python
+import os
+
+config = SentinelConfig(
+    backend="redis",
+    redis_url=os.getenv("REDIS_URL", "redis://localhost:6379"),
+    redis_prefix=os.getenv("REDIS_PREFIX", "mybot:"),
+    throttling_default_max=int(os.getenv("RATE_LIMIT", "20")),
+    throttling_default_per_seconds=int(os.getenv("RATE_WINDOW", "60")),
+    debounce_default_window=int(os.getenv("DEBOUNCE_WINDOW", "1")),
+)
+```
+
+## Step 10: Error Handling
+
+Add proper error handling for Redis connection issues:
 
 ```python
 import logging
 from redis.exceptions import ConnectionError, TimeoutError
 
-# Set up logging
 logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-@dp.message()
-async def handle_message(message: Message):
-    """Handle messages with Redis error handling."""
+async def on_rate_limited(event, data, retry_after):
+    """Handle rate limiting with Redis error handling."""
     try:
-        await message.answer(f"Hello! Your message: {message.text}")
+        await event.answer(f"⏰ Rate limited! Try again in {int(retry_after)} seconds.")
     except (ConnectionError, TimeoutError) as e:
-        logging.error(f"Redis connection error: {e}")
-        await message.answer("Service temporarily unavailable. Please try again later.")
+        logger.error(f"Redis connection error: {e}")
+        # Fallback behavior
+        await event.answer("Service temporarily unavailable. Please try again later.")
+
+# Add the hook
+Sentinel.add_hooks(router, infra, config, on_rate_limited=on_rate_limited)
 ```
 
-## Step 10: Production Configuration
+## Step 11: Redis Cluster Support
 
-For production, use environment variables:
+For high availability, use Redis Cluster:
 
 ```python
-import os
-from aiogram_sentinel.storage import RedisStorage
-
-# Get Redis URL from environment
-redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
-
-# Create storage with environment configuration
-redis_storage = RedisStorage(
-    url=redis_url,
-    namespace=os.getenv("REDIS_NAMESPACE", "aiogram_sentinel"),
-    key_prefix=os.getenv("REDIS_KEY_PREFIX", "protection:"),
-    db=int(os.getenv("REDIS_DB", "0")),
-    password=os.getenv("REDIS_PASSWORD"),
+config = SentinelConfig(
+    backend="redis",
+    redis_url="redis://node1:6379,node2:6379,node3:6379",
+    redis_prefix="mybot:",
 )
 ```
 
-## Verify Results
+## Step 12: Performance Optimization
 
-Your Redis-enabled bot should:
-- ✅ Persist rate limiting across restarts
-- ✅ Maintain blocklist across restarts
-- ✅ Store debounce data persistently
-- ✅ Handle Redis connection errors gracefully
-- ✅ Support multiple bot instances
+### Connection Pooling
+```python
+import redis.asyncio as redis
 
-## What's Next?
+# Configure connection pool
+pool = redis.ConnectionPool.from_url(
+    "redis://localhost:6379",
+    max_connections=50,
+    retry_on_timeout=True,
+    socket_keepalive=True,
+    socket_keepalive_options={},
+)
+```
 
-- [Advanced Configuration Tutorial](advanced-configuration.md)
-- [Custom Middleware Tutorial](custom-middleware.md)
-- [Performance Optimization Tutorial](performance-optimization.md)
+### Pipeline Operations
+Redis backends automatically use pipelining for better performance.
+
+### Memory Optimization
+```bash
+# Set maxmemory policy
+redis-cli config set maxmemory-policy allkeys-lru
+
+# Set maxmemory limit
+redis-cli config set maxmemory 100mb
+```
+
+## Step 13: Backup and Recovery
+
+### Backup Redis Data
+```bash
+# Create backup
+redis-cli bgsave
+
+# Copy RDB file
+cp /var/lib/redis/dump.rdb /backup/redis-backup-$(date +%Y%m%d).rdb
+```
+
+### Restore from Backup
+```bash
+# Stop Redis
+sudo systemctl stop redis-server
+
+# Copy backup file
+cp /backup/redis-backup-20231201.rdb /var/lib/redis/dump.rdb
+
+# Start Redis
+sudo systemctl start redis-server
+```
+
+## Step 14: Complete Production Example
+
+Here's a complete production-ready example:
+
+```python
+import asyncio
+import logging
+import os
+from aiogram import Bot, Dispatcher
+from aiogram.types import Message
+from aiogram_sentinel import Sentinel, SentinelConfig, rate_limit, debounce
+
+# Setup logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Initialize bot and dispatcher
+bot = Bot(token=os.getenv("BOT_TOKEN"))
+dp = Dispatcher()
+
+# Production configuration
+config = SentinelConfig(
+    backend="redis",
+    redis_url=os.getenv("REDIS_URL", "redis://localhost:6379"),
+    redis_prefix=os.getenv("REDIS_PREFIX", "mybot:prod:"),
+    throttling_default_max=int(os.getenv("RATE_LIMIT", "20")),
+    throttling_default_per_seconds=int(os.getenv("RATE_WINDOW", "60")),
+    debounce_default_window=int(os.getenv("DEBOUNCE_WINDOW", "1")),
+)
+
+# Setup with one call
+router, infra = await Sentinel.setup(dp, config)
+
+# Rate limiting hook with error handling
+async def on_rate_limited(event, data, retry_after):
+    try:
+        logger.info(f"Rate limited user {event.from_user.id} for {retry_after}s")
+        await event.answer(f"⏰ Rate limited! Try again in {int(retry_after)} seconds.")
+    except Exception as e:
+        logger.error(f"Error in rate limit hook: {e}")
+
+# Add hooks
+Sentinel.add_hooks(router, infra, config, on_rate_limited=on_rate_limited)
+
+@router.message()
+@rate_limit(10, 60)
+@debounce(1.0)
+async def handle_message(message: Message):
+    """Handle all messages with protection."""
+    try:
+        await message.answer(f"Hello! Your message: {message.text}")
+    except Exception as e:
+        logger.error(f"Error handling message: {e}")
+        await message.answer("Sorry, something went wrong!")
+
+async def main():
+    """Start the bot."""
+    try:
+        await dp.start_polling(bot)
+    except Exception as e:
+        logger.error(f"Bot startup error: {e}")
+        raise
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
 
 ## Troubleshooting
 
-**Redis connection refused**: Ensure Redis server is running and accessible.
+### Common Issues
 
-**Authentication errors**: Check Redis password and user permissions.
+**Connection refused**: Check if Redis is running and accessible.
 
-**Memory issues**: Monitor Redis memory usage and configure eviction policies.
+**Authentication failed**: Verify Redis password and username.
 
-**Performance issues**: Consider Redis clustering for high-load scenarios.
+**Memory issues**: Monitor Redis memory usage and set appropriate limits.
+
+**Performance issues**: Use connection pooling and monitor Redis performance.
+
+### Redis Commands for Debugging
+
+```bash
+# Check Redis status
+redis-cli ping
+
+# Monitor commands in real-time
+redis-cli monitor
+
+# Check memory usage
+redis-cli info memory
+
+# List all keys
+redis-cli keys "*"
+
+# Check specific keys
+redis-cli keys "mybot:*"
+
+# Get key TTL
+redis-cli ttl "mybot:rate:12345:handler"
+
+# Delete all keys (careful!)
+redis-cli flushdb
+```
+
+## Next Steps
+
+1. **Monitor performance**: Use Redis monitoring tools
+2. **Set up alerts**: Monitor Redis memory and connection issues
+3. **Backup regularly**: Implement automated backup procedures
+4. **Scale horizontally**: Use Redis Cluster for high availability
+5. **Optimize settings**: Tune Redis configuration for your workload

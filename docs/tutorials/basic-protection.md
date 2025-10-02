@@ -1,8 +1,8 @@
 # Tutorial: Basic Bot Protection
 
-**Goal**: Build a Telegram bot with comprehensive protection against spam and abuse.
+**Goal**: Build a Telegram bot with rate limiting and debouncing protection.
 
-**What you'll build**: A bot that handles messages with rate limiting, user blocking, and authentication.
+**What you'll build**: A bot that handles messages with rate limiting and duplicate message prevention.
 
 ## Prerequisites
 
@@ -29,19 +29,25 @@ Create `bot.py`:
 import asyncio
 from aiogram import Bot, Dispatcher
 from aiogram.types import Message
-from aiogram_sentinel import Sentinel
+from aiogram_sentinel import Sentinel, SentinelConfig, rate_limit, debounce
 
 # Initialize bot and dispatcher
 bot = Bot(token="YOUR_BOT_TOKEN")
 dp = Dispatcher()
 
-# Create Sentinel instance
-sentinel = Sentinel()
+# Configure aiogram-sentinel
+config = SentinelConfig(
+    throttling_default_max=10,  # 10 messages per window
+    throttling_default_per_seconds=60,  # 60 second window
+    debounce_default_window=2,  # 2 second debounce
+)
 
-# Register middleware
-dp.message.middleware(sentinel.middleware)
+# Setup with one call - wires all middleware in recommended order
+router, infra = await Sentinel.setup(dp, config)
 
-@dp.message()
+@router.message()
+@rate_limit(5, 60)  # 5 messages per minute
+@debounce(1.0)      # 1 second debounce
 async def handle_message(message: Message):
     """Handle all messages with protection."""
     await message.answer(f"Hello! Your message: {message.text}")
@@ -54,137 +60,211 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-## Step 3: Test Basic Protection
+## Step 3: Understanding the Protection
 
-Run your bot:
+The bot now has two layers of protection:
+
+### Rate Limiting
+- **Global limit**: 10 messages per 60 seconds (from config)
+- **Handler limit**: 5 messages per 60 seconds (from decorator)
+- **Sliding window**: Uses the most restrictive limit
+
+### Debouncing
+- **Global debounce**: 2 seconds (from config)
+- **Handler debounce**: 1 second (from decorator)
+- **Fingerprinting**: Prevents duplicate messages
+
+## Step 4: Testing the Protection
+
+Run your bot and test the protection:
 
 ```bash
 python bot.py
 ```
 
-Send a few messages to your bot. You should see:
-- Messages are processed normally
-- Rate limiting prevents spam
-- New users are automatically registered
+Try these tests:
+1. **Rate limiting**: Send 6 messages quickly - the 6th should be rate limited
+2. **Debouncing**: Send the same message twice quickly - the second should be ignored
+3. **Normal usage**: Send different messages with normal timing - should work fine
 
-## Step 4: Add Custom Configuration
+## Step 5: Custom Configuration
 
-Modify your bot to use custom protection settings:
+Let's customize the protection for different handlers:
 
 ```python
-from aiogram_sentinel import Sentinel, SentinelConfig
+@router.message()
+@rate_limit(3, 30)  # 3 messages per 30 seconds
+@debounce(0.5)      # 0.5 second debounce
+async def strict_handler(message: Message):
+    """Strict protection for sensitive commands."""
+    await message.answer("This is a strictly protected handler!")
 
-# Create custom configuration
-config = SentinelConfig(
-    throttling_default_max=3,      # 3 messages
-    throttling_default_per_seconds=60,  # per minute
-    debounce_default_window=5,     # 5 second debounce
-)
-
-# Create Sentinel with custom config
-sentinel = Sentinel(config=config)
+@router.message()
+@rate_limit(20, 60)  # 20 messages per minute
+@debounce(2.0)       # 2 second debounce
+async def lenient_handler(message: Message):
+    """More lenient protection for general chat."""
+    await message.answer("This handler allows more messages!")
 ```
 
-## Step 5: Add User Blocking
+## Step 6: Adding Hooks
 
-Add a command to block/unblock users:
+Add custom feedback when rate limiting occurs:
 
 ```python
+async def on_rate_limited(event, data, retry_after):
+    """Called when rate limit is exceeded."""
+    await event.answer(f"⏰ Rate limited! Try again in {int(retry_after)} seconds.")
+
+# Add the hook
+Sentinel.add_hooks(router, infra, config, on_rate_limited=on_rate_limited)
+```
+
+## Step 7: Using Scopes
+
+Use scopes to group related handlers:
+
+```python
+@router.message()
+@rate_limit(5, 60, scope="commands")
+@debounce(1.0, scope="commands")
+async def command_handler(message: Message):
+    """Commands share the same rate limit."""
+    await message.answer("Command executed!")
+
+@router.message()
+@rate_limit(5, 60, scope="commands")  # Same scope = shared limit
+@debounce(1.0, scope="commands")
+async def another_command_handler(message: Message):
+    """Another command sharing the same rate limit."""
+    await message.answer("Another command executed!")
+```
+
+## Step 8: Production Configuration
+
+For production, use Redis backend:
+
+```python
+config = SentinelConfig(
+    backend="redis",
+    redis_url="redis://localhost:6379",
+    redis_prefix="mybot:",
+    throttling_default_max=10,
+    throttling_default_per_seconds=60,
+    debounce_default_window=2,
+)
+```
+
+## Step 9: Error Handling
+
+Add proper error handling:
+
+```python
+@router.message()
+@rate_limit(5, 60)
+@debounce(1.0)
+async def handle_message(message: Message):
+    """Handle all messages with protection."""
+    try:
+        await message.answer(f"Hello! Your message: {message.text}")
+    except Exception as e:
+        print(f"Error handling message: {e}")
+        await message.answer("Sorry, something went wrong!")
+```
+
+## Step 10: Monitoring
+
+Add logging to monitor protection effectiveness:
+
+```python
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+async def on_rate_limited(event, data, retry_after):
+    """Log rate limiting events."""
+    logger.info(f"Rate limited user {event.from_user.id} for {retry_after}s")
+    await event.answer(f"⏰ Rate limited! Try again in {int(retry_after)} seconds.")
+```
+
+## Complete Example
+
+Here's the complete `bot.py`:
+
+```python
+import asyncio
+import logging
 from aiogram import Bot, Dispatcher
 from aiogram.types import Message
-from aiogram.filters import Command
-from aiogram_sentinel import Sentinel
+from aiogram_sentinel import Sentinel, SentinelConfig, rate_limit, debounce
 
-# ... existing code ...
+# Setup logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-@dp.message(Command("block"))
-async def block_user(message: Message):
-    """Block a user (admin only)."""
-    if message.from_user.id != YOUR_ADMIN_ID:  # Replace with your ID
-        return
-    
-    # Extract user ID from reply or command argument
-    if message.reply_to_message:
-        user_id = message.reply_to_message.from_user.id
-    else:
-        try:
-            user_id = int(message.text.split()[1])
-        except (IndexError, ValueError):
-            await message.answer("Usage: /block <user_id> or reply to a message")
-            return
-    
-    # Block the user
-    await sentinel.blocklist_backend.set_blocked(user_id, True)
-    await message.answer(f"User {user_id} has been blocked")
+# Initialize bot and dispatcher
+bot = Bot(token="YOUR_BOT_TOKEN")
+dp = Dispatcher()
 
-@dp.message(Command("unblock"))
-async def unblock_user(message: Message):
-    """Unblock a user (admin only)."""
-    if message.from_user.id != YOUR_ADMIN_ID:  # Replace with your ID
-        return
-    
-    # Extract user ID from reply or command argument
-    if message.reply_to_message:
-        user_id = message.reply_to_message.from_user.id
-    else:
-        try:
-            user_id = int(message.text.split()[1])
-        except (IndexError, ValueError):
-            await message.answer("Usage: /unblock <user_id> or reply to a message")
-            return
-    
-    # Unblock the user
-    await sentinel.blocklist_backend.set_blocked(user_id, False)
-    await message.answer(f"User {user_id} has been unblocked")
+# Configure aiogram-sentinel
+config = SentinelConfig(
+    backend="memory",  # Use "redis" for production
+    throttling_default_max=10,
+    throttling_default_per_seconds=60,
+    debounce_default_window=2,
+)
+
+# Setup with one call
+router, infra = await Sentinel.setup(dp, config)
+
+# Rate limiting hook
+async def on_rate_limited(event, data, retry_after):
+    logger.info(f"Rate limited user {event.from_user.id} for {retry_after}s")
+    await event.answer(f"⏰ Rate limited! Try again in {int(retry_after)} seconds.")
+
+# Add hooks
+Sentinel.add_hooks(router, infra, config, on_rate_limited=on_rate_limited)
+
+@router.message()
+@rate_limit(5, 60)
+@debounce(1.0)
+async def handle_message(message: Message):
+    """Handle all messages with protection."""
+    try:
+        await message.answer(f"Hello! Your message: {message.text}")
+    except Exception as e:
+        logger.error(f"Error handling message: {e}")
+        await message.answer("Sorry, something went wrong!")
+
+async def main():
+    """Start the bot."""
+    await dp.start_polling(bot)
+
+if __name__ == "__main__":
+    asyncio.run(main())
 ```
 
-## Step 6: Add Rate Limit Status
+## Next Steps
 
-Add a command to check rate limit status:
-
-```python
-@dp.message(Command("status"))
-async def check_status(message: Message):
-    """Check rate limit status."""
-    user_id = message.from_user.id
-    key = f"user:{user_id}:handler"
-    
-    # Get current rate limit count
-    count = await sentinel.rate_limiter_backend.get_rate_limit(key)
-    
-    await message.answer(f"Your current rate limit count: {count}")
-```
-
-## Step 7: Test All Features
-
-Test your bot with these scenarios:
-
-1. **Normal usage**: Send regular messages
-2. **Rate limiting**: Send messages rapidly to trigger rate limiting
-3. **User blocking**: Use `/block` and `/unblock` commands
-4. **Status check**: Use `/status` to see rate limit information
-
-## Verify Results
-
-Your bot should now:
-- ✅ Process messages normally
-- ✅ Rate limit users who send too many messages
-- ✅ Block/unblock users on command
-- ✅ Show rate limit status
-- ✅ Automatically register new users
-
-## What's Next?
-
-- [Advanced Configuration Tutorial](advanced-configuration.md)
-- [Redis Storage Tutorial](redis-storage.md)
-- [Custom Middleware Tutorial](custom-middleware.md)
+1. **Test thoroughly**: Try different scenarios to understand the protection
+2. **Monitor performance**: Use logging to track rate limiting effectiveness
+3. **Tune settings**: Adjust limits based on your bot's usage patterns
+4. **Add more handlers**: Create different protection levels for different commands
+5. **Deploy to production**: Use Redis backend for production deployment
 
 ## Troubleshooting
 
-**Bot not responding**: Check your bot token and ensure the bot is running.
+### Common Issues
 
-**Rate limiting not working**: Verify the middleware is registered correctly.
+**Bot not responding**: Check your bot token and network connection.
 
-**Blocking not working**: Check that you're using the correct user ID format.
+**Rate limiting too strict**: Adjust `throttling_default_max` in your configuration.
 
-**Import errors**: Ensure aiogram-sentinel is installed correctly.
+**Redis connection errors**: Ensure Redis is running and accessible.
+
+### Getting Help
+
+- Check the [Troubleshooting Guide](../troubleshooting.md) for detailed solutions
+- Look at the [FAQ](../faq.md) for common questions
+- Open an issue on [GitHub](https://github.com/ArmanAvanesyan/aiogram-sentinel/issues)

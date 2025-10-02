@@ -54,8 +54,6 @@ async def benchmark_middleware():
     
     # Test each middleware individually
     middlewares = [
-        ("blocking", sentinel.blocking_middleware),
-        ("auth", sentinel.auth_middleware),
         ("debouncing", sentinel.debouncing_middleware),
         ("throttling", sentinel.throttling_middleware),
     ]
@@ -131,11 +129,9 @@ async def benchmark_concurrent_users():
 
 | Middleware | Memory Backend | Redis Backend | Overhead |
 |------------|----------------|---------------|----------|
-| Blocking | 0.05ms | 0.12ms | 0.05ms |
-| Auth | 0.15ms | 0.25ms | 0.15ms |
 | Debouncing | 0.08ms | 0.18ms | 0.08ms |
 | Throttling | 0.12ms | 0.22ms | 0.12ms |
-| **Total** | **0.40ms** | **0.77ms** | **0.40ms** |
+| **Total** | **0.20ms** | **0.40ms** | **0.20ms** |
 
 ### Storage Backend Performance
 
@@ -143,8 +139,6 @@ async def benchmark_concurrent_users():
 |-----------|----------------|---------------|---------------|
 | Rate Limit Check | 0.12ms | 0.22ms | 0.35ms |
 | Debounce Check | 0.08ms | 0.18ms | 0.28ms |
-| Blocklist Check | 0.05ms | 0.15ms | 0.25ms |
-| User Registration | 0.15ms | 0.25ms | 0.40ms |
 
 ### Concurrent User Performance
 
@@ -161,9 +155,9 @@ async def benchmark_concurrent_users():
 | Component | Memory Backend | Redis Backend |
 |-----------|----------------|---------------|
 | Base Library | 2.5MB | 2.5MB |
-| Per 1,000 Users | 0.5MB | 0.1MB |
-| Per 10,000 Users | 5.0MB | 1.0MB |
-| Per 100,000 Users | 50.0MB | 10.0MB |
+| Per 1,000 Users | 0.3MB | 0.1MB |
+| Per 10,000 Users | 3.0MB | 1.0MB |
+| Per 100,000 Users | 30.0MB | 10.0MB |
 
 ### Redis Memory Usage
 
@@ -171,9 +165,7 @@ async def benchmark_concurrent_users():
 |-----------|----------|-----------------|------------------|
 | Rate Limits | 0.1KB | 100KB | 1MB |
 | Debounce | 0.05KB | 50KB | 0.5MB |
-| Blocklist | 0.01KB | 10KB | 0.1MB |
-| User Data | 0.2KB | 200KB | 2MB |
-| **Total** | **0.36KB** | **360KB** | **3.6MB** |
+| **Total** | **0.15KB** | **150KB** | **1.5MB** |
 
 ## Performance Optimization
 
@@ -204,7 +196,7 @@ config = SentinelConfig(
 
 ```python
 # Optimize middleware order
-# Fastest to slowest: Blocking → Auth → Debouncing → Throttling
+# Fastest to slowest: Debouncing → Throttling
 dp.message.middleware(sentinel.middleware)  # Optimal order
 ```
 
@@ -343,7 +335,7 @@ python -m memory_profiler your_bot.py
 
 aiogram-sentinel provides excellent performance characteristics:
 
-- **Minimal Overhead**: <1ms per message with Redis backend
+- **Minimal Overhead**: <0.5ms per message with Redis backend
 - **Linear Scaling**: Performance scales linearly with user count
 - **Memory Efficient**: Predictable memory usage patterns
 - **Production Ready**: Tested up to 100,000+ concurrent users

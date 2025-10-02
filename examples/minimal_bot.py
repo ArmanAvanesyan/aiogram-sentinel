@@ -4,10 +4,9 @@ Minimal example bot demonstrating aiogram-sentinel features.
 
 This example shows:
 - Complete setup with memory backend
-- All middleware features (blocking, auth, debouncing, throttling)
-- Decorator usage (@rate_limit, @debounce, @require_registered)
-- Resolver and notifier hooks
-- Router hooks for membership management
+- Rate limiting and debouncing middleware
+- Decorator usage (@rate_limit, @debounce)
+- Rate limit hooks
 - Custom hook implementations
 
 Run with: python examples/minimal_bot.py
@@ -29,7 +28,6 @@ from aiogram_sentinel import (
     SentinelConfig,
     debounce,
     rate_limit,
-    require_registered,
 )
 
 # Configure logging
@@ -64,81 +62,6 @@ async def on_rate_limited(
             logger.error(f"Failed to send rate limit message: {e}")
 
 
-async def resolve_user(
-    event: types.TelegramObject, data: dict[str, Any]
-) -> dict[str, Any] | None:
-    """Hook for custom user resolution and validation."""
-    # Extract user information
-    if hasattr(event, "from_user") and getattr(event, "from_user", None):  # type: ignore
-        user = event.from_user  # type: ignore
-
-        # Custom validation logic
-        if getattr(user, "is_bot", False):  # type: ignore
-            logger.info(f"Blocking bot user: {getattr(user, 'id', 0)}")  # type: ignore
-            return None  # Veto bot users
-
-        # Check if user is in a custom blacklist
-        # (This is just an example - you could check against a database)
-        blacklisted_users = {123456789, 987654321}  # Example blacklist
-        user_id = getattr(user, "id", 0)  # type: ignore
-        if user_id in blacklisted_users:
-            logger.info(f"Blocking blacklisted user: {user_id}")
-            return None  # Veto blacklisted users
-
-        # Return user context
-        return {
-            "user_id": user_id,
-            "username": getattr(user, "username", None),  # type: ignore
-            "first_name": getattr(user, "first_name", None),  # type: ignore
-            "last_name": getattr(user, "last_name", None),  # type: ignore
-            "is_bot": getattr(user, "is_bot", False),  # type: ignore
-            "is_premium": getattr(user, "is_premium", False),  # type: ignore
-            "language_code": getattr(user, "language_code", None),  # type: ignore
-        }
-
-    return None  # No user info available
-
-
-async def on_user_blocked(user_id: int, username: str, data: dict[str, Any]) -> None:
-    """Hook called when a user is blocked (kicked from bot)."""
-    logger.info(f"User blocked: {username} (ID: {user_id})")
-
-    # You can implement custom logic here:
-    # - Log to audit system
-    # - Send notification to admins
-    # - Update user statistics
-    # - Clean up user data
-
-    # Example: Log to external system
-    try:
-        # This would be your custom logging/notification system
-        print(
-            f"🔴 BLOCKED: {username} (ID: {user_id}) - {data.get('old_status')} -> {data.get('new_status')}"
-        )
-    except Exception as e:
-        logger.error(f"Failed to process block event: {e}")
-
-
-async def on_user_unblocked(user_id: int, username: str, data: dict[str, Any]) -> None:
-    """Hook called when a user is unblocked (rejoins bot)."""
-    logger.info(f"User unblocked: {username} (ID: {user_id})")
-
-    # You can implement custom logic here:
-    # - Send welcome back message
-    # - Update user statistics
-    # - Restore user preferences
-    # - Log to audit system
-
-    # Example: Send welcome back message
-    try:
-        # This would be your custom notification system
-        print(
-            f"🟢 UNBLOCKED: {username} (ID: {user_id}) - {data.get('old_status')} -> {data.get('new_status')}"
-        )
-    except Exception as e:
-        logger.error(f"Failed to process unblock event: {e}")
-
-
 # ============================================================================
 # BOT HANDLERS
 # ============================================================================
@@ -152,24 +75,11 @@ async def start_handler(message: Message) -> None:
         "🤖 Welcome to aiogram-sentinel example bot!\n\n"
         "This bot demonstrates:\n"
         "• Rate limiting (3 messages per 30 seconds)\n"
-        "• Debouncing (1 second delay)\n"
-        "• User authentication\n"
-        "• Blocking protection\n\n"
+        "• Debouncing (1 second delay)\n\n"
         "Try these commands:\n"
         "/start - This message\n"
-        "/protected - Requires registration\n"
         "/spam - Test rate limiting\n"
         "/help - Show help"
-    )
-
-
-@require_registered()  # Requires user to be registered
-async def protected_handler(message: Message) -> None:
-    """Protected handler that requires user registration."""
-    await message.answer(
-        "🔒 This is a protected command!\n\n"
-        "You can only access this if you're registered in the system. "
-        "The @require_registered decorator ensures this."
     )
 
 
@@ -188,20 +98,14 @@ async def help_handler(message: Message) -> None:
     await message.answer(
         "📚 aiogram-sentinel Example Bot\n\n"
         "**Features demonstrated:**\n"
-        "• Blocking middleware - blocks problematic users\n"
-        "• Auth middleware - manages user registration\n"
         "• Debouncing middleware - prevents duplicate messages\n"
-        "• Throttling middleware - rate limits requests\n"
-        "• Membership router - handles bot membership changes\n\n"
+        "• Throttling middleware - rate limits requests\n\n"
         "**Commands:**\n"
         "/start - Welcome message (rate limited)\n"
-        "/protected - Requires registration\n"
         "/spam - Test rate limiting\n"
         "/help - This help message\n\n"
         "**Hooks in action:**\n"
-        "• Rate limit notifications\n"
-        "• User resolution and validation\n"
-        "• Block/unblock event handling"
+        "• Rate limit notifications"
     )
 
 
@@ -237,23 +141,19 @@ async def main() -> None:
         debounce_default_window=2,  # Default: 2 second debounce
     )
 
-    # Setup aiogram-sentinel (simplified)
-    router, backends = await Sentinel.setup(dp, config)
+    # Setup aiogram-sentinel
+    router, infra = await Sentinel.setup(dp, config)
 
     # Add hooks for advanced functionality
     Sentinel.add_hooks(
         router,
-        backends,
+        infra,
         config,
         on_rate_limited=on_rate_limited,
-        resolve_user=resolve_user,
-        on_block=on_user_blocked,
-        on_unblock=on_user_unblocked,
     )
 
     # Register handlers
     dp.message.register(start_handler, Command("start"))
-    dp.message.register(protected_handler, Command("protected"))
     dp.message.register(spam_handler, Command("spam"))
     dp.message.register(help_handler, Command("help"))
     dp.callback_query.register(callback_handler)
@@ -265,7 +165,7 @@ async def main() -> None:
         f"⚙️  Rate limit: {config.throttling_default_max}/{config.throttling_default_per_seconds}s"
     )
     logger.info(f"🔄 Debounce window: {config.debounce_default_window}s")
-    logger.info("🎯 Hooks enabled: rate_limited, resolve_user, on_block, on_unblock")
+    logger.info("🎯 Hooks enabled: rate_limited")
 
     try:
         # Start polling

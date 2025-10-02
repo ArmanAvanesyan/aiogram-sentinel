@@ -28,6 +28,8 @@ This document explains the system design and architecture of aiogram-sentinel.
 - **GUI/Admin Interface**: No web interfaces or management dashboards
 - **Multi-Platform**: Telegram-only, no support for other messaging platforms
 - **Real-time Analytics**: No built-in analytics or reporting features
+- **User Authentication**: No built-in user management (use aiogram-auth for that)
+- **Blocking Management**: No built-in blocking features (use aiogram-auth for that)
 
 ## High-Level Architecture
 
@@ -40,8 +42,6 @@ graph TB
     
     subgraph "aiogram-sentinel"
         subgraph "Middleware Chain"
-            BM[BlockingMiddleware]
-            AM[AuthMiddleware]
             DM[DebouncingMiddleware]
             TM[ThrottlingMiddleware]
         end
@@ -49,16 +49,11 @@ graph TB
         subgraph "Storage Layer"
             MB[Memory Backend]
             RB[Redis Backend]
-            FB[Future Backends]
         end
         
         subgraph "Configuration"
             SC[SentinelConfig]
             SF[Storage Factory]
-        end
-        
-        subgraph "Router"
-            MR[Membership Router]
         end
     end
     
@@ -66,19 +61,13 @@ graph TB
         R[Redis Server]
     end
     
-    DP --> BM
-    BM --> AM
-    AM --> DM
+    DP --> DM
     DM --> TM
     TM --> H
     
-    BM --> MB
-    AM --> MB
     DM --> MB
     TM --> MB
     
-    BM --> RB
-    AM --> RB
     DM --> RB
     TM --> RB
     
@@ -87,14 +76,11 @@ graph TB
     SC --> SF
     SF --> MB
     SF --> RB
-    
-    MR --> MB
-    MR --> RB
 ```
 
 ## Overview
 
-aiogram-sentinel is designed as a modular edge hygiene library for aiogram v3 bots. It provides protection against spam, abuse, and unwanted behavior through a combination of middleware, storage backends, and event hooks.
+aiogram-sentinel is designed as a focused rate limiting and debouncing library for aiogram v3 bots. It provides protection against spam and abuse through middleware, storage backends, and event hooks.
 
 ## Core Components
 
@@ -108,8 +94,6 @@ All backends implement standardized protocols defined in `storage/base.py`:
 
 - **RateLimiterBackend**: Rate limiting with sliding windows
 - **DebounceBackend**: Message deduplication and timing
-- **BlocklistBackend**: User blocking and unblocking
-- **UserRepo**: User registration and data management
 
 #### Memory Backend
 
@@ -138,22 +122,8 @@ Middlewares are the core protection mechanisms that process events before they r
 The middleware chain follows a strict order for optimal performance:
 
 ```
-Blocking → Auth → Debouncing → Throttling → Handlers
+Debouncing → Throttling → Handlers
 ```
-
-#### BlockingMiddleware
-
-- **Purpose**: Early user blocking based on blocklist
-- **Performance**: Single backend call, early return
-- **Data**: Sets `data["sentinel_blocked"] = True` when blocked
-- **Scope**: All event types
-
-#### AuthMiddleware
-
-- **Purpose**: User authentication and context management
-- **Features**: Auto-registration, custom validation hooks
-- **Data**: Sets `data["user_context"]` and `data["user_exists"]`
-- **Integration**: Works with `@require_registered` decorator
 
 #### DebounceMiddleware
 
@@ -161,6 +131,7 @@ Blocking → Auth → Debouncing → Throttling → Handlers
 - **Method**: SHA256 fingerprinting of message content
 - **Data**: Sets `data["sentinel_debounced"] = True` when duplicate
 - **Scope**: Message and callback events
+- **Configurable**: Per-handler debounce windows via `@debounce` decorator
 
 #### ThrottlingMiddleware
 
@@ -168,33 +139,25 @@ Blocking → Auth → Debouncing → Throttling → Handlers
 - **Features**: Per-handler limits, retry notifications
 - **Data**: Sets `data["sentinel_rate_limited"] = True` when limited
 - **Hooks**: Optional `on_rate_limited` callback
+- **Configurable**: Per-handler limits via `@rate_limit` decorator
 
-### 3. Router
-
-The membership router (`routers/my_chat_member.py`) handles bot membership changes:
-
-- **Auto-sync**: Updates blocklist based on membership status
-- **Private chats only**: Ignores group chat events
-- **State transitions**: `kicked/left` → blocked, `member` → unblocked
-- **Hooks**: `on_block` and `on_unblock` callbacks
-
-### 4. Setup Helper
+### 3. Setup Helper
 
 The setup helper (`sentinel.py`) provides a simplified one-call configuration:
 
 ```python
 # Basic setup
-router, backends = await Sentinel.setup(dp, config)
+router, infra = await Sentinel.setup(dp, config)
 
 # Advanced setup with hooks
-Sentinel.add_hooks(router, backends, config, **hooks)
+Sentinel.add_hooks(router, infra, config, on_rate_limited=callback)
 ```
 
 **Features**:
 - Automatic middleware registration
 - Backend instantiation
 - Router inclusion
-- Separated hook configuration for advanced users
+- Hook configuration for advanced users
 
 ## Data Flow
 
@@ -202,290 +165,186 @@ Sentinel.add_hooks(router, backends, config, **hooks)
 
 ```
 1. Event arrives → Dispatcher
-2. BlockingMiddleware → Check blocklist
-3. AuthMiddleware → Ensure user, validate
-4. DebounceMiddleware → Check duplicates
-5. ThrottlingMiddleware → Check rate limits
-6. Handler execution
+2. DebounceMiddleware → Check duplicates
+3. ThrottlingMiddleware → Check rate limits
+4. Handler execution
 ```
 
-## Lifecycle & Sequence Diagrams
-
-### Message Processing Flow
+### Rate Limiting Flow
 
 ```mermaid
 sequenceDiagram
     participant U as User
     participant TG as Telegram
     participant DP as Dispatcher
-    participant BM as BlockingMiddleware
-    participant AM as AuthMiddleware
     participant DM as DebouncingMiddleware
     participant TM as ThrottlingMiddleware
     participant H as Handler
-    participant SB as Storage Backend
 
     U->>TG: Send message
-    TG->>DP: Webhook/Polling event
-    DP->>BM: Process event
-    
-    BM->>SB: Check if user blocked
-    SB-->>BM: Block status
-    alt User is blocked
-        BM-->>DP: Block event
-        DP-->>TG: No response
-    else User not blocked
-        BM->>AM: Continue to auth
-        AM->>SB: Ensure user exists
-        SB-->>AM: User data
-        AM->>DM: Continue to debounce
-        DM->>SB: Check message fingerprint
-        SB-->>DM: Duplicate status
-        alt Message is duplicate
-            DM-->>DP: Skip event
-        else Message is new
-            DM->>TM: Continue to throttle
-            TM->>SB: Check rate limit
-            SB-->>TM: Rate limit status
-            alt Rate limit exceeded
-                TM-->>DP: Rate limit event
-            else Rate limit OK
-                TM->>H: Execute handler
-                H-->>TM: Handler response
-                TM-->>DP: Success
-            end
+    TG->>DP: Message event
+    DP->>DM: Process event
+    DM->>DM: Check fingerprint
+    alt Duplicate
+        DM-->>DP: Skip (debounced)
+    else New
+        DM->>TM: Process event
+        TM->>TM: Check rate limit
+        alt Rate limited
+            TM-->>DP: Skip (rate limited)
+        else Allowed
+            TM->>H: Execute handler
+            H-->>U: Response
         end
     end
-```
-
-### User Registration Flow
-
-```mermaid
-sequenceDiagram
-    participant U as User
-    participant AM as AuthMiddleware
-    participant SB as Storage Backend
-    participant H as Handler
-
-    U->>AM: First message
-    AM->>SB: Check user exists
-    SB-->>AM: User not found
-    AM->>SB: Create user record
-    SB-->>AM: User created
-    AM->>H: Continue to handler
-    H-->>U: Welcome message
-```
-
-### Blocklist Synchronization Flow
-
-```mermaid
-sequenceDiagram
-    participant U as User
-    participant TG as Telegram
-    participant MR as Membership Router
-    participant SB as Storage Backend
-    participant H as Hook Handler
-
-    U->>TG: Block bot
-    TG->>MR: my_chat_member event
-    MR->>SB: Add user to blocklist
-    SB-->>MR: Blocked
-    MR->>H: on_block hook
-    H-->>MR: Hook processed
-    MR-->>TG: Event handled
-```
-
-### Key Generation
-
-Keys are generated consistently across all backends:
-
-```python
-# Rate limiting
-rate_key(user_id, handler_name, **scope)
-
-# Debouncing  
-debounce_key(user_id, handler_name, fingerprint=content_hash)
-
-# User management
-user_key(user_id)
-```
-
-### State Management
-
-#### Rate Limiting State
-
-```
-Memory: {key: deque([timestamp1, timestamp2, ...])}
-Redis:  {key: counter_value} with TTL
-```
-
-#### Debouncing State
-
-```
-Memory: {key: last_seen_timestamp}
-Redis:  {key: "1"} with TTL (SET NX EX)
-```
-
-#### Blocklist State
-
-```
-Memory: {user_id1, user_id2, ...}
-Redis:  SADD/SREM/SISMEMBER operations
-```
-
-#### User State
-
-```
-Memory: {user_id: {user_data}}
-Redis:  HSET/HSETNX/HGETALL operations
 ```
 
 ## Configuration
 
 ### SentinelConfig
 
-Centralized configuration for all components:
+The main configuration class provides:
+
+- **Backend selection**: `memory` or `redis`
+- **Default limits**: Global rate limiting defaults
+- **Redis settings**: URL, prefix, and connection options
+- **Debounce settings**: Default debounce windows
+
+### Decorators
+
+Handler-level configuration via decorators:
 
 ```python
-@dataclass
-class SentinelConfig:
-    backend: str = "memory"  # "memory" or "redis"
-    redis_url: str = "redis://localhost:6379"
-    redis_prefix: str = "sentinel"
-    throttling_default_max: int = 5
-    throttling_default_per_seconds: int = 10
-    debounce_default_window: int = 2
-    # ... validation and defaults
+@router.message()
+@rate_limit(5, 60)  # 5 messages per minute
+@debounce(1.0)      # 1 second debounce
+async def handler(message: Message):
+    pass
 ```
 
-### Backend Factory
+## Key Generation
 
-The factory pattern (`storage/factory.py`) creates backends based on configuration:
+### Rate Limiting Keys
 
-```python
-def build_backends(config: SentinelConfig) -> BackendsBundle:
-    if config.backend == "memory":
-        return _build_memory_backends()
-    elif config.backend == "redis":
-        return _build_redis_backends(config)
+Rate limiting keys follow the pattern:
+```
+{prefix}:rate:{user_id}:{handler_name}:{scope?}
 ```
 
-## Error Handling
+### Debounce Keys
 
-### Exception Hierarchy
-
+Debounce keys follow the pattern:
 ```
-SentinelError (base)
-├── ConfigurationError
-├── BackendOperationError
-└── MiddlewareError
+{prefix}:debounce:{user_id}:{handler_name}:{fingerprint}:{scope?}
 ```
 
-### Error Recovery
+### Fingerprinting
 
-- **Backend failures**: Graceful degradation, log errors
-- **Hook failures**: Don't break middleware chain
-- **Configuration errors**: Fail fast with clear messages
+Message fingerprinting uses SHA256 of:
+- Message text (for text messages)
+- Callback data (for callback queries)
+- File ID (for media messages)
 
 ## Performance Considerations
 
 ### Memory Backend
 
-- **O(1) operations**: Hash lookups, set operations
+- **O(1) operations**: Hash table lookups
 - **Memory usage**: Grows with active users
-- **Cleanup**: Automatic via sliding windows
+- **Cleanup**: Automatic removal of expired entries
+- **Thread safety**: Async locks for concurrent access
 
 ### Redis Backend
 
-- **Network latency**: Single Redis call per operation
-- **Connection pooling**: Reuse connections
-- **Key expiration**: Automatic cleanup via TTL
+- **Network latency**: Consider Redis connection pooling
+- **Key expiration**: Automatic TTL management
+- **Pipelining**: Batch operations for better performance
+- **Memory usage**: Redis handles memory management
 
-### Middleware Overhead
+## Error Handling
 
-- **Blocking**: ~0.1ms (single lookup)
-- **Auth**: ~0.5ms (user registration check)
-- **Debouncing**: ~0.2ms (fingerprint + lookup)
-- **Throttling**: ~0.3ms (counter increment)
+### Backend Failures
 
-## Scalability
+- **Graceful degradation**: Fall back to allowing requests
+- **Logging**: Comprehensive error logging
+- **Monitoring**: Hook callbacks for observability
 
-### Horizontal Scaling
+### Configuration Errors
 
-- **Redis backend**: Multiple bot instances share state
-- **Stateless middlewares**: No shared state between instances
-- **Key namespacing**: Prevent conflicts between bots
-
-### Vertical Scaling
-
-- **Memory backend**: Limited by RAM
-- **Redis backend**: Limited by Redis capacity
-- **Middleware chain**: Linear with number of middlewares
-
-## Security
-
-### Data Protection
-
-- **User data**: Minimal storage, no sensitive information
-- **Key namespacing**: Prevent data leakage between bots
-- **Input validation**: All user inputs validated
-
-### Attack Mitigation
-
-- **Rate limiting**: Prevent spam and DoS
-- **Blocking**: Remove problematic users
-- **Debouncing**: Prevent duplicate processing
-- **Authentication**: Ensure user legitimacy
+- **Validation**: Runtime configuration validation
+- **Defaults**: Sensible fallback values
+- **Documentation**: Clear error messages
 
 ## Extensibility
 
-### Adding New Backends
+### Custom Backends
 
-1. Implement backend protocols
-2. Add to factory function
-3. Update configuration options
-4. Add tests and documentation
+Implement the protocol interfaces:
 
-### Adding New Middlewares
-
-1. Inherit from `BaseMiddleware`
-2. Follow middleware order guidelines
-3. Set appropriate data flags
-4. Add to setup helper
+```python
+class CustomRateLimiter(RateLimiterBackend):
+    async def allow(self, key: str, limit: int, window: int) -> bool:
+        # Custom implementation
+        pass
+```
 
 ### Custom Hooks
 
-All hooks are optional and can be customized:
+Register custom callbacks:
 
-- **Rate limit hooks**: Custom notifications
-- **User resolution**: Custom validation logic
-- **Membership hooks**: Custom event handling
+```python
+async def on_rate_limited(event, data, retry_after):
+    await event.answer(f"Rate limited. Try again in {retry_after}s.")
 
-## Testing Strategy
+Sentinel.add_hooks(router, infra, config, on_rate_limited=on_rate_limited)
+```
 
-### Unit Tests
+## Security Considerations
 
-- **Backend tests**: Isolated backend functionality
-- **Middleware tests**: Individual middleware behavior
-- **Integration tests**: End-to-end workflows
+### Key Isolation
 
-### Performance Tests
+- **User separation**: Keys include user ID
+- **Handler separation**: Keys include handler name
+- **Scope separation**: Optional scope for additional isolation
 
-- **Load testing**: High-frequency event processing
-- **Memory usage**: Backend memory consumption
-- **Latency testing**: Middleware overhead measurement
+### Data Privacy
 
-## Deployment Considerations
+- **No content storage**: Only fingerprints and timestamps
+- **Automatic cleanup**: Expired data removal
+- **Configurable retention**: TTL settings
+
+## Monitoring and Observability
+
+### Hooks
+
+- **on_rate_limited**: Called when rate limit is exceeded
+- **Custom metrics**: Easy integration with monitoring systems
+
+### Logging
+
+- **Structured logging**: JSON format for parsing
+- **Configurable levels**: Debug, info, warning, error
+- **Performance metrics**: Timing and count information
+
+## Best Practices
+
+### Configuration
+
+1. **Start with defaults**: Use sensible defaults for development
+2. **Tune for production**: Adjust limits based on usage patterns
+3. **Monitor performance**: Use hooks to track rate limiting effectiveness
+4. **Test thoroughly**: Verify behavior under load
+
+### Deployment
+
+1. **Use Redis for production**: Memory backend is for development only
+2. **Configure connection pooling**: Optimize Redis connections
+3. **Monitor memory usage**: Track Redis memory consumption
+4. **Set up alerts**: Monitor rate limiting and error rates
 
 ### Development
 
-- **Memory backend**: Simple setup, no dependencies
-- **Local testing**: All features available
-- **Debug logging**: Detailed operation logs
-
-### Production
-
-- **Redis backend**: Persistent, scalable storage
-- **Monitoring**: Hook integration for metrics
-- **Error handling**: Graceful degradation
-- **Configuration**: Environment-based settings
+1. **Use decorators**: Prefer handler-level configuration
+2. **Test edge cases**: Verify behavior with rapid requests
+3. **Profile performance**: Measure middleware overhead
+4. **Document custom hooks**: Explain custom callback behavior

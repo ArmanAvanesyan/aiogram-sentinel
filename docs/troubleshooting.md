@@ -93,7 +93,7 @@ logging.basicConfig(
    # More lenient configuration
    config = SentinelConfig(
        throttling_default_max=20,  # Increase limit
-       throttling_default_per_seconds=60,
+       throttling_default_per_seconds=10,
    )
    ```
 
@@ -141,48 +141,8 @@ logging.basicConfig(
 3. **Check Redis configuration**:
    ```python
    # Use memory storage as fallback
-   from aiogram_sentinel.storage import MemoryStorage
-   
-   storage = MemoryStorage()  # Fallback to memory
-   sentinel = Sentinel(storage=storage)
-   ```
-
-### User Blocking Issues
-
-**Symptoms**: Users can't be blocked/unblocked, blocking doesn't work
-
-**Possible Causes**:
-- Blocklist backend not configured
-- User ID format issues
-- Storage backend problems
-
-**Solutions**:
-
-1. **Check blocklist backend**:
-   ```python
-   @dp.message(Command("test_block"))
-   async def test_block(message: Message):
-       user_id = message.from_user.id
-       
-       # Test blocking
-       await sentinel.blocklist_backend.set_blocked(user_id, True)
-       is_blocked = await sentinel.blocklist_backend.is_blocked(user_id)
-       
-       await message.answer(f"User {user_id} blocked: {is_blocked}")
-   ```
-
-2. **Verify user ID format**:
-   ```python
-   # Ensure user ID is integer
-   user_id = int(message.from_user.id)
-   ```
-
-3. **Check storage backend**:
-   ```python
-   # Test storage directly
-   await sentinel.blocklist_backend.set_blocked(12345, True)
-   result = await sentinel.blocklist_backend.is_blocked(12345)
-   print(f"Block test result: {result}")
+   config = SentinelConfig(backend="memory")  # Fallback to memory
+   router, infra = await Sentinel.setup(dp, config)
    ```
 
 ### Debouncing Issues
@@ -210,61 +170,19 @@ logging.basicConfig(
        key = f"user:{message.from_user.id}:test"
        
        # Test debounce
-       await sentinel.debounce_backend.set_debounce(key, 5)
-       is_debounced = await sentinel.debounce_backend.is_debounced(key)
+       is_seen = await sentinel.debounce_backend.seen(key, 5, "test_fingerprint")
        
-       await message.answer(f"Debounce test: {is_debounced}")
+       await message.answer(f"Debounce test: {is_seen}")
    ```
 
 3. **Check key generation**:
    ```python
-   from aiogram_sentinel.utils.keys import generate_key
+   from aiogram_sentinel.utils.keys import debounce_key
    
-   key = generate_key("debounce", user_id=12345, handler_name="test")
+   key = debounce_key("user", 12345, "test", "fingerprint")
    print(f"Generated key: {key}")
    ```
 
-### Authentication Issues
-
-**Symptoms**: Users can't register, authentication fails
-
-**Possible Causes**:
-- User repository not configured
-- Registration logic issues
-- Storage backend problems
-
-**Solutions**:
-
-1. **Check user repository**:
-   ```python
-   @dp.message(Command("test_auth"))
-   async def test_auth(message: Message):
-       user_id = message.from_user.id
-       
-       # Test user registration
-       await sentinel.user_repo.ensure_user(user_id, {"username": "test"})
-       user_info = await sentinel.user_repo.get_user(user_id)
-       
-       await message.answer(f"User info: {user_info}")
-   ```
-
-2. **Verify user data format**:
-   ```python
-   # Ensure user data is properly formatted
-   user_data = {
-       "user_id": message.from_user.id,
-       "username": message.from_user.username,
-       "first_name": message.from_user.first_name,
-   }
-   ```
-
-3. **Check storage backend**:
-   ```python
-   # Test user repository directly
-   await sentinel.user_repo.ensure_user(12345, {"test": "data"})
-   user = await sentinel.user_repo.get_user(12345)
-   print(f"User data: {user}")
-   ```
 
 ## Performance Issues
 
@@ -277,10 +195,11 @@ logging.basicConfig(
 1. **Use Redis storage**:
    ```python
    # Switch from memory to Redis
-   from aiogram_sentinel.storage import RedisStorage
-   
-   storage = RedisStorage("redis://localhost:6379")
-   sentinel = Sentinel(storage=storage)
+   config = SentinelConfig(
+       backend="redis",
+       redis_url="redis://localhost:6379"
+   )
+   router, infra = await Sentinel.setup(dp, config)
    ```
 
 2. **Configure cleanup**:
@@ -288,7 +207,7 @@ logging.basicConfig(
    # Enable automatic cleanup
    config = SentinelConfig(
        # Reduce retention time
-       throttling_default_per_seconds=300,  # 5 minutes
+       throttling_default_per_seconds=10,  # 10 seconds
    )
    ```
 
@@ -313,19 +232,19 @@ logging.basicConfig(
 1. **Optimize storage backend**:
    ```python
    # Use faster Redis configuration
-   storage = RedisStorage(
-       url="redis://localhost:6379",
-       socket_timeout=1,  # Reduce timeout
-       socket_connect_timeout=1,
+   config = SentinelConfig(
+       backend="redis",
+       redis_url="redis://localhost:6379",
    )
+   router, infra = await Sentinel.setup(dp, config)
    ```
 
 2. **Reduce middleware complexity**:
    ```python
-   # Disable unnecessary middleware
+   # Use minimal configuration
    config = SentinelConfig(
-       blocklist_enabled=False,  # Disable if not needed
-       auth_required=False,      # Disable if not needed
+       throttling_default_max=10,  # Reduce rate limit
+       debounce_default_window=1,  # Reduce debounce time
    )
    ```
 
@@ -366,7 +285,9 @@ config = SentinelConfig(
 ```python
 # Test storage connection
 try:
-    await storage.ping()
+    # Test with a simple operation
+    await infra.rate_limiter.allow("test", 1, 1)
+    print("Storage connection successful")
 except Exception as e:
     print(f"Storage error: {e}")
 ```
@@ -409,16 +330,15 @@ async def health_check(message: Message):
         "middleware": "registered",
         "storage": await check_storage_health(),
         "rate_limiter": await check_rate_limiter_health(),
-        "blocklist": await check_blocklist_health(),
         "debounce": await check_debounce_health(),
-        "user_repo": await check_user_repo_health(),
     }
     
     await message.answer(f"Health Status: {health}")
 
 async def check_storage_health():
     try:
-        await sentinel.storage.ping()
+        # Test with a simple operation
+        await infra.rate_limiter.allow("health_check", 1, 1)
         return "healthy"
     except Exception:
         return "unhealthy"

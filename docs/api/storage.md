@@ -12,14 +12,6 @@
     options:
       show_source: true
 
-::: aiogram_sentinel.storage.MemoryBlocklist
-    options:
-      show_source: true
-
-::: aiogram_sentinel.storage.MemoryUserRepo
-    options:
-      show_source: true
-
 ### Redis Backends
 
 ::: aiogram_sentinel.storage.RedisRateLimiter
@@ -27,14 +19,6 @@
       show_source: true
 
 ::: aiogram_sentinel.storage.RedisDebounce
-    options:
-      show_source: true
-
-::: aiogram_sentinel.storage.RedisBlocklist
-    options:
-      show_source: true
-
-::: aiogram_sentinel.storage.RedisUserRepo
     options:
       show_source: true
 
@@ -48,10 +32,8 @@
     options:
       show_source: true
 
-::: aiogram_sentinel.storage.base.BlocklistBackend
-    options:
-      show_source: true
+## Factory
 
-::: aiogram_sentinel.storage.base.UserRepo
+::: aiogram_sentinel.storage.factory.build_infra
     options:
       show_source: true
