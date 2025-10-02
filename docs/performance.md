@@ -16,9 +16,9 @@ This document provides comprehensive performance analysis and benchmarks for aio
 
 ### Software Versions
 
-- **aiogram-sentinel**: v1.0.0
-- **aiogram**: v3.0.0
-- **redis-py**: v4.5.0
+- **aiogram-sentinel**: v0.1.1
+- **aiogram**: v3.22.0
+- **redis-py**: v6.4.0
 - **pytest-benchmark**: v4.0.0
 
 ### Test Dataset

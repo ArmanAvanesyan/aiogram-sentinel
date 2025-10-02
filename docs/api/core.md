@@ -21,6 +21,29 @@
         - redis_url
         - redis_prefix
 
+::: aiogram_sentinel.InfraBundle
+    options:
+      show_source: true
+      members:
+        - throttling_backend
+        - debounce_backend
+
+::: aiogram_sentinel.RateLimiterBackend
+    options:
+      show_source: true
+      members:
+        - allow
+        - cleanup_expired
+
+::: aiogram_sentinel.DebounceBackend  
+    options:
+      show_source: true
+      members:
+        - seen
+        - cleanup_expired
+        - redis_url
+        - redis_prefix
+
 ## Middleware
 
 ::: aiogram_sentinel.middlewares.ThrottlingMiddleware
