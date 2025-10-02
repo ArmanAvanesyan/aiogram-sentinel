@@ -194,7 +194,7 @@ jobs:
 ### Security Vulnerability Process
 
 **1. Vulnerability Discovery**
-- Private reporting via [SECURITY.md](SECURITY.md)
+- Private reporting via [SECURITY.md](../SECURITY.md)
 - Security team assessment
 - CVE assignment (if applicable)
 

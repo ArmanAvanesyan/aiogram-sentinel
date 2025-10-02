@@ -145,15 +145,15 @@ For advanced usage examples, see the [Tutorials](tutorials/) and [API Reference]
 
 ## Security
 
-For security information, see the [Security Policy](SECURITY.md).
+For security information, see the [SECURITY.md](../SECURITY.md).
 
 ### Q: Is aiogram-sentinel secure?
 
-**A**: Yes, aiogram-sentinel is designed with security in mind. See the [Security Policy](SECURITY.md) for details.
+**A**: Yes, aiogram-sentinel is designed with security in mind. See the [SECURITY.md](../SECURITY.md) for details.
 
 ### Q: How do I secure Redis connections?
 
-**A**: See the [Security Policy](SECURITY.md) for Redis security guidelines.
+**A**: See the [SECURITY.md](../SECURITY.md) for Redis security guidelines.
 
 ### Q: Can I monitor rate limiting events?
 
