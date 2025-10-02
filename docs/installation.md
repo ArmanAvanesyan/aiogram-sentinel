@@ -52,7 +52,7 @@ uv add "aiogram-sentinel[redis]"
 uv add -e ".[dev]"
 ```
 
-##<｜tool▁sep｜>verification
+## Verification
 
 Verify the installation:
 

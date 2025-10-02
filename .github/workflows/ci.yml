@@ -94,14 +94,14 @@ jobs:
     
     - name: Run Bandit security scan
       run: |
-        uv run bandit -r src -f json -o bandit-report.json || true
+        uv run bandit -r src -f json -o reports/security/bandit-report.json || true
       continue-on-error: true
     
     - name: Upload security report
       uses: actions/upload-artifact@v4
       with:
         name: bandit-report-quality-${{ matrix.python-version }}
-        path: bandit-report.json
+        path: reports/security/bandit-report.json
         retention-days: 30
       if: always()
 
@@ -164,7 +164,7 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
-          file: ./coverage.xml
+          file: ./reports/coverage/coverage.xml
           flags: unittests
           name: codecov-umbrella
 
@@ -229,7 +229,7 @@ jobs:
     - name: Run unit tests with coverage
       if: matrix.test-type == 'unit'
       run: |
-        uv run pytest tests/unit/ -v --cov=src/aiogram_sentinel --cov-report=xml --cov-report=html
+        uv run pytest tests/unit/ -v --cov=src/aiogram_sentinel --cov-report=xml:reports/coverage/coverage.xml --cov-report=html:reports/coverage/htmlcov/
     
     - name: Run integration tests
       if: matrix.test-type == 'integration' && matrix.os == 'ubuntu-latest'
@@ -243,21 +243,21 @@ jobs:
       run: |
         echo "Integration tests skipped on ${{ matrix.os }} (Redis not available)"
     
-    - name: Upload coverage reports
-      if: matrix.test-type == 'unit'
-      uses: actions/upload-artifact@v4
-      with:
-        name: coverage-report-${{ matrix.os }}-${{ matrix.python-version }}
-        path: htmlcov/
-        retention-days: 30
+      - name: Upload coverage reports
+        if: matrix.test-type == 'unit'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report-${{ matrix.os }}-${{ matrix.python-version }}
+          path: reports/coverage/htmlcov/
+          retention-days: 30
     
-    - name: Upload coverage to Codecov
-      if: matrix.test-type == 'unit'
-      uses: codecov/codecov-action@v4
-      with:
-        file: ./coverage.xml
-        flags: unittests
-        name: codecov-umbrella
+      - name: Upload coverage to Codecov
+        if: matrix.test-type == 'unit'
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./reports/coverage/coverage.xml
+          flags: unittests
+          name: codecov-umbrella
 
     - name: Test Summary
       if: always()

@@ -51,9 +51,16 @@ coverage.xml
 .pytest_cache/
 cover/
 
+# Reports directory (organized)
+# Security reports are tracked in reports/security/
+# Coverage reports are ignored in reports/coverage/
+reports/coverage/
+reports/*.log
+
 # Benchmark results
 .benchmarks/
 .pytest_cache/
+reports/performance/
 
 # Translations
 *.mo
