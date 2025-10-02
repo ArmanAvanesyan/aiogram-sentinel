@@ -8,11 +8,10 @@ alwaysApply: true
 
 ## Stable Surface
 - Public API includes:
-  `SentinelConfig`, `Sentinel.setup`, `build_backends`,
-  middlewares (`BlockingMiddleware`, `AuthMiddleware`, `DebounceMiddleware`, `ThrottlingMiddleware`),
-  router (`make_sentinel_router`),
-  decorators (`rate_limit`, `debounce`, `require_registered`),
-  storage protocols & `BackendsBundle`, `__version__`.
+  `SentinelConfig`, `Sentinel.setup`, `build_infra`,
+  middlewares (`DebounceMiddleware`, `ThrottlingMiddleware`),
+  decorators (`rate_limit`, `debounce`),
+  storage protocols & `InfraBundle`, `__version__`.
 
 ## Changes
 - Backward-compatible additions ⇒ **minor** bump.

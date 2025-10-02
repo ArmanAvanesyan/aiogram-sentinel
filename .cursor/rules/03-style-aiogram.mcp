@@ -7,16 +7,11 @@ alwaysApply: true
 # aiogram Style
 
 ## Middlewares
-- BlockingMiddleware: deny early if blocklisted; set data["sentinel_blocked"]=True; return.
-- AuthMiddleware: ensure_user(uid, username=?); optional resolve_user() populates user_context/user_exists; veto on is_bot/is_blocked; return.
 - DebounceMiddleware: fingerprint(message.text|caption|callback.data or hashed fallback of Update); if seen() then set data["sentinel_debounced"]=True; return.
 - ThrottlingMiddleware: resolve (max, per, scope) from decorator or cfg; if not allowed set data["sentinel_rate_limited"]=True; call on_rate_limited(event, data, retry_after≈1.0); return.
 
-## Router
-- make_sentinel_router(blocks, on_block?, on_unblock?): private chats only; new=kicked → set_blocked True; new=member from {kicked,left} → set_blocked False; then call hooks.
-
 ## Setup
-- Sentinel.setup wires middlewares in strict order on .message & .callback_query; includes membership router; returns (router, backends).
+- Sentinel.setup wires middlewares in strict order on .message & .callback_query; returns (router, infra).
 
 ## Performance
 - No sleeps; no network or DB in middlewares/router. Push to hooks.

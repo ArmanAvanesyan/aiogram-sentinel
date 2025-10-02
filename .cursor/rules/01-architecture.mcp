@@ -11,8 +11,7 @@ alwaysApply: true
   - version.py, config.py, exceptions.py, types.py, decorators.py, sentinel.py
   - utils/keys.py
   - storage/{base.py,memory.py,redis.py,factory.py}
-  - middlewares/{blocking.py,auth.py,debouncing.py,throttling.py}
-  - routers/my_chat_member.py
+  - middlewares/{debouncing.py,throttling.py}
 - examples/minimal_bot.py
 - tests/*
 - docs/*
@@ -23,8 +22,7 @@ alwaysApply: true
 - storage/redis.py: redis.asyncio only; **namespaced keys**.
 - storage/factory.py: selects backend; guarded imports; helpful errors.
 - middlewares/*: pure aiogram; no DB; no user-facing strings.
-- routers/my_chat_member.py: sync blocklist + call hooks only.
-- sentinel.py: wire order; include router; no logic duplication.
+- sentinel.py: wire order; no logic duplication.
 
 ## Middleware Order (MUST)
-Blocking → Auth → Debouncing → Throttling → Handlers
+Debouncing → Throttling → Handlers
