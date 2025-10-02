@@ -8,13 +8,10 @@ from typing import Any
 from aiogram import Dispatcher, Router
 
 from .config import SentinelConfig
-from .middlewares.auth import AuthMiddleware
-from .middlewares.blocking import BlockingMiddleware
 from .middlewares.debouncing import DebounceMiddleware
 from .middlewares.throttling import ThrottlingMiddleware
-from .routers.my_chat_member import make_sentinel_router
-from .storage.factory import build_backends
-from .types import BackendsBundle
+from .storage.factory import build_infra
+from .types import InfraBundle
 
 
 class Sentinel:
@@ -25,99 +22,91 @@ class Sentinel:
         dp: Dispatcher,
         cfg: SentinelConfig,
         router: Router | None = None,
-    ) -> tuple[Router, BackendsBundle]:
-        """Setup aiogram-sentinel with all middlewares and router.
+        *,
+        infra: InfraBundle | None = None,
+    ) -> tuple[Router, InfraBundle]:
+        """Setup aiogram-sentinel middlewares.
 
         Args:
-            dp: aiogram Dispatcher instance
-            cfg: SentinelConfig configuration
-            router: Optional custom router (if None, creates default)
+            dp: Dispatcher instance
+            cfg: Configuration
+            router: Optional router to use (creates new one if not provided)
+            infra: Optional infrastructure bundle (builds from config if not provided)
 
         Returns:
-            Tuple of (router, backends) for further customization
+            Tuple of (router, infra_bundle)
         """
-        # Build backends
-        backends = build_backends(cfg)
+        # Build infrastructure if not provided
+        if infra is None:
+            infra = build_infra(cfg)
 
         # Create or use provided router
         if router is None:
             router = Router(name="sentinel")
 
         # Create middlewares in correct order
-        blocking_middleware = BlockingMiddleware(backends.blocklist)
-        auth_middleware = AuthMiddleware(backends.user_repo)
-        debounce_middleware = DebounceMiddleware(backends.debounce, cfg)
-        throttling_middleware = ThrottlingMiddleware(backends.rate_limiter, cfg)
+        debounce_middleware = DebounceMiddleware(infra.debounce, cfg)
+        throttling_middleware = ThrottlingMiddleware(infra.rate_limiter, cfg)
 
         # Add middlewares to router in correct order
         for reg in (router.message, router.callback_query):
-            reg.middleware(blocking_middleware)
-            reg.middleware(auth_middleware)
             reg.middleware(debounce_middleware)
             reg.middleware(throttling_middleware)
 
-        # Include membership router for auto block/unblock
-        dp.include_router(make_sentinel_router(backends.blocklist))
+        # Include router in dispatcher
         dp.include_router(router)
 
-        return router, backends
+        return router, infra
 
     @staticmethod
     def add_hooks(
         router: Router,
-        backends: BackendsBundle,
+        infra: InfraBundle,
         cfg: SentinelConfig,
         *,
         on_rate_limited: Callable[[Any, dict[str, Any], float], Awaitable[Any]]
         | None = None,
-        resolve_user: Callable[[Any, dict[str, Any]], Awaitable[dict[str, Any] | None]]
-        | None = None,
-        on_block: Callable[[int, str, dict[str, Any]], Awaitable[Any]] | None = None,
-        on_unblock: Callable[[int, str, dict[str, Any]], Awaitable[Any]] | None = None,
     ) -> None:
         """Add hooks to existing middlewares.
 
         Args:
             router: Router with middlewares
-            backends: Backends bundle
+            infra: Infrastructure bundle (rate_limiter, debounce)
             cfg: SentinelConfig configuration
             on_rate_limited: Optional hook for rate-limited events
-            resolve_user: Optional hook for user resolution
-            on_block: Optional hook for block events
-            on_unblock: Optional hook for unblock events
         """
         # Create middlewares with hooks
-        auth_middleware = AuthMiddleware(backends.user_repo, resolve_user=resolve_user)
+        debounce_middleware = DebounceMiddleware(infra.debounce, cfg)
         throttling_middleware = ThrottlingMiddleware(
-            backends.rate_limiter, cfg, on_rate_limited=on_rate_limited
+            infra.rate_limiter, cfg, on_rate_limited=on_rate_limited
         )
 
         # Replace middlewares with hook-enabled versions
         for reg in (router.message, router.callback_query):
-            # Remove existing middlewares and add new ones
-            # Note: This is a simplified approach - in practice, you might want
-            # to replace specific middlewares or use a different pattern
-            reg.middleware(auth_middleware)
-            reg.middleware(throttling_middleware)
+            # Clear existing middlewares
+            reg.middlewares.clear()  # type: ignore
 
-        # Update membership router with hooks
-        # Note: This would require re-including the router with hooks
-        # In practice, you might want to create a new router with hooks
+            # Add complete middleware chain with hooks in correct order
+            reg.middleware(debounce_middleware)
+            reg.middleware(throttling_middleware)
 
 
 async def setup_sentinel(
     dp: Dispatcher,
     cfg: SentinelConfig,
     router: Router | None = None,
-) -> tuple[Router, BackendsBundle]:
+    *,
+    infra: InfraBundle | None = None,
+) -> tuple[Router, InfraBundle]:
     """Convenience function for Sentinel.setup.
 
     Args:
-        dp: aiogram Dispatcher instance
-        cfg: SentinelConfig configuration
-        router: Optional custom router
+        dp: Dispatcher instance
+        cfg: Configuration
+        router: Optional router to use (creates new one if not provided)
+        infra: Optional infrastructure bundle (builds from config if not provided)
 
     Returns:
-        Tuple of (router, backends)
+        Tuple of (router, infra_bundle)
     """
-    return await Sentinel.setup(dp, cfg, router)
+    return await Sentinel.setup(dp, cfg, router, infra=infra)

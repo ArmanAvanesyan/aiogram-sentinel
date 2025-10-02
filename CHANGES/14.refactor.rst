@@ -1,0 +1,1 @@
+Simplified middleware stack by removing AuthMiddleware, BlockingMiddleware, and ChatMember router for streamlined API.

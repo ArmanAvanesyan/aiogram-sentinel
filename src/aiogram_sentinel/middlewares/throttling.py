@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Awaitable, Callable
 from typing import Any
 
@@ -11,6 +12,8 @@ from aiogram.types import TelegramObject
 from ..config import SentinelConfig
 from ..storage.base import RateLimiterBackend
 from ..utils.keys import rate_key
+
+logger = logging.getLogger(__name__)
 
 
 class ThrottlingMiddleware(BaseMiddleware):
@@ -59,16 +62,15 @@ class ThrottlingMiddleware(BaseMiddleware):
             # Rate limit exceeded
             data["sentinel_rate_limited"] = True
 
-            # Calculate retry after time
-            retry_after = self._calculate_retry_after(per_seconds)
+            # Calculate retry after time using actual remaining TTL
+            retry_after = await self._calculate_retry_after(key, per_seconds)
 
             # Call optional hook
             if self._on_rate_limited:
                 try:
                     await self._on_rate_limited(event, data, retry_after)
-                except Exception:  # nosec B110
-                    # Log error but don't fail the middleware
-                    pass
+                except Exception as e:
+                    logger.exception("on_rate_limited hook failed: %s", e)
 
             # Stop processing
             return
@@ -119,6 +121,18 @@ class ThrottlingMiddleware(BaseMiddleware):
         if "message_id" in data:
             scope_kwargs["message_id"] = data["message_id"]
 
+        # Get scope from decorator if provided
+        scope: str | None = None
+        if hasattr(handler, "sentinel_rate_limit"):
+            config = handler.sentinel_rate_limit  # type: ignore
+            if isinstance(config, (tuple, list)) and len(config) >= 3:  # type: ignore
+                scope = config[2]  # type: ignore
+            elif isinstance(config, dict):
+                scope = config.get("scope")  # type: ignore
+
+        if scope:
+            scope_kwargs["scope"] = scope
+
         return rate_key(user_id, handler_name, **scope_kwargs)
 
     def _extract_user_id(self, event: TelegramObject) -> int:
@@ -134,26 +148,25 @@ class ThrottlingMiddleware(BaseMiddleware):
             # Fallback to 0 for anonymous events
             return 0
 
-    def _calculate_retry_after(self, window: int) -> float:
-        """Calculate retry after time in seconds."""
-        # Simple implementation - return the window duration
-        # In a real implementation, this could be more sophisticated
-        return float(window)
+    async def _calculate_retry_after(self, key: str, window: int) -> float:
+        """Calculate retry after time in seconds using actual remaining TTL."""
+        # Get remaining requests to calculate when the window will reset
+        remaining = await self._rate_limiter.get_remaining(key, 1, window)
 
+        # If no remaining requests, calculate time until oldest request expires
+        if remaining == 0:
+            # For memory backend, we need to check the actual timestamps
+            # For Redis backend, we can use TTL
+            if hasattr(self._rate_limiter, "_redis"):
+                # Redis backend - use TTL
+                try:
+                    ttl = await self._rate_limiter._redis.ttl(key)  # type: ignore
+                    return max(0, float(ttl)) if ttl > 0 else float(window)  # type: ignore
+                except Exception:
+                    return float(window)
+            else:
+                # Memory backend - estimate based on window
+                return float(window)
 
-def rate_limit(
-    limit: int = 10, window: int = 60
-) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
-    """Decorator to set rate limit configuration on handlers.
-
-    Args:
-        limit: Maximum number of requests per window
-        window: Time window in seconds
-    """
-
-    def decorator(handler: Callable[..., Any]) -> Callable[..., Any]:
-        # Store rate limit configuration on the handler
-        handler.sentinel_rate_limit = {"limit": limit, "window": window}  # type: ignore
-        return handler
-
-    return decorator
+        # If there are remaining requests, the window is not full
+        return 0.0

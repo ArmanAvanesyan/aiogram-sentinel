@@ -43,13 +43,13 @@ class DebounceMiddleware(BaseMiddleware):
         window_seconds = self._get_debounce_window(handler, data)
 
         # Generate fingerprint for the event
-        fingerprint = self._generate_fingerprint(event)
+        fp = self._generate_fingerprint(event)
 
         # Generate debounce key
         key = self._generate_debounce_key(event, handler, data)
 
         # Check if already seen within window
-        if await self._debounce_backend.seen(key, window_seconds, fingerprint):
+        if await self._debounce_backend.seen(key, window_seconds, fp):
             # Duplicate detected within window
             data["sentinel_debounced"] = True
             return  # Stop processing
@@ -130,6 +130,18 @@ class DebounceMiddleware(BaseMiddleware):
         if "message_id" in data:
             scope_kwargs["message_id"] = data["message_id"]
 
+        # Get scope from decorator if provided
+        scope: str | None = None
+        if hasattr(handler, "sentinel_debounce"):
+            config = handler.sentinel_debounce  # type: ignore
+            if isinstance(config, (tuple, list)) and len(config) >= 2:  # type: ignore
+                scope = config[1]  # type: ignore
+            elif isinstance(config, dict):
+                scope = config.get("scope")  # type: ignore
+
+        if scope:
+            scope_kwargs["scope"] = scope
+
         return debounce_key(user_id, handler_name, **scope_kwargs)
 
     def _extract_user_id(self, event: TelegramObject) -> int:
@@ -144,18 +156,3 @@ class DebounceMiddleware(BaseMiddleware):
         else:
             # Fallback to 0 for anonymous events
             return 0
-
-
-def debounce(delay: float = 1.0) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
-    """Decorator to set debounce configuration on handlers.
-
-    Args:
-        delay: Debounce delay in seconds
-    """
-
-    def decorator(handler: Callable[..., Any]) -> Callable[..., Any]:
-        # Store debounce configuration on the handler
-        handler.sentinel_debounce = {"delay": delay}  # type: ignore
-        return handler
-
-    return decorator
