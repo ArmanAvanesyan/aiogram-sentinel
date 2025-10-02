@@ -243,21 +243,21 @@ jobs:
       run: |
         echo "Integration tests skipped on ${{ matrix.os }} (Redis not available)"
     
-      - name: Upload coverage reports
-        if: matrix.test-type == 'unit'
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report-${{ matrix.os }}-${{ matrix.python-version }}
-          path: reports/coverage/htmlcov/
-          retention-days: 30
+    - name: Upload coverage reports
+      if: matrix.test-type == 'unit'
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report-${{ matrix.os }}-${{ matrix.python-version }}
+        path: reports/coverage/htmlcov/
+        retention-days: 30
     
-      - name: Upload coverage to Codecov
-        if: matrix.test-type == 'unit'
-        uses: codecov/codecov-action@v4
-        with:
-          file: ./reports/coverage/coverage.xml
-          flags: unittests
-          name: codecov-umbrella
+    - name: Upload coverage to Codecov
+      if: matrix.test-type == 'unit'
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./reports/coverage/coverage.xml
+        flags: unittests
+        name: codecov-umbrella
 
     - name: Test Summary
       if: always()
