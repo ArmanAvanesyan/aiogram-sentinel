@@ -50,9 +50,9 @@ nav:
     - FAQ: faq.md
     - Troubleshooting: troubleshooting.md
   - Development:
-    - Contributing: CONTRIBUTING.md
+    - Contributing: ../CONTRIBUTING.md
     - Testing: TESTING.md
-    - Changelog: CHANGELOG.md
+    - Changelog: ../CHANGELOG.md
 
 plugins:
   - search
