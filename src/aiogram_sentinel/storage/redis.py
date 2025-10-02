@@ -3,13 +3,12 @@
 from __future__ import annotations
 
 import time
-from typing import Any
 
 from redis.asyncio import Redis
 from redis.exceptions import RedisError
 
 from ..exceptions import BackendOperationError
-from .base import BlocklistBackend, DebounceBackend, RateLimiterBackend, UserRepo
+from .base import DebounceBackend, RateLimiterBackend
 
 
 def _k(prefix: str, *parts: str) -> str:
@@ -70,95 +69,3 @@ class RedisDebounce(DebounceBackend):
             return added is None
         except RedisError as e:
             raise BackendOperationError(f"Failed to check debounce: {e}") from e
-
-
-class RedisBlocklist(BlocklistBackend):
-    """Redis blocklist backend using SADD/SREM/SISMEMBER."""
-
-    def __init__(self, redis: Redis, prefix: str) -> None:
-        """Initialize the blocklist backend."""
-        self._redis = redis
-        self._prefix = prefix
-        self._blocklist_key = _k(self._prefix, "blocklist")
-
-    async def is_blocked(self, user_id: int) -> bool:
-        """Check if user is blocked."""
-        try:
-            result = await self._redis.sismember(self._blocklist_key, str(user_id))  # type: ignore
-            return bool(result)  # type: ignore
-        except RedisError as e:
-            raise BackendOperationError(f"Failed to check blocklist: {e}") from e
-
-    async def set_blocked(self, user_id: int, blocked: bool) -> None:
-        """Set user blocked status."""
-        try:
-            if blocked:
-                await self._redis.sadd(self._blocklist_key, str(user_id))  # type: ignore
-            else:
-                await self._redis.srem(self._blocklist_key, str(user_id))  # type: ignore
-        except RedisError as e:
-            raise BackendOperationError(f"Failed to set blocked status: {e}") from e
-
-
-class RedisUserRepo(UserRepo):
-    """Redis user repository using HSETNX/HSET."""
-
-    def __init__(self, redis: Redis, prefix: str) -> None:
-        """Initialize the user repository."""
-        self._redis = redis
-        self._prefix = prefix
-
-    async def ensure_user(self, user_id: int, *, username: str | None = None) -> None:
-        """Ensure user exists, creating if necessary."""
-        try:
-            redis_key = _k(self._prefix, "user", str(user_id))
-            await self._redis.hsetnx(redis_key, "registered", "1")  # type: ignore
-            if username:
-                await self._redis.hset(redis_key, "username", username)  # type: ignore
-        except RedisError as e:
-            raise BackendOperationError(f"Failed to ensure user: {e}") from e
-
-    async def is_registered(self, user_id: int) -> bool:
-        """Check if user is registered."""
-        try:
-            redis_key = _k(self._prefix, "user", str(user_id))
-            result = await self._redis.hexists(redis_key, "registered")  # type: ignore
-            return bool(result)  # type: ignore
-        except RedisError as e:
-            raise BackendOperationError(f"Failed to check registration: {e}") from e
-
-    async def register_user(self, user_id: int, **kwargs: Any) -> None:
-        """Register a user with optional data."""
-        try:
-            redis_key = _k(self._prefix, "user", str(user_id))
-            # Set user_id and timestamp
-            await self._redis.hset(redis_key, "user_id", str(user_id))  # type: ignore
-            await self._redis.hset(redis_key, "registered_at", str(time.time()))  # type: ignore
-            # Set additional fields
-            for key, value in kwargs.items():
-                await self._redis.hset(redis_key, key, str(value))  # type: ignore
-        except RedisError as e:
-            raise BackendOperationError(f"Failed to register user: {e}") from e
-
-    async def get_user(self, user_id: int) -> dict[str, Any] | None:
-        """Get user data by ID."""
-        try:
-            redis_key = _k(self._prefix, "user", str(user_id))
-            data = await self._redis.hgetall(redis_key)  # type: ignore
-            if not data:
-                return None
-            # Convert bytes to strings and parse types
-            result: dict[str, Any] = {}
-            for key, value in data.items():  # type: ignore
-                key_str = key.decode() if isinstance(key, bytes) else str(key)  # type: ignore
-                value_str = value.decode() if isinstance(value, bytes) else str(value)  # type: ignore
-                # Try to parse as int/float, otherwise keep as string
-                if value_str.isdigit():
-                    result[key_str] = int(value_str)
-                elif value_str.replace(".", "").isdigit():
-                    result[key_str] = float(value_str)
-                else:
-                    result[key_str] = value_str
-            return result
-        except RedisError as e:
-            raise BackendOperationError(f"Failed to get user: {e}") from e

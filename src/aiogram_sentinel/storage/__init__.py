@@ -1,41 +1,29 @@
 """Storage backend implementations for aiogram-sentinel."""
 
 from .base import (
-    BlocklistBackend,
     DebounceBackend,
     RateLimiterBackend,
-    UserRepo,
 )
-from .factory import build_backends
+from .factory import build_infra
 from .memory import (
-    MemoryBlocklist,
     MemoryDebounce,
     MemoryRateLimiter,
-    MemoryUserRepo,
 )
 from .redis import (
-    RedisBlocklist,
     RedisDebounce,
     RedisRateLimiter,
-    RedisUserRepo,
 )
 
 __all__ = [
     # Protocols
-    "BlocklistBackend",
     "DebounceBackend",
     "RateLimiterBackend",
-    "UserRepo",
     # Factory
-    "build_backends",
+    "build_infra",
     # Memory implementations
-    "MemoryBlocklist",
     "MemoryDebounce",
     "MemoryRateLimiter",
-    "MemoryUserRepo",
     # Redis implementations
-    "RedisBlocklist",
     "RedisDebounce",
     "RedisRateLimiter",
-    "RedisUserRepo",
 ]

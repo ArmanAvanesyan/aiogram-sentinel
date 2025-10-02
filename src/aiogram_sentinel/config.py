@@ -29,9 +29,6 @@ class SentinelConfig:
     # Auth configuration
     require_registration: bool = False
 
-    # Blocking configuration
-    auto_block_on_limit: bool = True
-
     # Internal settings
     _validated: bool = field(default=False, init=False)
 
@@ -56,9 +53,6 @@ class SentinelConfig:
 
         if self.debounce_default_window <= 0:
             raise ConfigurationError("debounce_default_window must be positive")
-
-        if not self.redis_prefix.endswith(":"):
-            self.redis_prefix += ":"
 
     def is_redis_backend(self) -> bool:
         """Check if Redis backend is configured."""

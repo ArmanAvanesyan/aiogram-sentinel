@@ -5,9 +5,8 @@ from __future__ import annotations
 import asyncio
 import time
 from collections import defaultdict, deque
-from typing import Any
 
-from .base import BlocklistBackend, DebounceBackend, RateLimiterBackend, UserRepo
+from .base import DebounceBackend, RateLimiterBackend
 
 
 class MemoryRateLimiter(RateLimiterBackend):
@@ -121,76 +120,3 @@ class MemoryDebounce(DebounceBackend):
     def _debounces(self) -> dict[str, float]:
         """Access to internal storage for testing."""
         return self._store
-
-
-class MemoryBlocklist(BlocklistBackend):
-    """In-memory blocklist backend using set semantics."""
-
-    def __init__(self) -> None:
-        """Initialize the blocklist backend."""
-        self._blocked_users: set[int] = set()
-        self._lock = asyncio.Lock()
-
-    async def is_blocked(self, user_id: int) -> bool:
-        """Check if user is blocked."""
-        async with self._lock:
-            return user_id in self._blocked_users
-
-    async def set_blocked(self, user_id: int, blocked: bool) -> None:
-        """Set user blocked status."""
-        async with self._lock:
-            if blocked:
-                self._blocked_users.add(user_id)
-            else:
-                self._blocked_users.discard(user_id)
-
-    # Convenience methods for tests
-    async def block_user(self, user_id: int) -> None:
-        """Block a user."""
-        await self.set_blocked(user_id, True)
-
-    async def unblock_user(self, user_id: int) -> None:
-        """Unblock a user."""
-        await self.set_blocked(user_id, False)
-
-
-class MemoryUserRepo(UserRepo):
-    """In-memory user repository implementation."""
-
-    def __init__(self) -> None:
-        """Initialize the user repository."""
-        self._users: dict[int, dict[str, Any]] = {}
-        self._lock = asyncio.Lock()
-
-    async def ensure_user(self, user_id: int, *, username: str | None = None) -> None:
-        """Ensure user exists, creating if necessary."""
-        async with self._lock:
-            if user_id not in self._users:
-                self._users[user_id] = {
-                    "user_id": user_id,
-                    "registered_at": time.monotonic(),
-                }
-            if username:
-                self._users[user_id]["username"] = username
-
-    async def is_registered(self, user_id: int) -> bool:
-        """Check if user is registered."""
-        async with self._lock:
-            return user_id in self._users
-
-    async def register_user(self, user_id: int, **kwargs: Any) -> None:
-        """Register a user with optional data."""
-        async with self._lock:
-            if user_id not in self._users:
-                self._users[user_id] = {
-                    "user_id": user_id,
-                    "registered_at": time.monotonic(),
-                }
-            # Update with provided data
-            for key, value in kwargs.items():
-                self._users[user_id][key] = value
-
-    async def get_user(self, user_id: int) -> dict[str, Any] | None:
-        """Get user data by ID."""
-        async with self._lock:
-            return self._users.get(user_id)

@@ -4,38 +4,31 @@ from __future__ import annotations
 
 from ..config import SentinelConfig
 from ..exceptions import ConfigurationError
-from ..types import BackendsBundle
+from ..types import InfraBundle
 
 
-def build_backends(config: SentinelConfig) -> BackendsBundle:
-    """Build storage backends based on configuration."""
+def build_infra(config: SentinelConfig) -> InfraBundle:
+    """Build infrastructure backends (rate_limiter + debounce) based on configuration."""
     if config.backend == "memory":
-        return _build_memory_backends()
+        return _build_memory_infra()
     elif config.backend == "redis":
-        return _build_redis_backends(config)
+        return _build_redis_infra(config)
     else:
         raise ConfigurationError(f"Unsupported backend: {config.backend}")
 
 
-def _build_memory_backends() -> BackendsBundle:
-    """Build in-memory backends."""
-    from .memory import (
-        MemoryBlocklist,
-        MemoryDebounce,
-        MemoryRateLimiter,
-        MemoryUserRepo,
-    )
+def _build_memory_infra() -> InfraBundle:
+    """Build in-memory infrastructure backends."""
+    from .memory import MemoryDebounce, MemoryRateLimiter
 
-    return BackendsBundle(
+    return InfraBundle(
         rate_limiter=MemoryRateLimiter(),
         debounce=MemoryDebounce(),
-        blocklist=MemoryBlocklist(),
-        user_repo=MemoryUserRepo(),
     )
 
 
-def _build_redis_backends(config: SentinelConfig) -> BackendsBundle:
-    """Build Redis backends."""
+def _build_redis_infra(config: SentinelConfig) -> InfraBundle:
+    """Build Redis infrastructure backends."""
     try:
         from redis.asyncio import Redis
     except ImportError as e:
@@ -43,22 +36,15 @@ def _build_redis_backends(config: SentinelConfig) -> BackendsBundle:
             "Redis backend requires redis package. Install with: pip install redis"
         ) from e
 
-    from .redis import (
-        RedisBlocklist,
-        RedisDebounce,
-        RedisRateLimiter,
-        RedisUserRepo,
-    )
+    from .redis import RedisDebounce, RedisRateLimiter
 
     try:
         # Create Redis connection
         redis: Redis = Redis.from_url(config.redis_url)  # type: ignore
 
-        return BackendsBundle(
+        return InfraBundle(
             rate_limiter=RedisRateLimiter(redis, config.redis_prefix),
             debounce=RedisDebounce(redis, config.redis_prefix),
-            blocklist=RedisBlocklist(redis, config.redis_prefix),
-            user_repo=RedisUserRepo(redis, config.redis_prefix),
         )
     except Exception as e:
         raise ConfigurationError(f"Failed to create Redis connection: {e}") from e
