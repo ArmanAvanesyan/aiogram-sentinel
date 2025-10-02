@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
   pull_request:
     branches: [main]
   schedule:
@@ -130,6 +130,50 @@ jobs:
         os: [ubuntu-latest]
         test-type: ["unit"]
         python-version: ["3.12"]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up UV
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: ${{ env.UV_VERSION }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache UV dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/uv
+            .venv
+          key: ${{ runner.os }}-uv-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml', '**/uv.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-uv-${{ matrix.python-version }}-
+
+      - name: Install dependencies
+        run: uv sync --all-extras --all-groups
+
+      - name: Run unit tests with coverage
+        run: uv run pytest tests/unit/ -v --cov=src/aiogram_sentinel --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+
+      - name: Update job summary
+        if: always()
+        run: |
+          echo "## 🧪 Unit Tests Summary" >> $GITHUB_STEP_SUMMARY
+          echo "| Platform | Python | Test Type | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "| ${{ matrix.os }} | ${{ matrix.python-version }} | ${{ matrix.test-type }} | ✅ |" >> $GITHUB_STEP_SUMMARY
         
   tests-full:
     name: Tests (Full Matrix)
@@ -229,8 +273,9 @@ jobs:
     timeout-minutes: 10
     needs: detect-changes
     if: |
-      (github.event_name == 'schedule' || github.event_name == 'push') &&
-      (needs.detect-changes.outputs.code == 'true' || needs.detect-changes.outputs.ci == 'true')
+      github.event_name == 'schedule' ||
+      (github.event_name == 'push' &&
+       (needs.detect-changes.outputs.code == 'true' || needs.detect-changes.outputs.ci == 'true'))
     
     strategy:
       matrix:

@@ -212,8 +212,8 @@ version_variables = ["src/aiogram_sentinel/version.py:__version__"]
 build_command = "uv run python -m hatchling build"
 dist_path = "dist/"
 upload_to_vcs_release = true
-upload_to_pypi = true
-upload_to_release = true
+upload_to_pypi = false
+upload_to_release = false
 commit_subject = "chore(release): {version} [skip ci]"
 commit_message = "chore(release): {version} [skip ci]"
 tag_commit = true
@@ -224,10 +224,6 @@ prerelease = false
 [tool.semantic_release.branches.main]
 match = "main"
 prerelease = false
-
-[tool.semantic_release.branches.develop]
-match = "develop"
-prerelease = true
 
 
 [tool.semantic_release.commit_parser_options]
