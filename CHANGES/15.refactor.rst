@@ -1,1 +1,0 @@
-Streamlined storage backend interfaces and removed unused factory methods for simplified implementation.

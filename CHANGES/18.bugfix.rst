@@ -1,1 +1,0 @@
-Fixed middleware error handling, improved performance, and enhanced debouncing accuracy.
