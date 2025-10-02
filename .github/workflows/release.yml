@@ -93,28 +93,25 @@ jobs:
         with:
           skip-existing: true
 
-      - name: Create GitHub Release from Tag
-        id: create_release
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref_name }}
-          release_name: Release ${{ github.ref_name }}
-          body: |
-            Release ${{ github.ref_name }}
-            
-            Automated package published to PyPI with simplified middleware stack and documentation cleanup.
-          draft: false
-          prerelease: false
-
-      - name: Upload release assets
+      - name: Create GitHub Release and Upload Assets
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
           files: dist/*
           tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body: |
+            Release ${{ github.ref_name }}
+            
+            Automated package published to PyPI with simplified middleware stack and documentation cleanup.
+            
+            ## Changes
+            - Simplified middleware stack focusing on core rate limiting and debouncing
+            - Streamlined storage backends (memory and Redis)
+            - Documentation cleanup and restructuring
+            - Performance improvements and benchmarks
+          overwrite_files: true
+          generate_release_notes: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
