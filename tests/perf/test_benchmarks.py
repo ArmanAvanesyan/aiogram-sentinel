@@ -6,10 +6,8 @@ from typing import Any
 import pytest
 
 from aiogram_sentinel.storage.memory import (
-    MemoryBlocklist,
     MemoryDebounce,
     MemoryRateLimiter,
-    MemoryUserRepo,
 )
 
 
@@ -37,39 +35,19 @@ async def test_debounce_performance() -> None:
 
 
 @pytest.mark.asyncio
-async def test_blocklist_performance() -> None:
-    """Benchmark blocklist operations."""
-    blocklist = MemoryBlocklist()
-    user_id = 12345
-
-    # Simple performance test without benchmark fixture
-    for _ in range(1000):
-        await blocklist.is_blocked(user_id)
-
-
-@pytest.mark.asyncio
-async def test_user_repo_performance() -> None:
-    """Benchmark user repository operations."""
-    user_repo = MemoryUserRepo()
-    user_id = 12345
-
-    # Simple performance test without benchmark fixture
-    for i in range(1000):
-        await user_repo.register_user(user_id + i, username=f"user{i}")
-
-
-@pytest.mark.asyncio
 async def test_concurrent_operations() -> None:
     """Benchmark concurrent operations."""
     rate_limiter = MemoryRateLimiter()
-    user_repo = MemoryUserRepo()
+    debounce = MemoryDebounce()
 
     # Simple performance test without benchmark fixture
     tasks: list[Any] = []
     for i in range(100):
         # Mix of operations
         tasks.append(rate_limiter.allow(f"user:{i}", max_events=10, per_seconds=60))
-        tasks.append(user_repo.register_user(i, username=f"user{i}"))
+        tasks.append(
+            debounce.seen(f"user:{i}:handler", window_seconds=60, fingerprint="test")
+        )
 
     await asyncio.gather(*tasks)
 
