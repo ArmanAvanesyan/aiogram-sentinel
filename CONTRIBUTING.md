@@ -260,6 +260,60 @@ Releases are automated via GitHub Actions:
 - Review existing [issues](../../issues)
 - Join discussions in [GitHub Discussions](../../discussions)
 
+## Development Tools
+
+### Version Management
+
+We include utility tools to help maintain version consistency across releases:
+
+#### `tools/check_version_tag.py`
+**Purpose**: Validates version consistency between package sources and git tags.
+
+**Usage**:
+```bash
+# Check version consistency (typically run in CI)
+uv run python tools/check_version_tag.py
+```
+
+**What it validates**:
+- Package version (`src/aiogram_sentinel/version.py`)
+- PyProject version (`pyproject.toml`)
+- Git tag version (from `GITHUB_REF`)
+
+**When to use**:
+- Before releasing to catch version mismatches
+- In CI workflows to prevent inconsistent releases
+- When debugging version-related issues
+
+#### `tools/gen_tree.py`
+**Purpose**: Generates markdown-formatted directory tree for documentation.
+
+**Usage**:
+```bash
+# Generate directory structure for docs
+uv run python tools/gen_tree.py
+```
+
+**Output**: Creates a clean directory tree that can be:
+- Pasted into README.md
+- Used in documentation
+- Included in contribution guides
+
+**Features**:
+- Automatically ignores build artifacts, cache files, and IDE files
+- Produces markdown-ready output
+- Sorts directories before files alphabetically
+
+### Release Process Tools
+
+These tools are automatically integrated into our CI/CD workflows:
+
+- **Version checker** runs during tag-based releases
+- **Directory generator** can be used for documentation updates
+- Both tools use `uv run` for consistency with our dependency management
+
+For more details on the release process, see the [Release Guidelines](docs/release.md).
+
 ## Code of Conduct
 
 Please be respectful and constructive in all interactions. We aim to create a welcoming environment for all contributors.

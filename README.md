@@ -110,7 +110,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines and setup inst
 
 ## 🔒 Security
 
-For security issues, see [SECURITY.md](.github/SECURITY.md).
+For security issues, see [SECURITY.md](SECURITY.md).
 
 ## 📄 License
 
