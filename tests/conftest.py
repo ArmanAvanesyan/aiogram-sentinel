@@ -9,10 +9,8 @@ import pytest
 from aiogram.types import CallbackQuery, Chat, Message, User
 
 from aiogram_sentinel.storage.memory import (
-    MemoryBlocklist,
     MemoryDebounce,
     MemoryRateLimiter,
-    MemoryUserRepo,
 )
 
 
@@ -47,8 +45,6 @@ def memory_backends():
     return {
         "rate_limiter": MemoryRateLimiter(),
         "debounce": MemoryDebounce(),
-        "blocklist": MemoryBlocklist(),
-        "user_repo": MemoryUserRepo(),
     }
 
 
@@ -136,18 +132,6 @@ def debounce() -> MemoryDebounce:
 
 
 @pytest.fixture
-def blocklist() -> MemoryBlocklist:
-    """Create a MemoryBlocklist instance."""
-    return MemoryBlocklist()
-
-
-@pytest.fixture
-def user_repo() -> MemoryUserRepo:
-    """Create a MemoryUserRepo instance."""
-    return MemoryUserRepo()
-
-
-@pytest.fixture
 def mock_redis() -> AsyncMock:
     """Create a mock Redis connection."""
     mock_redis = AsyncMock()
@@ -157,26 +141,6 @@ def mock_redis() -> AsyncMock:
     mock_pipeline.expire.return_value = None
     mock_pipeline.execute.return_value = [1, 1]
     return mock_redis
-
-
-@pytest.fixture
-def mock_blocklist_backend() -> AsyncMock:
-    """Create a mock blocklist backend."""
-    backend = AsyncMock()
-    backend.is_blocked.return_value = False
-    backend.block_user.return_value = None
-    backend.unblock_user.return_value = None
-    return backend
-
-
-@pytest.fixture
-def mock_user_repo() -> AsyncMock:
-    """Create a mock user repository."""
-    repo = AsyncMock()
-    repo.is_registered.return_value = False
-    repo.register_user.return_value = None
-    repo.get_user.return_value = {}
-    return repo
 
 
 @pytest.fixture
@@ -199,35 +163,8 @@ def mock_debounce_backend() -> AsyncMock:
 
 
 @pytest.fixture
-def mock_resolve_user() -> Any:
-    """Create a mock resolve_user hook."""
-
-    async def resolve_user(event: Any, data: Any) -> dict[str, Any] | None:
-        if hasattr(event, "from_user") and event.from_user:
-            return {
-                "user_id": event.from_user.id,
-                "username": event.from_user.username,
-            }
-        return None
-
-    return resolve_user
-
-
-@pytest.fixture
 def mock_on_rate_limited() -> AsyncMock:
     """Create a mock on_rate_limited hook."""
-    return AsyncMock()
-
-
-@pytest.fixture
-def mock_on_block() -> AsyncMock:
-    """Create a mock on_block hook."""
-    return AsyncMock()
-
-
-@pytest.fixture
-def mock_on_unblock() -> AsyncMock:
-    """Create a mock on_unblock hook."""
     return AsyncMock()
 
 
@@ -238,8 +175,6 @@ def performance_thresholds() -> dict[str, float]:
     return {
         "rate_limit_increment": 0.001,  # 1ms
         "debounce_check": 0.001,  # 1ms
-        "blocklist_check": 0.001,  # 1ms
-        "user_repo_operation": 0.001,  # 1ms
         "middleware_overhead": 0.005,  # 5ms
     }
 

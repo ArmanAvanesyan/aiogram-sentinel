@@ -41,20 +41,3 @@ def debounce(
         return handler
 
     return decorator
-
-
-def require_registered(
-    required: bool = True,
-) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
-    """Decorator to mark a handler as requiring user registration.
-
-    Args:
-        required: Whether registration is required
-    """
-
-    def decorator(handler: Callable[..., Any]) -> Callable[..., Any]:
-        # Store registration requirement on the handler
-        handler.sentinel_require_registered = required  # type: ignore
-        return handler
-
-    return decorator

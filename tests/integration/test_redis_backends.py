@@ -6,10 +6,8 @@ from typing import Any
 import pytest
 
 from aiogram_sentinel.storage.redis import (
-    RedisBlocklist,
     RedisDebounce,
     RedisRateLimiter,
-    RedisUserRepo,
 )
 
 
@@ -34,8 +32,6 @@ class TestRedisBackends:
         backends = {
             "rate_limiter": RedisRateLimiter(redis_client, "test:"),
             "debounce": RedisDebounce(redis_client, "test:"),
-            "blocklist": RedisBlocklist(redis_client, "test:"),
-            "user_repo": RedisUserRepo(redis_client, "test:"),
         }
 
         yield backends
@@ -89,50 +85,6 @@ class TestRedisBackends:
         key2 = "user:456:handler"
         is_debounced = await debounce.is_debounced(key2)
         assert is_debounced is False
-
-    @pytest.mark.asyncio
-    async def test_redis_blocklist_integration(self, redis_backends: Any) -> None:
-        """Test Redis blocklist integration."""
-        blocklist = redis_backends["blocklist"]
-        user_id = 12345
-
-        # Test initial state
-        is_blocked = await blocklist.is_blocked(user_id)
-        assert is_blocked is False
-
-        # Test block user
-        await blocklist.block_user(user_id)
-        is_blocked = await blocklist.is_blocked(user_id)
-        assert is_blocked is True
-
-        # Test unblock user
-        await blocklist.unblock_user(user_id)
-        is_blocked = await blocklist.is_blocked(user_id)
-        assert is_blocked is False
-
-    @pytest.mark.asyncio
-    async def test_redis_user_repo_integration(self, redis_backends: Any) -> None:
-        """Test Redis user repository integration."""
-        user_repo = redis_backends["user_repo"]
-        user_id = 12345
-
-        # Test initial state
-        is_registered = await user_repo.is_registered(user_id)
-        assert is_registered is False
-
-        user_data = await user_repo.get_user(user_id)
-        assert user_data is None
-
-        # Test register user
-        await user_repo.register_user(user_id, username="testuser", first_name="Test")
-        is_registered = await user_repo.is_registered(user_id)
-        assert is_registered is True
-
-        user_data = await user_repo.get_user(user_id)
-        assert user_data is not None
-        assert user_data["username"] == "testuser"
-        assert user_data["first_name"] == "Test"
-        assert "registered_at" in user_data
 
     @pytest.mark.asyncio
     async def test_redis_connection_error_handling(self, redis_url: str) -> None:
