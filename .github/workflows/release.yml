@@ -39,7 +39,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
@@ -48,10 +48,23 @@ jobs:
         with:
           version: "0.8.0"
 
+      - name: Cache UV dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/uv
+            .venv
+          key: ${{ runner.os }}-uv-release-${{ hashFiles('**/pyproject.toml', '**/uv.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-uv-release-
+
       - name: Install dependencies
         run: |
           uv sync --all-extras --all-groups
-          uv add build twine
+      
+      - name: Install build tools
+        run: |
+          uv tool install build twine
 
       - name: Run quality checks
         if: github.event_name != 'push' || !startsWith(github.ref, 'refs/tags/')
@@ -70,12 +83,12 @@ jobs:
       - name: Build package for tag release
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
         run: |
-          uv run python -m build
+          uv tool run python -m build
 
       - name: Check package
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
         run: |
-          uv run twine check dist/*
+          uv tool run twine check dist/*
 
       - name: Publish to PyPI
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
@@ -95,26 +108,18 @@ jobs:
           body: |
             Release ${{ github.ref_name }}
             
-            Initial release of aiogram-sentinel with core features:
-            - Rate limiting middleware
-            - Debouncing middleware
-            - Authentication middleware
-            - Blocking middleware
-            - Memory and Redis storage backends
-            - Comprehensive documentation and CI/CD
+            Automated package published to PyPI with simplified middleware stack and documentation cleanup.
           draft: false
           prerelease: false
 
       - name: Upload release assets
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
-        uses: actions/upload-release-asset@v1
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          tag_name: ${{ github.ref_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/
-          asset_name: dist
-          asset_content_type: application/zip
 
       - name: Semantic Release (Manual - Patch)
         if: github.event.inputs.version_type == 'patch' && (github.event_name != 'push' || !startsWith(github.ref, 'refs/tags/'))
