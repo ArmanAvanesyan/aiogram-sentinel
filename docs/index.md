@@ -2,6 +2,8 @@
 
 **Rate limiting and debouncing middleware for aiogram v3** - Protect your Telegram bots from spam and abuse with powerful middleware and storage backends.
 
+*Updated: GitHub Pages deployment enabled with environment tracking*
+
 ## Quick Start
 
 ```python
