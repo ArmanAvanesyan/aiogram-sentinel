@@ -108,6 +108,23 @@ await dp.start_polling(bot)
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines and setup instructions.
 
+## 💬 Community & Support
+
+- 💬 **[Discussions](https://github.com/ArmanAvanesyan/aiogram-sentinel/discussions)** - Questions, ideas, and community chat
+- 🐛 **[Issues](https://github.com/ArmanAvanesyan/aiogram-sentinel/issues)** - Bug reports and concrete feature requests
+- 📖 **[Documentation](https://armanavanesyan.github.io/aiogram-sentinel/)** - Complete guides and API reference
+
+### 🎯 Where to Get Help
+
+| Need Help With | Go To |
+|----------------|--------|
+| Usage questions | 💬 **[Q&A Discussions](https://github.com/ArmanAvanesyan/aiogram-sentinel/discussions/categories/q-a)** |
+| Feature suggestions | 💡 **[Ideas & Feature Requests](https://github.com/ArmanAvanesyan/aiogram-sentinel/discussions/categories/ideas-feature-requests)** |
+| Bug reports | 🐛 **[Issues](https://github.com/ArmanAvanesyan/aiogram-sentinel/issues)** |
+| General chat | 💬 **[General Discussion](https://github.com/ArmanAvanesyan/aiogram-sentinel/discussions/categories/general-discussion)** |
+| Share projects | 🎉 **[Show and tell](https://github.com/ArmanAvanesyan/aiogram-sentinel/discussions/categories/show-and-tell)** |
+| Project updates | 📢 **[Announcements](https://github.com/ArmanAvanesyan/aiogram-sentinel/discussions/categories/announcements)** |
+
 ## 🔒 Security
 
 For security issues, see [SECURITY.md](SECURITY.md).

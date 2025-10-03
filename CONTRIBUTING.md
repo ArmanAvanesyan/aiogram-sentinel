@@ -260,6 +260,41 @@ Releases are automated via GitHub Actions:
 - Review existing [issues](../../issues)
 - Join discussions in [GitHub Discussions](../../discussions)
 
+## Community Guidelines
+
+### 🎯 Where to Go for What
+
+| Purpose | Location | Reason |
+|---------|----------|---------|
+| **📚 Documentation Questions** | [💬 Q&A Discussions](https://github.com/ArmanAvanesyan/aiogram-sentinel/discussions/categories/q-a) | Interactive help and "how-to" questions |
+| **💡 Feature Ideas** | [💡 Ideas & Feature Requests](https://github.com/ArmanAvanesyan/aiogram-sentinel/discussions/categories/ideas-feature-requests) | Brainstorming and feature discussions |
+| **🐛 Bug Reports** | [🐛 Issues](https://github.com/ArmanAvanesyan/aiogram-sentinel/issues) | Trackable bugs requiring code fixes |
+| **💬 General Discussion** | [💬 General Discussion](https://github.com/ArmanAvanesyan/aiogram-sentinel/discussions/categories/general-discussion) | Community chat and announcements |
+| **🎉 Share Projects** | [🎉 Show and tell](https://github.com/ArmanAvanesyan/aiogram-sentinel/discussions/categories/show-and-tell) | Share bots using aiogram-sentinel |
+
+### 📋 Discussion Categories
+
+**✅ Use Discussions for:**
+- Questions about usage and configuration
+- Ideas for new features  
+- Sharing projects and examples
+- Community announcements
+- General discussion about the project
+
+**✅ Use Issues for:**
+- Bug reports with reproduction steps
+- Concrete, actionable feature requests
+- Security vulnerabilities
+- Code-related problems
+
+### 🤝 Community Standards
+
+- **Be respectful** and constructive in all interactions
+- **Search first** before asking questions
+- **Provide context** when asking for help
+- **Share knowledge** by answering others' questions
+- **Follow** [Code of Conduct](CODE_OF_CONDUCT.md)
+
 ## Development Tools
 
 ### Version Management
