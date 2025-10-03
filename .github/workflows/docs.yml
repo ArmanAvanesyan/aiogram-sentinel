@@ -90,6 +90,7 @@ jobs:
   deploy:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    environment: pages
     needs: [detect-docs-changes, build]
     steps:
       - name: Deploy to GitHub Pages
