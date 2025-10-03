@@ -31,7 +31,9 @@ class TestMemoryBackendPerformance:
         end_time = time.time()
 
         duration = end_time - start_time
-        assert duration <= performance_thresholds["rate_limit_increment"] * 1.1  # Allow 10% margin
+        assert (
+            duration <= performance_thresholds["rate_limit_increment"] * 1.1
+        )  # Allow 10% margin
 
         # Measure multiple increments
         start_time = time.time()
@@ -61,7 +63,9 @@ class TestMemoryBackendPerformance:
         end_time = time.time()
 
         duration = end_time - start_time
-        assert duration <= performance_thresholds["rate_limit_increment"] * 1.1  # Allow 10% margin
+        assert (
+            duration <= performance_thresholds["rate_limit_increment"] * 1.1
+        )  # Allow 10% margin
         assert count == 5  # 5 remaining out of 10
 
         # Measure multiple gets
