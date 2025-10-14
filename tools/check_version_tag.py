@@ -50,11 +50,25 @@ def get_version_from_pyproject() -> str:
 def get_tag_version() -> str:
     """Get version from git tag."""
     ref = os.environ.get("GITHUB_REF", "")
-    if not ref.startswith("refs/tags/v"):
-        raise RuntimeError(f"Not a version tag: {ref}")
-
-    # Extract version from tag (remove 'refs/tags/v' prefix)
-    tag_version = ref[11:]  # Remove 'refs/tags/v'
+    if ref.startswith("refs/tags/v"):
+        # Extract version from tag (remove 'refs/tags/v' prefix)
+        tag_version = ref[11:]  # Remove 'refs/tags/v'
+    else:
+        # Local development: get the latest tag
+        import subprocess
+        try:
+            result = subprocess.run(
+                ["git", "describe", "--tags", "--abbrev=0"],
+                capture_output=True,
+                text=True,
+                check=True
+            )
+            latest_tag = result.stdout.strip()
+            if not latest_tag.startswith("v"):
+                raise RuntimeError(f"Tag does not start with 'v': {latest_tag}")
+            tag_version = latest_tag[1:]  # Remove 'v' prefix
+        except subprocess.CalledProcessError as e:
+            raise RuntimeError(f"Failed to get git tag: {e}")
 
     # Validate version format
     if not re.match(r"^\d+\.\d+\.\d+$", tag_version):
