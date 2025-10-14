@@ -91,7 +91,9 @@ class TestMemoryBackendPerformance:
         end_time = time.time()
 
         duration = end_time - start_time
-        assert duration < performance_thresholds["debounce_check"] * 1.1  # Allow 10% tolerance
+        assert (
+            duration < performance_thresholds["debounce_check"] * 1.1
+        )  # Allow 10% tolerance
         assert is_debounced is False
 
         # Set debounce

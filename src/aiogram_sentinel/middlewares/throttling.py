@@ -84,7 +84,10 @@ class ThrottlingMiddleware(BaseMiddleware):
         return await handler(event, data)
 
     def _get_rate_limit_config(
-        self, handler: Callable[..., Any], data: dict[str, Any], event: TelegramObject | None = None
+        self,
+        handler: Callable[..., Any],
+        data: dict[str, Any],
+        event: TelegramObject | None = None,
     ) -> tuple[int, int]:
         """Get rate limit configuration from handler or use defaults."""
         # Check for policy-based configuration first
@@ -93,6 +96,7 @@ class ThrottlingMiddleware(BaseMiddleware):
             if isinstance(cfg, ThrottleCfg):
                 # Check if scope cap can be satisfied
                 from ..context import extract_group_ids
+
                 user_id, chat_id = extract_group_ids(event or data.get("event"), data)
                 resolved_scope = resolve_scope(user_id, chat_id, cfg.scope)
 

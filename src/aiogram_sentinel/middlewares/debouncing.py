@@ -67,7 +67,10 @@ class DebounceMiddleware(BaseMiddleware):
         return await handler(event, data)
 
     def _get_debounce_window(
-        self, handler: Callable[..., Any], data: dict[str, Any], event: TelegramObject | None = None
+        self,
+        handler: Callable[..., Any],
+        data: dict[str, Any],
+        event: TelegramObject | None = None,
     ) -> int:
         """Get debounce window from handler or use default."""
         # Check for policy-based configuration first
@@ -76,6 +79,7 @@ class DebounceMiddleware(BaseMiddleware):
             if isinstance(cfg, DebounceCfg):
                 # Check if scope cap can be satisfied
                 from ..context import extract_group_ids
+
                 user_id, chat_id = extract_group_ids(event or data.get("event"), data)
                 resolved_scope = resolve_scope(user_id, chat_id, cfg.scope)
 

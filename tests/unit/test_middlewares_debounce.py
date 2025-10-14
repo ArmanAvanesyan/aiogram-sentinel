@@ -610,13 +610,11 @@ class TestDebounceMiddlewarePolicySupport:
 
         from aiogram.types import Chat
         from aiogram.types import Message as TelegramMessage
+
         # Create a group chat (not private) so chat_id != user_id
         group_chat = Chat(id=456, type="group", title="Test Group")
         message_without_user = TelegramMessage(
-            message_id=1,
-            date=datetime.now(),
-            chat=group_chat,
-            text="test"
+            message_id=1, date=datetime.now(), chat=group_chat, text="test"
         )
 
         # Process event
