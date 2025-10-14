@@ -94,7 +94,7 @@ class SentinelEvents:
             # Add task to set for cleanup
             self._tasks.add(task)
             task.add_done_callback(self._tasks.discard)
- 
+
         # Clean up completed tasks to prevent accumulation
         self._cleanup_completed_tasks()
 
@@ -136,7 +136,7 @@ events = SentinelEvents()
 
 def cleanup_events() -> None:
     """Clean up the global events instance.
-    
+
     This is useful for tests to ensure no tasks are left running.
     """
     events._tasks.clear()

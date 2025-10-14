@@ -208,6 +208,7 @@ def cleanup_events():
     # Clean up after test
     try:
         from aiogram_sentinel.events import cleanup_events
+
         cleanup_events()
     except ImportError:
         pass  # Events module not available

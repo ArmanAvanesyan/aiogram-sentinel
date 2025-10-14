@@ -1,6 +1,6 @@
 """Tests for the internal event bus."""
 
-import asyncio
+import asyncio  # noqa: F401
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
