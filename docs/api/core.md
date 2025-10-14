@@ -160,7 +160,7 @@
     options:
       show_source: true
 
-::: aiogram_sentinel.decorators.policy
+::: aiogram_sentinel.policy.policy
     options:
       show_source: true
 

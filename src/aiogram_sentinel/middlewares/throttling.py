@@ -97,23 +97,36 @@ class ThrottlingMiddleware(BaseMiddleware):
                 # Check if scope cap can be satisfied
                 from ..context import extract_group_ids
 
-                user_id, chat_id = extract_group_ids(event or data.get("event"), data)
-                resolved_scope = resolve_scope(user_id, chat_id, cfg.scope)
-
-                if resolved_scope is None:
-                    # Scope cap cannot be satisfied, skip policy config
+                # Use event parameter or fallback to data event, but ensure it's not None
+                event_obj = event or data.get("event")
+                if event_obj is None:
+                    # No event available, skip policy config
                     logger.debug(
-                        "Policy skipped: required scope identifiers missing",
+                        "Policy skipped: no event available for scope resolution",
                         extra={
                             "cap": cfg.scope.value if cfg.scope else None,
-                            "user_id": user_id,
-                            "chat_id": chat_id,
                             "handler": getattr(handler, "__name__", "unknown"),
                         },
                     )
                     # Fall through to check other config sources
                 else:
-                    return cfg.rate, cfg.per
+                    user_id, chat_id = extract_group_ids(event_obj, data)
+                    resolved_scope = resolve_scope(user_id, chat_id, cfg.scope)
+
+                    if resolved_scope is None:
+                        # Scope cap cannot be satisfied, skip policy config
+                        logger.debug(
+                            "Policy skipped: required scope identifiers missing",
+                            extra={
+                                "cap": cfg.scope.value if cfg.scope else None,
+                                "user_id": user_id,
+                                "chat_id": chat_id,
+                                "handler": getattr(handler, "__name__", "unknown"),
+                            },
+                        )
+                        # Fall through to check other config sources
+                    else:
+                        return cfg.rate, cfg.per
 
         # Check if handler has rate limit configuration
         if hasattr(handler, "sentinel_rate_limit"):  # type: ignore
@@ -145,16 +158,16 @@ class ThrottlingMiddleware(BaseMiddleware):
         user_id, chat_id = extract_group_ids(event, data)
 
         # Auto-extract bucket from handler
-        bucket = extract_handler_bucket(event, data)
+        bucket: str | None = extract_handler_bucket(event, data)
 
         # Get handler name as fallback bucket
         if bucket is None:
-            bucket = getattr(handler, "__name__", "unknown")
+            bucket = str(getattr(handler, "__name__", "unknown"))
 
         # Get additional parameters from policy config, handler config, or data
-        method = None
-        explicit_bucket = None
-        scope_cap = None
+        method: str | None = None
+        explicit_bucket: str | None = None
+        scope_cap: Scope | None = None
 
         # Check policy-based configuration first
         if "sentinel_throttle_cfg" in data:
@@ -179,7 +192,9 @@ class ThrottlingMiddleware(BaseMiddleware):
             explicit_bucket = data["sentinel_bucket"]
 
         # Use explicit bucket if provided, otherwise use auto-extracted
-        final_bucket = explicit_bucket if explicit_bucket is not None else bucket
+        final_bucket: str | None = (
+            explicit_bucket if explicit_bucket is not None else bucket
+        )  # type: ignore[assignment]
 
         # Resolve scope with cap constraint
         resolved_scope = resolve_scope(user_id, chat_id, scope_cap)

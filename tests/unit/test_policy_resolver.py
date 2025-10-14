@@ -39,7 +39,7 @@ class TestPolicyResolverMiddleware:
 
         # Resolve configurations
         throttle_cfg_result, debounce_cfg_result = (
-            self.middleware._resolve_configurations(handler)
+            self.middleware.resolve_configurations_for_testing(handler)
         )
 
         assert throttle_cfg_result == throttle_cfg
@@ -58,7 +58,7 @@ class TestPolicyResolverMiddleware:
 
         # Resolve configurations
         throttle_cfg_result, debounce_cfg_result = (
-            self.middleware._resolve_configurations(handler)
+            self.middleware.resolve_configurations_for_testing(handler)
         )
 
         assert throttle_cfg_result is None
@@ -82,7 +82,7 @@ class TestPolicyResolverMiddleware:
 
         # Resolve configurations
         throttle_cfg_result, debounce_cfg_result = (
-            self.middleware._resolve_configurations(handler)
+            self.middleware.resolve_configurations_for_testing(handler)
         )
 
         assert throttle_cfg_result == throttle_cfg2  # Last wins
@@ -106,7 +106,7 @@ class TestPolicyResolverMiddleware:
 
         # Resolve configurations
         throttle_cfg_result, debounce_cfg_result = (
-            self.middleware._resolve_configurations(handler)
+            self.middleware.resolve_configurations_for_testing(handler)
         )
 
         assert throttle_cfg_result == throttle_cfg
@@ -120,7 +120,7 @@ class TestPolicyResolverMiddleware:
 
         # Resolve configurations
         throttle_cfg_result, debounce_cfg_result = (
-            self.middleware._resolve_configurations(handler)
+            self.middleware.resolve_configurations_for_testing(handler)
         )
 
         assert throttle_cfg_result is not None
@@ -137,7 +137,7 @@ class TestPolicyResolverMiddleware:
 
         # Resolve configurations
         throttle_cfg_result, debounce_cfg_result = (
-            self.middleware._resolve_configurations(handler)
+            self.middleware.resolve_configurations_for_testing(handler)
         )
 
         assert throttle_cfg_result is None
@@ -158,8 +158,8 @@ class TestPolicyResolverMiddleware:
         }
 
         # Resolve configurations
-        throttle_cfg_result, debounce_cfg_result = (
-            self.middleware._resolve_configurations(handler)
+        throttle_cfg_result, debounce_cfg_result = (  # type: ignore[unused-variable]
+            self.middleware.resolve_configurations_for_testing(handler)
         )
 
         assert throttle_cfg_result is not None
@@ -168,6 +168,7 @@ class TestPolicyResolverMiddleware:
         assert throttle_cfg_result.scope == Scope.GROUP
         assert throttle_cfg_result.method == "sendMessage"
         assert throttle_cfg_result.bucket == "test"
+        # debounce_cfg_result is None for throttle-only policy
 
     def test_policy_wins_over_legacy_decorator(self) -> None:
         """Test that policy wins over legacy decorator with warning."""
@@ -186,7 +187,7 @@ class TestPolicyResolverMiddleware:
             warnings.simplefilter("always")
 
             throttle_cfg_result, debounce_cfg_result = (
-                self.middleware._resolve_configurations(handler)
+                self.middleware.resolve_configurations_for_testing(handler)
             )
 
             # Policy should win
@@ -218,7 +219,7 @@ class TestPolicyResolverMiddleware:
             ValueError,
             match="Failed to resolve policy 'user_throtle' for handler 'test_handler'.*Did you mean: user_throttle",
         ):
-            self.middleware._resolve_configurations(handler)
+            self.middleware.resolve_configurations_for_testing(handler)
 
     def test_invalid_legacy_config_logs_warning(self) -> None:
         """Test that invalid legacy config logs warning."""
@@ -228,7 +229,7 @@ class TestPolicyResolverMiddleware:
 
         # Should not raise error, but log warning
         throttle_cfg_result, debounce_cfg_result = (
-            self.middleware._resolve_configurations(handler)
+            self.middleware.resolve_configurations_for_testing(handler)
         )
 
         assert throttle_cfg_result is None
@@ -239,7 +240,7 @@ class TestPolicyResolverMiddleware:
         handler = Mock()
 
         throttle_cfg_result, debounce_cfg_result = (
-            self.middleware._resolve_configurations(handler)
+            self.middleware.resolve_configurations_for_testing(handler)
         )
 
         assert throttle_cfg_result is None
@@ -251,7 +252,7 @@ class TestPolicyResolverMiddleware:
         # Don't set __sentinel_policies__ attribute
 
         throttle_cfg_result, debounce_cfg_result = (
-            self.middleware._resolve_configurations(handler)
+            self.middleware.resolve_configurations_for_testing(handler)
         )
 
         assert throttle_cfg_result is None

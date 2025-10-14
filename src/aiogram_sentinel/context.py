@@ -18,19 +18,19 @@ def extract_user_id(event: TelegramObject, data: dict[str, Any]) -> int | None:
         User ID if found, None otherwise
     """
     # Try from_user attribute (most common)
-    if hasattr(event, "from_user") and getattr(event, "from_user", None):
-        return getattr(event.from_user, "id", None)
+    if hasattr(event, "from_user") and getattr(event, "from_user", None):  # type: ignore[attr-defined]
+        return getattr(event.from_user, "id", None)  # type: ignore[attr-defined]
 
     # Try user attribute (some event types)
-    if hasattr(event, "user") and getattr(event, "user", None):
-        return getattr(event.user, "id", None)
+    if hasattr(event, "user") and getattr(event, "user", None):  # type: ignore[attr-defined]
+        return getattr(event.user, "id", None)  # type: ignore[attr-defined]
 
     # Try chat attribute as fallback (for anonymous events)
-    if hasattr(event, "chat") and getattr(event, "chat", None):
-        chat_id = getattr(event.chat, "id", None)
+    if hasattr(event, "chat") and getattr(event, "chat", None):  # type: ignore[attr-defined]
+        chat_id = getattr(event.chat, "id", None)  # type: ignore[attr-defined]
         # Only return chat ID if it's a private chat (user ID == chat ID)
         # and it's positive (not a group/supergroup)
-        if chat_id and chat_id > 0 and getattr(event.chat, "type", None) == "private":
+        if chat_id and chat_id > 0 and getattr(event.chat, "type", None) == "private":  # type: ignore[attr-defined]
             return chat_id
 
     return None
@@ -47,8 +47,8 @@ def extract_chat_id(event: TelegramObject, data: dict[str, Any]) -> int | None:
         Chat ID if found, None otherwise
     """
     # Try chat attribute
-    if hasattr(event, "chat") and getattr(event, "chat", None):
-        return getattr(event.chat, "id", None)
+    if hasattr(event, "chat") and getattr(event, "chat", None):  # type: ignore[attr-defined]
+        return getattr(event.chat, "id", None)  # type: ignore[attr-defined]
 
     # Try message attribute (for some event types)
     if hasattr(event, "message") and getattr(event, "message", None):

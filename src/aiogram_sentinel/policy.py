@@ -173,7 +173,7 @@ def resolve_scope(
         Resolved scope or None if cannot satisfy cap
     """
     # Determine available scopes
-    available = set()
+    available: set[Scope] = set()
     if user_id and chat_id:
         available.add(Scope.GROUP)
     if user_id:
@@ -223,7 +223,9 @@ def policy(*names: str) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     return decorator
 
 
-def convert_from_legacy_throttle(config: tuple | dict) -> ThrottleCfg:
+def convert_from_legacy_throttle(
+    config: tuple[Any, ...] | dict[str, Any],
+) -> ThrottleCfg:
     """Convert legacy throttling config to ThrottleCfg.
 
     Args:
@@ -251,7 +253,9 @@ def convert_from_legacy_throttle(config: tuple | dict) -> ThrottleCfg:
         raise ValueError(f"Invalid legacy throttling config: {config}")
 
 
-def convert_from_legacy_debounce(config: tuple | dict) -> DebounceCfg:
+def convert_from_legacy_debounce(
+    config: tuple[Any, ...] | dict[str, Any],
+) -> DebounceCfg:
     """Convert legacy debouncing config to DebounceCfg.
 
     Args:

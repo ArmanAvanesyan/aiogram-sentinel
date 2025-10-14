@@ -83,9 +83,9 @@ class PolicyResolverMiddleware(BaseMiddleware):
                     policy = self._registry.get(policy_name)
 
                     if policy.kind == "throttle":
-                        throttle_cfg = policy.cfg
+                        throttle_cfg = policy.cfg  # type: ignore[assignment]
                     elif policy.kind == "debounce":
-                        debounce_cfg = policy.cfg
+                        debounce_cfg = policy.cfg  # type: ignore[assignment]
 
                 except ValueError as e:
                     # Re-raise with more context
@@ -135,4 +135,20 @@ class PolicyResolverMiddleware(BaseMiddleware):
                         f"'{getattr(handler, '__name__', 'unknown')}': {e}"
                     )
 
-        return throttle_cfg, debounce_cfg
+        return throttle_cfg, debounce_cfg  # type: ignore[return-value]
+
+    def resolve_configurations_for_testing(
+        self, handler: Callable[..., Any]
+    ) -> tuple[ThrottleCfg | None, DebounceCfg | None]:
+        """Public method for testing configuration resolution.
+
+        This is a wrapper around the private _resolve_configurations method
+        to allow testing without accessing protected methods.
+
+        Args:
+            handler: Handler function
+
+        Returns:
+            Tuple of (throttle_cfg, debounce_cfg)
+        """
+        return self._resolve_configurations(handler)

@@ -107,7 +107,7 @@ class TestKeyBuilder:
         """Test for_update method with basic parameters."""
         kb = KeyBuilder(app="sentinel")
 
-        identifiers = []
+        identifiers: list[str] = []
         if user_id is not None:
             identifiers.append(str(user_id))
         if chat_id is not None:

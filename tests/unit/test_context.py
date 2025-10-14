@@ -425,7 +425,7 @@ class TestContextExtractorsEdgeCases:
         event = MockEvent()
 
         # This should not raise an exception
-        event_type = extract_event_type(event, {})
+        event_type = extract_event_type(event, {})  # type: ignore[arg-type]
         # Should fall back to some default or handle gracefully
         assert isinstance(event_type, str)
 

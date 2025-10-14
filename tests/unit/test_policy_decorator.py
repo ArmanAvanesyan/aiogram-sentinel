@@ -16,8 +16,8 @@ class TestPolicyDecorator:
         async def handler():
             return "test"
 
-        assert hasattr(handler, "__sentinel_policies__")
-        assert handler.__sentinel_policies__ == ("user_throttle",)
+        assert hasattr(handler, "__sentinel_policies__")  # type: ignore[attr-defined]
+        assert handler.__sentinel_policies__ == ("user_throttle",)  # type: ignore[attr-defined]
 
     def test_multiple_policies_attachment(self) -> None:
         """Test attaching multiple policies to handler."""
@@ -26,8 +26,8 @@ class TestPolicyDecorator:
         async def handler():
             return "test"
 
-        assert hasattr(handler, "__sentinel_policies__")
-        assert handler.__sentinel_policies__ == ("user_throttle", "user_debounce")
+        assert hasattr(handler, "__sentinel_policies__")  # type: ignore[attr-defined]
+        assert handler.__sentinel_policies__ == ("user_throttle", "user_debounce")  # type: ignore[attr-defined]
 
     def test_multiple_policies_preserves_order(self) -> None:
         """Test that multiple policies preserve order."""
@@ -36,7 +36,7 @@ class TestPolicyDecorator:
         async def handler():
             return "test"
 
-        assert handler.__sentinel_policies__ == ("first", "second", "third")
+        assert handler.__sentinel_policies__ == ("first", "second", "third")  # type: ignore[attr-defined]
 
     def test_decorator_works_with_sync_function(self) -> None:
         """Test that decorator works with sync functions."""
@@ -45,8 +45,8 @@ class TestPolicyDecorator:
         def sync_handler():
             return "test"
 
-        assert hasattr(sync_handler, "__sentinel_policies__")
-        assert sync_handler.__sentinel_policies__ == ("test_policy",)
+        assert hasattr(sync_handler, "__sentinel_policies__")  # type: ignore[attr-defined]
+        assert sync_handler.__sentinel_policies__ == ("test_policy",)  # type: ignore[attr-defined]
 
     def test_decorator_works_with_class_method(self) -> None:
         """Test that decorator works with class methods."""
@@ -57,8 +57,8 @@ class TestPolicyDecorator:
                 return "test"
 
         instance = TestClass()
-        assert hasattr(instance.method, "__sentinel_policies__")
-        assert instance.method.__sentinel_policies__ == ("class_policy",)
+        assert hasattr(instance.method, "__sentinel_policies__")  # type: ignore[attr-defined]
+        assert instance.method.__sentinel_policies__ == ("class_policy",)  # type: ignore[attr-defined]
 
     def test_no_policy_names_error(self) -> None:
         """Test that providing no policy names raises error."""
@@ -67,7 +67,7 @@ class TestPolicyDecorator:
         ):
 
             @policy()
-            async def handler():
+            async def handler():  # type: ignore[unused-function]
                 return "test"
 
     def test_empty_policy_name_allowed(self) -> None:
@@ -77,7 +77,7 @@ class TestPolicyDecorator:
         async def handler():
             return "test"
 
-        assert handler.__sentinel_policies__ == ("",)
+        assert handler.__sentinel_policies__ == ("",)  # type: ignore[attr-defined]
 
     def test_decorator_preserves_function_metadata(self) -> None:
         """Test that decorator preserves function metadata."""
@@ -89,4 +89,4 @@ class TestPolicyDecorator:
 
         assert handler_with_docstring.__name__ == "handler_with_docstring"
         assert handler_with_docstring.__doc__ == "This is a test handler."
-        assert handler_with_docstring.__sentinel_policies__ == ("test_policy",)
+        assert handler_with_docstring.__sentinel_policies__ == ("test_policy",)  # type: ignore[attr-defined]

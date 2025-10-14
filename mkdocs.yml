@@ -37,15 +37,19 @@ nav:
     - Basic Protection: tutorials/basic-protection.md
     - Redis Storage: tutorials/redis-storage.md
     - Advanced Configuration: tutorials/advanced-configuration.md
+    - Policy Patterns: tutorials/policy-patterns.md
   - Configuration: configuration.md
   - API Reference:
     - Core: api/core.md
+    - Policy Registry: api/policy-registry.md
+    - Keys & Scopes: api/keys-scopes.md
     - Storage: api/storage.md
   - Architecture:
     - Overview: ARCHITECTURE.md
     - Performance: performance.md
   - Project:
     - Release Process: release.md
+    - Roadmap: ROADMAP.md
   - Help:
     - FAQ: faq.md
     - Troubleshooting: troubleshooting.md

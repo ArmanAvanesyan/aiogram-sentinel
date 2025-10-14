@@ -36,14 +36,14 @@ class TestPolicyIntegration:
             return "test"
 
         # Verify policy attachment
-        assert hasattr(handler, "__sentinel_policies__")
-        assert handler.__sentinel_policies__ == ("user_throttle",)
+        assert hasattr(handler, "__sentinel_policies__")  # type: ignore[attr-defined]
+        assert handler.__sentinel_policies__ == ("user_throttle",)  # type: ignore[attr-defined]
 
         # Test policy resolution
         cfg = SentinelConfig()
         resolver = PolicyResolverMiddleware(registry, cfg)
-        throttle_cfg_result, debounce_cfg_result = resolver._resolve_configurations(
-            handler
+        throttle_cfg_result, debounce_cfg_result = (
+            resolver.resolve_configurations_for_testing(handler)
         )
 
         assert throttle_cfg_result == throttle_cfg
@@ -69,8 +69,8 @@ class TestPolicyIntegration:
         # Test policy resolution
         cfg = SentinelConfig()
         resolver = PolicyResolverMiddleware(registry, cfg)
-        throttle_cfg_result, debounce_cfg_result = resolver._resolve_configurations(
-            handler
+        throttle_cfg_result, debounce_cfg_result = (
+            resolver.resolve_configurations_for_testing(handler)
         )
 
         assert throttle_cfg_result == throttle_cfg
@@ -96,8 +96,8 @@ class TestPolicyIntegration:
         # Test policy resolution
         cfg = SentinelConfig()
         resolver = PolicyResolverMiddleware(registry, cfg)
-        throttle_cfg_result, debounce_cfg_result = resolver._resolve_configurations(
-            handler
+        throttle_cfg_result, debounce_cfg_result = (
+            resolver.resolve_configurations_for_testing(handler)
         )
 
         assert throttle_cfg_result == throttle_cfg2  # Last wins
@@ -111,7 +111,7 @@ class TestPolicyIntegration:
         registry.register(user_throttle)
 
         @policy("user_throttle")
-        async def handler():
+        async def handler():  # type: ignore[unused-function]
             return "test"
 
         # Test with user and chat available - should resolve to USER
@@ -154,8 +154,8 @@ class TestPolicyIntegration:
         # Test legacy resolution still works
         cfg = SentinelConfig()
         resolver = PolicyResolverMiddleware(registry, cfg)
-        throttle_cfg_result, debounce_cfg_result = resolver._resolve_configurations(
-            legacy_handler
+        throttle_cfg_result, debounce_cfg_result = (
+            resolver.resolve_configurations_for_testing(legacy_handler)
         )
 
         assert throttle_cfg_result is not None
@@ -194,8 +194,8 @@ class TestPolicyIntegration:
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always")
 
-            throttle_cfg_result, debounce_cfg_result = resolver._resolve_configurations(
-                mixed_handler
+            throttle_cfg_result, debounce_cfg_result = (
+                resolver.resolve_configurations_for_testing(mixed_handler)
             )
 
             # Policy should win
@@ -223,13 +223,17 @@ class TestPolicyIntegration:
         # Test policy resolution
         cfg = SentinelConfig()
         resolver = PolicyResolverMiddleware(registry, cfg)
-        throttle_cfg_result, debounce_cfg_result = resolver._resolve_configurations(
-            handler
+        throttle_cfg_result, debounce_cfg_result = (
+            resolver.resolve_configurations_for_testing(  # type: ignore[unused-variable]
+                handler
+            )
         )
 
         assert throttle_cfg_result == throttle_cfg
+        assert throttle_cfg_result is not None
         assert throttle_cfg_result.method == "sendMessage"
         assert throttle_cfg_result.bucket == "test_bucket"
+        # debounce_cfg_result is None for throttle-only policy
 
     def test_error_handling_missing_policy(self) -> None:
         """Test error handling for missing policy."""
@@ -246,7 +250,7 @@ class TestPolicyIntegration:
         with pytest.raises(
             ValueError, match="Failed to resolve policy 'missing_policy'"
         ):
-            resolver._resolve_configurations(handler)
+            resolver.resolve_configurations_for_testing(handler)
 
     def test_error_handling_invalid_policy_name(self) -> None:
         """Test error handling for invalid policy name."""
@@ -265,4 +269,4 @@ class TestPolicyIntegration:
         resolver = PolicyResolverMiddleware(registry, cfg)
 
         with pytest.raises(ValueError, match="Did you mean: user_throttle"):
-            resolver._resolve_configurations(handler)
+            resolver.resolve_configurations_for_testing(handler)
