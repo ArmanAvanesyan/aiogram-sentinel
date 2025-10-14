@@ -5,6 +5,7 @@ Minimal example bot demonstrating aiogram-sentinel features.
 This example shows:
 - Complete setup with memory backend
 - Rate limiting and debouncing middleware
+- Error handling with friendly messages
 - Decorator usage (@rate_limit, @debounce)
 - Rate limit hooks
 - Custom hook implementations
@@ -24,6 +25,7 @@ from aiogram.types import CallbackQuery, Message
 
 # Import aiogram-sentinel
 from aiogram_sentinel import (
+    ErrorConfig,
     Sentinel,
     SentinelConfig,
     debounce,
@@ -63,6 +65,60 @@ async def on_rate_limited(
 
 
 # ============================================================================
+# ERROR HANDLING CONFIGURATION
+# ============================================================================
+
+
+def classify_domain_error(exc: Exception) -> str | None:
+    """Classify domain-specific exceptions."""
+    if isinstance(exc, ValueError):
+        return "error_validation"
+    elif isinstance(exc, PermissionError):
+        return "error_permission"
+    return None
+
+
+def resolve_locale(event: types.TelegramObject, data: dict) -> str:
+    """Resolve user locale for error messages."""
+    user = getattr(event, "from_user", None)
+    if user and hasattr(user, "language_code"):
+        return user.language_code or "en"
+    return "en"
+
+
+def resolve_message(key: str, locale: str) -> str:
+    """Resolve error keys to user-friendly messages."""
+    messages = {
+        "en": {
+            "error_validation": "Please check your input and try again.",
+            "error_permission": "You do not have permission to perform this action.",
+            "error_telegram_badrequest": "Invalid request. Please try again.",
+            "error_telegram_forbidden": "Access denied.",
+            "error_telegram_retry_after": "Please wait a moment and try again.",
+            "error_unexpected_system": "An unexpected error occurred. Please try again later.",
+        }
+    }
+    return messages.get(locale, messages["en"]).get(key, key)
+
+
+async def on_error(event: types.TelegramObject, exc: Exception, data: dict) -> None:
+    """Custom error handler for logging and monitoring."""
+    logger.exception(f"Handler error: {exc}")
+    # Here you could send error reports to monitoring systems
+
+
+# Configure error handling
+error_config = ErrorConfig(
+    use_friendly_messages=True,
+    domain_classifier=classify_domain_error,
+    locale_resolver=resolve_locale,
+    message_resolver=resolve_message,
+    on_error=on_error,
+    show_alert_for_callbacks=True,
+)
+
+
+# ============================================================================
 # BOT HANDLERS
 # ============================================================================
 
@@ -99,14 +155,23 @@ async def help_handler(message: Message) -> None:
         "📚 aiogram-sentinel Example Bot\n\n"
         "**Features demonstrated:**\n"
         "• Debouncing middleware - prevents duplicate messages\n"
-        "• Throttling middleware - rate limits requests\n\n"
+        "• Throttling middleware - rate limits requests\n"
+        "• Error handling - friendly error messages\n\n"
         "**Commands:**\n"
         "/start - Welcome message (rate limited)\n"
         "/spam - Test rate limiting\n"
+        "/error - Test error handling\n"
         "/help - This help message\n\n"
         "**Hooks in action:**\n"
         "• Rate limit notifications"
     )
+
+
+async def error_handler(message: Message) -> None:
+    """Handler that demonstrates error handling."""
+    # This will raise a ValueError, which will be caught by the error middleware
+    # and converted to a friendly message
+    raise ValueError("This is a test error to demonstrate error handling")
 
 
 async def callback_handler(callback: CallbackQuery) -> None:
@@ -141,8 +206,8 @@ async def main() -> None:
         debounce_default_window=2,  # Default: 2 second debounce
     )
 
-    # Setup aiogram-sentinel
-    router, infra = await Sentinel.setup(dp, config)
+    # Setup aiogram-sentinel with error handling
+    router, infra = await Sentinel.setup(dp, config, error_config=error_config)
 
     # Add hooks for advanced functionality
     Sentinel.add_hooks(
@@ -155,6 +220,7 @@ async def main() -> None:
     # Register handlers
     dp.message.register(start_handler, Command("start"))
     dp.message.register(spam_handler, Command("spam"))
+    dp.message.register(error_handler, Command("error"))
     dp.message.register(help_handler, Command("help"))
     dp.callback_query.register(callback_handler)
 

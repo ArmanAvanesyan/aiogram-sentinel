@@ -122,8 +122,10 @@ Middlewares are the core protection mechanisms that process events before they r
 The middleware chain follows a strict order for optimal performance:
 
 ```
-Debouncing → Throttling → Handlers
+ErrorHandling (optional) → PolicyResolver → Debouncing → Throttling → Handlers
 ```
+
+**Note**: `ErrorHandlingMiddleware` is installed as the outermost middleware (when configured) to catch exceptions from all other middlewares and handlers.
 
 #### DebounceMiddleware
 
@@ -140,6 +142,14 @@ Debouncing → Throttling → Handlers
 - **Data**: Sets `data["sentinel_rate_limited"] = True` when limited
 - **Hooks**: Optional `on_rate_limited` callback
 - **Configurable**: Per-handler limits via `@rate_limit` decorator
+
+#### ErrorHandlingMiddleware (Optional)
+
+- **Purpose**: Centralized error handling for all exceptions
+- **Features**: Exception classification, i18n hooks, RetryAfter sync, event emission
+- **Data**: Publishes `ErrorEvent` to internal event bus
+- **Hooks**: Optional `on_error` callback, domain classifier, locale/message resolvers
+- **Configurable**: Via `ErrorConfig` with comprehensive options
 
 ### 3. Setup Helper
 
