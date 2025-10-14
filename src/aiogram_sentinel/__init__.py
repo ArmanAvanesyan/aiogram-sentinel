@@ -4,6 +4,17 @@ from .config import SentinelConfig
 from .decorators import debounce, rate_limit
 from .middlewares.debouncing import DebounceMiddleware
 from .middlewares.throttling import ThrottlingMiddleware
+from .policy import (
+    DebounceCfg,
+    Policy,
+    PolicyKind,
+    PolicyRegistry,
+    ThrottleCfg,
+    coerce_scope,
+    policy,
+    registry,
+    resolve_scope,
+)
 from .scopes import KeyBuilder, KeyParts, Scope
 from .sentinel import Sentinel, setup_sentinel
 from .storage.base import DebounceBackend, RateLimiterBackend
@@ -27,4 +38,13 @@ __all__: list[str] = [
     "Scope",
     "KeyParts",
     "KeyBuilder",
+    "Policy",
+    "PolicyRegistry",
+    "PolicyKind",
+    "ThrottleCfg",
+    "DebounceCfg",
+    "policy",
+    "registry",
+    "coerce_scope",
+    "resolve_scope",
 ]

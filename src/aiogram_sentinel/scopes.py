@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from enum import Enum, auto
+from enum import Enum
 from typing import Any
 
 logger = logging.getLogger(__name__)
@@ -13,10 +13,10 @@ logger = logging.getLogger(__name__)
 class Scope(Enum):
     """Scope enumeration for key generation."""
 
-    USER = auto()
-    CHAT = auto()
-    GROUP = auto()  # user+chat composite
-    GLOBAL = auto()
+    USER = "user"
+    CHAT = "chat"
+    GROUP = "group"  # user+chat composite
+    GLOBAL = "global"
 
 
 @dataclass(frozen=True)

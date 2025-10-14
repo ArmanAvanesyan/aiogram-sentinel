@@ -6,7 +6,8 @@ from unittest.mock import MagicMock, Mock
 import pytest
 
 from aiogram_sentinel.middlewares.throttling import ThrottlingMiddleware
-from aiogram_sentinel.scopes import KeyBuilder
+from aiogram_sentinel.policy import ThrottleCfg
+from aiogram_sentinel.scopes import KeyBuilder, Scope
 
 
 @pytest.mark.unit
@@ -551,3 +552,296 @@ class TestThrottlingMiddleware:
             ConfigurationError, match="throttling_default_per_seconds must be positive"
         ):
             SentinelConfig(throttling_default_max=10, throttling_default_per_seconds=0)
+
+
+@pytest.mark.unit
+class TestThrottlingMiddlewarePolicySupport:
+    """Test ThrottlingMiddleware policy support."""
+
+    @pytest.mark.asyncio
+    async def test_policy_based_configuration(
+        self,
+        mock_rate_limiter: Mock,
+        mock_handler: Mock,
+        mock_message: Mock,
+        mock_data: dict[str, Any],
+    ) -> None:
+        """Test that policy-based configuration is used."""
+        # Mock allowed request
+        mock_rate_limiter.allow.return_value = True
+        mock_rate_limiter.get_remaining.return_value = 5
+
+        from aiogram_sentinel.config import SentinelConfig
+
+        cfg = SentinelConfig(
+            throttling_default_max=10, throttling_default_per_seconds=60
+        )
+        key_builder = KeyBuilder(app="test")
+        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg, key_builder)
+
+        # Add policy-based configuration to data
+        throttle_cfg = ThrottleCfg(rate=5, per=30, scope=Scope.USER)
+        mock_data["sentinel_throttle_cfg"] = throttle_cfg
+
+        # Mock user ID for USER scope
+        mock_data["user_id"] = 123
+
+        # Process event
+        result = await middleware(mock_handler, mock_message, mock_data)
+
+        # Should call handler and return result
+        assert result == "handler_result"
+        mock_handler.assert_called_once_with(mock_message, mock_data)
+
+        # Should use policy configuration (5 requests per 30 seconds)
+        mock_rate_limiter.allow.assert_called_once()
+        call_args = mock_rate_limiter.allow.call_args[0]
+        assert call_args[1] == 5  # rate from policy
+        assert call_args[2] == 30  # per from policy
+
+    @pytest.mark.asyncio
+    async def test_policy_scope_cap_enforcement(
+        self,
+        mock_rate_limiter: Mock,
+        mock_handler: Mock,
+        mock_message: Mock,
+        mock_data: dict[str, Any],
+    ) -> None:
+        """Test that policy scope cap is enforced."""
+        # Mock allowed request
+        mock_rate_limiter.allow.return_value = True
+        mock_rate_limiter.get_remaining.return_value = 5
+
+        from aiogram_sentinel.config import SentinelConfig
+
+        cfg = SentinelConfig(
+            throttling_default_max=10, throttling_default_per_seconds=60
+        )
+        key_builder = KeyBuilder(app="test")
+        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg, key_builder)
+
+        # Add policy with USER scope cap
+        throttle_cfg = ThrottleCfg(rate=5, per=30, scope=Scope.USER)
+        mock_data["sentinel_throttle_cfg"] = throttle_cfg
+
+        # Mock user and chat IDs
+        mock_data["user_id"] = 123
+        mock_data["chat_id"] = 456
+
+        # Process event
+        result = await middleware(mock_handler, mock_message, mock_data)
+
+        # Should call handler
+        assert result == "handler_result"
+
+        # Should use USER scope (most specific within USER cap)
+        mock_rate_limiter.allow.assert_called_once()
+        call_args = mock_rate_limiter.allow.call_args[0]
+        key = call_args[0]
+        assert "USER" in key
+        assert "123" in key  # user_id
+
+    @pytest.mark.asyncio
+    async def test_policy_scope_cap_violation_skips_policy(
+        self,
+        mock_rate_limiter: Mock,
+        mock_handler: Mock,
+        mock_message: Mock,
+        mock_data: dict[str, Any],
+    ) -> None:
+        """Test that policy is skipped when scope cap cannot be satisfied."""
+        # Mock allowed request
+        mock_rate_limiter.allow.return_value = True
+        mock_rate_limiter.get_remaining.return_value = 5
+
+        from aiogram_sentinel.config import SentinelConfig
+
+        cfg = SentinelConfig(
+            throttling_default_max=10, throttling_default_per_seconds=60
+        )
+        key_builder = KeyBuilder(app="test")
+        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg, key_builder)
+
+        # Add policy with USER scope cap but no user_id available
+        throttle_cfg = ThrottleCfg(rate=5, per=30, scope=Scope.USER)
+        mock_data["sentinel_throttle_cfg"] = throttle_cfg
+
+        # Mock only chat_id (no user_id) - create message without from_user
+        mock_data["chat_id"] = 456
+        # Create a message without from_user to simulate no user_id available
+        from datetime import datetime
+
+        from aiogram.types import Chat
+        from aiogram.types import Message as TelegramMessage
+
+        # Create a group chat (not private) so chat_id != user_id
+        group_chat = Chat(id=456, type="group", title="Test Group")
+        message_without_user = TelegramMessage(
+            message_id=1, date=datetime.now(), chat=group_chat, text="test"
+        )
+
+        # Process event
+        result = await middleware(mock_handler, message_without_user, mock_data)
+
+        # Should call handler (policy skipped, uses default config)
+        assert result == "handler_result"
+
+        # Should use default configuration (10 requests per 60 seconds)
+        mock_rate_limiter.allow.assert_called_once()
+        call_args = mock_rate_limiter.allow.call_args[0]
+        assert call_args[1] == 10  # default rate
+        assert call_args[2] == 60  # default per
+
+    @pytest.mark.asyncio
+    async def test_policy_method_and_bucket_usage(
+        self,
+        mock_rate_limiter: Mock,
+        mock_handler: Mock,
+        mock_message: Mock,
+        mock_data: dict[str, Any],
+    ) -> None:
+        """Test that policy method and bucket are used in key generation."""
+        # Mock allowed request
+        mock_rate_limiter.allow.return_value = True
+        mock_rate_limiter.get_remaining.return_value = 5
+
+        from aiogram_sentinel.config import SentinelConfig
+
+        cfg = SentinelConfig(
+            throttling_default_max=10, throttling_default_per_seconds=60
+        )
+        key_builder = KeyBuilder(app="test")
+        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg, key_builder)
+
+        # Add policy with method and bucket
+        throttle_cfg = ThrottleCfg(
+            rate=5, per=30, scope=Scope.USER, method="sendMessage", bucket="test_bucket"
+        )
+        mock_data["sentinel_throttle_cfg"] = throttle_cfg
+
+        # Mock user ID
+        mock_data["user_id"] = 123
+
+        # Process event
+        result = await middleware(mock_handler, mock_message, mock_data)
+
+        # Should call handler
+        assert result == "handler_result"
+
+        # Should use method and bucket in key generation
+        mock_rate_limiter.allow.assert_called_once()
+        call_args = mock_rate_limiter.allow.call_args[0]
+        key = call_args[0]
+        assert "m=sendMessage" in key
+        assert "b=test_bucket" in key
+
+    @pytest.mark.asyncio
+    async def test_policy_backward_compatibility_with_handler_attributes(
+        self,
+        mock_rate_limiter: Mock,
+        mock_handler: Mock,
+        mock_message: Mock,
+        mock_data: dict[str, Any],
+    ) -> None:
+        """Test backward compatibility with handler attributes."""
+        # Mock allowed request
+        mock_rate_limiter.allow.return_value = True
+        mock_rate_limiter.get_remaining.return_value = 5
+
+        from aiogram_sentinel.config import SentinelConfig
+
+        cfg = SentinelConfig(
+            throttling_default_max=10, throttling_default_per_seconds=60
+        )
+        key_builder = KeyBuilder(app="test")
+        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg, key_builder)
+
+        # Add handler with legacy attributes (no policy config)
+        mock_handler.sentinel_rate_limit = (7, 45)
+
+        # Process event
+        result = await middleware(mock_handler, mock_message, mock_data)
+
+        # Should call handler
+        assert result == "handler_result"
+
+        # Should use handler attributes (7 requests per 45 seconds)
+        mock_rate_limiter.allow.assert_called_once()
+        call_args = mock_rate_limiter.allow.call_args[0]
+        assert call_args[1] == 7  # rate from handler
+        assert call_args[2] == 45  # per from handler
+
+    @pytest.mark.asyncio
+    async def test_policy_precedence_over_handler_attributes(
+        self,
+        mock_rate_limiter: Mock,
+        mock_handler: Mock,
+        mock_message: Mock,
+        mock_data: dict[str, Any],
+    ) -> None:
+        """Test that policy configuration takes precedence over handler attributes."""
+        # Mock allowed request
+        mock_rate_limiter.allow.return_value = True
+        mock_rate_limiter.get_remaining.return_value = 5
+
+        from aiogram_sentinel.config import SentinelConfig
+
+        cfg = SentinelConfig(
+            throttling_default_max=10, throttling_default_per_seconds=60
+        )
+        key_builder = KeyBuilder(app="test")
+        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg, key_builder)
+
+        # Add policy configuration
+        throttle_cfg = ThrottleCfg(rate=3, per=20)
+        mock_data["sentinel_throttle_cfg"] = throttle_cfg
+
+        # Add handler with legacy attributes
+        mock_handler.sentinel_rate_limit = (7, 45)
+
+        # Process event
+        result = await middleware(mock_handler, mock_message, mock_data)
+
+        # Should call handler
+        assert result == "handler_result"
+
+        # Should use policy configuration (3 requests per 20 seconds), not handler attributes
+        mock_rate_limiter.allow.assert_called_once()
+        call_args = mock_rate_limiter.allow.call_args[0]
+        assert call_args[1] == 3  # rate from policy
+        assert call_args[2] == 20  # per from policy
+
+    @pytest.mark.asyncio
+    async def test_policy_fallback_to_defaults(
+        self,
+        mock_rate_limiter: Mock,
+        mock_handler: Mock,
+        mock_message: Mock,
+        mock_data: dict[str, Any],
+    ) -> None:
+        """Test fallback to defaults when no policy or handler attributes."""
+        # Mock allowed request
+        mock_rate_limiter.allow.return_value = True
+        mock_rate_limiter.get_remaining.return_value = 5
+
+        from aiogram_sentinel.config import SentinelConfig
+
+        cfg = SentinelConfig(
+            throttling_default_max=15, throttling_default_per_seconds=90
+        )
+        key_builder = KeyBuilder(app="test")
+        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg, key_builder)
+
+        # No policy config or handler attributes
+
+        # Process event
+        result = await middleware(mock_handler, mock_message, mock_data)
+
+        # Should call handler
+        assert result == "handler_result"
+
+        # Should use default configuration
+        mock_rate_limiter.allow.assert_called_once()
+        call_args = mock_rate_limiter.allow.call_args[0]
+        assert call_args[1] == 15  # default rate
+        assert call_args[2] == 90  # default per

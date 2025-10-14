@@ -11,10 +11,10 @@ class TestScope:
 
     def test_scope_values(self) -> None:
         """Test that Scope enum has expected values."""
-        assert Scope.USER.value == 1
-        assert Scope.CHAT.value == 2
-        assert Scope.GROUP.value == 3
-        assert Scope.GLOBAL.value == 4
+        assert Scope.USER.value == "user"
+        assert Scope.CHAT.value == "chat"
+        assert Scope.GROUP.value == "group"
+        assert Scope.GLOBAL.value == "global"
 
     def test_scope_names(self) -> None:
         """Test that Scope enum has expected names."""
@@ -107,7 +107,7 @@ class TestKeyBuilder:
         """Test for_update method with basic parameters."""
         kb = KeyBuilder(app="sentinel")
 
-        identifiers = []
+        identifiers: list[str] = []
         if user_id is not None:
             identifiers.append(str(user_id))
         if chat_id is not None:

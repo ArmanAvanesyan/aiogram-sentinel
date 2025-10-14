@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Awaitable, Callable
 from typing import Any
 
@@ -10,9 +11,12 @@ from aiogram.types import TelegramObject
 
 from ..config import SentinelConfig
 from ..context import extract_group_ids, extract_handler_bucket
-from ..scopes import KeyBuilder
+from ..policy import DebounceCfg, resolve_scope
+from ..scopes import KeyBuilder, Scope
 from ..storage.base import DebounceBackend
 from ..utils.keys import fingerprint
+
+logger = logging.getLogger(__name__)
 
 
 class DebounceMiddleware(BaseMiddleware):
@@ -45,7 +49,7 @@ class DebounceMiddleware(BaseMiddleware):
     ) -> Any:
         """Process the event through debouncing middleware."""
         # Get debounce configuration
-        window_seconds = self._get_debounce_window(handler, data)
+        window_seconds = self._get_debounce_window(handler, data, event)
 
         # Generate fingerprint for the event
         fp = self._generate_fingerprint(event)
@@ -63,9 +67,50 @@ class DebounceMiddleware(BaseMiddleware):
         return await handler(event, data)
 
     def _get_debounce_window(
-        self, handler: Callable[..., Any], data: dict[str, Any]
+        self,
+        handler: Callable[..., Any],
+        data: dict[str, Any],
+        event: TelegramObject | None = None,
     ) -> int:
         """Get debounce window from handler or use default."""
+        # Check for policy-based configuration first
+        if "sentinel_debounce_cfg" in data:
+            cfg = data["sentinel_debounce_cfg"]
+            if isinstance(cfg, DebounceCfg):
+                # Check if scope cap can be satisfied
+                from ..context import extract_group_ids
+
+                # Use event parameter or fallback to data event, but ensure it's not None
+                event_obj = event or data.get("event")
+                if event_obj is None:
+                    # No event available, skip policy config
+                    logger.debug(
+                        "Policy skipped: no event available for scope resolution",
+                        extra={
+                            "cap": cfg.scope.value if cfg.scope else None,
+                            "handler": getattr(handler, "__name__", "unknown"),
+                        },
+                    )
+                    # Fall through to check other config sources
+                else:
+                    user_id, chat_id = extract_group_ids(event_obj, data)
+                    resolved_scope = resolve_scope(user_id, chat_id, cfg.scope)
+
+                    if resolved_scope is None:
+                        # Scope cap cannot be satisfied, skip policy config
+                        logger.debug(
+                            "Policy skipped: required scope identifiers missing",
+                            extra={
+                                "cap": cfg.scope.value if cfg.scope else None,
+                                "user_id": user_id,
+                                "chat_id": chat_id,
+                                "handler": getattr(handler, "__name__", "unknown"),
+                            },
+                        )
+                        # Fall through to check other config sources
+                    else:
+                        return cfg.window
+
         # Check if handler has debounce configuration
         if hasattr(handler, "sentinel_debounce"):  # type: ignore
             config = handler.sentinel_debounce  # type: ignore
@@ -126,22 +171,32 @@ class DebounceMiddleware(BaseMiddleware):
         user_id, chat_id = extract_group_ids(event, data)
 
         # Auto-extract bucket from handler
-        bucket = extract_handler_bucket(event, data)
+        bucket: str | None = extract_handler_bucket(event, data)
 
         # Get handler name as fallback bucket
         if bucket is None:
-            bucket = getattr(handler, "__name__", "unknown")
+            bucket = str(getattr(handler, "__name__", "unknown"))
 
-        # Get additional parameters from handler config or data
-        method = None
-        explicit_bucket = None
+        # Get additional parameters from policy config, handler config, or data
+        method: str | None = None
+        explicit_bucket: str | None = None
+        scope_cap: Scope | None = None
 
-        # Check handler configuration for overrides
-        if hasattr(handler, "sentinel_debounce"):
-            config = handler.sentinel_debounce  # type: ignore
-            if isinstance(config, dict):
-                method = config.get("method")  # type: ignore
-                explicit_bucket = config.get("bucket")  # type: ignore
+        # Check policy-based configuration first
+        if "sentinel_debounce_cfg" in data:
+            cfg = data["sentinel_debounce_cfg"]
+            if isinstance(cfg, DebounceCfg):
+                method = cfg.method
+                explicit_bucket = cfg.bucket
+                scope_cap = cfg.scope
+
+        # Check handler configuration for overrides (if no policy config)
+        if method is None and explicit_bucket is None and scope_cap is None:
+            if hasattr(handler, "sentinel_debounce"):
+                config = handler.sentinel_debounce  # type: ignore
+                if isinstance(config, dict):
+                    method = config.get("method")  # type: ignore
+                    explicit_bucket = config.get("bucket")  # type: ignore
 
         # Check data for overrides
         if "sentinel_method" in data:
@@ -150,26 +205,49 @@ class DebounceMiddleware(BaseMiddleware):
             explicit_bucket = data["sentinel_bucket"]
 
         # Use explicit bucket if provided, otherwise use auto-extracted
-        final_bucket = explicit_bucket if explicit_bucket is not None else bucket
+        final_bucket: str | None = (
+            explicit_bucket if explicit_bucket is not None else bucket
+        )
 
-        # Determine scope and build key
-        if user_id is not None and chat_id is not None:
-            # Both user and chat available - use GROUP scope
+        # Resolve scope with cap constraint
+        resolved_scope = resolve_scope(user_id, chat_id, scope_cap)
+        if resolved_scope is None:
+            # Cannot satisfy scope cap - log debug and skip debouncing
+            import logging
+
+            logger = logging.getLogger(__name__)
+            logger.debug(
+                "Policy skipped: required scope identifiers missing",
+                extra={
+                    "cap": scope_cap.value if scope_cap else None,
+                    "user_id": user_id,
+                    "chat_id": chat_id,
+                    "handler": getattr(handler, "__name__", "unknown"),
+                },
+            )
+            # Return a dummy key that will pass debouncing
+            return self._key_builder.global_(
+                "debounce", method=method, bucket=final_bucket
+            )
+
+        # Build key based on resolved scope
+        if (
+            resolved_scope == Scope.GROUP
+            and user_id is not None
+            and chat_id is not None
+        ):
             return self._key_builder.group(
                 "debounce", user_id, chat_id, method=method, bucket=final_bucket
             )
-        elif user_id is not None:
-            # Only user available - use USER scope
+        elif resolved_scope == Scope.USER and user_id is not None:
             return self._key_builder.user(
                 "debounce", user_id, method=method, bucket=final_bucket
             )
-        elif chat_id is not None:
-            # Only chat available - use CHAT scope
+        elif resolved_scope == Scope.CHAT and chat_id is not None:
             return self._key_builder.chat(
                 "debounce", chat_id, method=method, bucket=final_bucket
             )
-        else:
-            # Neither available - use GLOBAL scope
+        else:  # Scope.GLOBAL
             return self._key_builder.global_(
                 "debounce", method=method, bucket=final_bucket
             )

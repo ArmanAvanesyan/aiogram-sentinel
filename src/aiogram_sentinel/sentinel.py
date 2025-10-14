@@ -9,7 +9,9 @@ from aiogram import Dispatcher, Router
 
 from .config import SentinelConfig
 from .middlewares.debouncing import DebounceMiddleware
+from .middlewares.policy_resolver import PolicyResolverMiddleware
 from .middlewares.throttling import ThrottlingMiddleware
+from .policy import registry
 from .scopes import KeyBuilder
 from .storage.factory import build_infra
 from .types import InfraBundle
@@ -49,6 +51,7 @@ class Sentinel:
             router = Router(name="sentinel")
 
         # Create middlewares in correct order with KeyBuilder
+        policy_resolver = PolicyResolverMiddleware(registry, cfg)
         debounce_middleware = DebounceMiddleware(infra.debounce, cfg, key_builder)
         throttling_middleware = ThrottlingMiddleware(
             infra.rate_limiter, cfg, key_builder
@@ -56,6 +59,7 @@ class Sentinel:
 
         # Add middlewares to router in correct order
         for reg in (router.message, router.callback_query):
+            reg.middleware(policy_resolver)  # FIRST
             reg.middleware(debounce_middleware)
             reg.middleware(throttling_middleware)
 
@@ -85,6 +89,7 @@ class Sentinel:
         key_builder = KeyBuilder(app=cfg.redis_prefix)
 
         # Create middlewares with hooks
+        policy_resolver = PolicyResolverMiddleware(registry, cfg)
         debounce_middleware = DebounceMiddleware(infra.debounce, cfg, key_builder)
         throttling_middleware = ThrottlingMiddleware(
             infra.rate_limiter, cfg, key_builder, on_rate_limited=on_rate_limited
@@ -96,6 +101,7 @@ class Sentinel:
             reg.middlewares.clear()  # type: ignore
 
             # Add complete middleware chain with hooks in correct order
+            reg.middleware(policy_resolver)  # FIRST
             reg.middleware(debounce_middleware)
             reg.middleware(throttling_middleware)
 
