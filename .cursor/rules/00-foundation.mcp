@@ -8,21 +8,23 @@ alwaysApply: true
 
 ## Scope (DO)
 - Edge hygiene library for aiogram v3:
-  - Middlewares: Debouncing, Throttling(notifier)
+  - Middlewares: Debouncing, Throttling(notifier), PolicyResolver
   - Backends: memory & redis via SentinelConfig (with redis_prefix)
   - Setup helper: Sentinel.setup(dp, cfg, router=None)
-  - Decorators: @rate_limit, @debounce
+  - Decorators: @rate_limit, @debounce (deprecated), @policy
+  - Policy Registry: Centralized policy definitions with PolicyRegistry
 
-## Non-Goals (DON’T)
+## Non-Goals (DON'T)
 - No DB session lifecycle, domain services, i18n copy, logging policy, or user-facing strings.
 - No blocking I/O or heavy network calls in middlewares/router.
 - No expansion beyond aiogram v3 middlewares + router + storage.
 
 ## Public API (STABLE)
 SentinelConfig, Sentinel.setup, build_infra,
-DebounceMiddleware, ThrottlingMiddleware,
-rate_limit, debounce,
+DebounceMiddleware, ThrottlingMiddleware, PolicyResolverMiddleware,
+rate_limit, debounce (deprecated), policy,
 RateLimiterBackend, DebounceBackend,
-InfraBundle, __version__.
+InfraBundle, __version__,
+Policy, PolicyRegistry, PolicyKind, ThrottleCfg, DebounceCfg, registry.
 
 Changing any above ⇒ update README + bump semver.

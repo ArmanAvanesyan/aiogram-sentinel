@@ -11,7 +11,8 @@ from aiogram.types import TelegramObject
 
 from ..config import SentinelConfig
 from ..context import extract_group_ids, extract_handler_bucket
-from ..scopes import KeyBuilder
+from ..policy import ThrottleCfg, resolve_scope
+from ..scopes import KeyBuilder, Scope
 from ..storage.base import RateLimiterBackend
 
 logger = logging.getLogger(__name__)
@@ -54,7 +55,7 @@ class ThrottlingMiddleware(BaseMiddleware):
     ) -> Any:
         """Process the event through throttling middleware."""
         # Get rate limit configuration from handler or use defaults
-        max_events, per_seconds = self._get_rate_limit_config(handler, data)
+        max_events, per_seconds = self._get_rate_limit_config(handler, data, event)
 
         # Generate rate limit key
         key = self._generate_rate_limit_key(event, handler, data)
@@ -83,9 +84,33 @@ class ThrottlingMiddleware(BaseMiddleware):
         return await handler(event, data)
 
     def _get_rate_limit_config(
-        self, handler: Callable[..., Any], data: dict[str, Any]
+        self, handler: Callable[..., Any], data: dict[str, Any], event: TelegramObject | None = None
     ) -> tuple[int, int]:
         """Get rate limit configuration from handler or use defaults."""
+        # Check for policy-based configuration first
+        if "sentinel_throttle_cfg" in data:
+            cfg = data["sentinel_throttle_cfg"]
+            if isinstance(cfg, ThrottleCfg):
+                # Check if scope cap can be satisfied
+                from ..context import extract_group_ids
+                user_id, chat_id = extract_group_ids(event or data.get("event"), data)
+                resolved_scope = resolve_scope(user_id, chat_id, cfg.scope)
+
+                if resolved_scope is None:
+                    # Scope cap cannot be satisfied, skip policy config
+                    logger.debug(
+                        "Policy skipped: required scope identifiers missing",
+                        extra={
+                            "cap": cfg.scope.value if cfg.scope else None,
+                            "user_id": user_id,
+                            "chat_id": chat_id,
+                            "handler": getattr(handler, "__name__", "unknown"),
+                        },
+                    )
+                    # Fall through to check other config sources
+                else:
+                    return cfg.rate, cfg.per
+
         # Check if handler has rate limit configuration
         if hasattr(handler, "sentinel_rate_limit"):  # type: ignore
             config = handler.sentinel_rate_limit  # type: ignore
@@ -122,16 +147,26 @@ class ThrottlingMiddleware(BaseMiddleware):
         if bucket is None:
             bucket = getattr(handler, "__name__", "unknown")
 
-        # Get additional parameters from handler config or data
+        # Get additional parameters from policy config, handler config, or data
         method = None
         explicit_bucket = None
+        scope_cap = None
 
-        # Check handler configuration for overrides
-        if hasattr(handler, "sentinel_rate_limit"):
-            config = handler.sentinel_rate_limit  # type: ignore
-            if isinstance(config, dict):
-                method = config.get("method")  # type: ignore
-                explicit_bucket = config.get("bucket")  # type: ignore
+        # Check policy-based configuration first
+        if "sentinel_throttle_cfg" in data:
+            cfg = data["sentinel_throttle_cfg"]
+            if isinstance(cfg, ThrottleCfg):
+                method = cfg.method
+                explicit_bucket = cfg.bucket
+                scope_cap = cfg.scope
+
+        # Check handler configuration for overrides (if no policy config)
+        if method is None and explicit_bucket is None and scope_cap is None:
+            if hasattr(handler, "sentinel_rate_limit"):
+                config = handler.sentinel_rate_limit  # type: ignore
+                if isinstance(config, dict):
+                    method = config.get("method")  # type: ignore
+                    explicit_bucket = config.get("bucket")  # type: ignore
 
         # Check data for overrides
         if "sentinel_method" in data:
@@ -142,24 +177,43 @@ class ThrottlingMiddleware(BaseMiddleware):
         # Use explicit bucket if provided, otherwise use auto-extracted
         final_bucket = explicit_bucket if explicit_bucket is not None else bucket
 
-        # Determine scope and build key
-        if user_id is not None and chat_id is not None:
-            # Both user and chat available - use GROUP scope
+        # Resolve scope with cap constraint
+        resolved_scope = resolve_scope(user_id, chat_id, scope_cap)
+
+        if resolved_scope is None:
+            # Cannot satisfy scope cap - log debug and skip throttling
+            logger.debug(
+                "Policy skipped: required scope identifiers missing",
+                extra={
+                    "cap": scope_cap.value if scope_cap else None,
+                    "user_id": user_id,
+                    "chat_id": chat_id,
+                    "handler": getattr(handler, "__name__", "unknown"),
+                },
+            )
+            # Return a dummy key that will pass throttling
+            return self._key_builder.global_(
+                "throttle", method=method, bucket=final_bucket
+            )
+
+        # Build key based on resolved scope
+        if (
+            resolved_scope == Scope.GROUP
+            and user_id is not None
+            and chat_id is not None
+        ):
             return self._key_builder.group(
                 "throttle", user_id, chat_id, method=method, bucket=final_bucket
             )
-        elif user_id is not None:
-            # Only user available - use USER scope
+        elif resolved_scope == Scope.USER and user_id is not None:
             return self._key_builder.user(
                 "throttle", user_id, method=method, bucket=final_bucket
             )
-        elif chat_id is not None:
-            # Only chat available - use CHAT scope
+        elif resolved_scope == Scope.CHAT and chat_id is not None:
             return self._key_builder.chat(
                 "throttle", chat_id, method=method, bucket=final_bucket
             )
-        else:
-            # Neither available - use GLOBAL scope
+        else:  # Scope.GLOBAL
             return self._key_builder.global_(
                 "throttle", method=method, bucket=final_bucket
             )

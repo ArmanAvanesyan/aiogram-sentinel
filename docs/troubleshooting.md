@@ -33,6 +33,195 @@ logging.basicConfig(
 )
 ```
 
+## Policy Registry Issues
+
+### Policy Not Found Errors
+
+**Symptoms**: `ValueError: Policy 'policy_name' not found`
+
+**Solutions**:
+
+1. **Check policy registration**:
+```python
+from aiogram_sentinel import registry
+
+# List all registered policies
+print("Registered policies:", [p.name for p in registry.all()])
+
+# Check if policy exists
+try:
+    policy = registry.get("your_policy_name")
+    print(f"Policy found: {policy}")
+except ValueError as e:
+    print(f"Policy error: {e}")
+```
+
+2. **Verify policy name spelling**:
+```python
+# The error message includes suggestions
+try:
+    registry.get("user_throtle")  # Typo
+except ValueError as e:
+    print(e)  # "Policy 'user_throtle' not found. Did you mean: user_throttle"
+```
+
+3. **Register policy before use**:
+```python
+from aiogram_sentinel import registry, Policy, ThrottleCfg, Scope
+
+# Register policy first
+registry.register(Policy(
+    "user_throttle", "throttle",
+    ThrottleCfg(rate=5, per=60, scope=Scope.USER)
+))
+
+# Then use it
+@policy("user_throttle")
+async def handler(message):
+    await message.answer("Hello!")
+```
+
+### Policy Skipped Due to Missing Scope Identifiers
+
+**Symptoms**: Policy not applied, debug log shows "Policy skipped: required scope identifiers missing"
+
+**Solutions**:
+
+1. **Check scope cap requirements**:
+```python
+from aiogram_sentinel import resolve_scope, Scope
+
+# Test scope resolution
+user_id = 123
+chat_id = 456
+cap = Scope.USER
+
+resolved = resolve_scope(user_id, chat_id, cap)
+if resolved is None:
+    print(f"Cannot satisfy scope cap {cap} with user_id={user_id}, chat_id={chat_id}")
+else:
+    print(f"Resolved scope: {resolved}")
+```
+
+2. **Adjust scope cap or ensure identifiers are available**:
+```python
+# Option 1: Use more permissive scope cap
+registry.register(Policy(
+    "flexible_throttle", "throttle",
+    ThrottleCfg(rate=5, per=60, scope=Scope.GROUP)  # More permissive than USER
+))
+
+# Option 2: Ensure user_id is available in context
+# Check your handler context extraction
+```
+
+3. **Debug scope resolution**:
+```python
+import logging
+
+# Enable debug logging to see scope resolution
+logging.getLogger("aiogram_sentinel").setLevel(logging.DEBUG)
+
+# You'll see logs like:
+# "Policy skipped: required scope identifiers missing" with context
+```
+
+### Deprecation Warnings for Old Decorators
+
+**Symptoms**: `DeprecationWarning: @rate_limit is deprecated`
+
+**Solutions**:
+
+1. **Migrate to policy registry**:
+```python
+# Before (deprecated)
+@rate_limit(5, 60, scope="user")
+@debounce(2, scope="chat")
+async def handler(message):
+    await message.answer("Hello!")
+
+# After (recommended)
+from aiogram_sentinel import registry, policy, Policy, ThrottleCfg, DebounceCfg, Scope
+
+# Register policies once
+registry.register(Policy("user_throttle", "throttle", ThrottleCfg(rate=5, per=60, scope=Scope.USER)))
+registry.register(Policy("chat_debounce", "debounce", DebounceCfg(window=2, scope=Scope.CHAT)))
+
+# Use policies
+@policy("user_throttle", "chat_debounce")
+async def handler(message):
+    await message.answer("Hello!")
+```
+
+2. **Suppress warnings temporarily**:
+```python
+import warnings
+
+# Suppress deprecation warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning, module="aiogram_sentinel")
+```
+
+### Policy Resolution Conflicts
+
+**Symptoms**: Warning about both @policy and legacy decorators found
+
+**Solutions**:
+
+1. **Remove legacy decorators**:
+```python
+# Problem: Both policy and legacy decorator
+@policy("user_throttle")
+@rate_limit(5, 60)  # This will be ignored with warning
+async def handler(message):
+    await message.answer("Hello!")
+
+# Solution: Remove legacy decorator
+@policy("user_throttle")
+async def handler(message):
+    await message.answer("Hello!")
+```
+
+2. **Use only legacy decorators** (temporary):
+```python
+# If you need to keep legacy decorators temporarily
+@rate_limit(5, 60)
+async def handler(message):
+    await message.answer("Hello!")
+# Don't use @policy decorator
+```
+
+### Policy Configuration Validation Errors
+
+**Symptoms**: `ValueError: rate must be positive` or similar validation errors
+
+**Solutions**:
+
+1. **Check configuration values**:
+```python
+from aiogram_sentinel import ThrottleCfg, DebounceCfg
+
+# Valid configurations
+throttle_cfg = ThrottleCfg(rate=5, per=60)  # rate > 0, per > 0
+debounce_cfg = DebounceCfg(window=2)        # window > 0
+
+# Invalid configurations will raise ValueError
+try:
+    invalid_cfg = ThrottleCfg(rate=0, per=60)  # rate must be > 0
+except ValueError as e:
+    print(f"Configuration error: {e}")
+```
+
+2. **Validate before registration**:
+```python
+def safe_register_policy(policy):
+    """Safely register policy with validation."""
+    try:
+        registry.register(policy)
+        print(f"Policy '{policy.name}' registered successfully")
+    except ValueError as e:
+        print(f"Failed to register policy '{policy.name}': {e}")
+```
+
 ## Key Generation Issues
 
 ### Debugging Generated Keys

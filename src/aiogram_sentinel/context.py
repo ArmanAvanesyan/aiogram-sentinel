@@ -155,9 +155,7 @@ def extract_event_type(event: TelegramObject, data: dict[str, Any]) -> str:
     return type_mapping.get(event_type, event_type)
 
 
-def extract_handler_bucket(
-    event: TelegramObject, data: dict[str, Any]
-) -> str | None:
+def extract_handler_bucket(event: TelegramObject, data: dict[str, Any]) -> str | None:
     """Extract handler bucket from event and data.
 
     Args:
@@ -182,9 +180,7 @@ def extract_handler_bucket(
     return None
 
 
-def extract_callback_bucket(
-    event: TelegramObject, data: dict[str, Any]
-) -> str | None:
+def extract_callback_bucket(event: TelegramObject, data: dict[str, Any]) -> str | None:
     """Extract callback bucket from callback query events.
 
     Args:

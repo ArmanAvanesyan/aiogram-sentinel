@@ -1,5 +1,56 @@
 # Core API
 
+## Policy Registry
+
+::: aiogram_sentinel.PolicyRegistry
+    options:
+      show_source: true
+      members:
+        - register
+        - get
+        - all
+        - clear
+
+::: aiogram_sentinel.Policy
+    options:
+      show_source: true
+      members:
+        - name
+        - kind
+        - cfg
+        - description
+
+::: aiogram_sentinel.ThrottleCfg
+    options:
+      show_source: true
+      members:
+        - rate
+        - per
+        - scope
+        - method
+        - bucket
+
+::: aiogram_sentinel.DebounceCfg
+    options:
+      show_source: true
+      members:
+        - window
+        - scope
+        - method
+        - bucket
+
+::: aiogram_sentinel.policy
+    options:
+      show_source: true
+
+::: aiogram_sentinel.coerce_scope
+    options:
+      show_source: true
+
+::: aiogram_sentinel.resolve_scope
+    options:
+      show_source: true
+
 ## Main Classes
 
 ::: aiogram_sentinel.Sentinel
@@ -106,6 +157,10 @@
       show_source: true
 
 ::: aiogram_sentinel.decorators.debounce
+    options:
+      show_source: true
+
+::: aiogram_sentinel.decorators.policy
     options:
       show_source: true
 
