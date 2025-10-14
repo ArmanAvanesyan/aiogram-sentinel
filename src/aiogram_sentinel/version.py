@@ -1,3 +1,3 @@
 """Version information for aiogram-sentinel."""
 
-__version__ = "0.1.1"
+__version__ = "1.1.0"
