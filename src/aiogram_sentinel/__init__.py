@@ -2,6 +2,7 @@
 
 from .config import SentinelConfig
 from .decorators import debounce, rate_limit
+from .errors import ErrorConfig, ErrorEvent, ErrorHandlingMiddleware
 from .middlewares.debouncing import DebounceMiddleware
 from .middlewares.throttling import ThrottlingMiddleware
 from .policy import (
@@ -33,6 +34,9 @@ __all__: list[str] = [
     "build_infra",
     "DebounceMiddleware",
     "ThrottlingMiddleware",
+    "ErrorConfig",
+    "ErrorEvent",
+    "ErrorHandlingMiddleware",
     "rate_limit",
     "debounce",
     "Scope",

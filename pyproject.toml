@@ -49,6 +49,9 @@ dev = [
 redis = [
     "redis>=5.0",
 ]
+sentry = [
+    "sentry-sdk>=1.40.0",
+]
 
 [project.urls]
 Homepage = "https://github.com/aiogram-sentinel/aiogram-sentinel"
@@ -130,6 +133,7 @@ markers = [
 filterwarnings = [
     "error",
     "ignore::DeprecationWarning",
+    "ignore::pytest.PytestUnraisableExceptionWarning",
 ]
 
 [tool.bandit]

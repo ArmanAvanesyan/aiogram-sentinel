@@ -28,6 +28,12 @@ For Redis storage support:
 pip install aiogram-sentinel[redis]
 ```
 
+For Sentry error tracking:
+
+```bash
+pip install aiogram-sentinel[sentry]
+```
+
 ## Minimal Example
 
 Here's a complete bot with basic protection:

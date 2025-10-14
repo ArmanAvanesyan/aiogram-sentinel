@@ -9,6 +9,7 @@ from aiogram import Dispatcher, Router
 
 from .config import SentinelConfig
 from .middlewares.debouncing import DebounceMiddleware
+from .middlewares.errors import ErrorConfig, ErrorHandlingMiddleware
 from .middlewares.policy_resolver import PolicyResolverMiddleware
 from .middlewares.throttling import ThrottlingMiddleware
 from .policy import registry
@@ -20,6 +21,8 @@ from .types import InfraBundle
 class Sentinel:
     """Main setup class for aiogram-sentinel."""
 
+    _error_config: ErrorConfig | None = None
+
     @staticmethod
     async def setup(
         dp: Dispatcher,
@@ -27,6 +30,7 @@ class Sentinel:
         router: Router | None = None,
         *,
         infra: InfraBundle | None = None,
+        error_config: ErrorConfig | None = None,
     ) -> tuple[Router, InfraBundle]:
         """Setup aiogram-sentinel middlewares.
 
@@ -35,6 +39,7 @@ class Sentinel:
             cfg: Configuration
             router: Optional router to use (creates new one if not provided)
             infra: Optional infrastructure bundle (builds from config if not provided)
+            error_config: Optional error handling configuration
 
         Returns:
             Tuple of (router, infra_bundle)
@@ -57,9 +62,19 @@ class Sentinel:
             infra.rate_limiter, cfg, key_builder
         )
 
+        # Create error handling middleware if configured
+        error_middleware = None
+        effective_error_config = error_config or Sentinel._error_config
+        if effective_error_config:
+            error_middleware = ErrorHandlingMiddleware(
+                effective_error_config, key_builder, infra.rate_limiter
+            )
+
         # Add middlewares to router in correct order
         for reg in (router.message, router.callback_query):
-            reg.middleware(policy_resolver)  # FIRST
+            if error_middleware:
+                reg.middleware(error_middleware)  # FIRST (outermost)
+            reg.middleware(policy_resolver)
             reg.middleware(debounce_middleware)
             reg.middleware(throttling_middleware)
 
@@ -67,6 +82,17 @@ class Sentinel:
         dp.include_router(router)
 
         return router, infra
+
+    @staticmethod
+    def use_errors(error_config: ErrorConfig) -> None:
+        """Configure error handling for the next setup call.
+
+        Args:
+            error_config: Error handling configuration
+        """
+        # This is a convenience method that can be used to configure
+        # error handling before calling setup()
+        Sentinel._error_config = error_config
 
     @staticmethod
     def add_hooks(

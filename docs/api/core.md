@@ -1,5 +1,37 @@
 # Core API
 
+## Error Handling
+
+::: aiogram_sentinel.ErrorConfig
+    options:
+      show_source: true
+      members:
+        - use_friendly_messages
+        - domain_classifier
+        - message_resolver
+        - locale_resolver
+        - on_error
+        - sync_retry_after
+        - respond_strategy
+        - show_alert_for_callbacks
+        - send_strategy
+
+::: aiogram_sentinel.ErrorEvent
+    options:
+      show_source: true
+      members:
+        - error_type
+        - error_message
+        - event_type
+        - user_id
+        - chat_id
+        - locale
+        - retry_after
+
+::: aiogram_sentinel.ErrorHandlingMiddleware
+    options:
+      show_source: true
+
 ## Policy Registry
 
 ::: aiogram_sentinel.PolicyRegistry

@@ -201,6 +201,18 @@ def event_loop() -> Any:
 
 
 # Test markers
+@pytest.fixture(autouse=True)
+def cleanup_events():
+    """Clean up events after each test."""
+    yield
+    # Clean up after test
+    try:
+        from aiogram_sentinel.events import cleanup_events
+        cleanup_events()
+    except ImportError:
+        pass  # Events module not available
+
+
 def pytest_configure(config: Any) -> None:
     """Configure pytest markers."""
     config.addinivalue_line("markers", "unit: Unit tests")
