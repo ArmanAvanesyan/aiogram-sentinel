@@ -223,10 +223,8 @@ class TestPolicyIntegration:
         # Test policy resolution
         cfg = SentinelConfig()
         resolver = PolicyResolverMiddleware(registry, cfg)
-        throttle_cfg_result, debounce_cfg_result = (
-            resolver.resolve_configurations_for_testing(  # type: ignore[unused-variable]
-                handler
-            )
+        throttle_cfg_result, debounce_cfg_result = (  # type: ignore[unused-variable]
+            resolver.resolve_configurations_for_testing(handler)
         )
 
         assert throttle_cfg_result == throttle_cfg

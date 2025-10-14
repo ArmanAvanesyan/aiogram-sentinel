@@ -194,7 +194,7 @@ class ThrottlingMiddleware(BaseMiddleware):
         # Use explicit bucket if provided, otherwise use auto-extracted
         final_bucket: str | None = (
             explicit_bucket if explicit_bucket is not None else bucket
-        )  # type: ignore[assignment]
+        )
 
         # Resolve scope with cap constraint
         resolved_scope = resolve_scope(user_id, chat_id, scope_cap)
