@@ -68,7 +68,7 @@ def get_tag_version() -> str:
                 raise RuntimeError(f"Tag does not start with 'v': {latest_tag}")
             tag_version = latest_tag[1:]  # Remove 'v' prefix
         except subprocess.CalledProcessError as e:
-            raise RuntimeError(f"Failed to get git tag: {e}")
+            raise RuntimeError(f"Failed to get git tag: {e}") from e
 
     # Validate version format
     if not re.match(r"^\d+\.\d+\.\d+$", tag_version):
