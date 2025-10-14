@@ -35,14 +35,59 @@
         - allow
         - cleanup_expired
 
-::: aiogram_sentinel.DebounceBackend  
+::: aiogram_sentinel.KeyBuilder
     options:
       show_source: true
       members:
-        - seen
-        - cleanup_expired
-        - redis_url
-        - redis_prefix
+        - __init__
+        - for_update
+        - user
+        - chat
+        - group
+        - global_
+
+::: aiogram_sentinel.KeyParts
+    options:
+      show_source: true
+      members:
+        - namespace
+        - scope
+        - identifiers
+
+::: aiogram_sentinel.Scope
+    options:
+      show_source: true
+      members:
+        - USER
+        - CHAT
+        - GROUP
+        - GLOBAL
+
+## Context Extractors
+
+::: aiogram_sentinel.context.extract_user_id
+    options:
+      show_source: true
+
+::: aiogram_sentinel.context.extract_chat_id
+    options:
+      show_source: true
+
+::: aiogram_sentinel.context.extract_group_ids
+    options:
+      show_source: true
+
+::: aiogram_sentinel.context.extract_event_type
+    options:
+      show_source: true
+
+::: aiogram_sentinel.context.extract_handler_bucket
+    options:
+      show_source: true
+
+::: aiogram_sentinel.context.extract_callback_bucket
+    options:
+      show_source: true
 
 ## Middleware
 

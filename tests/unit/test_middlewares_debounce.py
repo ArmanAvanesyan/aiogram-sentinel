@@ -6,6 +6,7 @@ from unittest.mock import MagicMock, Mock
 import pytest
 
 from aiogram_sentinel.middlewares.debouncing import DebounceMiddleware
+from aiogram_sentinel.scopes import KeyBuilder
 
 
 @pytest.mark.unit
@@ -27,7 +28,8 @@ class TestDebounceMiddleware:
         from aiogram_sentinel.config import SentinelConfig
 
         cfg = SentinelConfig(debounce_default_window=1)
-        middleware = DebounceMiddleware(mock_debounce_backend, cfg)
+        key_builder = KeyBuilder(app="test")
+        middleware = DebounceMiddleware(mock_debounce_backend, cfg, key_builder)
 
         # Process event
         result = await middleware(mock_handler, mock_message, mock_data)
@@ -54,7 +56,8 @@ class TestDebounceMiddleware:
         from aiogram_sentinel.config import SentinelConfig
 
         cfg = SentinelConfig(debounce_default_window=1)
-        middleware = DebounceMiddleware(mock_debounce_backend, cfg)
+        key_builder = KeyBuilder(app="test")
+        middleware = DebounceMiddleware(mock_debounce_backend, cfg, key_builder)
 
         # Process event
         result = await middleware(mock_handler, mock_message, mock_data)
@@ -83,7 +86,8 @@ class TestDebounceMiddleware:
         from aiogram_sentinel.config import SentinelConfig
 
         cfg = SentinelConfig(debounce_default_window=1)
-        middleware = DebounceMiddleware(mock_debounce_backend, cfg)
+        key_builder = KeyBuilder(app="test")
+        middleware = DebounceMiddleware(mock_debounce_backend, cfg, key_builder)
 
         # Process event
         await middleware(mock_handler, mock_message, mock_data)
@@ -116,7 +120,8 @@ class TestDebounceMiddleware:
         from aiogram_sentinel.config import SentinelConfig
 
         cfg = SentinelConfig(debounce_default_window=1)
-        middleware = DebounceMiddleware(mock_debounce_backend, cfg)
+        key_builder = KeyBuilder(app="test")
+        middleware = DebounceMiddleware(mock_debounce_backend, cfg, key_builder)
 
         # Process event
         await middleware(mock_handler, mock_message, mock_data)
@@ -141,7 +146,8 @@ class TestDebounceMiddleware:
         from aiogram_sentinel.config import SentinelConfig
 
         cfg = SentinelConfig(debounce_default_window=2)
-        middleware = DebounceMiddleware(mock_debounce_backend, cfg)
+        key_builder = KeyBuilder(app="test")
+        middleware = DebounceMiddleware(mock_debounce_backend, cfg, key_builder)
 
         # Process event
         await middleware(mock_handler, mock_message, mock_data)
@@ -166,7 +172,8 @@ class TestDebounceMiddleware:
         from aiogram_sentinel.config import SentinelConfig
 
         cfg = SentinelConfig(debounce_default_window=1)
-        middleware = DebounceMiddleware(mock_debounce_backend, cfg)
+        key_builder = KeyBuilder(app="test")
+        middleware = DebounceMiddleware(mock_debounce_backend, cfg, key_builder)
 
         # Process event
         result = await middleware(mock_handler, mock_callback_query, mock_data)
@@ -190,7 +197,8 @@ class TestDebounceMiddleware:
         from aiogram_sentinel.config import SentinelConfig
 
         cfg = SentinelConfig(debounce_default_window=1)
-        middleware = DebounceMiddleware(mock_debounce_backend, cfg)
+        key_builder = KeyBuilder(app="test")
+        middleware = DebounceMiddleware(mock_debounce_backend, cfg, key_builder)
 
         # Process event
         await middleware(mock_handler, mock_message, mock_data)
@@ -220,7 +228,8 @@ class TestDebounceMiddleware:
         from aiogram_sentinel.config import SentinelConfig
 
         cfg = SentinelConfig(debounce_default_window=1)
-        middleware = DebounceMiddleware(mock_debounce_backend, cfg)
+        key_builder = KeyBuilder(app="test")
+        middleware = DebounceMiddleware(mock_debounce_backend, cfg, key_builder)
 
         # Process event
         await middleware(mock_handler, mock_callback_query, mock_data)
@@ -249,7 +258,8 @@ class TestDebounceMiddleware:
         from aiogram_sentinel.config import SentinelConfig
 
         cfg = SentinelConfig(debounce_default_window=1)
-        middleware = DebounceMiddleware(mock_debounce_backend, cfg)
+        key_builder = KeyBuilder(app="test")
+        middleware = DebounceMiddleware(mock_debounce_backend, cfg, key_builder)
 
         # Should raise the error
         with pytest.raises(Exception, match="Backend error"):
@@ -273,7 +283,8 @@ class TestDebounceMiddleware:
         from aiogram_sentinel.config import SentinelConfig
 
         cfg = SentinelConfig(debounce_default_window=1)
-        middleware = DebounceMiddleware(mock_debounce_backend, cfg)
+        key_builder = KeyBuilder(app="test")
+        middleware = DebounceMiddleware(mock_debounce_backend, cfg, key_builder)
 
         # Should propagate handler error
         with pytest.raises(Exception, match="Handler error"):
@@ -297,7 +308,8 @@ class TestDebounceMiddleware:
         from aiogram_sentinel.config import SentinelConfig
 
         cfg = SentinelConfig(debounce_default_window=1)
-        middleware = DebounceMiddleware(mock_debounce_backend, cfg)
+        key_builder = KeyBuilder(app="test")
+        middleware = DebounceMiddleware(mock_debounce_backend, cfg, key_builder)
 
         # Process event
         await middleware(mock_handler, mock_message, mock_data)
@@ -323,7 +335,8 @@ class TestDebounceMiddleware:
         from aiogram_sentinel.config import SentinelConfig
 
         cfg = SentinelConfig(debounce_default_window=1)
-        middleware = DebounceMiddleware(mock_debounce_backend, cfg)
+        key_builder = KeyBuilder(app="test")
+        middleware = DebounceMiddleware(mock_debounce_backend, cfg, key_builder)
 
         # Process event
         await middleware(mock_handler, mock_message, mock_data)
@@ -342,7 +355,8 @@ class TestDebounceMiddleware:
         from aiogram_sentinel.config import SentinelConfig
 
         cfg = SentinelConfig(debounce_default_window=1)
-        middleware = DebounceMiddleware(mock_debounce_backend, cfg)
+        key_builder = KeyBuilder(app="test")
+        middleware = DebounceMiddleware(mock_debounce_backend, cfg, key_builder)
 
         # Create two messages with same content
         mock_message1 = MagicMock()
@@ -373,7 +387,8 @@ class TestDebounceMiddleware:
         from aiogram_sentinel.config import SentinelConfig
 
         cfg = SentinelConfig(debounce_default_window=1)
-        middleware = DebounceMiddleware(mock_debounce_backend, cfg)
+        key_builder = KeyBuilder(app="test")
+        middleware = DebounceMiddleware(mock_debounce_backend, cfg, key_builder)
 
         # Create messages for different users with same content
         user_ids = [12345, 67890]
@@ -399,7 +414,8 @@ class TestDebounceMiddleware:
         from aiogram_sentinel.config import SentinelConfig
 
         cfg = SentinelConfig(debounce_default_window=1)
-        middleware = DebounceMiddleware(mock_debounce_backend, cfg)
+        key_builder = KeyBuilder(app="test")
+        middleware = DebounceMiddleware(mock_debounce_backend, cfg, key_builder)
 
         # Should store the backend and delay
         assert hasattr(middleware, "_debounce_backend")
@@ -416,7 +432,8 @@ class TestDebounceMiddleware:
         from aiogram_sentinel.config import SentinelConfig
 
         cfg = SentinelConfig(debounce_default_window=1)
-        middleware = DebounceMiddleware(mock_debounce_backend, cfg)
+        key_builder = KeyBuilder(app="test")
+        middleware = DebounceMiddleware(mock_debounce_backend, cfg, key_builder)
 
         # Create message with empty text
         mock_message = MagicMock()
@@ -441,7 +458,8 @@ class TestDebounceMiddleware:
         from aiogram_sentinel.config import SentinelConfig
 
         cfg = SentinelConfig(debounce_default_window=1)
-        middleware = DebounceMiddleware(mock_debounce_backend, cfg)
+        key_builder = KeyBuilder(app="test")
+        middleware = DebounceMiddleware(mock_debounce_backend, cfg, key_builder)
 
         # Create message with None text
         mock_message = MagicMock()
@@ -466,7 +484,8 @@ class TestDebounceMiddleware:
         from aiogram_sentinel.config import SentinelConfig
 
         cfg = SentinelConfig(debounce_default_window=1)
-        middleware = DebounceMiddleware(mock_debounce_backend, cfg)
+        key_builder = KeyBuilder(app="test")
+        middleware = DebounceMiddleware(mock_debounce_backend, cfg, key_builder)
 
         # Create event with no user information
         mock_event = MagicMock()

@@ -6,6 +6,7 @@ from unittest.mock import MagicMock, Mock
 import pytest
 
 from aiogram_sentinel.middlewares.throttling import ThrottlingMiddleware
+from aiogram_sentinel.scopes import KeyBuilder
 
 
 @pytest.mark.unit
@@ -30,7 +31,8 @@ class TestThrottlingMiddleware:
         cfg = SentinelConfig(
             throttling_default_max=10, throttling_default_per_seconds=60
         )
-        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg)
+        key_builder = KeyBuilder(app="test")
+        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg, key_builder)
 
         # Process event
         result = await middleware(mock_handler, mock_message, mock_data)
@@ -60,7 +62,8 @@ class TestThrottlingMiddleware:
         cfg = SentinelConfig(
             throttling_default_max=10, throttling_default_per_seconds=60
         )
-        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg)
+        key_builder = KeyBuilder(app="test")
+        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg, key_builder)
 
         # Process event
         result = await middleware(mock_handler, mock_message, mock_data)
@@ -92,7 +95,8 @@ class TestThrottlingMiddleware:
         cfg = SentinelConfig(
             throttling_default_max=10, throttling_default_per_seconds=60
         )
-        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg)
+        key_builder = KeyBuilder(app="test")
+        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg, key_builder)
 
         # Process event
         await middleware(mock_handler, mock_message, mock_data)
@@ -131,7 +135,8 @@ class TestThrottlingMiddleware:
         cfg = SentinelConfig(
             throttling_default_max=10, throttling_default_per_seconds=60
         )
-        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg)
+        key_builder = KeyBuilder(app="test")
+        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg, key_builder)
 
         # Process event
         await middleware(mock_handler, mock_message, mock_data)
@@ -160,7 +165,8 @@ class TestThrottlingMiddleware:
         cfg = SentinelConfig(
             throttling_default_max=20, throttling_default_per_seconds=120
         )
-        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg)
+        key_builder = KeyBuilder(app="test")
+        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg, key_builder)
 
         # Process event
         await middleware(mock_handler, mock_message, mock_data)
@@ -190,8 +196,9 @@ class TestThrottlingMiddleware:
         cfg = SentinelConfig(
             throttling_default_max=10, throttling_default_per_seconds=60
         )
+        key_builder = KeyBuilder(app="test")
         middleware = ThrottlingMiddleware(
-            mock_rate_limiter, cfg, on_rate_limited=mock_on_rate_limited
+            mock_rate_limiter, cfg, key_builder, on_rate_limited=mock_on_rate_limited
         )
 
         # Process event
@@ -227,8 +234,9 @@ class TestThrottlingMiddleware:
         cfg = SentinelConfig(
             throttling_default_max=10, throttling_default_per_seconds=60
         )
+        key_builder = KeyBuilder(app="test")
         middleware = ThrottlingMiddleware(
-            mock_rate_limiter, cfg, on_rate_limited=mock_on_rate_limited
+            mock_rate_limiter, cfg, key_builder, on_rate_limited=mock_on_rate_limited
         )
 
         # Process event
@@ -258,8 +266,9 @@ class TestThrottlingMiddleware:
         cfg = SentinelConfig(
             throttling_default_max=10, throttling_default_per_seconds=60
         )
+        key_builder = KeyBuilder(app="test")
         middleware = ThrottlingMiddleware(
-            mock_rate_limiter, cfg, on_rate_limited=mock_on_rate_limited
+            mock_rate_limiter, cfg, key_builder, on_rate_limited=mock_on_rate_limited
         )
 
         # Should not raise error
@@ -284,7 +293,8 @@ class TestThrottlingMiddleware:
         cfg = SentinelConfig(
             throttling_default_max=10, throttling_default_per_seconds=60
         )
-        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg)
+        key_builder = KeyBuilder(app="test")
+        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg, key_builder)
 
         # Should raise the error
         with pytest.raises(Exception, match="Backend error"):
@@ -311,7 +321,8 @@ class TestThrottlingMiddleware:
         cfg = SentinelConfig(
             throttling_default_max=10, throttling_default_per_seconds=60
         )
-        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg)
+        key_builder = KeyBuilder(app="test")
+        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg, key_builder)
 
         # Should propagate handler error
         with pytest.raises(Exception, match="Handler error"):
@@ -338,7 +349,8 @@ class TestThrottlingMiddleware:
         cfg = SentinelConfig(
             throttling_default_max=10, throttling_default_per_seconds=60
         )
-        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg)
+        key_builder = KeyBuilder(app="test")
+        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg, key_builder)
 
         # Process event
         await middleware(mock_handler, mock_message, mock_data)
@@ -366,7 +378,8 @@ class TestThrottlingMiddleware:
         cfg = SentinelConfig(
             throttling_default_max=10, throttling_default_per_seconds=60
         )
-        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg)
+        key_builder = KeyBuilder(app="test")
+        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg, key_builder)
 
         # Process event
         await middleware(mock_handler, mock_message, mock_data)
@@ -387,7 +400,8 @@ class TestThrottlingMiddleware:
         cfg = SentinelConfig(
             throttling_default_max=10, throttling_default_per_seconds=60
         )
-        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg)
+        key_builder = KeyBuilder(app="test")
+        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg, key_builder)
 
         # Create multiple events for same user
         events: list[Any] = []
@@ -417,7 +431,8 @@ class TestThrottlingMiddleware:
         cfg = SentinelConfig(
             throttling_default_max=10, throttling_default_per_seconds=60
         )
-        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg)
+        key_builder = KeyBuilder(app="test")
+        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg, key_builder)
 
         # Create events for different users
         user_ids = [12345, 67890, 11111]
@@ -444,7 +459,8 @@ class TestThrottlingMiddleware:
         cfg = SentinelConfig(
             throttling_default_max=10, throttling_default_per_seconds=60
         )
-        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg)
+        key_builder = KeyBuilder(app="test")
+        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg, key_builder)
 
         # Should store the backend and config
         assert hasattr(middleware, "_rate_limiter")
@@ -465,7 +481,8 @@ class TestThrottlingMiddleware:
         cfg = SentinelConfig(
             throttling_default_max=10, throttling_default_per_seconds=60
         )
-        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg)
+        key_builder = KeyBuilder(app="test")
+        middleware = ThrottlingMiddleware(mock_rate_limiter, cfg, key_builder)
 
         # Create event with no user information
         mock_event = MagicMock()

@@ -10,6 +10,7 @@ from aiogram import Dispatcher, Router
 from .config import SentinelConfig
 from .middlewares.debouncing import DebounceMiddleware
 from .middlewares.throttling import ThrottlingMiddleware
+from .scopes import KeyBuilder
 from .storage.factory import build_infra
 from .types import InfraBundle
 
@@ -40,13 +41,18 @@ class Sentinel:
         if infra is None:
             infra = build_infra(cfg)
 
+        # Create KeyBuilder instance
+        key_builder = KeyBuilder(app=cfg.redis_prefix)
+
         # Create or use provided router
         if router is None:
             router = Router(name="sentinel")
 
-        # Create middlewares in correct order
-        debounce_middleware = DebounceMiddleware(infra.debounce, cfg)
-        throttling_middleware = ThrottlingMiddleware(infra.rate_limiter, cfg)
+        # Create middlewares in correct order with KeyBuilder
+        debounce_middleware = DebounceMiddleware(infra.debounce, cfg, key_builder)
+        throttling_middleware = ThrottlingMiddleware(
+            infra.rate_limiter, cfg, key_builder
+        )
 
         # Add middlewares to router in correct order
         for reg in (router.message, router.callback_query):
@@ -75,10 +81,13 @@ class Sentinel:
             cfg: SentinelConfig configuration
             on_rate_limited: Optional hook for rate-limited events
         """
+        # Create KeyBuilder instance
+        key_builder = KeyBuilder(app=cfg.redis_prefix)
+
         # Create middlewares with hooks
-        debounce_middleware = DebounceMiddleware(infra.debounce, cfg)
+        debounce_middleware = DebounceMiddleware(infra.debounce, cfg, key_builder)
         throttling_middleware = ThrottlingMiddleware(
-            infra.rate_limiter, cfg, on_rate_limited=on_rate_limited
+            infra.rate_limiter, cfg, key_builder, on_rate_limited=on_rate_limited
         )
 
         # Replace middlewares with hook-enabled versions

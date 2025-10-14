@@ -9,8 +9,10 @@ from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject
 
 from ..config import SentinelConfig
+from ..context import extract_group_ids, extract_handler_bucket
+from ..scopes import KeyBuilder
 from ..storage.base import DebounceBackend
-from ..utils.keys import debounce_key, fingerprint
+from ..utils.keys import fingerprint
 
 
 class DebounceMiddleware(BaseMiddleware):
@@ -20,16 +22,19 @@ class DebounceMiddleware(BaseMiddleware):
         self,
         debounce_backend: DebounceBackend,
         cfg: SentinelConfig,
+        key_builder: KeyBuilder,
     ) -> None:
         """Initialize the debouncing middleware.
 
         Args:
             debounce_backend: Debounce backend instance
             cfg: SentinelConfig configuration
+            key_builder: KeyBuilder instance for key generation
         """
         super().__init__()
         self._debounce_backend = debounce_backend
         self._cfg = cfg
+        self._key_builder = key_builder
         self._default_delay = cfg.debounce_default_window
 
     async def __call__(
@@ -116,43 +121,55 @@ class DebounceMiddleware(BaseMiddleware):
         handler: Callable[..., Any],
         data: dict[str, Any],
     ) -> str:
-        """Generate debounce key for the event."""
-        # Extract user ID
-        user_id = self._extract_user_id(event)
+        """Generate debounce key for the event using KeyBuilder."""
+        # Extract user and chat IDs using context extractors
+        user_id, chat_id = extract_group_ids(event, data)
 
-        # Get handler name
-        handler_name = getattr(handler, "__name__", "unknown")  # type: ignore
+        # Auto-extract bucket from handler
+        bucket = extract_handler_bucket(event, data)
 
-        # Get additional scope from data
-        scope_kwargs = {}
-        if "chat_id" in data:
-            scope_kwargs["chat_id"] = data["chat_id"]
-        if "message_id" in data:
-            scope_kwargs["message_id"] = data["message_id"]
+        # Get handler name as fallback bucket
+        if bucket is None:
+            bucket = getattr(handler, "__name__", "unknown")
 
-        # Get scope from decorator if provided
-        scope: str | None = None
+        # Get additional parameters from handler config or data
+        method = None
+        explicit_bucket = None
+
+        # Check handler configuration for overrides
         if hasattr(handler, "sentinel_debounce"):
             config = handler.sentinel_debounce  # type: ignore
-            if isinstance(config, (tuple, list)) and len(config) >= 2:  # type: ignore
-                scope = config[1]  # type: ignore
-            elif isinstance(config, dict):
-                scope = config.get("scope")  # type: ignore
+            if isinstance(config, dict):
+                method = config.get("method")  # type: ignore
+                explicit_bucket = config.get("bucket")  # type: ignore
 
-        if scope:
-            scope_kwargs["scope"] = scope
+        # Check data for overrides
+        if "sentinel_method" in data:
+            method = data["sentinel_method"]
+        if "sentinel_bucket" in data:
+            explicit_bucket = data["sentinel_bucket"]
 
-        return debounce_key(user_id, handler_name, **scope_kwargs)
+        # Use explicit bucket if provided, otherwise use auto-extracted
+        final_bucket = explicit_bucket if explicit_bucket is not None else bucket
 
-    def _extract_user_id(self, event: TelegramObject) -> int:
-        """Extract user ID from event."""
-        # Try different event types
-        if hasattr(event, "from_user") and getattr(event, "from_user", None):  # type: ignore
-            return getattr(event.from_user, "id", 0)  # type: ignore
-        elif hasattr(event, "user") and getattr(event, "user", None):  # type: ignore
-            return getattr(event.user, "id", 0)  # type: ignore
-        elif hasattr(event, "chat") and getattr(event, "chat", None):  # type: ignore
-            return getattr(event.chat, "id", 0)  # type: ignore
+        # Determine scope and build key
+        if user_id is not None and chat_id is not None:
+            # Both user and chat available - use GROUP scope
+            return self._key_builder.group(
+                "debounce", user_id, chat_id, method=method, bucket=final_bucket
+            )
+        elif user_id is not None:
+            # Only user available - use USER scope
+            return self._key_builder.user(
+                "debounce", user_id, method=method, bucket=final_bucket
+            )
+        elif chat_id is not None:
+            # Only chat available - use CHAT scope
+            return self._key_builder.chat(
+                "debounce", chat_id, method=method, bucket=final_bucket
+            )
         else:
-            # Fallback to 0 for anonymous events
-            return 0
+            # Neither available - use GLOBAL scope
+            return self._key_builder.global_(
+                "debounce", method=method, bucket=final_bucket
+            )

@@ -4,6 +4,7 @@ from .config import SentinelConfig
 from .decorators import debounce, rate_limit
 from .middlewares.debouncing import DebounceMiddleware
 from .middlewares.throttling import ThrottlingMiddleware
+from .scopes import KeyBuilder, KeyParts, Scope
 from .sentinel import Sentinel, setup_sentinel
 from .storage.base import DebounceBackend, RateLimiterBackend
 from .storage.factory import build_infra
@@ -23,4 +24,7 @@ __all__: list[str] = [
     "ThrottlingMiddleware",
     "rate_limit",
     "debounce",
+    "Scope",
+    "KeyParts",
+    "KeyBuilder",
 ]

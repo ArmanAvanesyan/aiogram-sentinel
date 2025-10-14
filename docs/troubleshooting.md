@@ -33,6 +33,217 @@ logging.basicConfig(
 )
 ```
 
+## Key Generation Issues
+
+### Debugging Generated Keys
+
+**Symptoms**: Keys not working as expected, rate limiting not functioning correctly
+
+**Solutions**:
+
+1. **Enable key debugging**:
+```python
+import logging
+
+# Enable debug logging to see generated keys
+logging.getLogger("aiogram_sentinel").setLevel(logging.DEBUG)
+```
+
+2. **Print generated keys**:
+```python
+from aiogram_sentinel import KeyBuilder
+
+kb = KeyBuilder(app="mybot")
+key = kb.user("throttle", 12345)
+print(f"Generated key: {key}")
+# Output: mybot:throttle:USER:12345
+```
+
+3. **Verify key format**:
+```python
+# Check key components
+parts = key.split(":")
+print(f"App: {parts[0]}")
+print(f"Namespace: {parts[1]}")
+print(f"Scope: {parts[2]}")
+print(f"Identifiers: {parts[3:]}")
+```
+
+### Key Validation Errors
+
+**Symptoms**: `ValueError` when creating keys
+
+**Common Causes**:
+- Empty namespace or identifiers
+- Separator characters in identifiers
+- Invalid scope usage
+
+**Solutions**:
+
+1. **Check namespace**:
+```python
+# ❌ Invalid
+parts = KeyParts(namespace="", scope=Scope.USER, identifiers=("123",))
+
+# ✅ Valid
+parts = KeyParts(namespace="throttle", scope=Scope.USER, identifiers=("123",))
+```
+
+2. **Check identifiers**:
+```python
+# ❌ Invalid - contains separator
+parts = KeyParts(namespace="throttle", scope=Scope.USER, identifiers=("123:456",))
+
+# ✅ Valid
+parts = KeyParts(namespace="throttle", scope=Scope.USER, identifiers=("123", "456"))
+```
+
+3. **Check scope usage**:
+```python
+# ❌ Invalid - GROUP scope with single identifier
+parts = KeyParts(namespace="throttle", scope=Scope.GROUP, identifiers=("123",))
+
+# ✅ Valid - GROUP scope with two identifiers
+parts = KeyParts(namespace="throttle", scope=Scope.GROUP, identifiers=("123", "456"))
+```
+
+### Context Extraction Issues
+
+**Symptoms**: Wrong user/chat IDs extracted from events
+
+**Solutions**:
+
+1. **Debug context extraction**:
+```python
+from aiogram_sentinel.context import extract_user_id, extract_chat_id
+
+user_id = extract_user_id(event, data)
+chat_id = extract_chat_id(event, data)
+
+print(f"Extracted user_id: {user_id}")
+print(f"Extracted chat_id: {chat_id}")
+print(f"Event type: {event.__class__.__name__}")
+```
+
+2. **Check event attributes**:
+```python
+# For Message events
+if hasattr(event, 'from_user'):
+    print(f"from_user: {event.from_user}")
+if hasattr(event, 'chat'):
+    print(f"chat: {event.chat}")
+
+# For CallbackQuery events
+if hasattr(event, 'data'):
+    print(f"callback data: {event.data}")
+```
+
+3. **Handle missing context**:
+```python
+# Check if context is available
+user_id, chat_id = extract_group_ids(event, data)
+
+if user_id and chat_id:
+    # Use GROUP scope
+    key = kb.group("throttle", user_id, chat_id)
+elif user_id:
+    # Use USER scope
+    key = kb.user("throttle", user_id)
+elif chat_id:
+    # Use CHAT scope
+    key = kb.chat("throttle", chat_id)
+else:
+    # Use GLOBAL scope
+    key = kb.global_("throttle")
+```
+
+### Deprecation Warnings
+
+**Symptoms**: Deprecation warnings for `rate_key()` and `debounce_key()`
+
+**Solutions**:
+
+1. **Update to KeyBuilder**:
+```python
+# ❌ Deprecated
+from aiogram_sentinel.utils.keys import rate_key, debounce_key
+
+key = rate_key(user_id, handler_name, **kwargs)
+
+# ✅ Recommended
+from aiogram_sentinel import KeyBuilder
+
+kb = KeyBuilder(app="sentinel")
+key = kb.user("throttle", user_id, bucket=handler_name, **kwargs)
+```
+
+2. **Suppress warnings temporarily**:
+```python
+import warnings
+
+# Suppress deprecation warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+```
+
+### Key Collision Detection
+
+**Symptoms**: Different inputs producing same keys
+
+**Solutions**:
+
+1. **Test key uniqueness**:
+```python
+keys = set()
+for user_id in range(1000):
+    key = kb.user("throttle", user_id)
+    if key in keys:
+        print(f"Key collision detected: {key}")
+    keys.add(key)
+```
+
+2. **Verify key components**:
+```python
+# Test different namespaces
+key1 = kb.user("throttle", 123)
+key2 = kb.user("debounce", 123)
+assert key1 != key2, "Keys should be different for different namespaces"
+
+# Test different scopes
+key3 = kb.user("throttle", 123)
+key4 = kb.chat("throttle", 123)
+assert key3 != key4, "Keys should be different for different scopes"
+```
+
+### Performance Issues
+
+**Symptoms**: Slow key generation or high memory usage
+
+**Solutions**:
+
+1. **Reuse KeyBuilder instances**:
+```python
+# ❌ Inefficient - creates new instance each time
+def generate_key(user_id):
+    kb = KeyBuilder(app="mybot")
+    return kb.user("throttle", user_id)
+
+# ✅ Efficient - reuse instance
+kb = KeyBuilder(app="mybot")
+
+def generate_key(user_id):
+    return kb.user("throttle", user_id)
+```
+
+2. **Cache frequently used keys**:
+```python
+from functools import lru_cache
+
+@lru_cache(maxsize=1000)
+def get_user_key(user_id: int) -> str:
+    kb = KeyBuilder(app="mybot")
+    return kb.user("throttle", user_id)
+```
+
 ## Common Issues
 
 ### Bot Not Responding
