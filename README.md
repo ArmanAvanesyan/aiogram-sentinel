@@ -2,39 +2,21 @@
 
 <p align="center">
   <!-- Essentials -->
-  <a href="https://github.com/ArmanAvanesyan/aiogram-sentinel/actions/workflows/ci.yml">
-    <img alt="CI" src="https://github.com/ArmanAvanesyan/aiogram-sentinel/actions/workflows/ci.yml/badge.svg?branch=main">
-  </a>
-  <a href="https://pypi.org/project/aiogram-sentinel/">
-    <img alt="PyPI" src="https://img.shields.io/pypi/v/aiogram-sentinel.svg">
-  </a>
-  <a href="https://pypi.org/project/aiogram-sentinel/">
-    <img alt="Python versions" src="https://img.shields.io/pypi/pyversions/aiogram-sentinel.svg">
-  </a>
-  <a href="https://armanavanesyan.github.io/aiogram-sentinel/">
-    <img alt="Docs" src="https://github.com/ArmanAvanesyan/aiogram-sentinel/actions/workflows/docs.yml/badge.svg?branch=main">
-  </a>
-  <a href="LICENSE">
-    <img alt="License" src="https://img.shields.io/github/license/ArmanAvanesyan/aiogram-sentinel.svg">
-  </a>
+  <a href="https://github.com/ArmanAvanesyan/aiogram-sentinel/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/ArmanAvanesyan/aiogram-sentinel/actions/workflows/ci.yml/badge.svg?branch=main"></a>
+  <a href="https://pypi.org/project/aiogram-sentinel/"><img alt="PyPI" src="https://img.shields.io/pypi/v/aiogram-sentinel.svg"></a>
+  <a href="https://pypi.org/project/aiogram-sentinel/"><img alt="Python versions" src="https://img.shields.io/pypi/pyversions/aiogram-sentinel.svg"></a>
+  <a href="https://armanavanesyan.github.io/aiogram-sentinel/"><img alt="Docs" src="https://github.com/ArmanAvanesyan/aiogram-sentinel/actions/workflows/docs.yml/badge.svg?branch=main"></a>
+  <a href="LICENSE"><img alt="License" src="https://img.shields.io/github/license/ArmanAvanesyan/aiogram-sentinel.svg"></a>
 </p>
 
 <details>
 <summary>More badges</summary>
 
 <p>
-  <a href="https://app.codecov.io/gh/ArmanAvanesyan/aiogram-sentinel">
-    <img alt="Coverage" src="https://codecov.io/gh/ArmanAvanesyan/aiogram-sentinel/branch/main/graph/badge.svg">
-  </a>
-  <a href="https://docs.astral.al/ruff/">
-    <img alt="Ruff" src="https://img.shields.io/badge/lint-ruff-%2300A1D6">
-  </a>
-  <a href="https://github.com/microsoft/pyright">
-    <img alt="Pyright" src="https://img.shields.io/badge/types-pyright-blue">
-  </a>
-  <a href="https://pepy.tech/project/aiogram-sentinel">
-    <img alt="Downloads" src="https://static.pepy.tech/badge/aiogram-sentinel/month">
-  </a>
+  <a href="https://app.codecov.io/gh/ArmanAvanesyan/aiogram-sentinel"><img alt="Coverage" src="https://codecov.io/gh/ArmanAvanesyan/aiogram-sentinel/branch/main/graph/badge.svg"></a>
+  <a href="https://docs.astral.al/ruff/"><img alt="Ruff" src="https://img.shields.io/badge/lint-ruff-%2300A1D6"></a>
+  <a href="https://github.com/microsoft/pyright"><img alt="Pyright" src="https://img.shields.io/badge/types-pyright-blue"></a>
+  <a href="https://pepy.tech/project/aiogram-sentinel"><img alt="Downloads" src="https://static.pepy.tech/badge/aiogram-sentinel/month"></a>
 </p>
 
 </details>
