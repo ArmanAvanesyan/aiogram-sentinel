@@ -56,12 +56,13 @@ def get_tag_version() -> str:
     else:
         # Local development: get the latest tag
         import subprocess
+
         try:
             result = subprocess.run(
                 ["git", "describe", "--tags", "--abbrev=0"],
                 capture_output=True,
                 text=True,
-                check=True
+                check=True,
             )
             latest_tag = result.stdout.strip()
             if not latest_tag.startswith("v"):

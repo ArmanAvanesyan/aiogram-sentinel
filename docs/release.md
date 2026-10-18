@@ -452,13 +452,13 @@ pip install aiogram-sentinel==1.0.0
 ### Release Team
 
 - **Release Manager**: [@ArmanAvanesyan](https://github.com/ArmanAvanesyan)
-- **Security Team**: [security@aiogram-sentinel.dev](mailto:security@aiogram-sentinel.dev)
+- **Security Team**: [arman.avanesyan@yahoo.com](mailto:arman.avanesyan@yahoo.com)
 - **Community**: [GitHub Discussions](https://github.com/ArmanAvanesyan/aiogram-sentinel/discussions)
 
 ### Emergency Contacts
 
 - **Critical Issues**: [@ArmanAvanesyan](https://github.com/ArmanAvanesyan)
-- **Security Issues**: [security@aiogram-sentinel.dev](mailto:security@aiogram-sentinel.dev)
+- **Security Issues**: [arman.avanesyan@yahoo.com](mailto:arman.avanesyan@yahoo.com)
 - **Community Issues**: [GitHub Discussions](https://github.com/ArmanAvanesyan/aiogram-sentinel/discussions)
 
 ---

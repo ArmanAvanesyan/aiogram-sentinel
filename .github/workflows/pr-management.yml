@@ -100,6 +100,9 @@ jobs:
   changelog-check:
     name: Check Changelog
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     if: ${{ !contains(github.event.pull_request.labels.*.name, 'skip news') }}
     
     steps:
