@@ -1,73 +1,50 @@
-# Changelog Entries
+# Changelog Fragments
 
-This directory contains changelog entries for the next release. Entries are organized by type in subdirectories.
+This directory holds one small file per user-facing change. At release time
+[towncrier](https://towncrier.readthedocs.io/) collects them into `CHANGELOG.md`
+and deletes them.
 
-## Directory Structure
+## File naming
 
-```
-CHANGES/
-├── feature/        # New features (.rst files)
-├── bugfix/         # Bug fixes (.rst files)
-├── doc/            # Documentation changes (.rst files)
-├── removal/        # Removed features (.rst files)
-├── misc/           # Miscellaneous changes (.rst files)
-└── README.md       # This file
-```
-
-## File Naming
-
-Each file should be named like:
+Files live **directly in this directory** (no subdirectories) and are named:
 
 ```
-<issue or PR number>.<category>.rst
+CHANGES/<pr-number>.<type>.rst
 ```
 
-For example:
-- `feature/1234.feature.rst` - New feature for issue #1234
-- `bugfix/5678.bugfix.rst` - Bug fix for PR #5678
-- `doc/9012.doc.rst` - Documentation update
+`<type>` is one of:
 
-## File Format
+| Type      | Use for                        |
+|-----------|--------------------------------|
+| `feature` | New functionality              |
+| `bugfix`  | Bug fixes                      |
+| `doc`     | Documentation-only changes     |
+| `removal` | Removed or deprecated features |
+| `misc`    | Everything else (CI, tooling)  |
 
-Each `.rst` file should contain a brief description:
+Examples:
 
-```rst
-Add support for Redis Cluster deployments.
-```
+- `CHANGES/48.feature.rst` for PR #48
+- `CHANGES/55.misc.rst` for PR #55
+- `CHANGES/+redis-cluster.feature.rst` when there is no PR or issue number yet
+- `CHANGES/48.feature.1.rst` for a second entry about the same PR
 
-## Examples
+## File content
 
-### Feature (`feature/123.feature.rst`)
+One or two sentences in present tense, describing the change from the user's
+point of view. The PR link is added automatically from the file name, so do not
+repeat it in the text.
+
 ```rst
 Add token bucket rate limiting algorithm.
 ```
 
-### Bug Fix (`bugfix/456.bugfix.rst`)
-```rst
-Fix memory leak in long-running processes.
+## Checking locally
+
+```bash
+uvx towncrier check --compare-with origin/main   # same check CI runs on PRs
+uvx towncrier build --draft --version 0.0.0      # preview the rendered changelog
 ```
 
-### Documentation (`doc/789.doc.rst`)
-```rst
-Add comprehensive migration guides.
-```
-
-### Removal (`removal/101.removal.rst`)
-```rst
-Remove deprecated legacy authentication middleware.
-```
-
-### Miscellaneous (`misc/202.misc.rst`)
-```rst
-Update project dependencies.
-```
-
-## Notes
-
-- Keep descriptions concise but informative
-- Focus on user-facing changes
-- Use present tense ("Add support" not "Added support")
-- Reference issues/PRs in the filename, not the content
-- One change per file
-- Place files in the appropriate subdirectory by type
-- Towncrier will process these automatically during releases
+A PR that needs no changelog entry (typo fixes, CI-only changes) can carry the
+`skip news` label instead of a fragment.

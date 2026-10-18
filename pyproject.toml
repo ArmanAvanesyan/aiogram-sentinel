@@ -176,6 +176,7 @@ package = "aiogram_sentinel"
 package_dir = "src"
 filename = "CHANGELOG.md"
 directory = "CHANGES"
+ignore = ["README.md", ".template.rst.jinja2"]
 # template = "CHANGES/.template.rst.jinja2"
 start_string = "<!-- towncrier release notes start -->\n"
 title_format = "## [{version}] - {project_date}"
