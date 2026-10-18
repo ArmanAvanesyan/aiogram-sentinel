@@ -1,0 +1,1 @@
+Fix changelog tooling: towncrier now sees fragments in ``CHANGES/``, the CI changelog check passes, and project contact addresses point to a working mailbox.
