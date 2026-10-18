@@ -54,9 +54,10 @@ sentry = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/aiogram-sentinel/aiogram-sentinel"
-Repository = "https://github.com/aiogram-sentinel/aiogram-sentinel"
-Issues = "https://github.com/aiogram-sentinel/aiogram-sentinel/issues"
+Homepage = "https://github.com/ArmanAvanesyan/aiogram-sentinel"
+Repository = "https://github.com/ArmanAvanesyan/aiogram-sentinel"
+Issues = "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues"
+Documentation = "https://armanavanesyan.github.io/aiogram-sentinel/"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/aiogram_sentinel"]
