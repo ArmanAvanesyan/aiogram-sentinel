@@ -17,7 +17,7 @@ We provide security updates for the following versions of aiogram-sentinel:
 
 Please report security vulnerabilities privately to:
 
-- **Email**: security@aiogram-sentinel.dev
+- **Email**: arman.avanesyan@yahoo.com
 - **GitHub Security Advisories**: [Create a private security advisory](https://github.com/ArmanAvanesyan/aiogram-sentinel/security/advisories/new)
 
 ### What to Include
@@ -298,7 +298,7 @@ async def handle_security_incident(user_id: int, incident_type: str):
 
 For security-related questions or concerns:
 
-- **Security Email**: security@aiogram-sentinel.dev
+- **Security Email**: arman.avanesyan@yahoo.com
 - **General Issues**: [GitHub Issues](https://github.com/ArmanAvanesyan/aiogram-sentinel/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/ArmanAvanesyan/aiogram-sentinel/discussions)
 

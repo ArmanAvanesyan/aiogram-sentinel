@@ -73,7 +73,7 @@ Community leaders will follow these Community Impact Guidelines in determining t
 If you experience or witness unacceptable behavior, or have any other concerns, please report it by contacting the project maintainers. All reports will be handled with discretion.
 
 **Contact Information**:
-- **Email**: conduct@aiogram-sentinel.dev
+- **Email**: arman.avanesyan@yahoo.com
 - **GitHub**: [Create a private issue](https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/new?template=security_issue.yml)
 
 When reporting, please include:
@@ -145,7 +145,7 @@ In addition to the general Code of Conduct, we have specific guidelines for our 
 
 For questions about this Code of Conduct or to report violations:
 
-- **Email**: conduct@aiogram-sentinel.dev
+- **Email**: arman.avanesyan@yahoo.com
 - **GitHub**: [Create a private issue](https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/new?template=security_issue.yml)
 
 ## Updates
