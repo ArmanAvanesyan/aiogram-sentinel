@@ -162,7 +162,7 @@ jobs:
         run: uv run pytest tests/unit/ -v --cov=src/aiogram_cmds --cov-report=xml
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
         with:
           file: ./reports/coverage/coverage.xml
           flags: unittests
@@ -245,7 +245,7 @@ jobs:
     
     - name: Upload coverage to Codecov
       if: matrix.test-type == 'unit'
-      uses: codecov/codecov-action@v5
+      uses: codecov/codecov-action@v7
       with:
         file: ./reports/coverage/coverage.xml
         flags: unittests
