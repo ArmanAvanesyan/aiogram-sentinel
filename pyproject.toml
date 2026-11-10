@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "aiogram-cmds"
-version = "0.2.0"
+version = "0.3.0"
 description = "Command management library for aiogram v3"
 readme = "README.md"
 license = {text = "MIT"}
@@ -21,6 +21,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Communications :: Chat",
 ]
@@ -35,6 +36,10 @@ dependencies = [
 dev = [
     "tomli>=2.0",
     "babel>=2.16",
+    "hypothesis>=6",
+    "pyperf>=2.9",
+    "orjson>=3.10",
+    "psutil>=6",
     "pytest>=7.0.0",
     "pytest-asyncio>=0.21.0",
     "pytest-mock>=3.10.0",
@@ -57,6 +62,9 @@ redis = [
 Homepage = "https://github.com/ArmanAvanesyan/aiogram-cmds"
 Repository = "https://github.com/ArmanAvanesyan/aiogram-cmds"
 Issues = "https://github.com/ArmanAvanesyan/aiogram-cmds/issues"
+
+[tool.hatch.build.targets.sdist]
+exclude = ["native/target", "native/dist"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/aiogram_cmds"]

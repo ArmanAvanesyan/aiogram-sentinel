@@ -46,6 +46,7 @@ nav:
   - Architecture:
     - Overview: ARCHITECTURE.md
     - Performance: performance.md
+    - Compiled Profiles: compiled-profiles.md
   - Project:
     - Release Process: releasing.md
     - Roadmap: ROADMAP.md

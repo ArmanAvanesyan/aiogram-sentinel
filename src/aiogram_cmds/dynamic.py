@@ -15,7 +15,9 @@ from .delivery import (
     LanguageCode,
     menu_slot,
     payload_fingerprint,
+    validate_fingerprint,
 )
+from .engines import Engine, native_engine
 from .registry import CommandRegistry
 from .translator import Translator
 
@@ -67,20 +69,17 @@ async def apply_profile(
     language_code: str | None | LanguageCode = UNSET,
     previous_fingerprint: str | None = None,
     best_effort: bool = False,
+    engine: Engine = "python",
 ) -> CommandApplyResult:
     """Apply or explicitly skip an identical caller-confirmed menu payload.
 
     There is no internal cache or distributed deduplication. Failed and cancelled
     requests never confirm a fingerprint, including ambiguous transport errors.
     """
+    native_engine(engine)
     if type(best_effort) is not bool:
         raise TypeError("best_effort must be a boolean")
-    if previous_fingerprint is not None and (
-        not isinstance(cast(object, previous_fingerprint), str)
-        or len(previous_fingerprint) != 64
-        or any(c not in "0123456789abcdef" for c in previous_fingerprint)
-    ):
-        raise ValueError("previous_fingerprint must be a confirmed SHA256 hex string")
+    validate_fingerprint(previous_fingerprint)
     fingerprint = None
     try:
         if profile not in cfg.profiles:
@@ -100,7 +99,7 @@ async def apply_profile(
         )
         slot = menu_slot(language, language_code, per_language=cfg.per_language)
         fingerprint = payload_fingerprint(
-            bot.id, scope.model_dump(exclude_none=True), slot, commands
+            bot.id, scope.model_dump(exclude_none=True), slot, commands, engine=engine
         )
         if previous_fingerprint == fingerprint:
             return CommandApplyResult("unchanged", fingerprint, fingerprint)

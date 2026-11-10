@@ -1,0 +1,46 @@
+name: Native candidate
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  wheels:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {os: ubuntu-latest, target: x86_64, manylinux: '2014'}
+          - {os: ubuntu-24.04-arm, target: aarch64, manylinux: '2014'}
+          - {os: ubuntu-latest, target: x86_64-unknown-linux-musl, manylinux: musllinux_1_2}
+          - {os: ubuntu-24.04-arm, target: aarch64-unknown-linux-musl, manylinux: musllinux_1_2}
+          - {os: macos-15-intel, target: x86_64, manylinux: auto}
+          - {os: macos-latest, target: aarch64, manylinux: auto}
+          - {os: windows-latest, target: x86_64, manylinux: auto}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: PyO3/maturin-action@v1
+        with:
+          target: ${{ matrix.target }}
+          manylinux: ${{ matrix.manylinux }}
+          args: --release --locked --manifest-path native/Cargo.toml --out native-dist
+      - uses: actions/upload-artifact@v6
+        with:
+          name: native-${{ matrix.os }}-${{ matrix.target }}
+          path: native-dist/*.whl
+  runtime:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.10', '3.11', '3.12', '3.13', '3.14']
+    steps:
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: ${{ matrix.python }}
+      - run: uv sync --frozen --all-extras --all-groups
+      - run: uv pip install ./native
+      - run: uv run --no-sync pytest tests/unit tests/integration --cov=aiogram_cmds --cov-fail-under=80
+      - run: cargo test --locked --manifest-path native/Cargo.toml
+      - run: cargo clippy --locked --manifest-path native/Cargo.toml --all-targets -- -D warnings

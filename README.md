@@ -267,3 +267,5 @@ locale/menu slots, default-language fallback, explicit language cleanup,
 confirmed payload fingerprints and partial batch outcomes. Run
 `uv run python examples/application_profiles.py --dry-run` for a network-free
 example. The library never configures application logging.
+
+Compiled immutable profiles and explicit optional engines are described in [performance guidance](docs/compiled-profiles.md). Python remains the default; native publication is benchmark-gated.
