@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - uses: astral-sh/setup-uv@v7
@@ -40,7 +40,7 @@ jobs:
           --manifest-sha256 "$MANIFEST_SHA256"
       - run: uvx twine check native-dist/*.whl native-dist/*.tar.gz
       - run: uvx abi3audit --strict native-dist/*.whl
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: verified-native-distributions
           path: |
@@ -55,7 +55,7 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v8
         with:
           name: verified-native-distributions
           path: native-dist
