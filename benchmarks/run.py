@@ -312,7 +312,9 @@ def main():
     commit = "published-0.2.0"
     if not published:
         commit = subprocess.check_output(
-            ["git", "rev-parse", "HEAD"], text=True
+            ["git", "rev-parse", "HEAD"],
+            text=True,
+            cwd=Path(__file__).resolve().parents[1],
         ).strip()
     try:
         rust_version = subprocess.run(
