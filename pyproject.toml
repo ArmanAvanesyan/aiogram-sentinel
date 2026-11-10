@@ -104,6 +104,3 @@ showcontent = true
 directory = "misc"
 name = "Miscellaneous"
 showcontent = true
-
-[tool.uv.sources]
-aiogram-coordination = {path = "../aiogram-coordination", editable = true}

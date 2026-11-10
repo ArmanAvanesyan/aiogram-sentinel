@@ -72,18 +72,10 @@ aiogram-nav before aiogram-idle when releasing the compatible pair, so Idle's
 optional `nav` dependency resolves. Record the release outcome and never replace
 already published version files.
 
-## Candidate CI while coordination publication is pending
+## Registry-only dependency freeze
 
-The 0.2.0 candidate uses the reviewed coordination `v0.1.0` source, pinned to
-`7dcb06e2e46a57e8b826279c744ab51d368a997d`. CI explicitly checks that source out
-beside Nav for the development-only uv path override. Installed-artifact jobs build
-a normal coordination wheel and supply it alongside the Nav wheel/sdist; they do
-not imply that coordination can already be resolved from PyPI. The security job
-skips the two editable local projects and still audits their registry dependencies.
-
-This is a candidate verification path, not the release freeze. After coordination
-0.1.0 is public on PyPI, remove the uv source override and candidate checkouts,
-resolve and commit a registry-only lock, remove the explicit candidate wheel from
-artifact installs, and repeat clean-index standalone/Redis wheel and sdist checks.
-Only then build and publish the final Nav 0.2.0 artifacts from its release tag.
-Keep changelog fragments until the release commit consumes them.
+Nav 0.2.0 requires the published `aiogram-coordination>=0.1.0,<0.2` distribution.
+Release CI uses the registry lock without adjacent checkouts or uv source overrides.
+Wheel and sdist probes resolve coordination from PyPI, first without Redis or Idle,
+then with the Redis extra against a real server. These indexed probes must pass
+before tagging or publishing; a direct candidate wheel is not a substitute.

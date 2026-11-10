@@ -10,14 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # Candidate-only peer checkout; remove after the PyPI release freeze.
-      - uses: actions/checkout@v4
-        with:
-          repository: ArmanAvanesyan/aiogram-coordination
-          ref: 7dcb06e2e46a57e8b826279c744ab51d368a997d # v0.1.0
-          path: .candidate-coordination
-      - name: Place the pinned development peer beside this checkout
-        run: mv "$GITHUB_WORKSPACE/.candidate-coordination" "$GITHUB_WORKSPACE/../aiogram-coordination"
       - uses: astral-sh/setup-uv@v6
       - run: uv sync --frozen --extra redis --python 3.12
       - run: uv run --no-sync ruff check .
@@ -32,11 +24,10 @@ jobs:
       - name: Independently install wheel and sdist without optional dependencies
         shell: bash
         run: |
-          uv build --project ../aiogram-coordination --out-dir "$RUNNER_TEMP/coordination-dist"
           for artifact in dist/*.whl dist/*.tar.gz; do
             target=$(mktemp -d)
             uv venv --python 3.12 "$target/env"
-            uv pip install --python "$target/env/bin/python" "$artifact" "$RUNNER_TEMP"/coordination-dist/*.whl pytest pytest-asyncio hypothesis
+            uv pip install --python "$target/env/bin/python" "$artifact" pytest pytest-asyncio hypothesis
             cp -R tests examples tools "$target/"
             cp pyproject.toml "$target/"
             cd "$target"
@@ -63,14 +54,6 @@ jobs:
             aiogram: minimum
     steps:
       - uses: actions/checkout@v4
-      # Candidate-only peer checkout; remove after the PyPI release freeze.
-      - uses: actions/checkout@v4
-        with:
-          repository: ArmanAvanesyan/aiogram-coordination
-          ref: 7dcb06e2e46a57e8b826279c744ab51d368a997d # v0.1.0
-          path: .candidate-coordination
-      - name: Place the pinned development peer beside this checkout
-        run: mv "$GITHUB_WORKSPACE/.candidate-coordination" "$GITHUB_WORKSPACE/../aiogram-coordination"
       - uses: astral-sh/setup-uv@v6
       - run: uv sync --frozen --python '${{ matrix.python }}'
       - shell: bash
@@ -107,14 +90,6 @@ jobs:
       AIOGRAM_NAV_REQUIRE_REDIS: '1'
     steps:
       - uses: actions/checkout@v4
-      # Candidate-only peer checkout; remove after the PyPI release freeze.
-      - uses: actions/checkout@v4
-        with:
-          repository: ArmanAvanesyan/aiogram-coordination
-          ref: 7dcb06e2e46a57e8b826279c744ab51d368a997d # v0.1.0
-          path: .candidate-coordination
-      - name: Place the pinned development peer beside this checkout
-        run: mv "$GITHUB_WORKSPACE/.candidate-coordination" "$GITHUB_WORKSPACE/../aiogram-coordination"
       - uses: astral-sh/setup-uv@v6
       - run: uv sync --frozen --extra redis --python '${{ matrix.python }}'
       - if: matrix.redis-client == 'minimum'
@@ -125,11 +100,10 @@ jobs:
         shell: bash
         run: |
           uv build
-          uv build --project ../aiogram-coordination --out-dir "$RUNNER_TEMP/coordination-dist"
           for artifact in dist/*.whl dist/*.tar.gz; do
             target=$(mktemp -d)
             uv venv --python 3.12 "$target/env"
-            uv pip install --python "$target/env/bin/python" "${artifact}[redis]" "$RUNNER_TEMP"/coordination-dist/*.whl pytest pytest-asyncio hypothesis
+            uv pip install --python "$target/env/bin/python" "${artifact}[redis]" pytest pytest-asyncio hypothesis
             cp -R tests examples tools "$target/"
             cp pyproject.toml "$target/"
             cd "$target"
@@ -147,14 +121,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # Candidate-only peer checkout; remove after the PyPI release freeze.
-      - uses: actions/checkout@v4
-        with:
-          repository: ArmanAvanesyan/aiogram-coordination
-          ref: 7dcb06e2e46a57e8b826279c744ab51d368a997d # v0.1.0
-          path: .candidate-coordination
-      - name: Place the pinned development peer beside this checkout
-        run: mv "$GITHUB_WORKSPACE/.candidate-coordination" "$GITHUB_WORKSPACE/../aiogram-coordination"
       - uses: astral-sh/setup-uv@v6
       - run: uv sync --frozen --extra redis --python 3.12
       # Keep the full low-severity inventory; the following invocation owns the gate.
