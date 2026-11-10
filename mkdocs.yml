@@ -39,6 +39,8 @@ nav:
     - Advanced Configuration: tutorials/advanced-configuration.md
     - Policy Patterns: tutorials/policy-patterns.md
   - Configuration: configuration.md
+  - Application integration: application-integration.md
+  - Migration to 1.2: migration-1.2.md
   - API Reference:
     - Core: api/core.md
     - Policy Registry: api/policy-registry.md

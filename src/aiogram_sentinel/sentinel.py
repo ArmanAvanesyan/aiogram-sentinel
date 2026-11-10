@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from typing import Any
@@ -43,6 +44,7 @@ class _Installation:
 
 
 _installations: WeakKeyDictionary[Router, _Installation] = WeakKeyDictionary()
+logger = logging.getLogger(__name__)
 
 
 class Sentinel:
@@ -115,6 +117,25 @@ class Sentinel:
         dp.include_router(router)
         _installations[router] = _Installation(infra, cfg, hook)
         Sentinel._error_config = None
+        attachment_warned = False
+
+        async def check_attachment() -> None:
+            nonlocal attachment_warned
+            if (
+                not any(
+                    child.message.handlers or child.callback_query.handlers
+                    for child in router.chain_tail
+                )
+                and not attachment_warned
+            ):
+                attachment_warned = True
+                logger.warning(
+                    "Sentinel protected router has no message/callback handlers; "
+                    "attach Sentinel to an ancestor of application handlers, "
+                    "not a sibling router"
+                )
+
+        dp.startup.register(check_attachment)
 
         return router, infra
 

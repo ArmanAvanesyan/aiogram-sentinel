@@ -14,11 +14,50 @@ from aiogram.types import Chat, Message, Update, User
 EXAMPLE = Path(__file__).parents[2] / "examples" / "minimal_bot.py"
 
 
-def load_example():
-    spec = importlib.util.spec_from_file_location("sentinel_minimal_example", EXAMPLE)
+def load_example(filename="minimal_bot.py"):
+    spec = importlib.util.spec_from_file_location(
+        "sentinel_example", EXAMPLE.with_name(filename)
+    )
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+@pytest.mark.asyncio
+async def test_application_example_protects_child_and_explicitly_exempts_start():
+    from aiogram.types import MessageEntity
+
+    example = load_example("application_bot.py")
+    dp = await example.create_dispatcher()
+    bot = Bot("123456:TEST")
+    bot.session.make_request = AsyncMock(return_value=update(100, "response").message)
+    try:
+        await dp.emit_startup()
+        for number in range(1, 7):
+            await dp.feed_update(bot, update(number, f"message {number}"))
+        for number in (7, 8):
+            event = update(number, "/start")
+            event = event.model_copy(
+                update={
+                    "message": event.message.model_copy(
+                        update={
+                            "entities": [
+                                MessageEntity(type="bot_command", offset=0, length=6)
+                            ]
+                        }
+                    )
+                }
+            )
+            await dp.feed_update(bot, event)
+        texts = [call.args[1].text for call in bot.session.make_request.await_args_list]
+        assert (
+            texts
+            == ["Accepted."] * 5
+            + ["Welcome. Send text to exercise message protection."] * 2
+        )
+    finally:
+        await bot.session.close()
+        await dp.storage.close()
 
 
 def update(number, text):

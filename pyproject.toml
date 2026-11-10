@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "aiogram-sentinel"
-version = "1.1.0"
+version = "1.2.0"
 description = "Edge hygiene library for aiogram v3 with middlewares, router, and storage backends"
 readme = "README.md"
 license = {text = "MIT"}
@@ -57,6 +57,7 @@ sentry = [
 Homepage = "https://github.com/ArmanAvanesyan/aiogram-sentinel"
 Repository = "https://github.com/ArmanAvanesyan/aiogram-sentinel"
 Issues = "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues"
+Documentation = "https://github.com/ArmanAvanesyan/aiogram-sentinel/tree/main/docs"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/aiogram_sentinel"]

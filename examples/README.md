@@ -29,3 +29,18 @@ sessions/storage close on exit. Do not enable verbose HTTP logs with real tokens
 Memory state is single-process and disappears on restart. For the Redis backend,
 install the `redis` extra and follow [Redis storage](../docs/tutorials/redis-storage.md).
 Redis uses fixed-window counting; memory uses sliding-window counting.
+
+## Application-owned root router and action policies
+
+`application_bot.py` uses an ancestor router and opt-in per-kind limits, keeps
+`/start` exemption explicit, and configures infrastructure-error passthrough.
+
+```sh
+python examples/application_bot.py --help
+BOT_TOKEN=... python examples/application_bot.py
+```
+
+Use a package installation (or the verified release wheel); imports come only
+from public aiogram/Sentinel APIs. Token-free help never constructs a Bot.
+Logging is configured only in the executable entry point. The complete HTTP503
+recipe is in the [application guide](../docs/application-integration.md).

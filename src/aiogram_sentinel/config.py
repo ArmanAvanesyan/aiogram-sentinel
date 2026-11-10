@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass, field
-from typing import Literal
+from types import MappingProxyType
+from typing import Literal, cast
 
+from .actions import ActionKind, ActionPolicy, SentinelExemptions
 from .exceptions import ConfigurationError
 
 
@@ -28,6 +31,13 @@ class SentinelConfig:
 
     # Auth configuration
     require_registration: bool = False
+
+    # Explicit opt-ins: existing shared/default behavior stays unchanged.
+    action_policies: Mapping[ActionKind, ActionPolicy] = field(
+        default_factory=lambda: dict[ActionKind, ActionPolicy]()
+    )
+    bucket_mode: Literal["shared", "action_kind"] = "shared"
+    exemptions: SentinelExemptions = field(default_factory=SentinelExemptions)
 
     # Internal settings
     _validated: bool = field(default=False, init=False)
@@ -53,6 +63,20 @@ class SentinelConfig:
 
         if self.debounce_default_window <= 0:
             raise ConfigurationError("debounce_default_window must be positive")
+
+        if self.bucket_mode not in ("shared", "action_kind"):
+            raise ConfigurationError("bucket_mode must be shared or action_kind")
+        if not isinstance(cast(object, self.exemptions), SentinelExemptions):
+            raise ConfigurationError("exemptions must be SentinelExemptions")
+        if not isinstance(cast(object, self.action_policies), Mapping):
+            raise ConfigurationError("action_policies must be a mapping")
+        if any(
+            kind not in ("message", "command", "callback_query")
+            or not isinstance(cast(object, policy), ActionPolicy)
+            for kind, policy in self.action_policies.items()
+        ):
+            raise ConfigurationError("Invalid action policy mapping")
+        self.action_policies = MappingProxyType(dict(self.action_policies))
 
     def is_redis_backend(self) -> bool:
         """Check if Redis backend is configured."""

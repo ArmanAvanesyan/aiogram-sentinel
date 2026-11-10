@@ -6,7 +6,7 @@ import logging
 import math
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, cast
 
 from aiogram import BaseMiddleware
 from aiogram.exceptions import (
@@ -47,6 +47,15 @@ class ErrorConfig:
     send_strategy: (
         Callable[[TelegramObject, dict[str, Any], str], Awaitable[None]] | None
     ) = None
+    reraise_exceptions: tuple[type[Exception], ...] = ()
+
+    def __post_init__(self) -> None:
+        if not isinstance(cast(object, self.reraise_exceptions), tuple) or any(
+            not isinstance(cast(object, value), type)
+            or not issubclass(cast(type[object], value), Exception)
+            for value in self.reraise_exceptions
+        ):
+            raise ValueError("reraise_exceptions must be a tuple of Exception types")
 
 
 class ErrorHandlingMiddleware(BaseMiddleware):
@@ -80,6 +89,8 @@ class ErrorHandlingMiddleware(BaseMiddleware):
         try:
             return await handler(event, data)
         except Exception as exc:
+            if isinstance(exc, self._cfg.reraise_exceptions):
+                raise
             await self._handle_error(exc, event, data)
             # Don't re-raise - error has been handled
             return None

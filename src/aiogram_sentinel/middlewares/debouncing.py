@@ -9,6 +9,7 @@ from typing import Any, cast
 from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject
 
+from ..actions import classify_action
 from ..config import SentinelConfig
 from ..context import extract_group_ids, extract_handler_bucket
 from ..policy import DebounceCfg, resolve_scope
@@ -48,6 +49,8 @@ class DebounceMiddleware(BaseMiddleware):
         data: dict[str, Any],
     ) -> Any:
         """Process the event through debouncing middleware."""
+        if data.get("sentinel_exempt") is True or self._cfg.exemptions.matches(event):
+            return await handler(event, data)
         # Get debounce configuration
         window_seconds = self._get_debounce_window(handler, data, event)
 
@@ -210,6 +213,9 @@ class DebounceMiddleware(BaseMiddleware):
         final_bucket: str | None = (
             explicit_bucket if explicit_bucket is not None else bucket
         )
+        namespace = "debounce"
+        if self._cfg.bucket_mode == "action_kind":
+            namespace = f"debounce.{classify_action(event)}"
 
         # Resolve scope with cap constraint
         resolved_scope = resolve_scope(user_id, chat_id, scope_cap)
@@ -229,7 +235,7 @@ class DebounceMiddleware(BaseMiddleware):
             )
             # Return a dummy key that will pass debouncing
             return self._key_builder.global_(
-                "debounce", method=method, bucket=final_bucket
+                namespace, method=method, bucket=final_bucket
             )
 
         # Build key based on resolved scope
@@ -239,17 +245,17 @@ class DebounceMiddleware(BaseMiddleware):
             and chat_id is not None
         ):
             return self._key_builder.group(
-                "debounce", user_id, chat_id, method=method, bucket=final_bucket
+                namespace, user_id, chat_id, method=method, bucket=final_bucket
             )
         elif resolved_scope == Scope.USER and user_id is not None:
             return self._key_builder.user(
-                "debounce", user_id, method=method, bucket=final_bucket
+                namespace, user_id, method=method, bucket=final_bucket
             )
         elif resolved_scope == Scope.CHAT and chat_id is not None:
             return self._key_builder.chat(
-                "debounce", chat_id, method=method, bucket=final_bucket
+                namespace, chat_id, method=method, bucket=final_bucket
             )
         else:  # Scope.GLOBAL
             return self._key_builder.global_(
-                "debounce", method=method, bucket=final_bucket
+                namespace, method=method, bucket=final_bucket
             )

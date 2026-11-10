@@ -3,7 +3,8 @@
 This page describes the maintainer procedure implemented by
 [the release workflow](https://github.com/ArmanAvanesyan/aiogram-sentinel/blob/main/.github/workflows/release.yml).
 It does not create or authorize a release. Branch pushes and pull requests run
-verification; only an explicit `vMAJOR.MINOR.PATCH` tag triggers publishing.
+verification. Publishing is a manual dispatch of `release.yml` against an explicit
+`vMAJOR.MINOR.PATCH` tag, with independently reviewed artifact checksums.
 
 ## Prepare a release
 
@@ -39,11 +40,19 @@ Do not reuse a version already published to PyPI.
 
 ## Tag and publish
 
-After the release commit and required CI checks are approved, the maintainer can
-create and push its matching `vX.Y.Z` tag. The tag workflow validates version
-consistency, builds wheel/sdist artifacts, checks them with Twine, publishes
-through the configured PyPI environment and attaches artifacts to a GitHub
-release with generated notes.
+After the release commit and required CI checks are approved, create and push
+its matching tag. Build and test wheel/sdist from that exact source, generate
+`SHA256SUMS` containing exactly the two filenames and hashes, and upload those
+exact bytes to the matching GitHub release with reviewed notes. Keep the SHA256
+digest of that manifest independently, then dispatch:
+
+```sh
+gh workflow run release.yml --ref vX.Y.Z -f manifest_sha256=REVIEWED_SHA256SUMS_DIGEST
+```
+
+The tag-only workflow verifies version, filenames, manifest and artifact digests
+before publishing through OIDC. It does not rebuild or substitute the reviewed
+distributions. Branch pushes, tag pushes and GitHub releases alone never publish.
 
 The `pypi` environment and trusted-publishing binding must already be configured
 for publishing to succeed. This documentation does not assert that remote

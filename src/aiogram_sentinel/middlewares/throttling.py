@@ -9,6 +9,7 @@ from typing import Any, cast
 from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject
 
+from ..actions import classify_action
 from ..config import SentinelConfig
 from ..context import extract_group_ids, extract_handler_bucket
 from ..policy import ThrottleCfg, resolve_scope
@@ -53,6 +54,8 @@ class ThrottlingMiddleware(BaseMiddleware):
         data: dict[str, Any],
     ) -> Any:
         """Process the event through throttling middleware."""
+        if data.get("sentinel_exempt") is True or self._cfg.exemptions.matches(event):
+            return await handler(event, data)
         # Get rate limit configuration from handler or use defaults
         max_events, per_seconds = self._get_rate_limit_config(handler, data, event)
 
@@ -196,6 +199,9 @@ class ThrottlingMiddleware(BaseMiddleware):
         final_bucket: str | None = (
             explicit_bucket if explicit_bucket is not None else bucket
         )
+        namespace = "throttle"
+        if self._cfg.bucket_mode == "action_kind":
+            namespace = f"throttle.{classify_action(event)}"
 
         # Resolve scope with cap constraint
         resolved_scope = resolve_scope(user_id, chat_id, scope_cap)
@@ -213,7 +219,7 @@ class ThrottlingMiddleware(BaseMiddleware):
             )
             # Return a dummy key that will pass throttling
             return self._key_builder.global_(
-                "throttle", method=method, bucket=final_bucket
+                namespace, method=method, bucket=final_bucket
             )
 
         # Build key based on resolved scope
@@ -223,19 +229,19 @@ class ThrottlingMiddleware(BaseMiddleware):
             and chat_id is not None
         ):
             return self._key_builder.group(
-                "throttle", user_id, chat_id, method=method, bucket=final_bucket
+                namespace, user_id, chat_id, method=method, bucket=final_bucket
             )
         elif resolved_scope == Scope.USER and user_id is not None:
             return self._key_builder.user(
-                "throttle", user_id, method=method, bucket=final_bucket
+                namespace, user_id, method=method, bucket=final_bucket
             )
         elif resolved_scope == Scope.CHAT and chat_id is not None:
             return self._key_builder.chat(
-                "throttle", chat_id, method=method, bucket=final_bucket
+                namespace, chat_id, method=method, bucket=final_bucket
             )
         else:  # Scope.GLOBAL
             return self._key_builder.global_(
-                "throttle", method=method, bucket=final_bucket
+                namespace, method=method, bucket=final_bucket
             )
 
     async def _calculate_retry_after(self, key: str, window: int) -> float:
