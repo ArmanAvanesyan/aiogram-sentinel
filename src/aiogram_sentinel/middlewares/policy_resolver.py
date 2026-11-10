@@ -21,6 +21,7 @@ from ..policy import (
 )
 
 logger = logging.getLogger(__name__)
+_MISSING = object()
 
 
 class PolicyResolverMiddleware(BaseMiddleware):
@@ -100,9 +101,8 @@ class PolicyResolverMiddleware(BaseMiddleware):
         debounce_cfg = None
 
         # Process policies (later overrides earlier for same kind)
-        if hasattr(handler, "__sentinel_policies__"):
-            policy_names = handler.__sentinel_policies__  # type: ignore
-
+        policy_names: Any = getattr(handler, "__sentinel_policies__", _MISSING)
+        if policy_names is not _MISSING:
             for policy_name in policy_names:
                 try:
                     policy = self._registry.get(policy_name)

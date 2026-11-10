@@ -2,6 +2,17 @@
 
 <!-- towncrier release notes start -->
 
+## [1.3.0] - Unreleased
+
+- Add explicit optional ABI1 Rust memory engines; retain the pure Python default,
+  exact window semantics and Redis distributed authority. Missing or mismatched
+  companions fail before engine mutation and never trigger an implicit fallback.
+- Reduce key/scope allocations, event type mapping allocations and repeated deque
+  lookups while retaining subclass key-builder behavior and policy precedence.
+- Add generated native parity tests, installed-package CPU/latency benchmark
+  drivers, Criterion kernels and a separate exact-asset native release workflow.
+- Native publication is pending performance qualification and all-platform CI.
+
 ## [1.2.0] - 2026-11-10
 
 ### Added

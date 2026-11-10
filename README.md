@@ -88,3 +88,10 @@ provide Idle/Nav scheduling or durable business-effect recovery.
 
 The library never configures logging globally. Examples enable scoped debug output
 and use recording Telegram sessions in tests; no real messages are sent by tests.
+
+### Optional native engine candidate
+
+Version 1.3.0 adds explicit `engine="rust"` selection for memory infrastructure;
+Python remains the default. The companion is independently built and release
+gated; no native dependency or extra is installed implicitly. See
+[engine selection, semantics and qualification](docs/native-engine.md).

@@ -104,6 +104,44 @@ class KeyBuilder:
 
         return self.sep.join(key_parts)
 
+    def _convenience(
+        self, namespace: str, scope: Scope, identifiers: tuple[str, ...], **kwargs: Any
+    ) -> str:
+        # Preserve subclass for_update overrides. The common concrete builder
+        # avoids allocating a temporary frozen dataclass on every update.
+        if type(self) is not KeyBuilder:
+            return self.for_update(KeyParts(namespace, scope, identifiers), **kwargs)
+        if not namespace:
+            raise ValueError("namespace cannot be empty")
+        for identifier in identifiers:
+            if not identifier:
+                raise ValueError("identifier cannot be empty")
+            if ":" in identifier:
+                raise ValueError(
+                    f"identifier cannot contain separator ':': {identifier}"
+                )
+        return self._join(namespace, scope, identifiers, **kwargs)
+
+    def _join(
+        self,
+        namespace: str,
+        scope: Scope,
+        identifiers: tuple[str, ...],
+        *,
+        method: str | None = None,
+        bucket: str | None = None,
+    ) -> str:
+        if method is not None and self.sep in method:
+            raise ValueError(f"method cannot contain separator '{self.sep}': {method}")
+        if bucket is not None and self.sep in bucket:
+            raise ValueError(f"bucket cannot contain separator '{self.sep}': {bucket}")
+        components = [self.app, namespace, scope.name, *identifiers]
+        if method is not None:
+            components.append(f"m={method}")
+        if bucket is not None:
+            components.append(f"b={bucket}")
+        return self.sep.join(components)
+
     def user(self, namespace: str, user_id: int, **kwargs: Any) -> str:
         """Build key for user scope.
 
@@ -115,10 +153,7 @@ class KeyBuilder:
         Returns:
             User-scoped key
         """
-        parts = KeyParts(
-            namespace=namespace, scope=Scope.USER, identifiers=(str(user_id),)
-        )
-        return self.for_update(parts, **kwargs)
+        return self._convenience(namespace, Scope.USER, (str(user_id),), **kwargs)
 
     def chat(self, namespace: str, chat_id: int, **kwargs: Any) -> str:
         """Build key for chat scope.
@@ -131,10 +166,7 @@ class KeyBuilder:
         Returns:
             Chat-scoped key
         """
-        parts = KeyParts(
-            namespace=namespace, scope=Scope.CHAT, identifiers=(str(chat_id),)
-        )
-        return self.for_update(parts, **kwargs)
+        return self._convenience(namespace, Scope.CHAT, (str(chat_id),), **kwargs)
 
     def group(self, namespace: str, user_id: int, chat_id: int, **kwargs: Any) -> str:
         """Build key for group scope (user+chat composite).
@@ -148,12 +180,9 @@ class KeyBuilder:
         Returns:
             Group-scoped key
         """
-        parts = KeyParts(
-            namespace=namespace,
-            scope=Scope.GROUP,
-            identifiers=(str(user_id), str(chat_id)),
+        return self._convenience(
+            namespace, Scope.GROUP, (str(user_id), str(chat_id)), **kwargs
         )
-        return self.for_update(parts, **kwargs)
 
     def global_(self, namespace: str, **kwargs: Any) -> str:
         """Build key for global scope.
@@ -165,7 +194,4 @@ class KeyBuilder:
         Returns:
             Global-scoped key
         """
-        parts = KeyParts(
-            namespace=namespace, scope=Scope.GLOBAL, identifiers=("global",)
-        )
-        return self.for_update(parts, **kwargs)
+        return self._convenience(namespace, Scope.GLOBAL, ("global",), **kwargs)

@@ -6,6 +6,7 @@ from .decorators import debounce, rate_limit
 from .errors import ErrorConfig, ErrorEvent, ErrorHandlingMiddleware
 from .middlewares.debouncing import DebounceMiddleware
 from .middlewares.throttling import ThrottlingMiddleware
+from .native import NativeEngineIncompatible, NativeEngineUnavailable
 from .policy import (
     DebounceCfg,
     Policy,
@@ -27,6 +28,8 @@ from .version import __version__
 __all__: list[str] = [
     "__version__",
     "SentinelConfig",
+    "NativeEngineUnavailable",
+    "NativeEngineIncompatible",
     "ActionKind",
     "ActionPolicy",
     "SentinelExemptions",

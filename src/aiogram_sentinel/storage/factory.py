@@ -10,20 +10,20 @@ from ..types import InfraBundle
 def build_infra(config: SentinelConfig) -> InfraBundle:
     """Build infrastructure backends (rate_limiter + debounce) based on configuration."""
     if config.backend == "memory":
-        return _build_memory_infra()
+        return _build_memory_infra(config)
     elif config.backend == "redis":
         return _build_redis_infra(config)
     else:
         raise ConfigurationError(f"Unsupported backend: {config.backend}")
 
 
-def _build_memory_infra() -> InfraBundle:
+def _build_memory_infra(config: SentinelConfig) -> InfraBundle:
     """Build in-memory infrastructure backends."""
     from .memory import MemoryDebounce, MemoryRateLimiter
 
     return InfraBundle(
-        rate_limiter=MemoryRateLimiter(),
-        debounce=MemoryDebounce(),
+        rate_limiter=MemoryRateLimiter(engine=config.engine),
+        debounce=MemoryDebounce(engine=config.engine),
     )
 
 

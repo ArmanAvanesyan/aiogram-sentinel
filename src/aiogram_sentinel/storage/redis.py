@@ -13,11 +13,6 @@ from ..exceptions import BackendOperationError
 from .base import DebounceBackend, RateLimiterBackend, validate_interval
 
 
-def _k(prefix: str, *parts: str) -> str:
-    """Build namespaced Redis key."""
-    return f"{prefix}:{':'.join(parts)}"
-
-
 class RedisRateLimiter(RateLimiterBackend):
     """Redis rate limiter using INCR + EXPIRE pattern."""
 
@@ -31,7 +26,7 @@ class RedisRateLimiter(RateLimiterBackend):
         validate_interval(max_events, "max_events")
         validate_interval(per_seconds, "per_seconds")
         try:
-            redis_key = _k(self._prefix, "rate", key)
+            redis_key = f"{self._prefix}:rate:{key}"
             # Increment and expiry must commit together, including after a worker dies.
             count = await cast(
                 Awaitable[int],
@@ -53,7 +48,7 @@ class RedisRateLimiter(RateLimiterBackend):
         validate_interval(max_events, "max_events")
         validate_interval(per_seconds, "per_seconds")
         try:
-            redis_key = _k(self._prefix, "rate", key)
+            redis_key = f"{self._prefix}:rate:{key}"
             val = await self._redis.get(redis_key)
             return max(0, max_events - int(val or 0))
         except RedisError as e:
@@ -72,8 +67,7 @@ class RedisDebounce(DebounceBackend):
         """Check if fingerprint was seen within window and record it."""
         validate_interval(window_seconds, "window_seconds")
         try:
-            fp = fingerprint  # Use fingerprint directly
-            k = _k(self._prefix, "debounce", key, fp)
+            k = f"{self._prefix}:debounce:{key}:{fingerprint}"
             added = await self._redis.set(
                 k, int(time.time()), ex=window_seconds, nx=True
             )
