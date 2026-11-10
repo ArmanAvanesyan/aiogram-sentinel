@@ -1,0 +1,105 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "aiogram-nav"
+version = "0.1.0"
+description = "Standalone navigation and recoverable screen rendering for aiogram 3"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{name = "aiogram-nav contributors"}]
+dependencies = ["aiogram>=3.22,<4"]
+
+classifiers = ["Development Status :: 3 - Alpha", "Framework :: AsyncIO", "Typing :: Typed", "Programming Language :: Python :: 3.10", "Programming Language :: Python :: 3.11", "Programming Language :: Python :: 3.12", "Programming Language :: Python :: 3.13", "Programming Language :: Python :: 3.14"]
+
+[project.urls]
+Homepage = "https://github.com/ArmanAvanesyan/aiogram-nav"
+Documentation = "https://github.com/ArmanAvanesyan/aiogram-nav/tree/main/docs"
+Repository = "https://github.com/ArmanAvanesyan/aiogram-nav"
+Issues = "https://github.com/ArmanAvanesyan/aiogram-nav/issues"
+Changelog = "https://github.com/ArmanAvanesyan/aiogram-nav/blob/main/CHANGELOG.md"
+
+[project.optional-dependencies]
+redis = ["redis>=5.0.8,<8"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "pytest-asyncio>=0.24",
+    "pytest-cov>=6",
+    "ruff>=0.11",
+    "pyright>=1.1.400",
+    "build>=1.2",
+    "twine>=6",
+    # Audit tooling needs Python 3.11+ for its patched filelock dependency.
+    "pip-audit>=2.9; python_version>='3.11'",
+    "hypothesis>=6",
+    "mkdocs>=1.6",
+    "towncrier>=24.8",
+    "tomli>=2; python_version<'3.11'",
+    "bandit>=1.8",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/aiogram_nav"]
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "ASYNC"]
+ignore = ["E501"]
+[tool.pyright]
+include = ["src"]
+pythonVersion = "3.10"
+typeCheckingMode = "strict"
+venvPath = "."
+venv = ".venv"
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+addopts = "-ra"
+[tool.coverage.run]
+source = ["aiogram_nav"]
+branch = true
+[tool.coverage.report]
+show_missing = true
+fail_under = 80
+
+[tool.towncrier]
+package = "aiogram_nav"
+package_dir = "src"
+directory = "CHANGES"
+filename = "CHANGELOG.md"
+title_format = "## {version} ({project_date})"
+issue_format = "[#{issue}](https://github.com/ArmanAvanesyan/aiogram-nav/issues/{issue})"
+underlines = ["", "", ""]
+wrap = true
+all_bullets = true
+
+[[tool.towncrier.type]]
+directory = "feature"
+name = "Features"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "bugfix"
+name = "Bugfixes"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "doc"
+name = "Documentation"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "removal"
+name = "Removals"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "misc"
+name = "Miscellaneous"
+showcontent = true

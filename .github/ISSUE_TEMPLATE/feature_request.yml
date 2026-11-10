@@ -1,0 +1,15 @@
+name: Feature request
+description: Describe a navigation use case or API improvement.
+body:
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Use case
+      description: What behavior does your application need? Include alternatives already considered.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Describe API, backend, recovery and compatibility implications where relevant.

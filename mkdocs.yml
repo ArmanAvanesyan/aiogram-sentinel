@@ -1,0 +1,16 @@
+site_name: aiogram-nav
+strict: true
+nav:
+  - Overview: index.md
+  - Quickstart: quickstart.md
+  - Concepts: concepts.md
+  - Public API: public-api.md
+  - Storage: storage.md
+  - Redis: redis.md
+  - Redis audit: redis-audit.md
+  - Migration: migration.md
+  - Optional idle integration: idle-integration.md
+  - Security: security.md
+  - Memory audit: memory-audit.md
+  - Verification: verification.md
+  - Releasing: releasing.md
