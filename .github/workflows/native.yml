@@ -23,7 +23,7 @@ jobs:
           - {os: windows-latest, target: x86_64, manylinux: auto}
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.target }}
@@ -35,7 +35,7 @@ jobs:
           for version in 3.10 3.11 3.12 3.13 3.14; do
             docker run --rm -v "$PWD:/work" -w /work "python:$version-alpine" sh -c 'pip install native-dist/*.whl && python tools/smoke_native.py'
           done
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: native-${{ matrix.os }}-${{ matrix.target }}
           path: native-dist/*.whl
@@ -55,11 +55,11 @@ jobs:
           - {os: macos-latest, target: aarch64}
           - {os: windows-latest, target: x86_64}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ matrix.python }}
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v8
         with:
           name: native-${{ matrix.os }}-${{ matrix.target }}
           path: native-dist
@@ -71,18 +71,18 @@ jobs:
   rust:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - run: cargo test --locked --manifest-path native/Cargo.toml
       - run: cargo clippy --locked --manifest-path native/Cargo.toml --all-targets -- -D warnings
   source:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: PyO3/maturin-action@v1
         with:
           command: sdist
           args: --manifest-path native/Cargo.toml --out native-dist
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: native-source
           path: native-dist/*.tar.gz
