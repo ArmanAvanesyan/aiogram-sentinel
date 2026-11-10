@@ -272,3 +272,39 @@ def test_native_hash_preserves_legacy_scope_serialization(value):
     assert payload_fingerprint(
         123, {"value": value}, None, rows
     ) == payload_fingerprint(123, {"value": value}, None, rows, engine="rust")
+
+
+@pytest.mark.parametrize("abi", [True, 1.0, 1])
+def test_malformed_matching_native_rejected_before_callbacks(
+    monkeypatch, mock_bot, abi
+):
+    from types import SimpleNamespace
+
+    import aiogram_cmds.engines as engines
+
+    module = SimpleNamespace(abi_version=lambda: abi, version=lambda: "0.3.0")
+    monkeypatch.setattr(engines, "import_module", lambda name: module)
+
+    def translator(key, **kwargs):
+        pytest.fail("Malformed native module must fail before callbacks")
+
+    with pytest.raises(NativeEngineError):
+        compile_config(
+            sample(),
+            config_revision="1",
+            translator=translator,
+            translation_revision="1",
+            engine="rust",
+        )
+    mock_bot.set_my_commands.assert_not_called()
+
+
+def test_native_dynamic_loader_failure_is_normalized(monkeypatch):
+    import aiogram_cmds.engines as engines
+
+    def broken(name):
+        raise OSError("dynamic loader failed")
+
+    monkeypatch.setattr(engines, "import_module", broken)
+    with pytest.raises(NativeEngineError):
+        native_engine("rust")

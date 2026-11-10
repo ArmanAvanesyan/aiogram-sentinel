@@ -43,12 +43,21 @@ def native_engine(engine: Engine = "python") -> NativeModule | None:
         return None
     try:
         module = cast(NativeModule, import_module("_aiogram_cmds_native"))
-    except ImportError as error:
+    except (ImportError, OSError) as error:
         raise NativeEngineError(
             "engine='rust' requires the separately installed aiogram-cmds-native companion"
         ) from error
     try:
-        if module.abi_version() != 1 or module.version() != "0.3.0":
+        abi = module.abi_version()
+        version = module.version()
+        required = ("resolve_profile", "validate_commands", "fingerprint", "compile")
+        if (
+            type(abi) is not int
+            or abi != 1
+            or type(version) is not str
+            or version != "0.3.0"
+            or any(not callable(getattr(module, name, None)) for name in required)
+        ):
             raise NativeEngineError(
                 "aiogram-cmds-native ABI/version is incompatible with this base package"
             )
