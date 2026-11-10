@@ -50,13 +50,12 @@ def use_sentry(
     Raises:
         RuntimeError: If sentry-sdk is not installed.
     """
-    if not _sentry_available:
+    if not _sentry_available or sentry_sdk is None:
         raise RuntimeError(
             "sentry-sdk is not installed. Install aiogram-sentinel[sentry] to enable Sentry integration."
         )
 
     # Initialize Sentry SDK
-    assert sentry_sdk is not None  # Type guard for pyright
     sentry_sdk.init(
         dsn=dsn,
         environment=environment,
@@ -94,7 +93,8 @@ async def _sentry_error_breadcrumb(event: BaseEvent) -> None:
         return
 
     try:
-        assert sentry_sdk is not None  # Type guard for pyright
+        if sentry_sdk is None:
+            raise RuntimeError("Sentry integration is unavailable")
         sentry_sdk.add_breadcrumb(
             message=f"Error: {event.error_type}",
             category="error",
@@ -120,7 +120,8 @@ def capture_exception(exception: Exception, **kwargs: Any) -> None:
         **kwargs: Additional context
     """
     try:
-        assert sentry_sdk is not None  # Type guard for pyright
+        if sentry_sdk is None:
+            raise RuntimeError("Sentry integration is unavailable")
         sentry_sdk.capture_exception(exception, **kwargs)
     except Exception as e:
         logger.exception("Failed to capture exception in Sentry: %s", e)
@@ -134,7 +135,8 @@ def set_user_context(user_id: int | None, chat_id: int | None) -> None:
         chat_id: Chat ID
     """
     try:
-        assert sentry_sdk is not None  # Type guard for pyright
+        if sentry_sdk is None:
+            raise RuntimeError("Sentry integration is unavailable")
         sentry_sdk.set_user(
             {
                 "id": user_id,

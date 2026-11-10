@@ -2,7 +2,7 @@
 
 Common issues and solutions for aiogram-sentinel.
 
-> **Quick Help**: For common questions, see the [FAQ](faq.md). For step-by-step guides, see the [Tutorials](tutorials/).
+> **Quick Help**: For common questions, see the [FAQ](faq.md). For step-by-step guides, see the [Tutorials](tutorials/basic-protection.md).
 
 ## Quick Diagnosis
 

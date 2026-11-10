@@ -60,14 +60,14 @@ pip install aiogram-sentinel[redis]
 
 - **[Quickstart](quickstart.md)** - Get started in 5 minutes
 - **[Configuration](configuration.md)** - Complete configuration guide
-- **[API Reference](api/)** - Full API documentation
-- **[Tutorials](tutorials/)** - Step-by-step guides
+- **[API Reference](api/core.md)** - Full API documentation
+- **[Tutorials](tutorials/basic-protection.md)** - Step-by-step guides
 - **[Performance](performance.md)** - Benchmarks and optimization
-- **[Examples](../examples/)** - Complete working examples
+- **[Examples](https://github.com/ArmanAvanesyan/aiogram-sentinel/tree/main/examples)** - Complete working examples
 
 ## 🤝 Contributing
 
-See [CONTRIBUTING.md](../CONTRIBUTING.md) for development guidelines and setup instructions.
+See [CONTRIBUTING.md](https://github.com/ArmanAvanesyan/aiogram-sentinel/blob/main/CONTRIBUTING.md) for development guidelines and setup instructions.
 
 ## 💬 Community & Support
 
@@ -87,8 +87,8 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for development guidelines and setup i
 
 ## Security
 
-For security issues, see [SECURITY.md](../SECURITY.md).
+For security issues, see [SECURITY.md](https://github.com/ArmanAvanesyan/aiogram-sentinel/blob/main/SECURITY.md).
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](../LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/ArmanAvanesyan/aiogram-sentinel/blob/main/LICENSE) file for details.

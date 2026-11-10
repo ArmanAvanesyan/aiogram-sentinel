@@ -123,9 +123,9 @@ router, infra = await Sentinel.setup(dp, config)
 ## Next Steps
 
 1. **Learn more**: Read the [Architecture Guide](ARCHITECTURE.md)
-2. **Explore examples**: Check out [examples/](../examples/)
+2. **Explore examples**: Check out [examples/](https://github.com/ArmanAvanesyan/aiogram-sentinel/tree/main/examples)
 3. **Configure protection**: See [Configuration Guide](configuration.md)
-4. **Build tutorials**: Follow [Tutorials](tutorials/)
+4. **Build tutorials**: Follow [Tutorials](tutorials/basic-protection.md)
 
 ## Troubleshooting
 
@@ -147,7 +147,7 @@ router, infra = await Sentinel.setup(dp, config)
 
 Now that you have a basic bot running, explore:
 
-- [Tutorials](tutorials/) - Step-by-step guides for common tasks
-- [API Reference](api/) - Complete API documentation
+- [Tutorials](tutorials/basic-protection.md) - Step-by-step guides for common tasks
+- [API Reference](api/core.md) - Complete API documentation
 - [Configuration](configuration.md) - Advanced configuration options
-- [Examples](../examples/) - Real-world usage examples
+- [Examples](https://github.com/ArmanAvanesyan/aiogram-sentinel/tree/main/examples) - Real-world usage examples

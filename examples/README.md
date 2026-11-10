@@ -1,70 +1,31 @@
-# aiogram-sentinel Examples
+# Examples
 
-This directory contains example implementations demonstrating how to use aiogram-sentinel.
+`minimal_bot.py` demonstrates process-local memory storage, duplicate suppression,
+rate-limit notifications and friendly application errors. Handlers are registered
+on the router returned by `Sentinel.setup`, so its middleware actually protects
+them. The example uses explicit per-setup error configuration and no deprecated
+decorators.
 
-## minimal_bot.py
+From the repository root:
 
-A complete example bot that demonstrates aiogram-sentinel core features:
-
-### Features Demonstrated
-
-- **Complete Setup**: Shows how to configure aiogram-sentinel with memory backend
-- **Core Middlewares**: Debouncing and Throttling
-- **Decorators**: `@rate_limit`, `@debounce`
-- **Hooks**: Rate limit notifications
-- **Error Handling**: Proper exception handling and logging
-
-### Commands
-
-- `/start` - Welcome message (rate limited to 3/30s, debounced 1s)
-- `/spam` - Test rate limiting (1/5s)
-- `/help` - Show help information
-
-### Running the Example
-
-1. **Set your bot token:**
-   ```bash
-   export BOT_TOKEN="your_bot_token_here"
-   ```
-
-2. **Run the bot:**
-   ```bash
-   python examples/minimal_bot.py
-   ```
-
-3. **Test the features:**
-   - Send `/start` multiple times quickly to see debouncing
-   - Send `/spam` multiple times to see rate limiting
-
-### Hook Customization
-
-The example includes a rate limit hook implementation that you can customize:
-
-#### Rate Limit Hook
-```python
-async def on_rate_limited(event, data, retry_after):
-    # Custom logic when user hits rate limit
-    # - Send warning message
-    # - Log to monitoring
-    # - Update statistics
+```bash
+uv sync --frozen --all-extras
+export BOT_TOKEN='your-token'
+uv run --no-sync python examples/minimal_bot.py
 ```
 
-### Configuration
+Send `/start` for instructions. Send `/spam one` then `/spam two` immediately:
+the first is accepted and the second receives a rate-limit response. Identical
+messages within two seconds are silently suppressed before rate limiting. After
+the rate window passes, `/error` demonstrates a friendly validation response.
+`/help` displays command guidance. Debouncing suppresses duplicates; it does not
+delay execution of the first message.
 
-The example uses a memory backend for simplicity, but you can easily switch to Redis:
+Debug logging is enabled for the example and Sentinel inside `main`; HTTP logging
+stays at the application's INFO level. Importing the example does not configure
+logging, access credentials or start polling. Polling failures propagate and
+sessions/storage close on exit. Do not enable verbose HTTP logs with real tokens.
 
-```python
-config = SentinelConfig(
-    backend="redis",
-    redis_url="redis://localhost:6379",
-    redis_prefix="my_bot:",
-    # ... other options
-)
-```
-
-### Next Steps
-
-- Customize the hooks for your specific needs
-- Implement custom rate limiting strategies
-- Add monitoring and analytics
-- Deploy with Redis backend for production use
+Memory state is single-process and disappears on restart. For the Redis backend,
+install the `redis` extra and follow [Redis storage](../docs/tutorials/redis-storage.md).
+Redis uses fixed-window counting; memory uses sliding-window counting.

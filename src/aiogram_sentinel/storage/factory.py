@@ -33,7 +33,7 @@ def _build_redis_infra(config: SentinelConfig) -> InfraBundle:
         from redis.asyncio import Redis
     except ImportError as e:
         raise ConfigurationError(
-            "Redis backend requires redis package. Install with: pip install redis"
+            "Redis backend requires redis package. Install with: pip install aiogram-sentinel[redis]"
         ) from e
 
     from .redis import RedisDebounce, RedisRateLimiter
@@ -47,4 +47,4 @@ def _build_redis_infra(config: SentinelConfig) -> InfraBundle:
             debounce=RedisDebounce(redis, config.redis_prefix),
         )
     except Exception as e:
-        raise ConfigurationError(f"Failed to create Redis connection: {e}") from e
+        raise ConfigurationError("Failed to create Redis connection") from e

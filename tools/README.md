@@ -4,6 +4,19 @@ This directory contains utility scripts for development and release management.
 
 ## Tools
 
+### `check_install.py`
+
+Validates an installed base distribution: runtime version matches metadata, the
+`py.typed` marker exists, memory storage works, and Redis/Sentry remain optional.
+Run it using an isolated environment after installing a wheel or sdist:
+
+```bash
+/tmp/sentinel-base/bin/python tools/check_install.py
+```
+
+The CI build job exercises both artifact formats. Run from outside the source
+package import path when adapting the command for a local environment.
+
 ### `check_version_tag.py`
 **Purpose**: Validates that package versions match git tags during releases.
 

@@ -48,15 +48,15 @@ nav:
     - Overview: ARCHITECTURE.md
     - Performance: performance.md
   - Project:
-    - Release Process: release.md
+    - Release Process: releasing.md
     - Roadmap: ROADMAP.md
   - Help:
     - FAQ: faq.md
     - Troubleshooting: troubleshooting.md
   - Development:
-    - Contributing: ../CONTRIBUTING.md
+    - Contributing: https://github.com/ArmanAvanesyan/aiogram-sentinel/blob/main/CONTRIBUTING.md
     - Testing: TESTING.md
-    - Changelog: ../CHANGELOG.md
+    - Changelog: https://github.com/ArmanAvanesyan/aiogram-sentinel/blob/main/CHANGELOG.md
 
 plugins:
   - search

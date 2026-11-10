@@ -52,7 +52,9 @@ coverage.xml
 cover/
 
 # Reports directory (organized)
-# Security reports are tracked in reports/security/
+# Generated security reports belong in CI artifacts, not source control.
+**/bandit-report.json
+**/pip-audit-report.json
 # Coverage reports are ignored in reports/coverage/
 reports/coverage/
 reports/*.log
@@ -133,6 +135,7 @@ celerybeat.pid
 # Environments
 .env
 .venv
+.test-venv/
 env/
 venv/
 ENV/

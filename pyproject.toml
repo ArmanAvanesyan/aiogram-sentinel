@@ -26,8 +26,7 @@ classifiers = [
 ]
 requires-python = ">=3.10"
 dependencies = [
-    "aiogram>=3.0.0",
-    "redis>=4.0.0",
+    "aiogram>=3.0.0,<4",
 ]
 
 [project.optional-dependencies]
@@ -42,12 +41,13 @@ dev = [
     "pyright>=1.1.0",
     "ruff>=0.1.0",
     "bandit>=1.7.0",
-    "pip-audit>=2.0.0",
+    "pip-audit>=2.9.0; python_version >= '3.11'",
     "build>=1.0.0",
-    "twine>=5.0.0",
+    "twine>=7.0.0",
+    "packaging>=26.0",
 ]
 redis = [
-    "redis>=5.0",
+    "redis>=5.0.8,<8",
 ]
 sentry = [
     "sentry-sdk>=1.40.0",
@@ -57,7 +57,6 @@ sentry = [
 Homepage = "https://github.com/ArmanAvanesyan/aiogram-sentinel"
 Repository = "https://github.com/ArmanAvanesyan/aiogram-sentinel"
 Issues = "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues"
-Documentation = "https://armanavanesyan.github.io/aiogram-sentinel/"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/aiogram_sentinel"]
@@ -87,16 +86,11 @@ line_length = 88
 known_first_party = ["aiogram_sentinel"]
 
 [tool.pyright]
+include = ["src"]
 pythonVersion = "3.10"
 typeCheckingMode = "strict"
-useLibraryCodeForTypes = true
-strictListInference = true
-strictDictionaryInference = true
-strictSetInference = true
-strictParameterNoneValue = true
-strictReturn = true
-strictVariableTypes = true
-strictTypeChecking = true
+venvPath = "."
+venv = ".venv"
 
 [tool.ruff]
 target-version = "py310"
@@ -139,7 +133,6 @@ filterwarnings = [
 
 [tool.bandit]
 exclude_dirs = ["tests", "examples"]
-skips = ["B101", "B601"]  # Skip assert_used and shell_injection for tests
 
 [tool.coverage.run]
 source = ["src"]
@@ -166,6 +159,7 @@ exclude_lines = [
 [dependency-groups]
 dev = [
     "hatchling>=1.27.0",
+    "towncrier>=24.8.0",
     "mkdocs>=1.6.1",
     "mkdocs-material>=9.6.20",
     "mkdocstrings[python]>=0.30.1",

@@ -1,12 +1,9 @@
 name: Release
-
 on:
   push:
     tags: ['v*.*.*']
-
 permissions:
-  contents: write
-
+  contents: read
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -15,71 +12,21 @@ jobs:
       contents: write
       id-token: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
+      - uses: astral-sh/setup-uv@v7
         with:
-          python-version: '3.11'
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
-        with:
-          version: "0.8.0"
-
-      - name: Cache UV dependencies
-        uses: actions/cache@v5
-        with:
-          path: |
-            ~/.cache/uv
-            .venv
-          key: ${{ runner.os }}-uv-release-${{ hashFiles('**/pyproject.toml', '**/uv.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-uv-release-
-
-      - name: Install dependencies
-        run: |
-          uv sync --all-extras --all-groups
-
-      - name: Check version consistency
-        run: |
-          uv run python tools/check_version_tag.py
-
-      - name: Build package for tag release
-        run: |
-          uv run python -m build
-
-      - name: Check package
-        run: |
-          uv run python -m twine check dist/*
-
-      - name: Publish to PyPI
+          python-version: '3.12'
+      - run: uv sync --frozen --all-extras
+      - name: Validate package version against the release tag
+        run: uv run --no-sync python tools/check_version_tag.py
+      - run: uv build
+      - run: uv run --no-sync python -m twine check dist/*
+      - name: Publish the explicitly tagged release
         uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          skip-existing: true
-
-      - name: Create GitHub Release and Upload Assets
+      - name: Attach artifacts and generated release notes
         uses: softprops/action-gh-release@v2
         with:
           files: dist/*
-          tag_name: ${{ github.ref_name }}
-          name: Release ${{ github.ref_name }}
-          body: |
-            Release ${{ github.ref_name }}
-            
-            Automated package published to PyPI with simplified middleware stack and documentation cleanup.
-            
-            ## Changes
-            - Simplified middleware stack focusing on core rate limiting and debouncing
-            - Streamlined storage backends (memory and Redis)
-            - Documentation cleanup and restructuring
-            - Performance improvements and benchmarks
-          overwrite_files: true
-          generate_release_notes: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+          generate_release_notes: true

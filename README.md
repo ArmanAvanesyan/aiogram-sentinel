@@ -25,13 +25,13 @@
 
 ## ✨ Features
 
-* **Rate Limiting:** Per-user/handler scopes with sliding window algorithm
+* **Rate Limiting:** Per-user/handler scopes; memory uses a sliding window and Redis uses a fixed window
 * **Debouncing:** Suppress duplicate messages/callbacks within a configurable window
 * **Storage Backends:** Memory (single worker) or Redis (multi-worker) with configurable prefixes
 * **Decorators:** `@rate_limit` and `@debounce` for easy handler configuration
 * **Hooks:** Optional `on_rate_limited` callback for custom user feedback
 * **Setup Helper:** `Sentinel.setup(dp, cfg)` wires middleware in recommended order
-* **Typed, async-first, production-ready.**
+* **Typed and async-first.**
 
 ## 📦 Installation
 
@@ -88,7 +88,10 @@ await dp.start_polling(bot)
 
 ## 🤝 Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines and setup instructions.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for frozen development setup, verification
+and the shared repository convention. Maintainers use [releasing](docs/releasing.md);
+branch pushes do not publish packages. Repository automation lives in `tools/`,
+release fragments in `CHANGES/`, and maintained verification evidence in `reports/`.
 
 ## 💬 Community & Support
 
