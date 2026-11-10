@@ -40,6 +40,7 @@ class ScopeDef(BaseModel):
     chat_id: int | None = None
     user_id: int | None = None
     languages: list[str] = Field(default_factory=list)  # empty = use global languages
+    per_language: bool | None = None  # None inherits CmdsConfig.per_language
 
 
 class MenuButtonDef(BaseModel):
@@ -59,6 +60,7 @@ class CmdsConfig(BaseModel):
 
     model_config = ConfigDict(extra="ignore")
     languages: list[str] = ["en"]
+    per_language: bool = True
     fallback_language: str = "en"
     i18n_key_prefix: str = "cmd"
     commands: dict[str, CommandDef] = Field(default_factory=dict)

@@ -1,2 +1,0 @@
-Clarify that the Redis extra installs a client only; no storage or coordination backend exists.
-Document failure migration and preserve flag-based APIs as compatibility interfaces.

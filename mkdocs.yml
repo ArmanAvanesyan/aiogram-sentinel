@@ -55,6 +55,7 @@ nav:
   - Development:
     - Testing: TESTING.md
     - Verification: verification.md
+    - Migrating to 0.2: migration-0.2.md
 
 plugins:
   - search

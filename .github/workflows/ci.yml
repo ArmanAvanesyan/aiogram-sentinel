@@ -30,6 +30,7 @@ jobs:
       - run: uv run --frozen ruff format --check .
       - run: uv run --frozen pyright
       - run: uv run --frozen python tools/check_version_tag.py
+      - run: uv run --frozen python examples/application_profiles.py --dry-run
 
   tests:
     name: Python ${{ matrix.python }}
@@ -110,27 +111,44 @@ jobs:
           if-no-files-found: warn
 
   artifacts:
+    name: Artifacts Python ${{ matrix.python }}
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - python: '3.10'
+            aiogram: 'aiogram==3.0.0'
+            asyncio: 'pytest-asyncio<1'
+          - python: '3.12'
+            aiogram: 'aiogram>=3,<4'
+            asyncio: 'pytest-asyncio'
     steps:
       - uses: actions/checkout@v6
       - uses: astral-sh/setup-uv@v7
         with:
-          python-version: '3.12'
+          python-version: ${{ matrix.python }}
       - run: uv sync --frozen --all-extras --all-groups
       - run: uv build
       - run: uv run --frozen twine check dist/*
-      - name: Verify wheel and sdist without optional dependencies
+      - name: Verify independent wheel and sdist without optional packages
         shell: bash
         run: |
           for artifact in dist/*.whl dist/*.tar.gz; do
-            uv venv /tmp/cmds-artifact --clear --python 3.12
-            uv pip install --python /tmp/cmds-artifact/bin/python "$artifact"
-            (cd /tmp && /tmp/cmds-artifact/bin/python -c 'from importlib.metadata import version; from importlib.resources import files; import importlib.util; import aiogram_cmds; assert aiogram_cmds.__version__ == version("aiogram-cmds"); assert files("aiogram_cmds").joinpath("py.typed").is_file(); assert importlib.util.find_spec("redis") is None; assert importlib.util.find_spec("aiogram_idle") is None; assert importlib.util.find_spec("aiogram_nav") is None')
+            target=$(mktemp -d)
+            uv venv "$target/env" --python '${{ matrix.python }}'
+            uv pip install --python "$target/env/bin/python" "$artifact" '${{ matrix.aiogram }}' pytest '${{ matrix.asyncio }}' pytest-mock babel tomli
+            uv pip check --python "$target/env/bin/python"
+            cp -R tests examples "$target/"
+            cp pyproject.toml "$target/"
+            (cd "$target" && "$target/env/bin/python" -I -c 'from importlib.metadata import version; from importlib.resources import files; import importlib.util; import aiogram_cmds; assert aiogram_cmds.__version__ == version("aiogram-cmds"); assert files("aiogram_cmds").joinpath("py.typed").is_file(); assert importlib.util.find_spec("redis") is None; assert importlib.util.find_spec("aiogram_idle") is None; assert importlib.util.find_spec("aiogram_nav") is None')
+            (cd "$target" && "$target/env/bin/python" -m pytest tests/unit tests/integration)
+            (cd "$target" && "$target/env/bin/python" examples/application_profiles.py --dry-run)
           done
       - uses: actions/upload-artifact@v6
         with:
-          name: distributions
+          name: distributions-${{ matrix.python }}
           path: dist/*
 
   aiogram-compatibility:

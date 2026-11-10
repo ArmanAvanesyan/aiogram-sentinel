@@ -37,3 +37,10 @@ uv run python examples/i18n_bot.py
 The locale follows Telegram's user language, with English fallback. Catalog paths
 are resolved relative to the script. Generated `.mo` files are local build output.
 See [i18n integration](../docs/tutorials/i18n-integration.md) for application usage.
+
+## Application-owned profiles and confirmation hashes
+
+`python examples/application_profiles.py --dry-run` sends no Telegram requests.
+Without that flag, set `BOT_TOKEN`; the example configures one default-language
+profile and skips the second identical request using a caller-owned confirmation.
+See the [0.2 migration guide](../docs/migration-0.2.md) for limitations.

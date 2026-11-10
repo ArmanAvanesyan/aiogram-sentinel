@@ -14,9 +14,9 @@ async def mock_bot():
     bot = AsyncMock(spec=Bot)
 
     # Configure mock methods
-    bot.set_my_commands = AsyncMock()
-    bot.delete_my_commands = AsyncMock()
-    bot.set_chat_menu_button = AsyncMock()
+    bot.set_my_commands = AsyncMock(return_value=True)
+    bot.delete_my_commands = AsyncMock(return_value=True)
+    bot.set_chat_menu_button = AsyncMock(return_value=True)
 
     return bot
 

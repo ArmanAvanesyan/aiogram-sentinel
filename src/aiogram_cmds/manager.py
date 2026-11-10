@@ -13,8 +13,9 @@ from typing import TYPE_CHECKING
 
 from aiogram import Bot
 
-from .apply import apply_config
-from .dynamic import set_user_profile
+from .apply import apply_config, apply_config_result
+from .delivery import UNSET, CommandApplyResult, CommandBatchResult, LanguageCode
+from .dynamic import apply_profile, clear_language_variants, set_user_profile
 from .policy import CommandPolicy, Flags, ProfileResolver, default_policy
 from .setters import (
     set_user_commands_by_flags,
@@ -59,8 +60,15 @@ class CommandScopeManager:
         is_during_registration: bool = False,
         user_language: str = "en",
         chat_id: int | None = None,
+        language_code: str | None | LanguageCode = UNSET,
     ) -> bool:
         """Apply legacy flag-based selection; failures propagate unless best_effort."""
+        if (
+            self.config is not None
+            and not self.config.per_language
+            and language_code is UNSET
+        ):
+            language_code = None
         flags = Flags(
             is_registered=is_registered,
             has_vehicle=has_vehicle,
@@ -78,6 +86,7 @@ class CommandScopeManager:
                     chat_id=chat_id,
                     profile=profile,
                     language=user_language,
+                    language_code=language_code,
                 )
             else:
                 # Classic mode: compute names via policy
@@ -91,6 +100,7 @@ class CommandScopeManager:
                     policy=self.policy,
                     translator=self.translator,
                     key_prefix=self.settings.i18n_key_prefix,
+                    language_code=language_code,
                 )
         except Exception as e:
             logger.error(
@@ -130,6 +140,7 @@ class CommandScopeManager:
         *,
         language: str = "en",
         chat_id: int | None = None,
+        language_code: str | None | LanguageCode = UNSET,
     ) -> bool:
         """Apply an application-selected profile without library-owned domain flags."""
         try:
@@ -143,6 +154,7 @@ class CommandScopeManager:
                 chat_id=chat_id,
                 profile=profile,
                 language=language,
+                language_code=language_code,
             )
         except Exception:
             logger.exception("Failed to apply command profile for user %s", user_id)
@@ -156,9 +168,13 @@ class CommandScopeManager:
         from aiogram.types import BotCommandScopeChat
 
         try:
-            await self.bot.delete_my_commands(
-                scope=BotCommandScopeChat(chat_id=user_id)
-            )
+            if (
+                await self.bot.delete_my_commands(
+                    scope=BotCommandScopeChat(chat_id=user_id)
+                )
+                is not True
+            ):
+                raise RuntimeError("Telegram did not delete the command menu")
         except Exception as e:
             logger.error(
                 "Failed to clear commands for user %d: %s", user_id, e, exc_info=True
@@ -192,4 +208,64 @@ class CommandScopeManager:
                 raise
             return False
         logger.info("Configured command scopes and menu button")
+        return True
+
+    async def apply_profile(
+        self,
+        user_id: int,
+        profile: str,
+        *,
+        language: str = "en",
+        chat_id: int | None = None,
+        language_code: str | None | LanguageCode = UNSET,
+        previous_fingerprint: str | None = None,
+    ) -> CommandApplyResult:
+        """Return applied/unchanged/failed without overloading Boolean results."""
+        if self.config is None:
+            error = ValueError("apply_profile requires CmdsConfig")
+            if not self.best_effort:
+                raise error
+            return CommandApplyResult("failed", error=error)
+        return await apply_profile(
+            self.bot,
+            self.config,
+            translator=self.translator,
+            user_id=user_id,
+            profile=profile,
+            chat_id=chat_id,
+            language=language,
+            language_code=language_code,
+            previous_fingerprint=previous_fingerprint,
+            best_effort=self.best_effort,
+        )
+
+    async def apply_all(self) -> CommandBatchResult:
+        """Apply configured targets with explicit partial-completion evidence."""
+        if self.config is None:
+            error = ValueError("apply_all requires CmdsConfig")
+            if not self.best_effort:
+                raise error
+            return CommandBatchResult("failed", error=error)
+        return await apply_config_result(
+            self.bot,
+            self.config,
+            translator=self.translator,
+            best_effort=self.best_effort,
+        )
+
+    async def clear_language_variants(
+        self, user_id: int, language_codes: list[str], *, chat_id: int | None = None
+    ) -> bool:
+        """Delete only explicit obsolete slots; never infer languages to remove."""
+        try:
+            await clear_language_variants(
+                self.bot,
+                user_id=user_id,
+                chat_id=chat_id,
+                language_codes=language_codes,
+            )
+        except Exception:
+            if not self.best_effort:
+                raise
+            return False
         return True

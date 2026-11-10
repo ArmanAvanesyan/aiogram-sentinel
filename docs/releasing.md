@@ -41,16 +41,27 @@ conventions.
 
 ## Publish
 
-After approving the release commit, a maintainer creates the matching `vX.Y.Z`
-tag and pushes that tag. The release workflow checks version consistency, builds
-and checks distributions, publishes to PyPI and creates a GitHub release. Review
-that workflow and environment configuration before use. Existing tags must not be
-deleted or rewritten; correct a faulty release with a new version.
+Publication is a manual dispatch from a matching version tag. A branch push,
+tag push or GitHub release alone does not publish to PyPI. The existing PyPI
+Trusted Publisher remains bound to `release.yml` and the `pypi` environment.
 
-`tools/deploy.sh` and `tools/deploy.ps1` are legacy maintainer conveniences that
-create and push tags. They are publication actions, not application-deployment
-scripts, and are not part of ordinary development. Prefer the explicit reviewed
-release steps above.
+After the reviewed commit and successful CI, create its `vX.Y.Z` tag. Build and
+verify the wheel and sdist from that exact source, create `SHA256SUMS` containing
+exactly those two filenames, and upload those files to the matching GitHub
+release. Keep the independently verified digest of the manifest.
+
+```sh
+gh workflow run release.yml --ref vX.Y.Z -f manifest_sha256=<reviewed-manifest-digest>
+```
+
+The workflow checks tag/version equality, filenames, metadata and all artifact
+hashes before uploading those exact bytes through Trusted Publishing. It does
+not rebuild or substitute distributions. Confirm workflow success, compare PyPI
+hashes, and verify fresh standalone installation from PyPI afterward.
+
+Never move release tags or replace published files. Correct a faulty release
+with a new version. `tools/deploy.sh` and `tools/deploy.ps1` are legacy tag
+preparation helpers; they do not replace the explicit reviewed upload procedure.
 
 ## Documentation
 

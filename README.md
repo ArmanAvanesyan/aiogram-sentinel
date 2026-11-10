@@ -15,7 +15,7 @@
 * **Multiple Scopes**: Support for all Telegram command scopes (private, group, admin, etc.)
 * **Auto-Setup**: One-call setup with sensible defaults
 * **Type-Safe**: Full type hints and strict type checking
-* **Production Ready**: Comprehensive testing, CI/CD, and documentation
+* **Verified behavior**: Contract tests, CI and documented failure semantics
 
 ## 📦 Installation
 
@@ -253,3 +253,17 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 See [CONTRIBUTING.md](CONTRIBUTING.md) for repository conventions and checks,
 [SECURITY.md](SECURITY.md) for private vulnerability reporting, and
 [docs/releasing.md](docs/releasing.md) for maintainer release instructions.
+
+## Compatibility and 0.2 migration
+
+| Component | Supported / tested |
+| --- | --- |
+| Python | 3.10–3.13 in CI |
+| aiogram | >=3.0.0,<4; minimum 3.0.0 and latest resolvable 3.x in CI |
+| Redis | Optional client extra >=5.0.8,<8; no Redis server/backend is implemented |
+
+See [the 0.2 migration guide](docs/migration-0.2.md) for independent rendering
+locale/menu slots, default-language fallback, explicit language cleanup,
+confirmed payload fingerprints and partial batch outcomes. Run
+`uv run python examples/application_profiles.py --dry-run` for a network-free
+example. The library never configures application logging.
