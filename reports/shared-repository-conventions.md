@@ -44,3 +44,13 @@ this verification agent.
 Remote GitHub workflows, other operating systems and the complete configured
 Python/PyPy matrix were not executed locally. Telegram tests use controlled
 sessions and do not contact Telegram. No release tag was created.
+
+## Linux security follow-up
+
+The first GitHub Linux security job exposed dependencies absent from the macOS
+environment: locked Cryptography 46.0.2 and pip 25.2 had known advisories. The lock
+now resolves Cryptography 50.0.2 and pip 26.3. A fresh Linux `python:3.12-slim`
+container (Python 3.12.16), using the frozen lock with all extras/groups, passes
+pip-audit with zero known vulnerabilities and all **252 unit/integration tests**.
+This audit includes Linux-only SecretStorage/Cryptography dependencies. Package
+versions, runtime dependency floors and public APIs are unchanged.
