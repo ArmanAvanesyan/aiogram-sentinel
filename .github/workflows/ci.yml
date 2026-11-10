@@ -39,7 +39,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.10', '3.11', '3.12', '3.13']
+        python: ['3.10', '3.11', '3.12', '3.13', '3.14']
     steps:
       - uses: actions/checkout@v6
       - uses: astral-sh/setup-uv@v7
@@ -138,7 +138,7 @@ jobs:
           for artifact in dist/*.whl dist/*.tar.gz; do
             target=$(mktemp -d)
             uv venv "$target/env" --python '${{ matrix.python }}'
-            uv pip install --python "$target/env/bin/python" "$artifact" '${{ matrix.aiogram }}' pytest '${{ matrix.asyncio }}' pytest-mock babel tomli
+            uv pip install --python "$target/env/bin/python" "$artifact" '${{ matrix.aiogram }}' pytest '${{ matrix.asyncio }}' pytest-mock babel tomli hypothesis
             uv pip check --python "$target/env/bin/python"
             cp -R tests examples "$target/"
             cp pyproject.toml "$target/"

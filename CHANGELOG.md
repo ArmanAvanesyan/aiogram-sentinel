@@ -2,6 +2,18 @@
 
 <!-- towncrier release notes start -->
 
+## [0.3.0] - Unreleased
+
+- Add explicitly revisioned immutable compiled command profiles and resolved batch
+  payloads. Preserve dynamic translator evaluation for existing live APIs.
+- Optimize Python profile resolution and reuse canonical compiled command JSON.
+- Add an explicit optional Rust engine candidate with ABI validation, independent
+  native packaging and parity tests. Python remains the default; companion
+  publication was withheld after the serial performance gate failed. No native
+  tag or dependency extra is released; the candidate remains buildable source.
+- Add installed-package CPU/latency evidence, pyperf and Criterion benchmarks,
+  and Python 3.14 / native platform CI.
+
 ## [0.2.0] - 2026-11-10
 
 ### Features

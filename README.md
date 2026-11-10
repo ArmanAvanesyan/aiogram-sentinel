@@ -267,3 +267,10 @@ locale/menu slots, default-language fallback, explicit language cleanup,
 confirmed payload fingerprints and partial batch outcomes. Run
 `uv run python examples/application_profiles.py --dry-run` for a network-free
 example. The library never configures application logging.
+
+Compiled immutable profiles and explicit optional engines are described in [performance guidance](docs/compiled-profiles.md). Python remains the default; native publication is benchmark-gated.
+
+The 0.3.0 native candidate **did not pass its release performance gate**. Native
+publication, native tags and a dependency extra are withheld. Rust code remains
+available to build from source; the Python 0.3.0 distribution can release
+independently. Use compiled Python profiles for explicit snapshot reuse.

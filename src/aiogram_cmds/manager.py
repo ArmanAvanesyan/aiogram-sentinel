@@ -9,13 +9,22 @@ back to policy-based names.
 """
 
 import logging
+from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
 from aiogram import Bot
 
 from .apply import apply_config, apply_config_result
+from .compiled import (
+    CompiledCommands,
+    ProfileRequest,
+    ResolvedPayload,
+    build_profile_batch,
+)
+from .compiled_delivery import apply_compiled_profile
 from .delivery import UNSET, CommandApplyResult, CommandBatchResult, LanguageCode
 from .dynamic import apply_profile, clear_language_variants, set_user_profile
+from .engines import Engine, native_engine
 from .policy import CommandPolicy, Flags, ProfileResolver, default_policy
 from .setters import (
     set_user_commands_by_flags,
@@ -41,9 +50,17 @@ class CommandScopeManager:
         policy: CommandPolicy | None = None,
         profile_resolver: ProfileResolver | None = None,
         best_effort: bool = False,
+        engine: Engine = "python",
+        compiled: CompiledCommands | None = None,
     ) -> None:
         if type(best_effort) is not bool:
             raise TypeError("best_effort must be a boolean")
+        native_engine(engine)
+        if compiled is not None and (config is not None or translator is not None):
+            raise ValueError("Pass either compiled or live config/translator, not both")
+        self.engine: Engine = engine
+        self.compiled = compiled.bind(engine) if compiled is not None else None
+        config = compiled.config() if compiled is not None else config
         self.best_effort = best_effort
         self.bot = bot
         self.settings = settings or CmdsSettings()
@@ -78,6 +95,14 @@ class CommandScopeManager:
         try:
             if self.config and self.profile_resolver:
                 profile = self.profile_resolver(flags)
+                if self.compiled is not None:
+                    return await self.update_profile(
+                        user_id,
+                        profile,
+                        language=user_language,
+                        chat_id=chat_id,
+                        language_code=language_code,
+                    )
                 await set_user_profile(
                     self.bot,
                     self.config,
@@ -146,6 +171,19 @@ class CommandScopeManager:
         try:
             if self.config is None:
                 raise ValueError("update_profile requires CmdsConfig")
+            if self.compiled is not None and profile in self.compiled.profiles:
+                result = await apply_compiled_profile(
+                    self.bot,
+                    self.compiled,
+                    user_id=user_id,
+                    profile=profile,
+                    language=language,
+                    chat_id=chat_id,
+                    language_code=language_code,
+                    best_effort=self.best_effort,
+                    engine=self.engine,
+                )
+                return result.status != "failed"
             await set_user_profile(
                 self.bot,
                 self.config,
@@ -193,6 +231,15 @@ class CommandScopeManager:
         """
         try:
             if self.config:
+                if self.compiled is not None:
+                    result = await apply_config_result(
+                        self.bot,
+                        self.config,
+                        compiled=self.compiled,
+                        engine=self.engine,
+                        best_effort=self.best_effort,
+                    )
+                    return result.status == "applied"
                 await apply_config(self.bot, self.config, translator=self.translator)
             else:
                 await setup_all_command_scopes(
@@ -226,6 +273,19 @@ class CommandScopeManager:
             if not self.best_effort:
                 raise error
             return CommandApplyResult("failed", error=error)
+        if self.compiled is not None:
+            return await apply_compiled_profile(
+                self.bot,
+                self.compiled,
+                user_id=user_id,
+                profile=profile,
+                language=language,
+                chat_id=chat_id,
+                language_code=language_code,
+                previous_fingerprint=previous_fingerprint,
+                best_effort=self.best_effort,
+                engine=self.engine,
+            )
         return await apply_profile(
             self.bot,
             self.config,
@@ -237,6 +297,7 @@ class CommandScopeManager:
             language_code=language_code,
             previous_fingerprint=previous_fingerprint,
             best_effort=self.best_effort,
+            engine=self.engine,
         )
 
     async def apply_all(self) -> CommandBatchResult:
@@ -251,6 +312,8 @@ class CommandScopeManager:
             self.config,
             translator=self.translator,
             best_effort=self.best_effort,
+            compiled=self.compiled,
+            engine=self.engine,
         )
 
     async def clear_language_variants(
@@ -269,3 +332,13 @@ class CommandScopeManager:
                 raise
             return False
         return True
+
+    def build_batch(
+        self, requests: Sequence[ProfileRequest]
+    ) -> tuple[ResolvedPayload, ...]:
+        """Resolve immutable batch payloads; no Telegram calls or confirmations."""
+        if self.compiled is None:
+            raise ValueError("build_batch requires an explicit compiled snapshot")
+        if any(request.bot_id != self.bot.id for request in requests):
+            raise ValueError("Batch bot identity differs from this manager")
+        return build_profile_batch(self.compiled, requests, engine=self.engine)

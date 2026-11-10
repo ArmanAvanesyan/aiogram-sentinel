@@ -232,3 +232,7 @@ dump.rdb
 
 # Static analysis cache
 .ruff_cache/
+
+# Optional native build outputs
+native/target/
+native/dist/

@@ -32,9 +32,17 @@ Auto-Setup (Recommended):
 from .apply import apply_config, apply_config_result
 from .auto_setup import setup_commands_auto
 from .builder import build_bot_commands
+from .compiled import (
+    CompiledCommands,
+    ProfileRequest,
+    ResolvedPayload,
+    build_profile_batch,
+    compile_config,
+)
 from .customize import CmdsConfig, CommandDef, MenuButtonDef, ProfileDef, ScopeDef
 from .delivery import UNSET, CommandApplyResult, CommandBatchResult, LanguageCode
 from .dynamic import apply_profile, clear_language_variants, set_user_profile
+from .engines import Engine, NativeEngineError
 from .manager import CommandScopeManager
 from .policy import CommandPolicy, Flags, ProfileResolver, default_policy
 from .settings import CmdsSettings, load_settings
@@ -45,6 +53,13 @@ __author__ = "aiogram_cmds contributors"
 __description__ = "Command builder & scope manager for aiogram bots"
 
 __all__ = [
+    "CompiledCommands",
+    "ProfileRequest",
+    "ResolvedPayload",
+    "build_profile_batch",
+    "compile_config",
+    "Engine",
+    "NativeEngineError",
     # Simple / classic
     "build_bot_commands",
     "CommandScopeManager",

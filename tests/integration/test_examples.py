@@ -98,7 +98,9 @@ async def test_gettext_example_registers_translated_menus(tmp_path):
     for locale in ("en", "ru", "es"):
         target = tmp_path / "locales" / locale / "LC_MESSAGES" / "messages.mo"
         target.parent.mkdir(parents=True)
-        with (source / "locales" / locale / "LC_MESSAGES" / "messages.po").open() as po:
+        with (source / "locales" / locale / "LC_MESSAGES" / "messages.po").open(
+            encoding="utf-8"
+        ) as po:
             catalog = pofile.read_po(po)
         with target.open("wb") as mo:
             mofile.write_mo(mo, catalog)

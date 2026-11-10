@@ -13,9 +13,9 @@ class CommandRegistry:
         p: ProfileDef | None = self.cfg.profiles.get(profile)
         if not p:
             return []
-        keep = [n for n in p.include if n in self.cfg.commands]
         exclude = set(p.exclude)
-        return [n for n in keep if n not in exclude]
+        commands = self.cfg.commands
+        return [n for n in p.include if n in commands and n not in exclude]
 
     def get_command(self, name: str) -> CommandDef | None:
         return self.cfg.commands.get(name)
