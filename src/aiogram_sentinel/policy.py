@@ -172,32 +172,15 @@ def resolve_scope(
     Returns:
         Resolved scope or None if cannot satisfy cap
     """
-    # Determine available scopes
-    available: set[Scope] = set()
-    if user_id and chat_id:
-        available.add(Scope.GROUP)
+    # Preserve the historical USER/CHAT/GROUP/GLOBAL specificity order,
+    # including invalid-cap errors, without allocating a set and two lists.
+    if cap and cap not in (Scope.USER, Scope.CHAT, Scope.GROUP, Scope.GLOBAL):
+        raise ValueError(f"{cap!r} is not in list")
     if user_id:
-        available.add(Scope.USER)
+        return Scope.USER
     if chat_id:
-        available.add(Scope.CHAT)
-    available.add(Scope.GLOBAL)
-
-    # Specificity order (most specific first)
-    order = [Scope.USER, Scope.CHAT, Scope.GROUP, Scope.GLOBAL]
-
-    # Filter by cap if provided
-    if cap:
-        cap_idx = order.index(cap)
-        candidates = order[: cap_idx + 1]
-    else:
-        candidates = order
-
-    # Return first available in specificity order
-    for s in candidates:
-        if s in available:
-            return s
-
-    return None
+        return None if cap == Scope.USER else Scope.CHAT
+    return Scope.GLOBAL if not cap or cap == Scope.GLOBAL else None
 
 
 def policy(*names: str) -> Callable[[Callable[..., Any]], Callable[..., Any]]:

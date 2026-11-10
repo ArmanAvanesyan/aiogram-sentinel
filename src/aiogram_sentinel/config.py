@@ -9,6 +9,7 @@ from typing import Literal, cast
 
 from .actions import ActionKind, ActionPolicy, SentinelExemptions
 from .exceptions import ConfigurationError
+from .native import validate_engine
 
 
 @dataclass
@@ -39,6 +40,8 @@ class SentinelConfig:
     bucket_mode: Literal["shared", "action_kind"] = "shared"
     exemptions: SentinelExemptions = field(default_factory=SentinelExemptions)
 
+    engine: Literal["python", "rust"] = "python"
+
     # Internal settings
     _validated: bool = field(default=False, init=False)
 
@@ -63,6 +66,8 @@ class SentinelConfig:
 
         if self.debounce_default_window <= 0:
             raise ConfigurationError("debounce_default_window must be positive")
+
+        validate_engine(self.engine)
 
         if self.bucket_mode not in ("shared", "action_kind"):
             raise ConfigurationError("bucket_mode must be shared or action_kind")
