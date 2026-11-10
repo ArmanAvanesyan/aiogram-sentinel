@@ -79,18 +79,15 @@ installs and published optional-peer resolution after every release.
 
 ## Current status
 
-Sentinel **1.2.0** and Cmds **0.2.0** are published. Their PRs (#63 and #16)
-passed applicable CI, were squash-merged, and the manually published wheel/sdist
-hashes match PyPI. Cmds also passed a fresh published standalone API probe.
+All five target releases are published to PyPI with matching GitHub releases:
+Sentinel **1.2.0**, Cmds **0.2.0**, Coordination **0.1.0**, Nav **0.2.0** and
+Idle **0.2.0**. Release artifacts match reviewed checksums; clean index-only
+standalone profiles passed. Nav and Idle remain independently usable.
 
-Coordination implementation and independent review are complete; GitHub CI passed
-at `7dcb06e`. Its GitHub release is a draft and PyPI publication remains pending.
-Nav PR #1 (`820ad034`) passed candidate CI; Idle PR #1 (`c662dd2`) also passed
-candidate CI, including the optional Nav integration. Both retain explicit development peer sources until Coordination
-is available on PyPI. Their target releases have not been published.
-Registration of its new PyPI Trusted Publisher currently requires owner password
-confirmation; no password is available in the agent browser.
+Nav PR #1 merged as `f3c5da7`; Idle PR #1 merged as `abd1b81` after final
+registry-only CI and independent review. Coordination was published first, then
+Nav, then Idle. No temporary peer source overrides remain in release locks or CI.
 
-Completion requires all five target versions, matching GitHub releases, green
-release/tag checks, fresh-index standalone and combined verification, clean
-package checkouts, migration evidence and a final release report.
+See [release verification](library-release-verification.md) for workflow links,
+artifact evidence and migration boundaries. Existing local Kit design drafts and
+mkdocs changes were preserved; no PeopleHub code or deployment was changed.
