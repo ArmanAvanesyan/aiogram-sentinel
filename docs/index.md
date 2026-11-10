@@ -146,7 +146,7 @@ those concerns; installing the extra does not make updates atomic.
 
 - 💬 **[Discussions](https://github.com/ArmanAvanesyan/aiogram-cmds/discussions)** - Questions, ideas, and community chat
 - 🐛 **[Issues](https://github.com/ArmanAvanesyan/aiogram-cmds/issues)** - Bug reports and feature requests
-- 📖 **[Documentation](https://armanavanesyan.github.io/aiogram-cmds/)** - Complete guides and API reference
+- 📖 **[Documentation](https://aiogram-cmds.dev)** - Complete guides and API reference
 
 ## 📊 Project Status
 

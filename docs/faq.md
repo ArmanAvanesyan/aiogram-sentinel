@@ -366,7 +366,7 @@ Create an issue on GitHub or submit a pull request with improvements.
 
 - [GitHub Discussions](https://github.com/ArmanAvanesyan/aiogram-cmds/discussions) - Community help
 - [GitHub Issues](https://github.com/ArmanAvanesyan/aiogram-cmds/issues) - Bug reports
-- [Documentation](https://armanavanesyan.github.io/aiogram-cmds/) - Complete guides
+- [Documentation](https://aiogram-cmds.dev) - Complete guides
 
 ### How do I report bugs?
 

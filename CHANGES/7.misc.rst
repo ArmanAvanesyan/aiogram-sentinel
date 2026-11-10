@@ -1,1 +1,0 @@
-Fix project URLs: replace the dead ``aiogram-cmds.dev`` docs domain with the GitHub Pages site and point repository links at the real repository.

@@ -157,13 +157,13 @@ config = CmdsConfig(
 
 ## 📚 Documentation
 
-👉 **[Full Documentation](https://armanavanesyan.github.io/aiogram-cmds/)** ← Start here!
+👉 **[Full Documentation](https://aiogram-cmds.dev)** ← Start here!
 
-* **[Quickstart](https://armanavanesyan.github.io/aiogram-cmds/quickstart/)** - Get started in 5 minutes
-* **[Configuration](https://armanavanesyan.github.io/aiogram-cmds/configuration/)** - Complete configuration guide
-* **[API Reference](https://armanavanesyan.github.io/aiogram-cmds/api/)** - Full API documentation
-* **[Tutorials](https://armanavanesyan.github.io/aiogram-cmds/tutorials/)** - Step-by-step guides
-* **[Examples](https://armanavanesyan.github.io/aiogram-cmds/examples/)** - Complete working examples
+* **[Quickstart](https://aiogram-cmds.dev/quickstart/)** - Get started in 5 minutes
+* **[Configuration](https://aiogram-cmds.dev/configuration/)** - Complete configuration guide
+* **[API Reference](https://aiogram-cmds.dev/api/)** - Full API documentation
+* **[Tutorials](https://aiogram-cmds.dev/tutorials/)** - Step-by-step guides
+* **[Examples](https://aiogram-cmds.dev/examples/)** - Complete working examples
 
 ## 🏗️ Architecture
 
@@ -220,7 +220,7 @@ uv run ruff format .
 
 * 💬 **[Discussions](https://github.com/ArmanAvanesyan/aiogram-cmds/discussions)** - Questions, ideas, and community chat
 * 🐛 **[Issues](https://github.com/ArmanAvanesyan/aiogram-cmds/issues)** - Bug reports and feature requests
-* 📖 **[Documentation](https://armanavanesyan.github.io/aiogram-cmds/)** - Complete guides and API reference
+* 📖 **[Documentation](https://aiogram-cmds.dev)** - Complete guides and API reference
 
 ## 🔒 Security
 

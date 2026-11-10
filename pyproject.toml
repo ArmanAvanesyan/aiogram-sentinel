@@ -56,7 +56,6 @@ redis = [
 Homepage = "https://github.com/ArmanAvanesyan/aiogram-cmds"
 Repository = "https://github.com/ArmanAvanesyan/aiogram-cmds"
 Issues = "https://github.com/ArmanAvanesyan/aiogram-cmds/issues"
-Documentation = "https://armanavanesyan.github.io/aiogram-cmds/"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/aiogram_cmds"]
