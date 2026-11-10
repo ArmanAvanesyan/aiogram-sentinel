@@ -21,7 +21,10 @@ import re
 import sys
 from pathlib import Path
 
-import tomllib
+try:
+    import tomllib
+except ModuleNotFoundError:  # Python 3.10
+    import tomli as tomllib
 
 
 def get_package_version() -> str | None:
@@ -125,16 +128,9 @@ def check_version_consistency() -> int:
 
     print()
 
-    # Check if we have at least two versions to compare
-    versions = [
-        v
-        for v in [package_version, pyproject_version, git_tag_version]
-        if v is not None
-    ]
-
-    if len(versions) < 2:
-        print("⚠️  Not enough version sources to perform consistency check")
-        return 0
+    if package_version is None or pyproject_version is None:
+        print("❌ Both package and project versions must be readable")
+        return 2
 
     # Normalize versions for comparison
     normalized_versions = {}

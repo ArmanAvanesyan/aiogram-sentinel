@@ -1,411 +1,169 @@
 name: CI
 
+on:
+  push:
+    branches: [main, 'chore/**']
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-  schedule:
-    # Weekly security audit (Monday 6 AM UTC)
-    - cron: '0 6 * * 1'
-
-env:
-  UV_VERSION: '0.8.0'
-
 jobs:
-  detect-changes:
+  quality:
     runs-on: ubuntu-latest
-    outputs:
-      code: ${{ steps.changes.outputs.code }}
-      docs: ${{ steps.changes.outputs.docs }}
-      ci: ${{ steps.changes.outputs.ci }}
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v6
-      - uses: dorny/paths-filter@v3
-        id: changes
+      - uses: astral-sh/setup-uv@v7
         with:
-          filters: |
-            code:
-              - 'src/**'
-              - 'tests/**'
-              - 'pyproject.toml'
-              - 'uv.lock'
-            docs:
-              - 'docs/**'
-              - 'mkdocs.yml'
-              - 'README.md'
-            ci:
-              - '.github/workflows/**'
-              - '.github/dependabot.yml'
-
-  quality-checks:
-    needs: detect-changes
-    if: needs.detect-changes.outputs.code == 'true'
-    name: Quality Checks
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    strategy:
-      matrix:
-        python-version: ['3.12']  # Single version for faster quality checks
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v6
-    
-    - name: Install UV
-      uses: astral-sh/setup-uv@v7
-      with:
-        version: ${{ env.UV_VERSION }}
-    
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v6
-      with:
-        python-version: ${{ matrix.python-version }}
-    
-    - name: Cache UV dependencies
-      uses: actions/cache@v5
-      with:
-        path: |
-          ~/.cache/uv
-          .venv
-        key: ${{ runner.os }}-uv-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml', '**/uv.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-uv-${{ matrix.python-version }}-
-    
-    - name: Install dependencies
-      run: |
-        uv sync --all-extras --dev
-    
-    - name: Run Ruff linting
-      run: |
-        uv run ruff check --output-format=github .
-    
-    - name: Run Ruff formatting check
-      run: |
-        uv run ruff format --check --diff .
-    
-    - name: Run Pyright type checking
-      run: |
-        uv run pyright
-    
-    - name: Run Bandit security scan
-      run: |
-        uv run bandit -r src -f json -o reports/security/bandit-report.json || true
-      continue-on-error: true
-    
-    - name: Upload security report
-      uses: actions/upload-artifact@v6
-      with:
-        name: bandit-report-quality-${{ matrix.python-version }}
-        path: reports/security/bandit-report.json
-        retention-days: 30
-      if: always()
-
-    - name: Quality Checks Summary
-      if: always()
-      run: |
-        echo "## 🔍 Quality Checks Results" >> $GITHUB_STEP_SUMMARY
-        echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
-        echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
-        echo "| 🐍 Python ${{ matrix.python-version }} | ✅ |" >> $GITHUB_STEP_SUMMARY
-        echo "| 🔍 Ruff Lint | ✅ |" >> $GITHUB_STEP_SUMMARY
-        echo "| 🎨 Ruff Format | ✅ |" >> $GITHUB_STEP_SUMMARY
-        echo "| 📝 Pyright Type Check | ✅ |" >> $GITHUB_STEP_SUMMARY
-        echo "| 🛡️ Bandit Security Scan | ✅ |" >> $GITHUB_STEP_SUMMARY
+          python-version: '3.12'
+      - run: uv sync --frozen --all-extras --all-groups
+      - run: uv run --frozen ruff check .
+      - run: uv run --frozen ruff format --check .
+      - run: uv run --frozen pyright
+      - run: uv run --frozen python tools/check_version_tag.py
 
   tests:
-    name: Tests
-    runs-on: ${{ matrix.os }}
-    needs: [detect-changes, quality-checks]
-    if: needs.detect-changes.outputs.code == 'true'
-    timeout-minutes: 20
-    
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest]
-        test-type: ["unit"]
-        python-version: ["3.12"]
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Set up UV
-        uses: astral-sh/setup-uv@v7
-        with:
-          version: ${{ env.UV_VERSION }}
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Cache UV dependencies
-        uses: actions/cache@v5
-        with:
-          path: |
-            ~/.cache/uv
-            .venv
-          key: ${{ runner.os }}-uv-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml', '**/uv.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-uv-${{ matrix.python-version }}-
-
-      - name: Install dependencies
-        run: uv sync --all-extras --all-groups
-
-      - name: Run unit tests with coverage
-        run: uv run pytest tests/unit/ -v --cov=src/aiogram_cmds --cov-report=xml
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          file: ./reports/coverage/coverage.xml
-          flags: unittests
-          name: codecov-umbrella
-
-      - name: Update job summary
-        if: always()
-        run: |
-          echo "## 🧪 Unit Tests Summary" >> $GITHUB_STEP_SUMMARY
-          echo "| Platform | Python | Test Type | Status |" >> $GITHUB_STEP_SUMMARY
-          echo "| ${{ matrix.os }} | ${{ matrix.python-version }} | ${{ matrix.test-type }} | ✅ |" >> $GITHUB_STEP_SUMMARY
-        
-  tests-full:
-    name: Tests (Full Matrix)
-    runs-on: ${{ matrix.os }}
-    needs: [detect-changes, quality-checks]
-    if: |
-      needs.detect-changes.outputs.code == 'true' &&
-      github.event_name == 'push' &&
-      github.ref == 'refs/heads/main'
-    timeout-minutes: 20
-    
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        test-type: ['unit', 'integration']
-        python-version: ['3.10', '3.11', '3.12', '3.13']
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v6
-    
-    - name: Install UV
-      uses: astral-sh/setup-uv@v7
-      with:
-        version: ${{ env.UV_VERSION }}
-    
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v6
-      with:
-        python-version: ${{ matrix.python-version }}
-    
-    - name: Cache UV dependencies
-      uses: actions/cache@v5
-      with:
-        path: |
-          ~/.cache/uv
-          .venv
-        key: ${{ runner.os }}-uv-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml', '**/uv.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-uv-${{ matrix.python-version }}-
-    
-    - name: Install dependencies
-      run: |
-        uv sync --all-extras --dev
-    
-    - name: Run unit tests with coverage
-      if: matrix.test-type == 'unit'
-      run: |
-        uv run pytest tests/unit/ -v --cov=src/aiogram_cmds --cov-report=xml:reports/coverage/coverage.xml --cov-report=html:reports/coverage/htmlcov/
-    
-    - name: Run integration tests
-      if: matrix.test-type == 'integration'
-      run: |
-        uv run pytest tests/integration/ -v
-    
-    - name: Run performance tests
-      if: matrix.test-type == 'integration'
-      run: |
-        uv run pytest tests/perf/ -v
-    
-    - name: Upload coverage reports
-      if: matrix.test-type == 'unit'
-      uses: actions/upload-artifact@v6
-      with:
-        name: coverage-report-${{ matrix.os }}-${{ matrix.python-version }}
-        path: reports/coverage/htmlcov/
-        retention-days: 30
-    
-    - name: Upload coverage to Codecov
-      if: matrix.test-type == 'unit'
-      uses: codecov/codecov-action@v5
-      with:
-        file: ./reports/coverage/coverage.xml
-        flags: unittests
-        name: codecov-umbrella
-
-    - name: Test Summary
-      if: always()
-      run: |
-        echo "## 🧪 Test Results" >> $GITHUB_STEP_SUMMARY
-        echo "| Platform | Python | Test Type | Status |" >> $GITHUB_STEP_SUMMARY
-        echo "|----------|--------|-----------|--------|" >> $GITHUB_STEP_SUMMARY
-        echo "| ${{ matrix.os }} | ${{ matrix.python-version }} | ${{ matrix.test-type }} | ✅ |" >> $GITHUB_STEP_SUMMARY
-
-  security-audit:
-    name: Security Audit
+    name: Python ${{ matrix.python }}
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-    needs: detect-changes
-    if: |
-      github.event_name == 'schedule' ||
-      (github.event_name == 'push' &&
-       (needs.detect-changes.outputs.code == 'true' || needs.detect-changes.outputs.ci == 'true'))
-    
+    timeout-minutes: 20
     strategy:
+      fail-fast: false
       matrix:
-        python-version: ['3.10', '3.11', '3.12', '3.13']
-    
+        python: ['3.10', '3.11', '3.12', '3.13']
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v6
-    
-    - name: Install UV
-      uses: astral-sh/setup-uv@v7
-      with:
-        version: ${{ env.UV_VERSION }}
-    
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v6
-      with:
-        python-version: ${{ matrix.python-version }}
-    
-    - name: Cache UV dependencies
-      uses: actions/cache@v5
-      with:
-        path: |
-          ~/.cache/uv
-          .venv
-        key: ${{ runner.os }}-uv-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml', '**/uv.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-uv-${{ matrix.python-version }}-
-    
-    - name: Install dependencies
-      run: |
-        uv sync --all-extras --dev
-    
-    - name: Run pip-audit
-      run: |
-        uv run pip-audit --format json --output pip-audit-report-${{ matrix.python-version }}.json
-      continue-on-error: true
-    
-    - name: Upload vulnerability report
-      uses: actions/upload-artifact@v6
-      with:
-        name: pip-audit-report-security-${{ matrix.python-version }}
-        path: pip-audit-report-${{ matrix.python-version }}.json
-        retention-days: 30
-      if: always()
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: ${{ matrix.python }}
+      - run: uv sync --frozen --all-extras --all-groups
+      - run: uv run --frozen pytest tests/unit tests/integration --cov=aiogram_cmds --cov-report=xml:reports/coverage/coverage.xml --cov-fail-under=80
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: coverage-${{ matrix.python }}
+          path: reports/coverage/coverage.xml
+          if-no-files-found: warn
+
+  platform-tests:
+    name: ${{ matrix.os }} / ${{ matrix.python }}
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+        python: ['3.10', '3.13']
+    steps:
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: ${{ matrix.python }}
+      - run: uv sync --frozen --all-extras --all-groups
+      - run: uv run --frozen pytest tests/unit tests/integration
 
   pypy-tests:
-    name: PyPy Tests
-    runs-on: ${{ matrix.os }}
-    needs: tests
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
     timeout-minutes: 20
-    
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: 'pypy3.10'
+      - uses: astral-sh/setup-uv@v7
+      - run: uv sync --frozen --all-extras --all-groups --python pypy3.10
+      - run: uv run --frozen pytest tests/unit tests/integration
+
+  security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: '3.12'
+      - run: uv sync --frozen --all-extras --all-groups
+      - name: Static security analysis
+        run: |
+          mkdir -p reports/security
+          uv run --frozen bandit -c pyproject.toml -r src -f json -o reports/security/bandit-report.json
+      - name: Audit installed dependencies
+        if: '!cancelled()'
+        run: |
+          mkdir -p reports/security
+          uv run --frozen pip-audit --skip-editable --format json --output reports/security/pip-audit-report.json
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: security-reports
+          path: reports/security/*.json
+          if-no-files-found: warn
+
+  artifacts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: '3.12'
+      - run: uv sync --frozen --all-extras --all-groups
+      - run: uv build
+      - run: uv run --frozen twine check dist/*
+      - name: Verify wheel and sdist without optional dependencies
+        shell: bash
+        run: |
+          for artifact in dist/*.whl dist/*.tar.gz; do
+            uv venv /tmp/cmds-artifact --clear --python 3.12
+            uv pip install --python /tmp/cmds-artifact/bin/python "$artifact"
+            (cd /tmp && /tmp/cmds-artifact/bin/python -c 'from importlib.metadata import version; from importlib.resources import files; import importlib.util; import aiogram_cmds; assert aiogram_cmds.__version__ == version("aiogram-cmds"); assert files("aiogram_cmds").joinpath("py.typed").is_file(); assert importlib.util.find_spec("redis") is None; assert importlib.util.find_spec("aiogram_idle") is None; assert importlib.util.find_spec("aiogram_nav") is None')
+          done
+      - uses: actions/upload-artifact@v6
+        with:
+          name: distributions
+          path: dist/*
+
+  aiogram-compatibility:
+    name: aiogram ${{ matrix.aiogram }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
-        python-version: ["pypy3.10"]
-    
+        aiogram: ['aiogram==3.0.0', 'aiogram>=3,<4']
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v6
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: '3.10'
+      - run: uv venv --python 3.10
+      - run: uv pip install -e '.[dev]' '${{ matrix.aiogram }}'
+      - run: .venv/bin/python -m pytest tests/unit tests/integration
 
-    - name: Set up Python ${{ matrix.python-version }} on ${{ matrix.os }}
-      uses: actions/setup-python@v6
-      with:
-        python-version: ${{ matrix.python-version }}
-
-    - name: Install UV
-      uses: astral-sh/setup-uv@v7
-      with:
-        version: ${{ env.UV_VERSION }}
-
-    - name: Cache UV dependencies
-      uses: actions/cache@v5
-      with:
-        path: |
-          ~/.cache/uv
-          .venv
-        key: ${{ runner.os }}-uv-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml', '**/uv.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-uv-${{ matrix.python-version }}-
-
-    - name: Install dependencies
-      run: |
-        uv sync --all-extras --dev --python ${{ matrix.python-version }}
-
-    - name: Run unit tests
-      run: |
-        uv run pytest tests/unit/ -v
-
-  performance-benchmark:
-    name: Performance Benchmark
+  performance:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
-    needs: tests
     timeout-minutes: 15
-    if: github.ref == 'refs/heads/main'
-    
-    strategy:
-      matrix:
-        python-version: ['3.10', '3.11', '3.12', '3.13']
-    
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v6
-    
-    - name: Install UV
-      uses: astral-sh/setup-uv@v7
-      with:
-        version: ${{ env.UV_VERSION }}
-    
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v6
-      with:
-        python-version: ${{ matrix.python-version }}
-    
-    - name: Cache UV dependencies
-      uses: actions/cache@v5
-      with:
-        path: |
-          ~/.cache/uv
-          .venv
-        key: ${{ runner.os }}-uv-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml', '**/uv.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-uv-${{ matrix.python-version }}-
-    
-    - name: Install dependencies
-      run: |
-        uv sync --all-extras --dev
-    
-    - name: Run performance benchmarks
-      run: |
-        uv run pytest tests/perf/ -v --benchmark-only --benchmark-json=benchmark-results-${{ matrix.python-version }}.json
-      continue-on-error: true
-    
-    - name: Upload benchmark results
-      uses: actions/upload-artifact@v6
-      with:
-        name: benchmark-results-perf-${{ matrix.python-version }}
-        path: benchmark-results-${{ matrix.python-version }}.json
-        retention-days: 30
-      if: always()
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: '3.12'
+      - run: uv sync --frozen --all-extras --all-groups
+      - run: uv run --frozen pytest tests/perf --benchmark-json=reports/benchmark-results.json
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: performance-results
+          path: reports/benchmark-results.json
+          if-no-files-found: warn

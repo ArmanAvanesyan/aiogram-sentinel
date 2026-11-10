@@ -23,7 +23,17 @@ from .registry import CommandRegistry
 from .translator import Translator
 
 
-def _scope_obj(s: ScopeDef):
+def _scope_obj(
+    s: ScopeDef,
+) -> (
+    BotCommandScopeDefault
+    | BotCommandScopeAllPrivateChats
+    | BotCommandScopeAllGroupChats
+    | BotCommandScopeAllChatAdministrators
+    | BotCommandScopeChat
+    | BotCommandScopeChatAdministrators
+    | BotCommandScopeChatMember
+):
     if s.scope == "default":
         return BotCommandScopeDefault()
     if s.scope == "all_private_chats":
@@ -32,11 +42,17 @@ def _scope_obj(s: ScopeDef):
         return BotCommandScopeAllGroupChats()
     if s.scope == "all_chat_admins":
         return BotCommandScopeAllChatAdministrators()
+    if s.scope in {"chat", "chat_admins", "chat_member"} and s.chat_id is None:
+        raise ValueError("Chat command scopes require chat_id")
     if s.scope == "chat":
+        assert s.chat_id is not None
         return BotCommandScopeChat(chat_id=s.chat_id)
     if s.scope == "chat_admins":
+        assert s.chat_id is not None
         return BotCommandScopeChatAdministrators(chat_id=s.chat_id)
     if s.scope == "chat_member":
+        if s.chat_id is None or s.user_id is None:
+            raise ValueError("Chat-member command scopes require chat_id and user_id")
         return BotCommandScopeChatMember(chat_id=s.chat_id, user_id=s.user_id)
     raise ValueError(f"Unknown scope: {s.scope}")
 

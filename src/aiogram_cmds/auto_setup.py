@@ -6,13 +6,14 @@ with minimal configuration, making it easy to integrate into __main__.py.
 """
 
 import logging
+from typing import cast
 
 from aiogram import Bot
 
 from .customize import CmdsConfig, CommandDef, MenuButtonDef, ProfileDef, ScopeDef
 from .manager import CommandScopeManager
 from .policy import Flags, ProfileResolver
-from .translator import build_translator_from_i18n
+from .translator import I18nAdapter, build_translator_from_i18n
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +22,7 @@ async def setup_commands_auto(
     bot: Bot,
     *,
     languages: list[str] | None = None,
-    i18n_instance=None,
+    i18n_instance: I18nAdapter | None = None,
     config: CmdsConfig | None = None,
     profile_resolver: ProfileResolver | None = None,
 ) -> CommandScopeManager:
@@ -86,7 +87,7 @@ async def setup_commands_auto(
     return manager
 
 
-def _try_import_i18n():
+def _try_import_i18n() -> I18nAdapter | None:
     """Try to import i18n from common locations."""
     # Common aiogram i18n import patterns
     import_patterns = [
@@ -104,9 +105,9 @@ def _try_import_i18n():
             module = __import__(pattern, fromlist=[module_parts[-1]])
             # Try to get the i18n instance
             if hasattr(module, "i18n"):
-                return module.i18n
+                return cast(I18nAdapter, module.i18n)
             elif hasattr(module, "gettext"):
-                return module
+                return cast(I18nAdapter, module)
         except ImportError:
             continue
 

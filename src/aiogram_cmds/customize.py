@@ -63,5 +63,5 @@ class CmdsConfig(BaseModel):
     i18n_key_prefix: str = "cmd"
     commands: dict[str, CommandDef] = Field(default_factory=dict)
     profiles: dict[str, ProfileDef] = Field(default_factory=dict)
-    scopes: list[ScopeDef] = Field(default_factory=list)
+    scopes: list[ScopeDef] = Field(default_factory=lambda: list[ScopeDef]())
     menu_button: MenuButtonDef = Field(default_factory=MenuButtonDef)

@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security reporting guidance
+    url: https://github.com/ArmanAvanesyan/aiogram-cmds/security/policy
+    about: Read the security policy before sharing sensitive details. Public issues are not private.

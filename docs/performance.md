@@ -139,41 +139,20 @@ class DatabaseProfileResolver:
 
 ### 5. Redis Caching
 
-Use Redis for multi-worker deployments:
+Redis caching is an application integration, not a built-in backend. The
+`redis` extra installs only the client. `ProfileResolver` is synchronous; do not
+pass an async function to it. Perform asynchronous lookups before applying an
+application-selected profile:
 
 ```python
-import redis.asyncio as redis
-from aiogram_cmds import ProfileResolver, Flags
-
-class RedisProfileResolver:
-    def __init__(self, redis_client: redis.Redis):
-        self.redis = redis_client
-        self.cache_ttl = 300  # 5 minutes
-    
-    async def __call__(self, flags: Flags) -> str:
-        user_id = getattr(flags, 'user_id', None)
-        if not user_id:
-            return "guest"
-        
-        # Check Redis cache
-        cache_key = f"user_profile:{user_id}"
-        cached_profile = await self.redis.get(cache_key)
-        
-        if cached_profile:
-            return cached_profile.decode()
-        
-        # Determine profile
-        profile = await self._determine_profile(user_id)
-        
-        # Cache in Redis
-        await self.redis.setex(cache_key, self.cache_ttl, profile)
-        
-        return profile
-    
-    async def _determine_profile(self, user_id: int) -> str:
-        # Your profile determination logic
-        return "user"
+async def update_from_cache(manager, client, user_id: int) -> None:
+    cached = await client.get(f"user_profile:{user_id}")
+    profile = cached.decode() if cached else "guest"
+    await manager.update_profile(user_id, profile)
 ```
+
+Applications own cache invalidation, authorization, distributed coordination and
+recovery. Cached command menus do not enforce handler authorization.
 
 ## 📈 Benchmarking
 
@@ -387,7 +366,10 @@ async def update_user_commands(user_id: int, **flags):
 
 ## 🚀 Production Optimizations
 
-### 1. Use Redis for Multi-Worker Deployments
+### 1. Application-owned Redis integration
+
+This illustrative wrapper is application code. It does not provide distributed
+coordination, recovery or an aiogram-cmds storage backend.
 
 ```python
 import redis.asyncio as redis

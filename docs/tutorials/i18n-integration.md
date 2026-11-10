@@ -447,7 +447,7 @@ Congratulations! You've successfully integrated i18n with aiogram-cmds. Here's w
 
 1. **[Advanced Profiles Tutorial](advanced-profiles.md)** - Create user-specific commands
 2. **[Dynamic Commands Tutorial](dynamic-commands.md)** - Update commands at runtime
-3. **[Examples](../examples/)** - See complete multi-language bots
+3. **[Examples](https://github.com/ArmanAvanesyan/aiogram-cmds/tree/main/examples)** - See complete multi-language bots
 4. **[API Reference](../api/translator.md)** - Explore advanced translator features
 
 ## 💡 Tips

@@ -134,9 +134,13 @@ aiogram-cmds provides a layered architecture that scales from simple to complex:
 # Basic installation
 pip install aiogram-cmds
 
-# With Redis support (for multi-worker deployments)
+# Optional Redis client for application-owned integrations
 pip install aiogram-cmds[redis]
 ```
+
+The Redis extra installs a client only. This library provides no Redis backend,
+distributed lock, command cache or multi-worker coordination. Applications own
+those concerns; installing the extra does not make updates atomic.
 
 ## 🤝 Community
 
@@ -149,10 +153,10 @@ pip install aiogram-cmds[redis]
 - ✅ **Core Features**: Command management, i18n, profiles, scopes
 - ✅ **Documentation**: Comprehensive guides and API reference  
 - ✅ **Testing**: Unit, integration, and performance tests
-- ✅ **CI/CD**: Automated testing and deployment
+- ✅ **CI**: Automated verification; deliberate package releases and manual documentation publication
 - 🚧 **Examples**: Working bot examples (in progress)
 - 🔮 **Future**: Rate limiting, caching, advanced analytics
 
 ---
 
-**Ready to get started?** Check out our [Quickstart Guide](quickstart.md) or browse the [Examples](../examples/)!
+**Ready to get started?** Check out our [Quickstart Guide](quickstart.md) or browse the [Examples](https://github.com/ArmanAvanesyan/aiogram-cmds/tree/main/examples)!

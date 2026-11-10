@@ -323,7 +323,7 @@ logging.basicConfig(level=logging.DEBUG)
 ## 📚 Related Documentation
 
 - [Contributing Guide](../CONTRIBUTING.md) - Development guidelines
-- [Release Process](../docs/release.md) - Release workflow
+- [Release Process](../docs/releasing.md) - Release workflow
 - [CI/CD Workflows](../.github/workflows/) - Automated workflows
 
 ---

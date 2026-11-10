@@ -6,7 +6,7 @@ from .customize import CmdsConfig, CommandDef, ProfileDef
 
 
 class CommandRegistry:
-    def __init__(self, cfg: CmdsConfig):
+    def __init__(self, cfg: CmdsConfig) -> None:
         self.cfg = cfg
 
     def resolve_profile_commands(self, profile: str) -> list[str]:

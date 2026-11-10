@@ -51,9 +51,9 @@ coverage.xml
 .pytest_cache/
 cover/
 
-# Reports directory (organized)
-# Security reports are tracked in reports/security/
-# Coverage reports are ignored in reports/coverage/
+# Generated reports; maintained review documents may be tracked.
+bandit-report.json
+pip-audit-report.json
 reports/coverage/
 reports/*.log
 
@@ -229,3 +229,6 @@ dump.rdb
 
 # Cursor IDE
 .cursor/
+
+# Static analysis cache
+.ruff_cache/
