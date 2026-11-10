@@ -2,15 +2,13 @@
 
 Navigation works without an inactivity framework. The optional adapter is
 implemented in `aiogram_idle.integrations.nav`, supplied by aiogram-idle rather
-than imported by aiogram-nav. Install both compatible development distributions
+than imported by aiogram-nav. Install the compatible distributions
 explicitly; installing aiogram-nav alone installs neither aiogram-idle nor Redis.
 
-With adjacent checkouts, install navigation before the optional idle extra in the
-bot environment:
+In a bot environment, the optional idle extra selects compatible navigation:
 
 ```sh
-uv pip install ./aiogram-nav
-uv pip install './aiogram-idle[nav]'
+pip install 'aiogram-idle[nav]==0.1.0'
 # Select aiogram-idle[nav,redis] for the shared Redis backend.
 ```
 

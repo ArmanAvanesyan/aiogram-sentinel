@@ -1,11 +1,11 @@
 # Standalone navigation quickstart
 
-This checkout contains standalone memory and optional Redis implementations. It is a
-development distribution not yet on PyPI. From a checkout, install in a bot environment:
+Install the initial alpha release in your bot environment:
 
 ```sh
-uv venv --python 3.12
-uv pip install -e .
+pip install aiogram-nav==0.1.0
+# Optional persistent storage:
+pip install 'aiogram-nav[redis]==0.1.0'
 ```
 
 The package requires Python 3.10+ and aiogram 3.22 or newer in the 3.x series. It

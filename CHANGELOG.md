@@ -1,6 +1,10 @@
 # Changelog
 
-## 0.1.0 — unpublished local development
+<!-- towncrier release notes start -->
+
+## 0.1.0 (2026-11-10)
+
+### Features
 
 - Add independent navigation contracts, immutable registry and versioned JSON codec.
 - Add single-process memory sessions, guarded actions, history and bounded operation/control evidence.
@@ -11,7 +15,7 @@
 - Include runnable examples, user guides, contract/failure tests and a compatibility CI matrix.
 - Keep aiogram-idle integration optional and outside this package; the adapter is supplied by aiogram-idle.
 
-## Unreleased memory review fixes
+### Memory recovery fixes
 
 - Serialize stages across recorders/runtimes, preserve prior uncertainty and recheck authorization before new effects.
 - Bind completion to confirmed message receipts and strictly validate partial delivery plans/results.
@@ -20,7 +24,7 @@
 - Handle identity-resolver opt-outs, strict actor identities and valid millisecond expiry timelines.
 - Record the audit and additional regression coverage in docs/memory-audit.md.
 
-## Unreleased Redis backend
+### Redis backend
 
 - Add optional standalone Redis repository, server-time CAS and renewable fenced conversation locks.
 - Persist snapshots, partial-render receipts and atomic actor/session/view control consumption across processes.
@@ -29,7 +33,7 @@
 - Share full-handler Redis coordination with verified FSM isolation and a shared Redis FSM example.
 - Add real-server parity, concurrency, process-crash, ownership and recovery tests.
 
-## Unreleased Redis review fixes
+### Redis recovery fixes
 
 - Preserve partial/untracked keyboards when rejecting stale callbacks.
 - Fence every built-in cleanup call and skip cleanup after reentrant navigation supersedes its view.
@@ -37,3 +41,15 @@
 - Validate sweep namespace history and serialize scan cursors.
 - Reject contradictory receipts and cross-conversation render checkpoints.
 - Distinguish true NOSCRIPT responses from ambiguous transport failures and use exact server-time conversion.
+
+### Documentation
+
+- Align contributor guidance, typed package metadata, changelog fragments and
+  repository verification tools with the related aiogram libraries.
+
+### Miscellaneous
+
+- Synchronize the post-commit Redis ownership-loss regression with the
+  observation
+  hook and protect its whole revocation sequence against cancellation, without
+  relying on a 20 ms I/O deadline or incidental lease expiry under CI load.

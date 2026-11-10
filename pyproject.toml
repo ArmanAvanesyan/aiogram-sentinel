@@ -73,6 +73,7 @@ package = "aiogram_nav"
 package_dir = "src"
 directory = "CHANGES"
 filename = "CHANGELOG.md"
+start_string = "<!-- towncrier release notes start -->\n"
 title_format = "## {version} ({project_date})"
 issue_format = "[#{issue}](https://github.com/ArmanAvanesyan/aiogram-nav/issues/{issue})"
 underlines = ["", "", ""]

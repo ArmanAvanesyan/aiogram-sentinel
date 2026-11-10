@@ -4,28 +4,30 @@ Standalone screen navigation for aiogram 3, with a typed registry, memory or Red
 repositories, prepared rendering and explicit input bindings. Use reply keyboards,
 inline controls, commands or hybrids without adopting an idle framework.
 
-This is a development distribution, version 0.1.0, not yet published on PyPI.
+Version 0.1.0 is an initial alpha release. Review the recovery and storage
+boundaries before adopting it in an application.
 
-## Install locally
+## Install
 
 Requires Python 3.10+ and aiogram 3.22 or newer within the 3.x series.
 
 ```sh
-git clone https://github.com/ArmanAvanesyan/aiogram-nav.git
-cd aiogram-nav
-uv venv --python 3.12
-uv pip install -e .
+pip install aiogram-nav==0.1.0
+# Optional persistent storage:
+pip install 'aiogram-nav[redis]==0.1.0'
 ```
 
 The runtime depends only on aiogram. Neither aiogram-idle nor Redis is required.
-Install the optional Redis backend from the checkout with `uv pip install -e '.[redis]'`.
-See [Redis setup and recovery](docs/redis.md).
+See [Redis setup and recovery](docs/redis.md). Contributors can install an editable
+checkout with `uv sync --extra redis`; see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Run a demonstration
 
-From this checkout, set `BOT_TOKEN` in the environment:
+Clone the repository for its runnable examples, then set `BOT_TOKEN` in the environment:
 
 ```sh
+git clone https://github.com/ArmanAvanesyan/aiogram-nav.git
+cd aiogram-nav
 uv sync --python 3.12
 uv run python examples/demo.py --style reply
 uv run python examples/demo.py --style inline

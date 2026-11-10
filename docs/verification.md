@@ -1,6 +1,6 @@
 # Implementation verification
 
-Verified locally on 10 November 2026 for the unpublished 0.1.0 memory and Redis implementation.
+Historical local verification on 10 November 2026, before the 0.1.0 memory and Redis release.
 
 ## Implementation audit results
 

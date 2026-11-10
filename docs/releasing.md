@@ -1,7 +1,7 @@
 # Releasing aiogram-nav
 
 Repository CI verifies changes; a push does not publish a package. Version 0.1.0
-is currently a development distribution, not a claim of a PyPI release.
+is the initial alpha release.
 Publication requires a separate maintainer decision, working credentials and
 review of the artifacts being released.
 
@@ -45,9 +45,29 @@ CI performs these isolated checks; see [tools](https://github.com/ArmanAvanesyan
 
 ## Publish deliberately
 
-After the reviewed release commit and successful checks, the maintainer may tag
-that commit, publish the verified artifacts and create matching release notes.
-Confirm the destination index and artifact contents first. No credential,
-repository push, tag or package upload is performed by this documentation recipe.
-Use the same version in project metadata, changelog, tag and uploaded artifacts.
-Finally verify installation from the chosen index and record the release outcome.
+Commit the reviewed release changes and require successful CI before tagging.
+Build and verify the candidate from that exact source. Configure the PyPI Trusted
+Publisher for this repository, workflow `publish.yml` and environment `pypi`.
+The workflow is manual and tag-only; ordinary pushes and releases never publish.
+
+Create a checksum manifest for the two verified files, upload those exact bytes
+to the matching GitHub release, then dispatch publication with the independently
+verified manifest digest. For example, after preparing reviewed release notes:
+
+```sh
+git tag -a v0.1.0 -m "Release 0.1.0"
+git push origin v0.1.0
+(cd dist && shasum -a 256 *.whl *.tar.gz > SHA256SUMS)
+gh release create v0.1.0 dist/*.whl dist/*.tar.gz dist/SHA256SUMS \
+  --verify-tag --notes-file release-notes.md
+manifest_sha256=$(shasum -a 256 dist/SHA256SUMS | cut -d ' ' -f 1)
+gh workflow run publish.yml --ref v0.1.0 -f manifest_sha256="$manifest_sha256"
+```
+
+Substitute the intended version and candidate directory. The workflow checks tag,
+filenames, manifest and distribution digests before publishing through OIDC; it
+does not rebuild the reviewed distributions. Require the workflow to succeed,
+then verify availability and fresh standalone installation from PyPI. Publish
+aiogram-nav before aiogram-idle when releasing the compatible pair, so Idle's
+optional `nav` dependency resolves. Record the release outcome and never replace
+already published version files.
