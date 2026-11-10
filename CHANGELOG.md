@@ -2,6 +2,22 @@
 
 <!-- towncrier release notes start -->
 
+## [0.2.1] - 2026-11-11
+
+### Bugfixes
+
+- Preserve the authoritative session generation and expiry when abandoning the
+  first
+  prepared navigation view. Reject runtime/backend storage-setting conflicts
+  while
+  allowing separate worker settings. Fuse Redis history, parking and fresh time
+  observations into the atomic read; retain all commit fences. Expose
+  payload-free
+  capacity reasons and clock sampling diagnostics, with regression coverage for
+  lazy
+  receipt expiry and promised replay retention.
+
+
 ## [0.2.0] - 2026-11-10
 
 ### Features

@@ -38,7 +38,23 @@ class OwnershipLost(IdleError):
 
 
 class Overloaded(IdleError):
-    """Admission would evict unresolved recovery evidence."""
+    """Bounded admission failed; diagnostics never include application payloads."""
+
+    def __init__(
+        self,
+        *args: object,
+        reason: str = "capacity",
+        limit: int | None = None,
+        used: int | None = None,
+        earliest_safe_expiry: float | None = None,
+        protected_evidence: int | None = None,
+        size_bytes: int | None = None,
+    ) -> None:
+        super().__init__(*args)
+        self.reason, self.limit, self.used = reason, limit, used
+        self.earliest_safe_expiry = earliest_safe_expiry
+        self.protected_evidence = protected_evidence
+        self.size_bytes = size_bytes
 
 
 class PersistenceUnavailable(IdleError):

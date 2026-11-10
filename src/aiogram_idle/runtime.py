@@ -13,7 +13,7 @@ from aiogram_coordination import ExternalSession, SessionAuthority
 
 from .activity import IdleContext
 from .compat import bounded
-from .config import IdleConfig
+from .config import STORAGE_CONFIG_FIELDS, IdleConfig
 from .controls import ControlContext, ControlResult
 from .errors import ConfigurationError, ConfigurationMismatch, SessionExpired
 from .events import EventSink, emit
@@ -73,6 +73,19 @@ class IdleRuntime:
         self.adapters = dict(adapters)
         self.presenter = presenter
         self.config = config or backend.config
+        mismatches = [
+            field
+            for field in STORAGE_CONFIG_FIELDS
+            if getattr(self.config, field) != getattr(backend.config, field)
+        ]
+        if mismatches:
+            from .errors import ConfigurationMismatch
+
+            raise ConfigurationMismatch(
+                "Backend owns storage settings; configure these on the backend: "
+                + ", ".join(mismatches)
+                + ". Runtime worker/poll settings may differ."
+            )
         self.namespace = namespace
         self._explicit_coordinator = isolation is not None or getattr(
             backend, "_explicit_coordinator", False

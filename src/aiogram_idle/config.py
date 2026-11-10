@@ -69,3 +69,13 @@ class IdleConfig:
             raise ConfigurationError("lock wait must be shorter than lease")
         if not isinstance(cast(object, self.ambiguous_send), AmbiguousSendPolicy):
             raise ConfigurationError("unknown ambiguous-send policy")
+
+
+STORAGE_CONFIG_FIELDS = (
+    "recovery_retention_seconds",
+    "max_conversations",
+    "max_receipts_per_conversation",
+    "max_tokens_per_conversation",
+    "max_params_bytes",
+    "max_components_bytes",
+)

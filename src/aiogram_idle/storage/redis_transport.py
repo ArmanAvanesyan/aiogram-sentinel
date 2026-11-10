@@ -43,15 +43,30 @@ class RedisClock:
     def __init__(self) -> None:
         self._server: float | None = None
         self._mono = 0.0
+        self.sample_count = 0
+        self.last_jump_seconds: float | None = None
 
     def update(self, seconds: float) -> None:
         now = time.monotonic()
-        if self._server is not None and abs(seconds - (self._server + now - self._mono)) > 1:
+        jump = seconds - (self._server + now - self._mono) if self._server is not None else None
+        if jump is not None and abs(jump) > 1:
+            self.last_jump_seconds = jump
             logging.getLogger(__name__).warning(
                 "Redis clock jumped; deadline and lease timing may have changed"
             )
+        self.sample_count += 1
         self._server = seconds
         self._mono = now
+
+    def diagnostics(self) -> dict[str, int | float | None]:
+        """Clock observations only; an interpolated read is not a fresh server sample."""
+        return {
+            "sample_count": self.sample_count,
+            "sample_age_seconds": max(0.0, time.monotonic() - self._mono)
+            if self._server is not None
+            else None,
+            "last_jump_seconds": self.last_jump_seconds,
+        }
 
     def now(self) -> float:
         if self._server is None:
@@ -113,6 +128,10 @@ class Connection:
                     await self.call("SCRIPT", "LOAD", source)
                     continue
                 if _is_response_error(error):
+                    if "IDLE_INCONSISTENT namespace history" in str(error):
+                        raise BackendInconsistent(
+                            "Redis namespace history was lost or replaced; explicit recovery required"
+                        ) from error
                     raise BackendInconsistent(
                         "Redis script failed; effects must stop pending reconciliation"
                     ) from error
