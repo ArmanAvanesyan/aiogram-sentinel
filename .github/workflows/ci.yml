@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v7
         with:
           python-version: '3.12'
@@ -40,13 +40,13 @@ jobs:
       matrix:
         python: ['3.10', '3.11', '3.12', '3.13']
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ matrix.python }}
       - run: uv sync --frozen --all-extras --all-groups
       - run: uv run --frozen pytest tests/unit tests/integration --cov=aiogram_cmds --cov-report=xml:reports/coverage/coverage.xml --cov-fail-under=80
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: coverage-${{ matrix.python }}
@@ -64,7 +64,7 @@ jobs:
         os: [macos-latest, windows-latest]
         python: ['3.10', '3.13']
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ matrix.python }}
@@ -76,8 +76,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: 'pypy3.10'
       - uses: astral-sh/setup-uv@v7
@@ -88,7 +88,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v7
         with:
           python-version: '3.12'
@@ -102,7 +102,7 @@ jobs:
         run: |
           mkdir -p reports/security
           uv run --frozen pip-audit --skip-editable --format json --output reports/security/pip-audit-report.json
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: security-reports
@@ -113,7 +113,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v7
         with:
           python-version: '3.12'
@@ -128,7 +128,7 @@ jobs:
             uv pip install --python /tmp/cmds-artifact/bin/python "$artifact"
             (cd /tmp && /tmp/cmds-artifact/bin/python -c 'from importlib.metadata import version; from importlib.resources import files; import importlib.util; import aiogram_cmds; assert aiogram_cmds.__version__ == version("aiogram-cmds"); assert files("aiogram_cmds").joinpath("py.typed").is_file(); assert importlib.util.find_spec("redis") is None; assert importlib.util.find_spec("aiogram_idle") is None; assert importlib.util.find_spec("aiogram_nav") is None')
           done
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: distributions
           path: dist/*
@@ -142,7 +142,7 @@ jobs:
       matrix:
         aiogram: ['aiogram==3.0.0', 'aiogram>=3,<4']
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v7
         with:
           python-version: '3.10'
@@ -155,13 +155,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v7
         with:
           python-version: '3.12'
       - run: uv sync --frozen --all-extras --all-groups
       - run: uv run --frozen pytest tests/perf --benchmark-json=reports/benchmark-results.json
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: performance-results
