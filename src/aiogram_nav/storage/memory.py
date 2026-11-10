@@ -37,11 +37,12 @@ from ..models import (
     ViewState,
 )
 from ..protocols import Coordinator
+from .sessions import MemorySessions
 from .state import Conversation, Operation, fingerprint, payload_size
 from .tokens import MemoryTokens
 
 
-class MemoryNavigationRepository(MemoryTokens):
+class MemoryNavigationRepository(MemoryTokens, MemorySessions):
     """One event loop/process only. No persistence or recovery across restart."""
 
     capabilities = frozenset({"conditional_commits", "prepared_actions", "opaque_tokens"})
@@ -52,16 +53,21 @@ class MemoryNavigationRepository(MemoryTokens):
         self.clock = clock or SystemClock()
         self.config = config or NavigationConfig()
         self.coordinator: Coordinator = MemoryCoordinator()
+        self.application_coordinator_selected = False
         self._lock = asyncio.Lock()
         self._records: dict[ConversationKey, Conversation] = {}
         self._sweep_cursor = 0
+        self._storage_format = 1
+        self._format_operations: dict[str, tuple[int, int]] = {}
 
     def bind_coordinator(self, coordinator: Coordinator) -> None:
         if coordinator is self.coordinator:
+            self.application_coordinator_selected = True
             return
         if self._records or self.coordinator.active_scopes or coordinator.active_scopes:
             raise ConfigurationError("Configure shared navigation isolation before activity")
         self.coordinator = coordinator
+        self.application_coordinator_selected = True
 
     def _guard_scope(self, key: ConversationKey, scope: object | None) -> None:
         if scope is not None and not self.coordinator.scope_matches(key, scope):
@@ -174,7 +180,11 @@ class MemoryNavigationRepository(MemoryTokens):
             expiry = (
                 snapshot.expires_at
                 if snapshot
-                else (intent.expires_at or now + math.ceil(self.config.session_seconds * 1000))
+                else (
+                    record.external_session.absolute_expires_at
+                    if record.external_session
+                    else (intent.expires_at or now + math.ceil(self.config.session_seconds * 1000))
+                )
             )
             if expiry <= now or (
                 snapshot is not None

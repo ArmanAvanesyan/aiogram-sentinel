@@ -4,13 +4,13 @@ build-backend = "hatchling.build"
 
 [project]
 name = "aiogram-nav"
-version = "0.1.0"
+version = "0.2.0"
 description = "Standalone navigation and recoverable screen rendering for aiogram 3"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 authors = [{name = "aiogram-nav contributors"}]
-dependencies = ["aiogram>=3.22,<4"]
+dependencies = ["aiogram>=3.22,<4", "aiogram-coordination>=0.1.0,<0.2"]
 
 classifiers = ["Development Status :: 3 - Alpha", "Framework :: AsyncIO", "Typing :: Typed", "Programming Language :: Python :: 3.10", "Programming Language :: Python :: 3.11", "Programming Language :: Python :: 3.12", "Programming Language :: Python :: 3.13", "Programming Language :: Python :: 3.14"]
 

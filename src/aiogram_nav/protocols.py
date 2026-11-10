@@ -2,20 +2,12 @@
 
 from __future__ import annotations
 
-from collections.abc import Awaitable, Callable, Hashable
-from contextlib import AbstractAsyncContextManager
+from collections.abc import Awaitable, Callable
 from typing import Protocol, TypeVar
 
+from aiogram_coordination import Coordinator as Coordinator
+
 T = TypeVar("T")
-
-
-class Coordinator(Protocol):
-    @property
-    def active_scopes(self) -> int: ...
-    def hold(self, key: Hashable) -> AbstractAsyncContextManager[None]: ...
-    def scope_token(self, key: Hashable) -> object | None: ...
-    def scope_active(self, token: object) -> bool: ...
-    def scope_matches(self, key: Hashable, token: object) -> bool: ...
 
 
 class EffectRecorder(Protocol):

@@ -108,20 +108,34 @@ async def test_reentrancy_is_task_scoped_and_full_identity_isolated(nav_redis_cl
 @pytest.mark.asyncio
 async def test_cancelled_waiter_does_not_release_owner(nav_redis_client):
     prefix = f"test-coord:{uuid.uuid4().hex}"
-    first, second = coordinator(nav_redis_client, prefix), coordinator(nav_redis_client, prefix)
+    attempted = asyncio.Event()
+
+    class WaitingCoordinator(RedisCoordinator):
+        async def _command(self, *args):
+            result = await super()._command(*args)
+            if args[0] == "SET" and not result:
+                attempted.set()
+                # Force cancellation at a known contention point, independently
+                # of scheduler load or an unrelated acquisition deadline.
+                await asyncio.Event().wait()
+            return result
+
+    first = RedisCoordinator(redis=nav_redis_client, prefix=prefix)
+    second = WaitingCoordinator(redis=nav_redis_client, prefix=prefix)
     key = ConversationKey("test", 1, 2, 2)
     async with first.hold(key):
+        owner = await nav_redis_client.get(first.lock_key(key))
 
         async def waiter():
             async with second.hold(key):
                 pytest.fail("waiter entered occupied lock")
 
         task = asyncio.create_task(waiter())
-        await asyncio.sleep(0.02)
+        await asyncio.wait_for(attempted.wait(), timeout=3)
         task.cancel()
         with pytest.raises(asyncio.CancelledError):
             await task
-        assert await nav_redis_client.get(first.lock_key(key)) is not None
+        assert await nav_redis_client.get(first.lock_key(key)) == owner
         assert second.active_scopes == 0
 
 

@@ -72,9 +72,17 @@ jobs:
       matrix:
         python: ['3.10', '3.12', '3.14']
         redis-client: [minimum, latest]
+        redis-server: ['7']
+        include:
+          - python: '3.12'
+            redis-client: minimum
+            redis-server: '8'
+          - python: '3.12'
+            redis-client: latest
+            redis-server: '8'
     services:
       redis:
-        image: redis:7-alpine
+        image: redis:${{ matrix.redis-server }}-alpine
         ports: ['6379:6379']
         options: --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 3s --health-retries 10
     env:
@@ -88,7 +96,7 @@ jobs:
         run: uv pip install 'redis==5.0.8'
       - run: uv run --no-sync pytest --cov=aiogram_nav --cov-report=term-missing --cov-report=xml --cov-fail-under=80
       - name: Verify Redis-enabled installed artifacts against the real server
-        if: matrix.python == '3.12' && matrix.redis-client == 'latest'
+        if: matrix.python == '3.12' && matrix.redis-client == 'latest' && matrix.redis-server == '7'
         shell: bash
         run: |
           uv build
@@ -106,7 +114,7 @@ jobs:
       - if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: redis-coverage-${{ matrix.python }}-${{ matrix.redis-client }}
+          name: redis-coverage-${{ matrix.python }}-${{ matrix.redis-client }}-${{ matrix.redis-server }}
           path: coverage.xml
           if-no-files-found: warn
   security:
@@ -120,7 +128,7 @@ jobs:
       - run: uv run --no-sync bandit -r src -ll
       - name: Audit the resolved environment
         if: always()
-        run: uv run --no-sync pip-audit --format=json --output=pip-audit-report.json
+        run: uv run --no-sync pip-audit --skip-editable --format=json --output=pip-audit-report.json
       - if: always()
         uses: actions/upload-artifact@v4
         with:

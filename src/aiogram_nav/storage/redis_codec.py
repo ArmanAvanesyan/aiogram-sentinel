@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import json
 from typing import TypeVar, cast
+
+from aiogram_coordination import ExternalSession
 
 from ..codec import decode, encode
 from ..errors import ConfigurationError, SchemaUnsupported
@@ -51,30 +54,42 @@ def _token(entry: TokenRecord) -> dict[str, object]:
     )
 
 
-def dumps(key: ConversationKey, record: Conversation) -> str:
-    return encode(
-        dict(
-            key=key,
-            version=record.version,
-            current=record.current,
-            pending_id=record.pending_id,
-            operations={
-                name: dict(
-                    fingerprint=entry.fingerprint,
-                    prepared=entry.prepared,
-                    status=entry.status,
-                    result=entry.result,
-                    retention_until=entry.retention_until,
-                    completion_fingerprint=entry.completion_fingerprint,
-                    token_receipts={
-                        token: _token(value) for token, value in entry.token_receipts.items()
-                    },
-                )
-                for name, entry in record.operations.items()
-            },
-            tokens={name: _token(value) for name, value in record.tokens.items()},
-        )
+def dumps(key: ConversationKey, record: Conversation, *, storage_format: int = 1) -> str:
+    values: dict[str, object] = dict(
+        key=key,
+        version=record.version,
+        current=record.current,
+        pending_id=record.pending_id,
+        operations={
+            name: dict(
+                fingerprint=entry.fingerprint,
+                prepared=entry.prepared,
+                status=entry.status,
+                result=entry.result,
+                retention_until=entry.retention_until,
+                completion_fingerprint=entry.completion_fingerprint,
+                token_receipts={
+                    token: _token(value) for token, value in entry.token_receipts.items()
+                },
+            )
+            for name, entry in record.operations.items()
+        },
+        tokens={name: _token(value) for name, value in record.tokens.items()},
     )
+    if storage_format == 2:
+        binding = record.external_session
+        values["external_session"] = (
+            None
+            if binding is None
+            else {
+                "session_id": binding.session_id,
+                "revision": binding.revision,
+                "absolute_expires_at": binding.absolute_expires_at,
+            }
+        )
+    elif record.external_session is not None:
+        raise ConfigurationError("External sessions require storage format 2")
+    return encode(values, schema_version=storage_format)
 
 
 def loads(raw: str, key: ConversationKey) -> Conversation:
@@ -82,7 +97,9 @@ def loads(raw: str, key: ConversationKey) -> Conversation:
         decoded = decode(raw)
     except ConfigurationError as error:
         raise SchemaUnsupported("Malformed Redis navigation persistence") from error
-    data = _map(decoded, {"key", "version", "current", "pending_id", "operations", "tokens"})
+    version = json.loads(raw)["schema_version"]
+    names = {"key", "version", "current", "pending_id", "operations", "tokens"}
+    data = _map(decoded, names | ({"external_session"} if version == 2 else set()))
     if _typed(data["key"], ConversationKey) != key:
         raise SchemaUnsupported("Redis conversation identity mismatch")
     record = Conversation(
@@ -90,6 +107,16 @@ def loads(raw: str, key: ConversationKey) -> Conversation:
         _optional(data["current"], VersionedSnapshot),
         _optional(data["pending_id"], str),
     )
+    if version == 2 and data["external_session"] is not None:
+        binding = _map(data["external_session"], {"session_id", "revision", "absolute_expires_at"})
+        try:
+            record.external_session = ExternalSession(
+                _typed(binding["session_id"], str),
+                _typed(binding["revision"], str),
+                _typed(binding["absolute_expires_at"], int),
+            )
+        except ValueError as error:
+            raise SchemaUnsupported("Malformed external session binding") from error
     try:
         identifier(record.version, "version")
     except ValueError as error:

@@ -33,11 +33,24 @@ wheels = [
 ]
 
 [[package]]
-name = "aiogram-nav"
+name = "aiogram-coordination"
 version = "0.1.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "aiogram" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/92/4e/16d6b97b482201bf930799777ee4a8c17b8414610f503ed2d005fdad6221/aiogram_coordination-0.1.0.tar.gz", hash = "sha256:775ed78a71a51fc862b7394cd00a7ca6ca4a11013bb7c286e57e2b059f5471b1", size = 257488, upload-time = "2026-11-10T12:42:27.259Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f5/39/1b507749cea1a8860a478c13daf20dea619290cb4a152e14f0d22e9b3298/aiogram_coordination-0.1.0-py3-none-any.whl", hash = "sha256:c3b44457924a327adf40963abcb5b6d22618539fe7968216df74b524c99f3da4", size = 21126, upload-time = "2026-11-10T12:42:25.922Z" },
+]
+
+[[package]]
+name = "aiogram-nav"
+version = "0.2.0"
 source = { editable = "." }
 dependencies = [
     { name = "aiogram" },
+    { name = "aiogram-coordination" },
 ]
 
 [package.optional-dependencies]
@@ -66,6 +79,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "aiogram", specifier = ">=3.22,<4" },
+    { name = "aiogram-coordination", specifier = ">=0.1.0,<0.2" },
     { name = "redis", marker = "extra == 'redis'", specifier = ">=5.0.8,<8" },
 ]
 provides-extras = ["redis"]

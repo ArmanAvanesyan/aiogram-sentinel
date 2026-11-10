@@ -4,7 +4,7 @@ Standalone screen navigation for aiogram 3, with a typed registry, memory or Red
 repositories, prepared rendering and explicit input bindings. Use reply keyboards,
 inline controls, commands or hybrids without adopting an idle framework.
 
-Version 0.1.0 is an initial alpha release. Review the recovery and storage
+Version 0.2.0 is an initial alpha release. Review the recovery and storage
 boundaries before adopting it in an application.
 
 ## Install
@@ -12,12 +12,12 @@ boundaries before adopting it in an application.
 Requires Python 3.10+ and aiogram 3.22 or newer within the 3.x series.
 
 ```sh
-pip install aiogram-nav==0.1.0
+pip install aiogram-nav==0.2.0
 # Optional persistent storage:
-pip install 'aiogram-nav[redis]==0.1.0'
+pip install 'aiogram-nav[redis]==0.2.0'
 ```
 
-The runtime depends only on aiogram. Neither aiogram-idle nor Redis is required.
+The runtime depends on aiogram and aiogram-coordination; it never imports Idle. Neither aiogram-idle nor Redis is required.
 See [Redis setup and recovery](docs/redis.md). Contributors can install an editable
 checkout with `uv sync --extra redis`; see [CONTRIBUTING.md](CONTRIBUTING.md).
 
@@ -95,3 +95,20 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for repository conventions and verificati
 [release guidance](docs/releasing.md) for maintainer procedures.
 
 MIT licensed. See [LICENSE](LICENSE).
+
+## Application ownership and compatibility
+
+See [application-owned integration](docs/application-integration.md) for custom FSM
+isolation, manual router placement, prepared rendering, external session authority
+and bounded draining. These are explicit opt-ins; automatic routing and owned
+sessions retain their existing defaults.
+
+| Target | Required checks |
+| --- | --- |
+| Python | 3.10, 3.11, 3.12, 3.13, 3.14 |
+| aiogram | 3.22 minimum and latest 3.x; minimum on Python 3.14 excluded for upstream wheel compatibility |
+| Redis server | 7+ single primary, non-cluster, noeviction; real-server CI |
+| redis-py | 5.0.8 minimum and latest below 8 |
+| Coordination | >=0.1.0,<0.2 |
+
+Configured matrices and locally executed checks are distinguished in release verification.

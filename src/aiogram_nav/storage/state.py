@@ -9,6 +9,8 @@ from dataclasses import dataclass, field, fields, is_dataclass
 from enum import Enum
 from typing import Literal, cast
 
+from aiogram_coordination import ExternalSession
+
 from ..models import (
     CommitResult,
     NavigationToken,
@@ -80,6 +82,7 @@ class TokenRecord:
 @dataclass
 class Conversation:
     version: str
+    external_session: ExternalSession | None = field(default=None, kw_only=True)
     current: VersionedSnapshot | None = None
     pending_id: str | None = None
     operations: dict[str, Operation] = field(default_factory=lambda: dict[str, Operation]())

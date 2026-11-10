@@ -72,3 +72,15 @@ new external effects. `SchemaUnsupported` rejects malformed or newer persisted
 records. No Redis failure returns a successful local-memory result.
 
 Custom presenters must call `CleanupRequest.ensure_owned()` when supplied, immediately before each new cleanup effect. Invalid/stale callbacks are acknowledged without deleting unproven message markup; committed-view cleanup uses tracked references.
+
+## Application ownership additions in 0.2
+
+- `create_bindings_router(navigation)` plus explicit manual `install` options.
+- `ApplicationPresenter(cleanup=..., render=None)` and `prepare_action`/`complete_render`.
+- Shared `SessionAuthority`, `ExternalSession` and `TrackedEventIsolation` contracts.
+- `callback_rejection` with a public `CallbackRejection` value and coarse reason.
+- `drain(timeout_seconds=10)` before resource closure.
+- `RedisDeploymentAttestation` and explicit repository storage-format activation.
+
+[Application ownership](application-integration.md) defines the guarantees and
+required callback responsibilities; [migration](migration.md) covers activation.

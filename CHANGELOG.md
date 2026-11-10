@@ -2,6 +2,31 @@
 
 <!-- towncrier release notes start -->
 
+## 0.2.0 (2026-11-10)
+
+### Features
+
+- Add the shared aiogram-coordination dependency and verified application-owned
+  FSM isolation through TrackedEventIsolation and structural coordinator adapters.
+- Add manual binding-router placement with explicit root-handler opt-in, retaining
+  automatic installation's strict routing safeguards.
+- Add ApplicationPresenter and prepared Go/Back/Home/Cancel/Refresh actions so
+  applications can own rendering and generation-specific message cleanup.
+- Bind internal navigation generations to an external SessionAuthority without
+  extending or replacing application sessions; retain uncertain recovery evidence.
+- Customize stale/foreign callback rejections without consuming valid controls
+  before application state guards.
+- Add bounded draining and preserve caller-owned clients during shutdown.
+
+### Redis and migration
+
+- Keep storage format 1 as the default and add explicit format 2 activation with
+  dry-run assessment, retained receipts and atomic fencing of old writers.
+- Add managed Redis deployment attestation for ACL-denied inspection commands;
+  observed unsafe deployments and connection failures still fail closed.
+- Add real Redis 7/8 and minimum/current dependency verification. Navigation still
+  works independently of aiogram-idle; no Idle dependency is introduced.
+
 ## 0.1.0 (2026-11-10)
 
 ### Features

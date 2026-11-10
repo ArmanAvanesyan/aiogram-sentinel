@@ -7,7 +7,14 @@ from hashlib import sha256
 from typing import TYPE_CHECKING
 
 from .errors import ConfigurationError
-from .models import ConversationKey, HistoryMode, NavigationSnapshot, PreparedAction, RenderResult
+from .models import (
+    ActionKind,
+    ConversationKey,
+    HistoryMode,
+    NavigationSnapshot,
+    PreparedAction,
+    RenderResult,
+)
 
 if TYPE_CHECKING:
     from .navigation import Navigation
@@ -20,6 +27,7 @@ class NavigationContext:
         self.navigation, self.key = navigation, key
         self.operation_prefix = operation_prefix
         self._sequence = 0
+        self.control_handled = False
 
     def operation_id(self, supplied: str | None) -> str:
         if supplied is not None:
@@ -30,8 +38,17 @@ class NavigationContext:
         return sha256(f"{self.operation_prefix}:{self._sequence}".encode()).hexdigest()
 
     async def current(self) -> NavigationSnapshot | None:
-        loaded = await self.navigation.repository.load(self.key)
-        return loaded.snapshot if loaded is not None else None
+        async with self.navigation.coordinator.hold(self.key):
+            loaded = await self.navigation.repository.load(self.key)
+            if loaded is None:
+                return None
+            from .errors import SessionExpired
+
+            try:
+                await self.navigation.authorize_session(self.key, loaded.snapshot.session_id)
+            except SessionExpired:
+                return None
+            return loaded.snapshot
 
     async def go(
         self,
@@ -103,6 +120,28 @@ class NavigationContext:
     ) -> NavigationSnapshot:
         return await self.navigation.touch(
             self.key, source=source, operation_id=self.operation_id(operation_id)
+        )
+
+    async def prepare_action(
+        self,
+        kind: ActionKind,
+        *,
+        node_id: str | None = None,
+        params: Mapping[str, object] | None = None,
+        history: HistoryMode = "push",
+        operation_id: str | None = None,
+        source: str = "application",
+        accepted_activity: bool = True,
+    ) -> PreparedAction:
+        return await self.navigation.prepare_action(
+            self.key,
+            kind,
+            node_id=node_id,
+            params=params,
+            history=history,
+            operation_id=self.operation_id(operation_id),
+            source=source,
+            accepted_activity=accepted_activity,
         )
 
     async def prepare_render(
