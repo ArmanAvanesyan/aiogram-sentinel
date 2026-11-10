@@ -118,4 +118,4 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md) and the
 
 MIT. See [LICENSE](LICENSE).
 
-For a source checkout, use the frozen lock for standalone work: `uv sync --frozen` and `uv run --no-sync ...` work with aiogram-nav absent. Regenerating the lock or selecting the nav extra uses the adjacent navigation checkout declared in tool.uv.sources. Installing the base wheel or Redis extra does not require that checkout.
+For a source checkout, use `uv sync --frozen` and `uv run --no-sync ...`. Selecting the nav extra resolves published dependencies; adjacent peer checkouts are not required. See [installation](docs/installation.md) for explicit joint-development overrides.

@@ -1,17 +1,6 @@
 name: Optional navigation integration
 on:
   workflow_dispatch:
-    inputs:
-      nav_repository:
-        description: Compatible aiogram-nav GitHub repository (owner/name)
-        required: true
-        default: ArmanAvanesyan/aiogram-nav
-        type: string
-      nav_ref:
-        description: Compatible reviewed revision
-        required: true
-        default: 820ad03492b13618b491e1a79ca2e92fcc8b381b
-        type: string
 permissions:
   contents: read
 jobs:
@@ -41,16 +30,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: aiogram-idle
-      - uses: actions/checkout@v4
-        with:
-          repository: ${{ inputs.nav_repository }}
-          ref: ${{ inputs.nav_ref }}
-          path: aiogram-nav
-      - uses: actions/checkout@v4
-        with:
-          repository: ArmanAvanesyan/aiogram-coordination
-          ref: 7dcb06e2e46a57e8b826279c744ab51d368a997d # coordination v0.1.0
-          path: aiogram-coordination
       - uses: astral-sh/setup-uv@v6
       - run: uv sync --frozen --extra redis --extra nav --python '${{ matrix.python }}'
       - run: uv run --no-sync ruff check .

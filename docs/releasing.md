@@ -44,16 +44,11 @@ Substitute the actual release version consistently. Do not add credentials,
 generated security reports or build output to commits. Repository pushes never
 trigger the manual publication workflow.
 
-## Unpublished peer candidates
+## Published dependency freeze
 
-Candidate PR verification currently checks out the pinned public coordination
-0.1.0 tag and the reviewed navigation candidate beside this repository. Artifact
-checks build coordination as a normal wheel and explicitly pass it using
-`tools/check_artifacts.py --peer /absolute/path/aiogram_coordination.whl ...`.
-Without `--peer`, the helper remains registry-only. Candidate checks prove artifact
-compatibility with the named peer; they do not prove PyPI availability.
-
-Before release, publish coordination, then navigation; remove both temporary
-`tool.uv.sources` entries, regenerate `uv.lock` against indexed peers, update the
-source-development recipes, and restore ordinary checkout/indexed dependency CI.
-Run registry-only artifact and optional-extra installs before publishing idle.
+Release CI and artifact checks resolve coordination and optional navigation from
+the package index. Do not add local peer sources or sibling checkout requirements
+to the release lock. `tools/check_artifacts.py` without `--peer` verifies this
+registry-only path; explicit `--peer` remains available for separately identified
+local experiments and is not release evidence. Publish coordination before
+navigation, and navigation before idle, so every advertised extra resolves.

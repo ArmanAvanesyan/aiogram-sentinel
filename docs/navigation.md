@@ -13,11 +13,11 @@ python -m pip install 'aiogram-idle[nav]==0.2.0'
 python -m pip install 'aiogram-idle[nav,redis]==0.2.0'
 ```
 
-The `nav` extra resolves `aiogram-nav>=0.2.0,<0.2` from PyPI. Base and Redis-only
+The `nav` extra resolves `aiogram-nav>=0.2.0,<0.3` from PyPI. Base and Redis-only
 installations remain independent of aiogram-nav.
 
-For source development, put compatible `aiogram-idle` and `aiogram-nav` checkouts
-in adjacent directories and run the combined example from the idle checkout:
+For source development, install the published optional dependencies and run the
+combined example from the idle checkout:
 
 ```sh
 uv sync --frozen --extra nav --extra redis
@@ -188,12 +188,12 @@ AIOGRAM_IDLE_REDIS_URL=redis://localhost:6379/0 AIOGRAM_IDLE_REQUIRE_REDIS=1 \
 uv run --no-sync pyright --project pyright-nav.json
 ```
 
-For standalone development without a neighboring navigation checkout, keep the frozen lock (`uv sync --frozen`) and use `uv run --no-sync`; regenerating the development lock resolves all extras and needs the local peer source. Base and Redis-only distribution installs do not need it.
+Source checkouts resolve published peers; an adjacent repository is not required. See [installation](installation.md) for explicit joint-development overrides.
 
-An automatic, separate integration CI job checks out `ArmanAvanesyan/aiogram-nav`
-at `main`, runs the optional strict type profile and exercises navigation/component
-tests with real Redis. Standalone jobs neither check out nor install navigation.
-The manual optional-integration workflow accepts an explicit compatible peer
-repository/revision and checks the broader Python 3.10–3.14 and Redis 8 matrix.
+An automatic, separate integration CI job installs published navigation through
+the `nav` extra, runs the optional strict type profile and exercises
+navigation/component tests with real Redis. Standalone jobs do not install
+navigation. The manual optional-integration workflow uses the same published
+dependencies and checks the broader Python 3.10–3.14 and Redis 8 matrix.
 Configured jobs do not imply remote execution or package publication; consult
 [dated verification evidence](verification.md) for what was actually run.

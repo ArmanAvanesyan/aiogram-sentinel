@@ -26,11 +26,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: aiogram-idle
-      - uses: actions/checkout@v4
-        with:
-          repository: ArmanAvanesyan/aiogram-coordination
-          ref: 7dcb06e2e46a57e8b826279c744ab51d368a997d # coordination v0.1.0
-          path: aiogram-coordination
       - uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
@@ -45,10 +40,8 @@ jobs:
       - run: uv run --no-sync towncrier build --draft --version 0.2.0
       - run: uv build
       - run: uv run --no-sync twine check dist/*
-      - name: Build explicit coordination candidate dependency
-        run: uv build --project ../aiogram-coordination --wheel --out-dir ../peer-artifacts
-      - name: Verify artifacts with explicit unpublished peer candidate
-        run: uv run --no-sync python tools/check_artifacts.py --peer ../peer-artifacts/*.whl dist/*.whl dist/*.tar.gz
+      - name: Verify artifacts against published dependencies
+        run: uv run --no-sync python tools/check_artifacts.py dist/*.whl dist/*.tar.gz
       - name: Compile examples without sending messages
         run: uv run --no-sync python -m compileall -q examples
       - name: Smoke test Redis wheel and sdist independently
@@ -57,7 +50,7 @@ jobs:
           for artifact in dist/*.whl dist/*.tar.gz; do
             smoke_dir=$(mktemp -d)
             uv venv --python 3.12 "$smoke_dir/env"
-            uv pip install --python "$smoke_dir/env/bin/python" "${artifact}[redis]" ../peer-artifacts/*.whl
+            uv pip install --python "$smoke_dir/env/bin/python" "${artifact}[redis]"
             cd "$smoke_dir"
             "$smoke_dir/env/bin/python" - <<'PYREDIS'
           import asyncio, importlib.util, os, uuid
@@ -84,11 +77,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: aiogram-idle
-      - uses: actions/checkout@v4
-        with:
-          repository: ArmanAvanesyan/aiogram-coordination
-          ref: 7dcb06e2e46a57e8b826279c744ab51d368a997d # coordination v0.1.0
-          path: aiogram-coordination
       - uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
@@ -105,11 +93,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: aiogram-idle
-      - uses: actions/checkout@v4
-        with:
-          repository: ArmanAvanesyan/aiogram-coordination
-          ref: 7dcb06e2e46a57e8b826279c744ab51d368a997d # coordination v0.1.0
-          path: aiogram-coordination
       - uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
@@ -157,11 +140,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: aiogram-idle
-      - uses: actions/checkout@v4
-        with:
-          repository: ArmanAvanesyan/aiogram-coordination
-          ref: 7dcb06e2e46a57e8b826279c744ab51d368a997d # coordination v0.1.0
-          path: aiogram-coordination
       - uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
@@ -200,11 +178,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: aiogram-idle
-      - uses: actions/checkout@v4
-        with:
-          repository: ArmanAvanesyan/aiogram-coordination
-          ref: 7dcb06e2e46a57e8b826279c744ab51d368a997d # coordination v0.1.0
-          path: aiogram-coordination
       - uses: astral-sh/setup-uv@v6
       - run: uv sync --frozen --extra redis --python 3.12
       - name: Select Redis client endpoint
@@ -235,16 +208,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: aiogram-idle
-      - uses: actions/checkout@v4
-        with:
-          repository: ArmanAvanesyan/aiogram-nav
-          ref: 820ad03492b13618b491e1a79ca2e92fcc8b381b
-          path: aiogram-nav
-      - uses: actions/checkout@v4
-        with:
-          repository: ArmanAvanesyan/aiogram-coordination
-          ref: 7dcb06e2e46a57e8b826279c744ab51d368a997d # coordination v0.1.0
-          path: aiogram-coordination
       - uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true

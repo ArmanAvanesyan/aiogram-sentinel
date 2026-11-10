@@ -57,9 +57,6 @@ omit = ["*/aiogram_idle/integrations/*"]
 show_missing = true
 fail_under = 80
 
-[tool.uv.sources]
-aiogram-coordination = {path = "../aiogram-coordination", editable = true}
-aiogram-nav = {path = "../aiogram-nav", editable = true}
 
 [tool.towncrier]
 package = "aiogram_idle"

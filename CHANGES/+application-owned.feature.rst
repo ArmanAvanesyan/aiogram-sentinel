@@ -1,1 +1,0 @@
-Add shared task-scoped coordination, verified application isolation, read-only application session authority, immutable activity registrations, coarse analytics adapters and explicit staged Redis format activation. Extend optional Nav integration with manual router placement and application-owned prepared rendering while preserving atomic navigation/activity updates.
