@@ -47,13 +47,14 @@ nav:
     - Overview: ARCHITECTURE.md
     - Performance: performance.md
   - Project:
-    - Release Process: release.md
+    - Release Process: releasing.md
     - Roadmap: ROADMAP.md
   - Help:
     - FAQ: faq.md
     - Troubleshooting: troubleshooting.md
   - Development:
     - Testing: TESTING.md
+    - Verification: verification.md
 
 plugins:
   - search

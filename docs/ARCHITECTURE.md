@@ -302,7 +302,7 @@ await manager.clear_user_commands(user_id)
 
 ### Error Handling
 - Graceful degradation on i18n failures
-- Fallback to default commands on errors
+- Manager failures propagate by default; explicit `best_effort=True` returns failure results
 - Comprehensive logging for debugging
 - No sensitive data in logs
 
@@ -314,7 +314,7 @@ await manager.clear_user_commands(user_id)
 - Profile resolution results can be memoized
 
 ### Batch Operations
-- Multiple scopes are applied in single operations
+- Each scope is applied through a separate Telegram API operation; partial completion is possible
 - Command building is optimized for bulk operations
 - Minimal API calls to Telegram
 

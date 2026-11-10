@@ -1177,7 +1177,7 @@ async def batch_update_commands(user_ids: list):
 
 Congratulations! You've successfully implemented dynamic command updates. Here's what you can do next:
 
-1. **[Examples](../examples/)** - See complete dynamic bots
+1. **[Examples](https://github.com/ArmanAvanesyan/aiogram-cmds/tree/main/examples)** - See complete dynamic bots
 2. **[API Reference](../api/core.md)** - Explore advanced features
 3. **[Performance Guide](../performance.md)** - Optimize your dynamic system
 4. **[Configuration Guide](../configuration.md)** - Advanced configuration options
@@ -1194,4 +1194,4 @@ Congratulations! You've successfully implemented dynamic command updates. Here's
 
 ---
 
-**Ready for more?** Check out the [Examples](../examples/) to see complete dynamic bots in action!
+**Ready for more?** Check out the [Examples](https://github.com/ArmanAvanesyan/aiogram-cmds/tree/main/examples) to see complete dynamic bots in action!

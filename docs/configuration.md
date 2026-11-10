@@ -639,4 +639,4 @@ config = CmdsConfig(
 For more information about using configurations, see:
 - [Quickstart Guide](quickstart.md) - Getting started with configurations
 - [API Reference](api/configuration.md) - Detailed API documentation
-- [Tutorials](tutorials/) - Step-by-step configuration guides
+- [Tutorials](tutorials/basic-setup.md) - Step-by-step configuration guides

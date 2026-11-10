@@ -38,8 +38,8 @@ from .manager import CommandScopeManager
 from .policy import CommandPolicy, Flags, ProfileResolver, default_policy
 from .settings import CmdsSettings, load_settings
 from .translator import Translator, build_translator_from_i18n, noop_translator
+from .version import __version__ as __version__
 
-__version__ = "0.1.0"
 __author__ = "aiogram_cmds contributors"
 __description__ = "Command builder & scope manager for aiogram bots"
 

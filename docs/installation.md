@@ -17,11 +17,11 @@ pip install aiogram-cmds
 - **Python 3.11, 3.12, 3.13** (recommended)
 
 ### Core Dependencies
-- **aiogram >= 3.0.0** - Telegram Bot API framework
-- **pydantic >= 2.0.0** - Data validation and settings
+- **aiogram >= 3.0.0, < 4** - Telegram Bot API framework
+- **pydantic >= 2.0.0, < 3** - Data validation and settings
 
 ### Optional Dependencies
-- **redis >= 4.0.0** - For multi-worker deployments (install with `[redis]` extra)
+- **redis >= 5.0.8, < 8** - Client for application-owned integrations (install with `[redis]` extra)
 
 ## 🚀 Installation Options
 
@@ -30,12 +30,15 @@ pip install aiogram-cmds
 pip install aiogram-cmds
 ```
 
-### With Redis Support
-For multi-worker deployments or advanced caching:
+### Optional Redis client
+For application-owned caching or coordination:
 
 ```bash
 pip install aiogram-cmds[redis]
 ```
+
+The extra installs only a client. It does not add command caching, distributed
+locks, persistence or multi-worker safety. Applications implement these explicitly.
 
 ### Development Installation
 For contributing to the project:
@@ -78,7 +81,7 @@ from aiogram_cmds import CommandScopeManager
 from aiogram import Bot
 
 # This should work without errors
-bot = Bot("dummy_token")
+bot = Bot("123456:EXAMPLE_TOKEN_FOR_LOCAL_VALIDATION_ONLY")
 manager = CommandScopeManager(bot)
 print("✅ aiogram-cmds installed successfully!")
 ```
@@ -134,18 +137,19 @@ services:
 
 3. **Install in development mode:**
    ```bash
-   uv pip install -e ".[dev]"
+   uv sync --all-extras --all-groups --frozen
    ```
 
-4. **Install pre-commit hooks (optional):**
+4. **Run the contribution checks:**
    ```bash
-   pre-commit install
+   uv run --frozen ruff check .
+   uv run --frozen pyright
+   uv run --frozen pytest tests/unit tests/integration
    ```
 
-5. **Run tests:**
-   ```bash
-   uv run pytest
-   ```
+No pre-commit hooks are configured. See the
+[contribution guide](https://github.com/ArmanAvanesyan/aiogram-cmds/blob/main/CONTRIBUTING.md)
+for documentation and packaging checks.
 
 ## 📋 System Requirements
 
@@ -165,7 +169,7 @@ services:
 - **Storage**: 500 MB+
 - **CPU**: 2+ cores
 - **Network**: High-speed, reliable connection
-- **Redis**: For multi-worker deployments
+- **Redis**: Optional application infrastructure; no backend is implemented here
 
 ## 🚨 Troubleshooting
 
@@ -247,7 +251,7 @@ After installation:
 
 1. **[Quickstart Guide](quickstart.md)** - Get started in 5 minutes
 2. **[Configuration](configuration.md)** - Configure your bot
-3. **[Examples](../examples/)** - See working examples
+3. **[Examples](https://github.com/ArmanAvanesyan/aiogram-cmds/tree/main/examples)** - See working examples
 4. **[API Reference](api/core.md)** - Explore the API
 
 ## 💡 Tips
@@ -256,7 +260,7 @@ After installation:
 - Pin your dependencies in production: `pip freeze > requirements.txt`
 - Test your installation with the verification code above
 - Keep aiogram-cmds updated for bug fixes and new features
-- Use Redis for production deployments with multiple workers
+- Coordinate updates between workers explicitly in your application; the Redis extra only installs a client
 
 ---
 

@@ -23,9 +23,13 @@
 # Basic installation
 pip install aiogram-cmds
 
-# With Redis support (for multi-worker deployments)
+# Optional Redis client for application-owned integrations
 pip install aiogram-cmds[redis]
 ```
+
+The Redis extra installs a client only. This library provides no Redis backend,
+distributed lock, command cache or multi-worker coordination. Applications own
+those concerns; installing the extra does not make updates atomic.
 
 ## ⚡ Quick Start
 
@@ -46,32 +50,7 @@ async def handle_start(message: Message):
     await message.answer("Welcome! Use /help to see available commands.")
 ```
 
-### Simple Mode
-
-```python
-from aiogram import Bot, Dispatcher
-from aiogram_cmds import CommandScopeManager, load_settings, build_translator_from_i18n
-
-# Load settings from pyproject.toml or use defaults
-settings = load_settings()
-translator = build_translator_from_i18n(i18n)  # Your aiogram i18n instance
-
-# Create manager
-manager = CommandScopeManager(bot, settings=settings, translator=translator)
-
-# Set up all command scopes
-await manager.setup_all()
-
-# Update user commands dynamically
-await manager.update_user_commands(
-    user_id=12345,
-    is_registered=True,
-    has_vehicle=False,
-    user_language="en"
-)
-```
-
-### Advanced Mode
+### Application-selected profiles (recommended)
 
 ```python
 from aiogram_cmds import CmdsConfig, CommandDef, ProfileDef, ScopeDef, MenuButtonDef
@@ -97,21 +76,51 @@ config = CmdsConfig(
     menu_button=MenuButtonDef(mode="commands"),
 )
 
-# Create manager with custom profile resolver
-def my_profile_resolver(flags):
-    if flags.is_admin:
-        return "admin"
-    elif flags.is_registered:
-        return "user"
-    return "guest"
-
-manager = CommandScopeManager(
-    bot, 
-    config=config, 
-    profile_resolver=my_profile_resolver
-)
+# Select profiles in your application using its own roles and state.
+manager = CommandScopeManager(bot, config=config)
 await manager.setup_all()
+await manager.update_profile(user_id=12345, profile="admin", language="en")
 ```
+
+### Legacy flag-based compatibility
+
+```python
+from aiogram import Bot, Dispatcher
+from aiogram_cmds import CommandScopeManager, load_settings, build_translator_from_i18n
+
+# Load settings from pyproject.toml or use defaults
+settings = load_settings()
+translator = build_translator_from_i18n(i18n)  # Your aiogram i18n instance
+
+# Create manager
+manager = CommandScopeManager(bot, settings=settings, translator=translator)
+
+# Set up all command scopes
+await manager.setup_all()
+
+# Update user commands dynamically
+await manager.update_user_commands(
+    user_id=12345,
+    is_registered=True,
+    has_vehicle=False,
+    user_language="en"
+)
+```
+
+### Failure handling
+
+Manager methods return `True` only after all Telegram operations finish. They
+propagate the original error by default. Code that relied on the old silent
+failure behavior can opt into `CommandScopeManager(bot, best_effort=True)` and
+check the returned boolean (`False` on failure). Cancellation always propagates.
+`setup_commands_auto` also propagates startup failures.
+
+A multi-scope update is sequential: an error can leave earlier scopes updated.
+There is no rollback or automatic retry. Retry deliberately after inspecting the
+error; command-setting calls replace the target scope's commands.
+
+`Flags` and `update_user_commands` remain supported for legacy integrations.
+Generic applications should select a profile themselves and use `update_profile`.
 
 ## 🎯 Use Cases
 
@@ -231,10 +240,16 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - ✅ **Core Features**: Command management, i18n, profiles, scopes
 - ✅ **Documentation**: Comprehensive guides and API reference
 - ✅ **Testing**: Unit, integration, and performance tests
-- ✅ **CI/CD**: Automated testing and deployment
+- ✅ **CI**: Automated verification; deliberate package releases and manual documentation publication
 - 🚧 **Examples**: Working bot examples (in progress)
 - 🔮 **Future**: Rate limiting, caching, advanced analytics
 
 ---
 
 **Made with ❤️ for the aiogram community**
+
+## Contributing and maintenance
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for repository conventions and checks,
+[SECURITY.md](SECURITY.md) for private vulnerability reporting, and
+[docs/releasing.md](docs/releasing.md) for maintainer release instructions.

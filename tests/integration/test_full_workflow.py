@@ -5,6 +5,7 @@ These tests verify complete workflows and interactions between components,
 ensuring the library works correctly in real-world scenarios.
 """
 
+from contextlib import contextmanager, nullcontext
 from unittest.mock import Mock
 
 import pytest
@@ -157,6 +158,7 @@ class TestFullWorkflowIntegration:
         # Mock i18n instance
         mock_i18n = Mock()
         mock_i18n.gettext.return_value = "Translated command"
+        mock_i18n.with_locale.side_effect = lambda locale: nullcontext()
 
         # Use auto-setup
         manager = await setup_commands_auto(
@@ -186,7 +188,21 @@ class TestFullWorkflowIntegration:
         # Create mock i18n with realistic translations
         mock_i18n = Mock()
 
-        def mock_gettext(key, locale):
+        current_locale = "en"
+
+        @contextmanager
+        def with_locale(locale):
+            nonlocal current_locale
+            previous = current_locale
+            current_locale = locale
+            try:
+                yield
+            finally:
+                current_locale = previous
+
+        mock_i18n.with_locale.side_effect = with_locale
+
+        def mock_gettext(key):
             translations = {
                 ("bot.start.desc", "en"): "Start the bot",
                 ("bot.start.desc", "ru"): "Запустить бота",
@@ -195,7 +211,7 @@ class TestFullWorkflowIntegration:
                 ("bot.profile.desc", "en"): "View profile",
                 ("bot.profile.desc", "ru"): "Просмотр профиля",
             }
-            return translations.get((key, locale), key)
+            return translations.get((key, current_locale), key)
 
         mock_i18n.gettext.side_effect = mock_gettext
 
@@ -235,17 +251,12 @@ class TestFullWorkflowIntegration:
 
         manager = CommandScopeManager(bot=mock_bot)
 
-        # These should handle errors gracefully (not crash)
-        await manager.setup_all()  # Should log error but not crash
-        await manager.update_user_commands(
-            user_id=12345,
-            is_registered=True,
-            has_vehicle=False,
-            is_during_registration=False,
-        )  # Should log error but not crash
-        await manager.clear_user_commands(
-            user_id=12345
-        )  # Should log error but not crash
+        with pytest.raises(Exception, match="API Error"):
+            await manager.setup_all()
+        with pytest.raises(Exception, match="API Error"):
+            await manager.update_user_commands(12345, True, False)
+        with pytest.raises(Exception, match="API Error"):
+            await manager.clear_user_commands(12345)
 
 
 class TestMultiLanguageIntegration:

@@ -258,10 +258,11 @@ class TestCommandScopeManager:
 
         manager = CommandScopeManager(bot=mock_bot, config=basic_config)
 
-        # Should not raise exception, but log error
-        await manager.update_user_commands(
-            user_id=12345, is_registered=True, has_vehicle=False, user_language="en"
-        )
+        # API failures propagate by default.
+        with pytest.raises(Exception, match="API Error"):
+            await manager.update_user_commands(
+                user_id=12345, is_registered=True, has_vehicle=False, user_language="en"
+            )
 
     @pytest.mark.asyncio
     async def test_error_handling_in_clear_user_commands(self, mock_bot):
@@ -271,8 +272,8 @@ class TestCommandScopeManager:
 
         manager = CommandScopeManager(bot=mock_bot)
 
-        # Should not raise exception, but log error
-        await manager.clear_user_commands(user_id=12345)
+        with pytest.raises(Exception, match="API Error"):
+            await manager.clear_user_commands(user_id=12345)
 
     @pytest.mark.asyncio
     async def test_error_handling_in_setup_all(self, mock_bot, basic_config):
@@ -282,8 +283,8 @@ class TestCommandScopeManager:
 
         manager = CommandScopeManager(bot=mock_bot, config=basic_config)
 
-        # Should not raise exception, but log error
-        await manager.setup_all()
+        with pytest.raises(Exception, match="API Error"):
+            await manager.setup_all()
 
     def test_logging_in_update_user_commands(self, mock_bot, basic_config, caplog):
         """Test logging in update_user_commands."""

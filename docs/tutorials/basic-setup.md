@@ -379,7 +379,7 @@ Congratulations! You've successfully set up aiogram-cmds. Here's what you can do
 1. **[i18n Integration Tutorial](i18n-integration.md)** - Learn advanced i18n setup
 2. **[Advanced Profiles Tutorial](advanced-profiles.md)** - Create user-specific commands
 3. **[Dynamic Commands Tutorial](dynamic-commands.md)** - Update commands at runtime
-4. **[Examples](../examples/)** - See complete working bots
+4. **[Examples](https://github.com/ArmanAvanesyan/aiogram-cmds/tree/main/examples)** - See complete working bots
 5. **[API Reference](../api/core.md)** - Explore advanced features
 
 ## 💡 Tips

@@ -2,97 +2,50 @@ name: Documentation
 
 on:
   push:
-    branches: [main]
-    paths:
-      - 'docs/**'
-      - 'src/**'
-      - 'mkdocs.yml'
-      - '.github/workflows/docs.yml'
+    branches: [main, 'chore/**']
   pull_request:
     branches: [main]
-    paths:
-      - 'docs/**'
-      - 'src/**'
-      - 'mkdocs.yml'
-      - '.github/workflows/docs.yml'
   workflow_dispatch:
+    inputs:
+      deploy:
+        description: Deploy the verified site to GitHub Pages
+        type: boolean
+        default: false
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: "pages"
-  cancel-in-progress: false
+  group: docs-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  detect-docs-changes:
-    runs-on: ubuntu-latest
-    outputs:
-      docs: ${{ steps.changes.outputs.docs }}
-      src: ${{ steps.changes.outputs.src }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: dorny/paths-filter@v3
-        id: changes
-        with:
-          filters: |
-            docs:
-              - 'docs/**'
-              - 'README.md'
-              - 'mkdocs.yml'
-            src:
-              - 'src/**'
-
   build:
     runs-on: ubuntu-latest
-    needs: detect-docs-changes
-    if: needs.detect-docs-changes.outputs.docs == 'true' || needs.detect-docs-changes.outputs.src == 'true'
+    timeout-minutes: 15
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
         with:
-          python-version: '3.11'
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v3
+          python-version: '3.12'
+      - run: uv sync --frozen --all-extras --all-groups
+      - run: uv run --frozen mkdocs build --strict
+      - uses: actions/upload-artifact@v4
         with:
-          version: "0.8.0"
-
-      - name: Cache UV dependencies
-        uses: actions/cache@v4
+          name: documentation
+          path: site/
+      - uses: actions/upload-pages-artifact@v3
+        if: github.event_name == 'workflow_dispatch' && inputs.deploy && github.ref == 'refs/heads/main'
         with:
-          path: |
-            ~/.cache/uv
-            .venv
-          key: ${{ runner.os }}-uv-docs-${{ hashFiles('**/pyproject.toml', '**/uv.lock', 'mkdocs.yml', 'docs/**') }}
-          restore-keys: |
-            ${{ runner.os }}-uv-docs-
-
-      - name: Install dependencies
-        run: |
-          uv sync --only-group dev
-
-      - name: Build documentation
-        run: |
-          uv run mkdocs build
-
-      - name: Upload artifact
-        if: github.ref == 'refs/heads/main'
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: site
+          path: site/
 
   deploy:
-    if: github.ref == 'refs/heads/main'
+    if: github.event_name == 'workflow_dispatch' && inputs.deploy && github.ref == 'refs/heads/main'
+    needs: build
     runs-on: ubuntu-latest
     environment: pages
-    needs: [detect-docs-changes, build]
+    permissions:
+      pages: write
+      id-token: write
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - uses: actions/deploy-pages@v4

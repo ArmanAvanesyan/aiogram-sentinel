@@ -673,7 +673,7 @@ def get_cached_profile(user_id: int) -> str:
 Congratulations! You've successfully created advanced user profiles. Here's what you can do next:
 
 1. **[Dynamic Commands Tutorial](dynamic-commands.md)** - Update commands at runtime
-2. **[Examples](../examples/)** - See complete profile-based bots
+2. **[Examples](https://github.com/ArmanAvanesyan/aiogram-cmds/tree/main/examples)** - See complete profile-based bots
 3. **[API Reference](../api/configuration.md)** - Explore advanced configuration options
 4. **[Performance Guide](../performance.md)** - Optimize your profile system
 

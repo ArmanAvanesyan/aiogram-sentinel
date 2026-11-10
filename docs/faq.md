@@ -252,7 +252,7 @@ Yes! aiogram-cmds is optimized for performance:
 
 ### How do I optimize for large user bases?
 
-1. Use Redis for multi-worker deployments
+1. Implement application-owned coordination for multiple workers
 2. Cache profile resolutions
 3. Batch command updates
 4. Use appropriate scope hierarchy
@@ -260,11 +260,10 @@ Yes! aiogram-cmds is optimized for performance:
 
 ### Can I use it with multiple workers?
 
-Yes! Use Redis for shared state:
-
-```bash
-pip install aiogram-cmds[redis]
-```
+Applications can use multiple workers, but this package does not coordinate
+concurrent command updates. The optional `redis` extra installs a client only.
+Applications must implement their own shared state, locking and recovery if
+needed; command scopes may otherwise be overwritten by competing workers.
 
 ## 🔒 Security
 
@@ -353,9 +352,9 @@ pytest --cov=src/aiogram_cmds
 ### Where can I find more documentation?
 
 - [Quickstart Guide](quickstart.md) - Get started in 5 minutes
-- [API Reference](api/) - Complete API documentation
-- [Tutorials](tutorials/) - Step-by-step guides
-- [Examples](../examples/) - Working bot examples
+- [API Reference](api/core.md) - Complete API documentation
+- [Tutorials](tutorials/basic-setup.md) - Step-by-step guides
+- [Examples](https://github.com/ArmanAvanesyan/aiogram-cmds/tree/main/examples) - Working bot examples
 
 ### How do I report documentation issues?
 

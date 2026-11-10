@@ -232,7 +232,7 @@ config = CmdsConfig(
 
 - Check out the [Configuration Guide](configuration.md) for detailed options
 - Read the [Architecture](ARCHITECTURE.md) to understand how it works
-- Browse [Examples](../examples/) for complete working bots
+- Browse [Examples](https://github.com/ArmanAvanesyan/aiogram-cmds/tree/main/examples) for complete working bots
 - Explore the [API Reference](api/core.md) for advanced usage
 
 ## 💡 Tips
@@ -245,4 +245,4 @@ config = CmdsConfig(
 
 ---
 
-**Ready for more?** Check out our [Tutorials](tutorials/) for step-by-step guides!
+**Ready for more?** Check out our [Tutorials](tutorials/basic-setup.md) for step-by-step guides!
