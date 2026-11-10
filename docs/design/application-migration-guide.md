@@ -6,6 +6,22 @@ Sentinel 1.2.0, Cmds 0.2.0, Coordination 0.1.0, Nav 0.2.0 and Idle 0.2.0
 are published. Use matching tagged examples with these versions; all release
 artifacts were verified against their PyPI hashes and clean installed profiles.
 
+## Install only what the application needs
+
+```sh
+python -m pip install 'aiogram-sentinel==1.2.0'
+python -m pip install 'aiogram-cmds==0.2.0'
+# Independent memory-backed navigation or inactivity:
+python -m pip install 'aiogram-nav==0.2.0'
+python -m pip install 'aiogram-idle==0.2.0'
+# Combined Redis-backed navigation and inactivity, when both are needed:
+python -m pip install 'aiogram-idle[nav,redis]==0.2.0'
+```
+
+These are alternatives selected by responsibility, not a required bundle.
+Coordination is installed automatically by Nav and Idle; Kit is not a dependency.
+Check each package's extras before choosing optional Sentinel/Cmds backends.
+
 ## Choose only the responsibilities needed
 
 | Package | Library owns | Application owns |
