@@ -49,7 +49,7 @@ See the [Configuration Guide](configuration.md) for detailed examples and option
 
 ## Usage
 
-For detailed usage examples, see the [Tutorials](tutorials/) and [API Reference](api/).
+For detailed usage examples, see the [Tutorials](tutorials/basic-protection.md) and [API Reference](api/core.md).
 
 ### Q: How do I check if a user is rate limited?
 
@@ -113,7 +113,7 @@ For detailed troubleshooting information, see the [Troubleshooting Guide](troubl
 
 ## Integration
 
-For integration examples, see the [Quickstart Guide](quickstart.md) and [Tutorials](tutorials/).
+For integration examples, see the [Quickstart Guide](quickstart.md) and [Tutorials](tutorials/basic-protection.md).
 
 ### Q: How do I integrate with existing aiogram bots?
 
@@ -121,15 +121,15 @@ For integration examples, see the [Quickstart Guide](quickstart.md) and [Tutoria
 
 ### Q: Can I use aiogram-sentinel with other middleware?
 
-**A**: Yes, aiogram-sentinel works with other aiogram middleware. See the [Tutorials](tutorials/) for examples.
+**A**: Yes, aiogram-sentinel works with other aiogram middleware. See the [Tutorials](tutorials/basic-protection.md) for examples.
 
 ### Q: How do I use aiogram-sentinel with webhooks?
 
-**A**: See the [Tutorials](tutorials/) for webhook integration examples.
+**A**: See the [Tutorials](tutorials/basic-protection.md) for webhook integration examples.
 
 ## Advanced Usage
 
-For advanced usage examples, see the [Tutorials](tutorials/) and [API Reference](api/).
+For advanced usage examples, see the [Tutorials](tutorials/basic-protection.md) and [API Reference](api/core.md).
 
 ### Q: How do I create custom storage backends?
 
@@ -137,11 +137,11 @@ For advanced usage examples, see the [Tutorials](tutorials/) and [API Reference]
 
 ### Q: How do I implement custom middleware?
 
-**A**: See the [Tutorials](tutorials/) for custom middleware examples.
+**A**: See the [Tutorials](tutorials/basic-protection.md) for custom middleware examples.
 
 ### Q: How do I handle different scopes for rate limiting?
 
-**A**: Use the `scope` parameter in decorators. See the [Tutorials](tutorials/) for scope handling examples.
+**A**: Use the `scope` parameter in decorators. See the [Tutorials](tutorials/basic-protection.md) for scope handling examples.
 
 ## Security
 

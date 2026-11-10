@@ -65,7 +65,7 @@ print(aiogram_sentinel.__version__)
 
 - See [Quickstart](quickstart.md) to get started
 - Check [Configuration](configuration.md) for setup options
-- Browse [Examples](../examples/) for complete working examples
+- Browse [Examples](https://github.com/ArmanAvanesyan/aiogram-sentinel/tree/main/examples) for complete working examples
 
 ## Optional dependencies and router ownership
 

@@ -66,3 +66,7 @@ TEST_REDIS_URL=redis://localhost:6379/15 REQUIRE_REDIS=1 \
 These endpoint environments verify compatibility; the frozen default environment
 is audited separately. Linux-only locked dependencies are included by running
 the security job on Linux.
+
+Dependency auditing runs on Python 3.11+ because the audit tool's patched
+transitive dependencies require it. Runtime and test support still includes
+Python 3.10.
