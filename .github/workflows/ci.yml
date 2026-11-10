@@ -14,8 +14,8 @@ jobs:
     name: Quality Checks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v7
         with:
           python-version: '3.12'
       - run: uv sync --frozen --all-extras
@@ -43,8 +43,8 @@ jobs:
       TEST_REDIS_URL: redis://localhost:6379/15
       REQUIRE_REDIS: '1'
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ matrix.python }}
       - run: uv sync --frozen --all-extras
@@ -58,10 +58,10 @@ jobs:
     if: github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'skip news')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: astral-sh/setup-uv@v6
+      - uses: astral-sh/setup-uv@v7
         with:
           python-version: '3.12'
       - run: uv sync --frozen --all-extras
@@ -73,8 +73,8 @@ jobs:
     name: Security scans
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v7
         with:
           python-version: '3.12'
       - run: uv sync --frozen --all-extras
@@ -85,7 +85,7 @@ jobs:
         run: uv run --no-sync pip-audit --format json --output pip-audit-report.json
       - name: Upload scan evidence, including failed scans
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: security-reports
           path: |
@@ -96,8 +96,8 @@ jobs:
     name: Distribution and base install
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v7
         with:
           python-version: '3.12'
       - run: uv build
