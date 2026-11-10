@@ -21,6 +21,7 @@ from ...models import (
 )
 from ...policies import ExemptPolicy, IdlePolicy
 from ...storage.codec import decode, encode
+from ...storage.session_bindings import EXTERNAL_SESSION
 from .codec import COMPONENT, OWNER
 from .engine import STAGING
 
@@ -53,7 +54,16 @@ def compose(
             repo.mapping.to_idle(key), SessionSnapshot(session_id, expiry / 1000)
         )
     elif current.session.session_id != session_id:
-        if current.session.expires_at > now or current.idle.operation is not None:
+        external = ledger.external_session
+        old_binding = current.components.get(EXTERNAL_SESSION)
+        external_rotation = (
+            external is not None
+            and isinstance(old_binding, Mapping)
+            and old_binding.get("session_id") != external.session_id
+        )
+        if (
+            current.session.expires_at > now and not external_rotation
+        ) or current.idle.operation is not None:
             raise ActivityConflict("Cannot replace the authoritative live session")
         current = RuntimeSnapshot(
             current.key, SessionSnapshot(session_id, expiry / 1000), components=current.components
@@ -61,6 +71,13 @@ def compose(
     elif COMPONENT not in current.components and current.activity is not None:
         raise ActivityConflict("A standalone activity cannot be adopted implicitly")
     components: dict[str, object] = dict(current.components)
+    if ledger.external_session is not None:
+        external = ledger.external_session
+        components[EXTERNAL_SESSION] = {
+            "session_id": external.session_id,
+            "revision": external.revision,
+            "absolute_expires_at": external.absolute_expires_at,
+        }
     previous_component = components.get(COMPONENT)
     body = dict(value)
     body["reply_overlay"] = reply_overlay

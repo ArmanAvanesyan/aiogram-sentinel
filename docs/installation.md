@@ -3,13 +3,13 @@
 Requires Python 3.10+ and `aiogram>=3.22,<4`.
 
 ```sh
-python -m pip install aiogram-idle==0.1.0
+python -m pip install aiogram-idle==0.2.0
 # Optional standalone Redis backend:
-python -m pip install 'aiogram-idle[redis]==0.1.0'
+python -m pip install 'aiogram-idle[redis]==0.2.0'
 # Optional navigation integration:
-python -m pip install 'aiogram-idle[nav]==0.1.0'
+python -m pip install 'aiogram-idle[nav]==0.2.0'
 # Navigation and Redis together:
-python -m pip install 'aiogram-idle[nav,redis]==0.1.0'
+python -m pip install 'aiogram-idle[nav,redis]==0.2.0'
 ```
 
 Base installations do not install Redis or aiogram-nav. The Redis-only extra does
@@ -25,12 +25,12 @@ uv sync --frozen --python 3.12
 uv run --no-sync python examples/demo.py --help
 ```
 
-Standalone frozen sync works without the peer repository. Regenerating the lock
-or selecting the `nav` extra in this development checkout uses the adjacent
-`../aiogram-nav` source declared in `pyproject.toml`. Clone a compatible navigation
-checkout there before selecting that extra. This source override does not change
-the wheel's dependency metadata or affect pip installation from PyPI. See the
-[integration guide](navigation.md) for the optional combined example.
+Both standalone and optional-extra development resolve published peers from the
+index. No adjacent checkout is required. Use `uv sync --frozen --extra nav` for
+navigation support. For joint development, explicitly install a local peer into
+the environment with `uv pip install -e /absolute/path/to/aiogram-nav` and run
+commands using `uv run --no-sync`; keep that override out of release artifacts and
+the committed lock. See the [integration guide](navigation.md).
 
 Redis storage requires a writable standalone Redis 7+ primary with `noeviction`.
 It does not turn memory FSM or application draft storage into durable storage.

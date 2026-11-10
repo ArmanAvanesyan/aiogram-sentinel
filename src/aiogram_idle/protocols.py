@@ -3,15 +3,15 @@
 from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
-from contextlib import AbstractAsyncContextManager
 from typing import TYPE_CHECKING, Protocol, TypeVar
+
+from aiogram_coordination import Coordinator as Coordinator
+from aiogram_coordination import SessionAuthority as SessionAuthority
 
 from .models import (
     ActionReceipt,
     FlowContext,
     FlowEligibility,
-    IdleConversationKey,
-    SessionSnapshot,
 )
 
 if TYPE_CHECKING:
@@ -49,20 +49,3 @@ class PromptPresenter(Protocol):
     async def show(self, request: PromptRequest) -> PromptReceipt: ...
     async def finish(self, request: FinishRequest) -> DeliveryReceipt: ...
     async def strip(self, receipt: PromptReceipt) -> DeliveryReceipt: ...
-
-
-class Coordinator(Protocol):
-    @property
-    def active_scopes(self) -> int: ...
-    def scope_token(self, key: IdleConversationKey) -> object | None: ...
-    def scope_active(self, token: object) -> bool: ...
-    def scope_matches(self, key: IdleConversationKey, token: object) -> bool: ...
-    def hold(self, key: IdleConversationKey) -> AbstractAsyncContextManager[None]: ...
-
-
-class SessionAuthority(Protocol):
-    async def authorize(
-        self,
-        key: IdleConversationKey,
-        session_id: str,
-    ) -> SessionSnapshot: ...

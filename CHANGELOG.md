@@ -2,6 +2,29 @@
 
 <!-- towncrier release notes start -->
 
+## [0.2.0] - 2026-11-10
+
+### Features
+
+- Add shared task-scoped coordination, verified application isolation,
+  read-only application session authority, immutable activity registrations,
+  coarse analytics adapters and explicit staged Redis format activation. Extend
+  optional Nav integration with manual router placement and application-owned
+  prepared rendering while preserving atomic navigation/activity updates.
+- Require `aiogram-coordination>=0.1.0,<0.2`; the optional integration now uses
+  `aiogram-nav>=0.2.0,<0.3`. Public session authority observations use immutable
+  millisecond expiry contracts; see the 0.2 migration guide before upgrading.
+- Add strict managed-Redis deployment attestation, explicit old-worker-drained
+  format activation, retained-evidence CAS migration and a dry-run-first
+  administrative CLI. Existing format-1 namespaces remain format 1 until activated.
+
+### Bugfixes
+
+- Drain standalone managed idle workers before aiogram closes FSM storage and
+  isolation; preserve uncertain effects and application authority during expiry
+  and outages.
+
+
 ## [0.1.0] - 2026-11-10
 
 ### Miscellaneous

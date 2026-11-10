@@ -54,7 +54,7 @@ class Screens:
         return CleanupResult()
 
 
-def make(*, bot=None, backend=None, policy=None):
+def make(*, bot=None, backend=None, policy=None, session_authority=None):
     clock = backend.clock if backend is not None else ManualClock(1000)
     config = backend.config if backend is not None else IdleConfig(enabled=True)
     backend = backend or MemoryIdleBackend(clock=clock, config=config)
@@ -71,6 +71,7 @@ def make(*, bot=None, backend=None, policy=None):
         presenter=Presenter(clock),
         namespace="test",
         bot=bot,
+        session_authority=session_authority,
     )
     registry = NavigationRegistry(
         roots={"main"},

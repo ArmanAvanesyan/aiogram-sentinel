@@ -113,8 +113,10 @@ class Engine(MemoryIdleBackend):
         config: IdleConfig,
         created_at: float,
         disarm_epoch: str = "",
+        storage_format: int = 1,
     ) -> None:
         super().__init__(clock=ManualClock(now), config=config)
+        self._storage_format = storage_format
         self.key = key
         self.original_job = job
         self.disarm_epoch = disarm_epoch
@@ -196,7 +198,8 @@ class Engine(MemoryIdleBackend):
                 "receipts": self._receipts.items.get(self.key, {}),
                 "pruned_before": self._receipts.pruned_before,
                 "tokens": self._tokens.get(self.key, {}),
-            }
+            },
+            schema_version=self._storage_format,
         )
 
     def job(self) -> str:

@@ -21,6 +21,9 @@ from ..models import (
 )
 from ..policies import IdlePolicy
 from ..protocols import Coordinator
+from .activation import StorageMigrationPage, activate, format_manifest, migrate_records
+from .deployment import RedisDeploymentAttestation
+from .format import StorageActivation
 from .redis_admin import IndexRecovery, IndexRecoveryPage
 from .redis_coordinator import RedisCoordinator
 from .redis_engine import Engine
@@ -51,10 +54,15 @@ class RedisIdleBackend(RedisJobs):
     )
 
     def __init__(
-        self, *, redis: object, prefix: str = "aiogram-idle", config: IdleConfig | None = None
+        self,
+        *,
+        redis: object,
+        prefix: str = "aiogram-idle",
+        config: IdleConfig | None = None,
+        deployment: RedisDeploymentAttestation | None = None,
     ) -> None:
         self.config = config or IdleConfig()
-        self._store = RedisStore(redis, prefix, self.config)
+        self._store = RedisStore(redis, prefix, self.config, deployment)
         self._owns_client = False
         self._index_recovery = IndexRecovery(self._store)
         self.clock: Clock = self._store.clock
@@ -64,7 +72,12 @@ class RedisIdleBackend(RedisJobs):
 
     @classmethod
     def from_url(
-        cls, url: str, *, prefix: str = "aiogram-idle", config: IdleConfig | None = None
+        cls,
+        url: str,
+        *,
+        prefix: str = "aiogram-idle",
+        config: IdleConfig | None = None,
+        deployment: RedisDeploymentAttestation | None = None,
     ) -> RedisIdleBackend:
         """Create a backend; its client is exposed for explicit lifecycle ownership."""
         from redis.asyncio import Redis
@@ -73,6 +86,7 @@ class RedisIdleBackend(RedisJobs):
             redis=Redis.from_url(url, socket_timeout=5, socket_connect_timeout=5),
             prefix=prefix,
             config=config,
+            deployment=deployment,
         )
         backend._owns_client = True
         return backend
@@ -83,6 +97,60 @@ class RedisIdleBackend(RedisJobs):
 
     async def initialize(self) -> None:
         await self._store.initialize()
+
+    async def storage_format(self) -> int:
+        await self.initialize()
+        version, _, _ = await format_manifest(self._store)
+        return version
+
+    async def require_storage_format(self, version: int) -> None:
+        if type(version) is not int or await self.storage_format() != version:
+            raise ConfigurationMismatch("Requested feature requires activated storage format")
+
+    async def activate_storage_format(
+        self,
+        *,
+        operation_id: str,
+        expected: int = 1,
+        target: int = 2,
+        old_workers_drained: bool = False,
+        dry_run: bool = True,
+    ) -> StorageActivation:
+        await self.initialize()
+        return await activate(
+            self._store,
+            expected=expected,
+            target=target,
+            operation_id=operation_id,
+            old_workers_drained=old_workers_drained,
+            dry_run=dry_run,
+            active_scopes=self.coordinator.active_scopes,
+        )
+
+    async def migrate_storage_records(
+        self, *, cursor: str = "0", limit: int = 100, dry_run: bool = True
+    ) -> StorageMigrationPage:
+        return await migrate_records(self._store, cursor=cursor, limit=limit, dry_run=dry_run)
+
+    async def bind_external_session(
+        self,
+        key: IdleConversationKey,
+        *,
+        session_id: str,
+        revision: str,
+        absolute_expires_at: int,
+        operation_id: str,
+    ) -> SessionSnapshot:
+        return await self._store.mutate(
+            key,
+            lambda engine: engine.bind_external_session(
+                key,
+                session_id=session_id,
+                revision=revision,
+                absolute_expires_at=absolute_expires_at,
+                operation_id=operation_id,
+            ),
+        )
 
     def bind_coordinator(self, coordinator: Coordinator) -> None:
         if coordinator is not self.coordinator:

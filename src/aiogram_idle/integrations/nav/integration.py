@@ -7,7 +7,8 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import TYPE_CHECKING
 
-from aiogram import Dispatcher
+from aiogram import Dispatcher, Router
+from aiogram_coordination import BorrowedFsmCoordinator
 from aiogram_nav.config import NavigationConfig
 from aiogram_nav.errors import ConfigurationError as NavigationConfigurationError
 from aiogram_nav.navigation import Navigation
@@ -90,7 +91,9 @@ class NavigationIntegration:
     def validate(self) -> None:
         """Reject changed writer hooks before accepting or executing work."""
         idle, repository = self.idle, self.navigation_repository
-        if type(idle.coordinator) not in {
+        if not isinstance(idle.coordinator, BorrowedFsmCoordinator) and type(
+            idle.coordinator
+        ) not in {
             MemoryCoordinator,
             AiogramMemoryCoordinator,
             RedisCoordinator,
@@ -118,6 +121,8 @@ class NavigationIntegration:
             or navigation.coordinator is not coordinator
             or repository.navigation is not navigation
             or navigation.namespace != idle.namespace
+            or navigation.session_validator != repository.authorize_session
+            or navigation.session_authority is not None
         ):
             raise ConfigurationError("The bound navigation writer configuration changed")
 
@@ -145,6 +150,13 @@ class NavigationIntegration:
             and self.idle.bot.id != navigation.bot.id
         ):
             raise ConfigurationError("Idle and navigation bots differ")
+        if (
+            navigation.session_authority is not None
+            and navigation.session_authority is not self.idle.session_authority
+        ):
+            raise ConfigurationError("Combined runtimes require one SessionAuthority instance")
+        if navigation.session_validator not in {None, self.navigation_repository.authorize_session}:
+            raise ConfigurationError("Combined session validation has another owner")
         if self.idle.bot is None:
             self.idle.bot = navigation.bot
         elif navigation.bot is None:
@@ -153,27 +165,53 @@ class NavigationIntegration:
             navigation.presenter = NavigationPresentation(self, navigation.presenter)
         elif navigation.presenter.integration is not self:
             raise ConfigurationError("Navigation presenter belongs to another integration")
+        navigation.session_authority = None
+        navigation.session_validator = self.navigation_repository.authorize_session
         self.navigation = navigation
         self.navigation_repository.bind_navigation(navigation)
 
     def install(
-        self, dispatcher: Dispatcher, *, navigation: Navigation, lifecycle: bool = True
+        self,
+        dispatcher: Dispatcher,
+        *,
+        navigation: Navigation,
+        lifecycle: bool = True,
+        bindings_mode: str = "automatic",
+        bindings_router: Router | None = None,
+        allow_root_handlers: bool = False,
     ) -> None:
         if self._installed:
             raise ConfigurationError("Navigation integration is already installed")
         from .installation import install, validate_install
 
-        validate_install(self, dispatcher, navigation)
+        validate_install(
+            self,
+            dispatcher,
+            navigation,
+            bindings_mode=bindings_mode,
+            bindings_router=bindings_router,
+            allow_root_handlers=allow_root_handlers,
+        )
         previous = (
             self.navigation,
             self.navigation_repository.navigation,
             navigation.presenter,
             navigation.bot,
             self.idle.bot,
+            navigation.session_authority,
+            navigation.session_validator,
         )
         try:
             self.bind(navigation)
-            install(self, dispatcher, navigation, lifecycle=lifecycle)
+            install(
+                self,
+                dispatcher,
+                navigation,
+                lifecycle=lifecycle,
+                bindings_mode=bindings_mode,
+                bindings_router=bindings_router,
+                allow_root_handlers=allow_root_handlers,
+            )
         except ConfigurationError:
             (
                 self.navigation,
@@ -181,6 +219,8 @@ class NavigationIntegration:
                 navigation.presenter,
                 navigation.bot,
                 self.idle.bot,
+                navigation.session_authority,
+                navigation.session_validator,
             ) = previous
             raise
         self._installed = True

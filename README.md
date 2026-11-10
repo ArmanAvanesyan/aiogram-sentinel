@@ -2,17 +2,42 @@
 
 Standalone inactivity policies for aiogram 3, with typed session/activity contracts and memory or optional Redis storage. Add Continue/Cancel questions or quiet cleanup to ordinary handlers and FSM conversations without adopting a navigation framework.
 
-Version `0.1.0` supports Python 3.10+ and aiogram 3.22 or newer within the 3.x series.
+Version `0.2.0` supports Python 3.10+ and aiogram 3.22 or newer within the 3.x series.
+
+## Compatibility
+
+| Component | Supported / tested |
+| --- | --- |
+| Python | 3.10–3.14 in CI |
+| aiogram | 3.22.0 minimum; latest resolvable 3.x |
+| Redis server | 7 and 8, single writable primary, noeviction |
+| redis-py extra | >=5.0.8,<8; minimum/current in CI |
+| aiogram-coordination | >=0.1.0,<0.2; required, Redis optional |
+| aiogram-nav extra | >=0.2.0,<0.3; never installed by the base package |
+
+Minimum aiogram is tested on Python 3.10–3.13; Python 3.14 uses current
+aiogram because historical dependency wheels do not support it.
+See [testing](docs/testing.md) for actual local evidence versus configured CI.
+
+## Application-owned integration in 0.2
+
+Use `ActivityRegistration` and `idle_context.activate(...)` to enter a flow
+without constructing snapshots. An optional read-only `SessionAuthority`
+binds activity to an existing application session after explicit storage-format
+activation. Public tracked isolation supports verified application locks without
+replacing FSM storage. The [application integration guide](docs/application-integration.md)
+and [0.2 migration](docs/migration-0.2.md) explain setup, authority failures,
+manual navigation routing and staged activation.
 
 ## Install
 
 ```bash
-python -m pip install aiogram-idle==0.1.0
+python -m pip install aiogram-idle==0.2.0
 # Optional standalone Redis backend:
-python -m pip install 'aiogram-idle[redis]==0.1.0'
+python -m pip install 'aiogram-idle[redis]==0.2.0'
 # Optional navigation integration, with or without Redis:
-python -m pip install 'aiogram-idle[nav]==0.1.0'
-python -m pip install 'aiogram-idle[nav,redis]==0.1.0'
+python -m pip install 'aiogram-idle[nav]==0.2.0'
+python -m pip install 'aiogram-idle[nav,redis]==0.2.0'
 ```
 
 The core runtime dependency is aiogram 3. Redis and aiogram-nav are not installed
@@ -93,4 +118,4 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md) and the
 
 MIT. See [LICENSE](LICENSE).
 
-For a source checkout, use the frozen lock for standalone work: `uv sync --frozen` and `uv run --no-sync ...` work with aiogram-nav absent. Regenerating the lock or selecting the nav extra uses the adjacent navigation checkout declared in tool.uv.sources. Installing the base wheel or Redis extra does not require that checkout.
+For a source checkout, use `uv sync --frozen` and `uv run --no-sync ...`. Selecting the nav extra resolves published dependencies; adjacent peer checkouts are not required. See [installation](docs/installation.md) for explicit joint-development overrides.

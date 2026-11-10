@@ -5,8 +5,8 @@ try:
 
     import aiogram_nav
 
-    if re.match(r"^0\.1(?:\.|$)", aiogram_nav.__version__) is None:
-        raise ImportError("Install aiogram-idle[nav] with aiogram-nav>=0.1.0,<0.2")
+    if re.match(r"^0\.2(?:\.|$)", aiogram_nav.__version__) is None:
+        raise ImportError("Install aiogram-idle[nav] with aiogram-nav>=0.2.0,<0.3")
     from .integration import NavigationIntegration
     from .mapping import IdentityMapping
     from .policies import NodePolicies

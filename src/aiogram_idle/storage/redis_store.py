@@ -18,7 +18,9 @@ from ..errors import (
     VersionConflict,
 )
 from ..models import ConfigManifest, IdleConversationKey, RuntimeSnapshot
+from .activation import format_manifest
 from .codec import decode, encode
+from .deployment import RedisDeploymentAttestation, validate_deployment
 from .redis_engine import Engine
 from .redis_quarantine import Quarantine
 from .redis_scripts import COMMIT, CONFIG, CONFIG_READ, INITIALIZE, READ
@@ -43,11 +45,19 @@ def _unbound_fencer(
 
 
 class RedisStore:
-    def __init__(self, redis: object, prefix: str, config: IdleConfig) -> None:
+    def __init__(
+        self,
+        redis: object,
+        prefix: str,
+        config: IdleConfig,
+        deployment: RedisDeploymentAttestation | None = None,
+    ) -> None:
         if not prefix or len(prefix) > 200 or any(char.isspace() for char in prefix):
             raise ValueError("Redis prefix must be a nonempty bounded string without whitespace")
         self.prefix = prefix
         self.config = config
+        self.deployment = deployment
+        self.format_version = 1
         self.clock = RedisClock()
         self.connection = Connection(redis, self.clock)
         self.initialized = False
@@ -81,7 +91,7 @@ class RedisStore:
             f"{self.prefix}:routes",
         ]
 
-    def storage_profile(self) -> str:
+    def storage_profile(self, *, version: int | None = None) -> str:
         values = {
             "recovery_retention_seconds": float(self.config.recovery_retention_seconds),
             "max_conversations": self.config.max_conversations,
@@ -90,37 +100,16 @@ class RedisStore:
             "max_params_bytes": self.config.max_params_bytes,
             "max_components_bytes": self.config.max_components_bytes,
         }
+        selected = self.format_version if version is None else version
+        if selected == 2:
+            values["storage_format"] = 2
         return hashlib.sha256(encode(values).encode()).hexdigest()
 
     async def initialize(self) -> None:
         if self.initialized:
             return
-        info = await self.connection.call("INFO", "server")
-        server = (
-            cast("dict[str, object]", info)
-            if isinstance(info, dict)
-            else dict(line.split(":", 1) for line in text(info).splitlines() if ":" in line)
-        )
-        version = str(server.get("redis_version", "0"))
-        if int(version.split(".")[0]) < 7:
-            raise ConfigurationMismatch("Reliable backend requires Redis 7 or newer")
-        role = array(await self.connection.call("ROLE"))
-        if not role or text(role[0]) != "master":
-            raise ConfigurationMismatch("Redis backend requires a writable primary")
-        cluster = await self.connection.call("INFO", "cluster")
-        if (
-            isinstance(cluster, dict)
-            and cast("dict[str, object]", cluster).get("cluster_enabled") == 1
-        ) or (not isinstance(cluster, dict) and "cluster_enabled:1" in text(cluster)):
-            raise ConfigurationMismatch("Redis Cluster is not supported")
-        eviction = await self.connection.call("CONFIG", "GET", "maxmemory-policy")
-        policy = (
-            cast("dict[str, object]", eviction).get("maxmemory-policy")
-            if isinstance(eviction, dict)
-            else array(eviction)[1]
-        )
-        if text(policy) != "noeviction":
-            raise ConfigurationMismatch("Reliable backend requires maxmemory-policy noeviction")
+        await validate_deployment(self.connection, self.deployment)
+        self.format_version, _, _ = await format_manifest(self)
         await self.connection.time()
         # Namespace history cannot be silently recreated around retained state.
         marker = await self.connection.script(
@@ -242,6 +231,7 @@ class RedisStore:
             config=self.config,
             created_at=self.created_at,
             disarm_epoch=cast(str, self.config_envelope(config)["disarm_epoch"]) if config else "",
+            storage_format=self.format_version,
         )
         engine.original_job = job
         return engine, raw, config

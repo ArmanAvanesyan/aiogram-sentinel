@@ -15,7 +15,7 @@ then read [standalone integration](standalone.md) and [recovery](recovery.md).
 explains state and effect ownership. Use [Redis](redis.md) for multiple processes,
 or [optional navigation](navigation.md) to coordinate navigation and idle activity.
 
-Install `aiogram-idle==0.1.0` from PyPI; select `[redis]`, `[nav]` or `[nav,redis]`
+Install `aiogram-idle==0.2.0` from PyPI; select `[redis]`, `[nav]` or `[nav,redis]`
 when needed. The [release process](releasing.md) remains a separate maintainer action. See
 [testing and compatibility](testing.md) for current checks and
 [verification](verification.md) for dated implementation evidence.
