@@ -85,8 +85,8 @@ hashes match PyPI. Cmds also passed a fresh published standalone API probe.
 
 Coordination implementation and independent review are complete; GitHub CI passed
 at `7dcb06e`. Its GitHub release is a draft and PyPI publication remains pending.
-Nav PR #1 (`820ad034`) passed candidate CI; Idle PR #1 (`c662dd2`) is running
-candidate CI. Both retain explicit development peer sources until Coordination
+Nav PR #1 (`820ad034`) passed candidate CI; Idle PR #1 (`c662dd2`) also passed
+candidate CI, including the optional Nav integration. Both retain explicit development peer sources until Coordination
 is available on PyPI. Their target releases have not been published.
 Registration of its new PyPI Trusted Publisher currently requires owner password
 confirmation; no password is available in the agent browser.
