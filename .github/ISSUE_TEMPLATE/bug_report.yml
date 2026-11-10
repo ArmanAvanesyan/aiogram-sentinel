@@ -1,0 +1,20 @@
+name: Bug report
+description: Report a reproducible navigation or recovery problem.
+body:
+  - type: markdown
+    attributes:
+      value: For sensitive vulnerabilities, follow SECURITY.md. Remove tokens, credentials and private message text.
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Python, aiogram-coordination, aiogram and optional redis-py versions; memory or Redis backend; FSM isolation configuration.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Include expected versus actual behavior and sanitized traceback. For recovery issues, state which effect stages are confirmed or unknown.
+    validations:
+      required: true
