@@ -2,7 +2,7 @@
 
 import math
 from dataclasses import dataclass
-from typing import cast
+from typing import Literal, cast
 
 from .errors import ConfigurationError
 
@@ -10,6 +10,7 @@ from .errors import ConfigurationError
 @dataclass(frozen=True)
 class NavigationConfig:
     root: str | None = None
+    engine: Literal["python", "rust"] = "python"
     session_seconds: float = 3600
     history_limit: int = 20
     recovery_seconds: float = 3600
@@ -19,6 +20,9 @@ class NavigationConfig:
     max_params_bytes: int = 16_384
 
     def __post_init__(self) -> None:
+        from .engine import require_engine
+
+        require_engine(self.engine)
         if self.root is not None and (
             not isinstance(cast(object, self.root), str) or not self.root
         ):

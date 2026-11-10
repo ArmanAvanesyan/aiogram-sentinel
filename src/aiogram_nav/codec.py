@@ -10,6 +10,7 @@ from dataclasses import fields
 from typing import Any, Literal, Union, cast, get_args, get_origin, get_type_hints
 
 from . import models
+from .engine import EngineName, strict_loads
 from .errors import ConfigurationError, SchemaUnsupported
 from .json import freeze_json, freeze_object
 
@@ -32,23 +33,17 @@ _CLASSES: tuple[type[Any], ...] = (
     models.NavigationEvent,
 )
 _NAMES = {cls.__name__: cls for cls in _CLASSES}
+_CLASS_SET = frozenset(_CLASSES)
+_FIELDS = {cls: frozenset(field.name for field in fields(cls)) for cls in _CLASSES}
+_HINTS = {cls: get_type_hints(cls) for cls in _CLASSES}
 
 
 def _bad() -> ConfigurationError:
     return ConfigurationError("Malformed navigation persistence record")
 
 
-def _pairs(items: list[tuple[str, object]]) -> dict[str, object]:
-    result: dict[str, object] = {}
-    for key, value in items:
-        if key in result:
-            raise _bad()
-        result[key] = value
-    return result
-
-
 def encode(value: object, *, max_bytes: int = 8_388_608, schema_version: int = 1) -> str:
-    if type(schema_version) is not int or schema_version not in (1, 2):
+    if type(schema_version) is not int or schema_version not in (1, 2, 3):
         raise SchemaUnsupported("Unsupported navigation persistence schema")
     result = json.dumps(
         {"schema_version": schema_version, "value": encode_value(value)},
@@ -61,14 +56,14 @@ def encode(value: object, *, max_bytes: int = 8_388_608, schema_version: int = 1
     return result
 
 
-def decode(value: str, *, max_bytes: int = 8_388_608) -> object:
+def decode(value: str, *, max_bytes: int = 8_388_608, engine: EngineName = "python") -> object:
     if not isinstance(cast(object, value), str) or len(value.encode()) > max_bytes:
         raise _bad()
     try:
-        root = _mapping(json.loads(value, object_pairs_hook=_pairs))
+        root = _mapping(strict_loads(value, engine=engine, max_bytes=max_bytes))
         if set(root) != {"schema_version", "value"}:
             raise _bad()
-        if type(root["schema_version"]) is not int or root["schema_version"] not in (1, 2):
+        if type(root["schema_version"]) is not int or root["schema_version"] not in (1, 2, 3):
             raise SchemaUnsupported("Unsupported navigation persistence schema")
         return decode_value(root["value"])
     except SchemaUnsupported:
@@ -86,7 +81,7 @@ def encode_value(value: object, *, _depth: int = 0) -> object:
         if not math.isfinite(value):
             raise _bad()
         return value
-    if type(value) in _CLASSES:
+    if type(value) in _CLASS_SET:
         cls = type(value)
         obj = cast(Any, value)
         data = {field.name: getattr(obj, field.name) for field in fields(obj)}
@@ -189,11 +184,11 @@ def _matches(value: object, hint: object) -> bool:
 
 
 def _construct(cls: type[Any], data: dict[str, object]) -> object:
-    if set(data) != {field.name for field in fields(cls)}:
+    if data.keys() != _FIELDS[cls]:
         raise _bad()
     if cls is models.NavigationSnapshot and data["schema_version"] != 1:
         raise SchemaUnsupported("Unsupported navigation snapshot schema")
-    hints = get_type_hints(cls)
+    hints = _HINTS[cls]
     for name, value in data.items():
         if name == "params":
             freeze_object(value)

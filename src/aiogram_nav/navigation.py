@@ -75,6 +75,7 @@ class Navigation:
     ) -> None:
         self.registry, self.repository, self.presenter = registry, repository, presenter
         self.config = config or repository.config
+        self.registry = registry.with_engine(self.config.engine)
         for field in fields(self.config):
             if field.name != "root" and getattr(self.config, field.name) != getattr(
                 repository.config, field.name

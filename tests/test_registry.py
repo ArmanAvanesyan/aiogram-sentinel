@@ -102,3 +102,17 @@ def test_generated_trees_have_explicit_root_reachability():
             nodes[1] = replace(nodes[1], parent=nodes[-1].id)
             with pytest.raises(ConfigurationError):
                 NavigationRegistry(roots={"main"}, nodes=nodes)
+
+
+def test_deep_registry_uses_iterative_graph_index():
+    from aiogram_nav import NavigationRegistry, Node
+
+    nodes = [Node("main", renderer="screen", cancel_to="main")]
+    nodes.extend(
+        Node(f"n{i}", parent="main" if i == 0 else f"n{i - 1}", renderer="screen")
+        for i in range(5000)
+    )
+    registry = NavigationRegistry(roots={"main"}, nodes=nodes)
+    assert registry.root_for("n4999") == "main"
+    assert registry.cancel_target("n4999") == "main"
+    assert len(registry.ancestors("n4999")) == 5001

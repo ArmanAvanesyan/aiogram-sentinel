@@ -7,6 +7,7 @@ from collections.abc import Iterator
 from typing import Protocol
 
 from ..config import NavigationConfig
+from ..engine import native_core
 from ..errors import OperationIdConflict, Overloaded, SessionExpired, StaleView
 from ..models import ConversationKey, NavigationToken, VersionedSnapshot
 from .state import Conversation, TokenRecord, fingerprint
@@ -131,6 +132,20 @@ class MemoryTokens:
         if entry is None or current is None:
             return None
         bound, snapshot = entry.token, current.snapshot
+        if self.config.engine == "rust":
+            valid = native_core().token_matches(
+                repr(bound.key),
+                repr(key),
+                str(bound.actor_id),
+                str(key.user_id),
+                bound.session_id,
+                snapshot.session_id,
+                bound.view_id,
+                snapshot.view.view_id,
+                str(bound.expires_at),
+                str(self._now()),
+            )
+            return entry if valid else None
         if (
             bound.key != key
             or bound.expires_at <= self._now()

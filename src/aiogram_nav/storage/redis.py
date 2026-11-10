@@ -3,12 +3,14 @@
 from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
+from dataclasses import replace
 from typing import Any, Protocol, TypeVar, cast
 
 from aiogram_coordination import ExternalSession
 
 from ..clock import Clock
 from ..config import NavigationConfig
+from ..engine import EngineName
 from ..errors import ConfigurationError, Overloaded
 from ..models import (
     ActionStatus,
@@ -48,10 +50,13 @@ class RedisNavigationRepository:
         redis: object,
         prefix: str = "aiogram-nav",
         config: NavigationConfig | None = None,
+        engine: EngineName | None = None,
         deployment: RedisDeploymentAttestation | None = None,
     ) -> None:
         self.prefix = prefix
         self.config = config or NavigationConfig()
+        if engine is not None:
+            self.config = replace(self.config, engine=engine)
         self._store = RedisStore(redis, prefix, self.config, deployment)
         self.clock: Clock = self._store.clock
         self.coordinator: Coordinator = self._store.coordinator
@@ -64,14 +69,18 @@ class RedisNavigationRepository:
         *,
         prefix: str = "aiogram-nav",
         config: NavigationConfig | None = None,
+        engine: EngineName | None = None,
         deployment: RedisDeploymentAttestation | None = None,
     ) -> RedisNavigationRepository:
+        effective = config or NavigationConfig()
+        if engine is not None:
+            effective = replace(effective, engine=engine)
         try:
             from redis.asyncio import Redis
         except ImportError as error:
             raise ConfigurationError("Install aiogram-nav[redis] to use from_url") from error
         client = cast(Any, Redis).from_url(url, socket_timeout=5, socket_connect_timeout=5)
-        repository = cls(redis=client, prefix=prefix, config=config, deployment=deployment)
+        repository = cls(redis=client, prefix=prefix, config=effective, deployment=deployment)
         repository._owned_client = client
         try:
             await repository.initialize()

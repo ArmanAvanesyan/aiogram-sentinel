@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import heapq
 import json
 from typing import TypeVar, cast
 
 from aiogram_coordination import ExternalSession
 
 from ..codec import decode, encode
+from ..engine import EngineName
 from ..errors import ConfigurationError, SchemaUnsupported
 from ..json import identifier
 from ..models import (
@@ -76,7 +78,7 @@ def dumps(key: ConversationKey, record: Conversation, *, storage_format: int = 1
         },
         tokens={name: _token(value) for name, value in record.tokens.items()},
     )
-    if storage_format == 2:
+    if storage_format >= 2:
         binding = record.external_session
         values["external_session"] = (
             None
@@ -92,14 +94,14 @@ def dumps(key: ConversationKey, record: Conversation, *, storage_format: int = 1
     return encode(values, schema_version=storage_format)
 
 
-def loads(raw: str, key: ConversationKey) -> Conversation:
+def loads(raw: str, key: ConversationKey, *, engine: EngineName = "python") -> Conversation:
     try:
-        decoded = decode(raw)
+        decoded = decode(raw, engine=engine)
     except ConfigurationError as error:
         raise SchemaUnsupported("Malformed Redis navigation persistence") from error
     version = json.loads(raw)["schema_version"]
     names = {"key", "version", "current", "pending_id", "operations", "tokens"}
-    data = _map(decoded, names | ({"external_session"} if version == 2 else set()))
+    data = _map(decoded, names | ({"external_session"} if version >= 2 else set()))
     if _typed(data["key"], ConversationKey) != key:
         raise SchemaUnsupported("Redis conversation identity mismatch")
     record = Conversation(
@@ -107,7 +109,7 @@ def loads(raw: str, key: ConversationKey) -> Conversation:
         _optional(data["current"], VersionedSnapshot),
         _optional(data["pending_id"], str),
     )
-    if version == 2 and data["external_session"] is not None:
+    if version >= 2 and data["external_session"] is not None:
         binding = _map(data["external_session"], {"session_id", "revision", "absolute_expires_at"})
         try:
             record.external_session = ExternalSession(
@@ -246,4 +248,10 @@ def loads(raw: str, key: ConversationKey) -> Conversation:
             raise SchemaUnsupported("Redis unresolved action lost its pending slot")
     if record.current is not None and record.current.version != record.version:
         raise SchemaUnsupported("Redis navigation version mismatch")
+    record.expiry_heap = [
+        (entry.retention_until, operation_id)
+        for operation_id, entry in record.operations.items()
+        if entry.status in {"completed", "failed"}
+    ]
+    heapq.heapify(record.expiry_heap)
     return record

@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import json
 from collections.abc import Collection, Iterable, Mapping
 from types import MappingProxyType
 from typing import cast
 
+from .engine import EngineName, NativeRegistry, native_core, require_engine
 from .errors import ConfigurationError, InvalidParameters, NodeNotFound
 from .json import JsonObject, freeze_object
 from .models import Node
@@ -19,7 +21,11 @@ class NavigationRegistry:
         nodes: Iterable[Node],
         migrations: Mapping[str, str] | None = None,
         safe_root: str | None = None,
+        engine: EngineName = "python",
     ) -> None:
+        require_engine(engine)
+        self.engine = engine
+        self._native: NativeRegistry | None = None
         items = tuple(nodes)
         if any(not isinstance(cast(object, node), Node) for node in items):
             raise ConfigurationError("Registry accepts Node values only")
@@ -30,7 +36,43 @@ class NavigationRegistry:
         self._roots = frozenset(roots)
         self._migrations: Mapping[str, str] = MappingProxyType(dict(migrations or {}))
         self._safe_root = safe_root
+        self._root_ids: dict[str, str] = {}
+        self._cancel_targets: dict[str, str] = {}
+        if engine == "rust":
+            try:
+                self._native = native_core().Registry(
+                    json.dumps(
+                        {
+                            "roots": sorted(self.roots),
+                            "nodes": [
+                                dict(
+                                    id=node.id,
+                                    parent=node.parent,
+                                    renderer=node.renderer,
+                                    back_to=node.back_to,
+                                    cancel_to=node.cancel_to,
+                                )
+                                for node in items
+                            ],
+                            "migrations": dict(self.migrations),
+                            "safe_root": self.safe_root,
+                        }
+                    )
+                )
+            except ValueError as error:
+                raise ConfigurationError(str(error)) from error
         self.validate()
+
+    def with_engine(self, engine: EngineName) -> NavigationRegistry:
+        if engine == self.engine:
+            return self
+        return NavigationRegistry(
+            roots=self.roots,
+            nodes=self.nodes.values(),
+            migrations=self.migrations,
+            safe_root=self.safe_root,
+            engine=engine,
+        )
 
     @property
     def nodes(self) -> Mapping[str, Node]:
@@ -64,6 +106,9 @@ class NavigationRegistry:
         return self.get(target)
 
     def ancestors(self, node_id: str) -> tuple[Node, ...]:
+        if self._native is not None:
+            self.get(node_id)
+            return tuple(self.get(item) for item in self._native.ancestors(node_id))
         node = self.get(node_id)
         result: list[Node] = []
         while True:
@@ -74,16 +119,21 @@ class NavigationRegistry:
         return tuple(result)
 
     def root_for(self, node_id: str) -> str:
-        return self.ancestors(node_id)[-1].id
+        self.get(node_id)
+        return (
+            self._native.root_for(node_id) if self._native is not None else self._root_ids[node_id]
+        )
 
     def back_target(self, node_id: str) -> str | None:
         return self.get(node_id).back_to
 
     def cancel_target(self, node_id: str) -> str:
-        for node in self.ancestors(node_id):
-            if node.cancel_to is not None:
-                return node.cancel_to
-        return self.root_for(node_id)
+        self.get(node_id)
+        return (
+            self._native.cancel_target(node_id)
+            if self._native is not None
+            else self._cancel_targets[node_id]
+        )
 
     def validate_params(
         self, node_id: str, params: Mapping[str, object] | None = None
@@ -100,6 +150,13 @@ class NavigationRegistry:
             raise InvalidParameters("Node parameter validation failed") from exc
 
     def validate(self, renderers: Collection[str] | None = None) -> None:
+        if self._native is not None:
+            if renderers is not None and any(
+                node.renderer is not None and node.renderer not in renderers
+                for node in self._nodes.values()
+            ):
+                raise ConfigurationError("A registry renderer is unavailable")
+            return
         if not self._roots:
             raise ConfigurationError("At least one navigation root is required")
         if not self._roots <= self._nodes.keys():
@@ -110,17 +167,6 @@ class NavigationRegistry:
         for node in self._nodes.values():
             if node.parent is None and node.id not in self._roots:
                 raise ConfigurationError("Every node must reach a configured root")
-            seen: set[str] = set()
-            current = node
-            while True:
-                if current.id in seen:
-                    raise ConfigurationError("Navigation parent graph contains a cycle")
-                seen.add(current.id)
-                if current.parent is None:
-                    break
-                if current.parent not in self._nodes:
-                    raise ConfigurationError("Navigation parent does not exist")
-                current = self._nodes[current.parent]
             for target in (node.back_to, node.cancel_to):
                 if target is not None and (
                     target not in self._nodes or self._nodes[target].renderer is None
@@ -132,6 +178,8 @@ class NavigationRegistry:
                 and node.renderer not in renderers
             ):
                 raise ConfigurationError("A registry renderer is unavailable")
+        if not self._root_ids:
+            self._index_graph()
         if self._safe_root is not None and self._safe_root not in self._roots:
             raise ConfigurationError("safe_root must be a configured root")
         for source, target in self._migrations.items():
@@ -144,6 +192,32 @@ class NavigationRegistry:
                 raise ConfigurationError(
                     "Migrations must explicitly map missing IDs to renderable nodes"
                 )
+
+    def _index_graph(self) -> None:
+        # Each edge is visited once. No recursive DFS or quadratic ancestor cache.
+        for node in self._nodes.values():
+            path: list[Node] = []
+            seen: set[str] = set()
+            current = node
+            while current.id not in self._root_ids:
+                if current.id in seen:
+                    raise ConfigurationError("Navigation parent graph contains a cycle")
+                seen.add(current.id)
+                path.append(current)
+                if current.parent is None:
+                    root = current.id
+                    inherited = root
+                    break
+                if current.parent not in self._nodes:
+                    raise ConfigurationError("Navigation parent does not exist")
+                current = self._nodes[current.parent]
+            else:
+                root = self._root_ids[current.id]
+                inherited = self._cancel_targets[current.id]
+            for ancestor in reversed(path):
+                inherited = ancestor.cancel_to or inherited
+                self._root_ids[ancestor.id] = root
+                self._cancel_targets[ancestor.id] = inherited
 
     def snapshot(self) -> tuple[tuple[str, str | None, str | None, str | None, str | None], ...]:
         """Stable reviewable registry structure, independent of labels/numbering."""

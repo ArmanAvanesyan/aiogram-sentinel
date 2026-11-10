@@ -8,7 +8,7 @@ import asyncio
 import hashlib
 import secrets
 from collections.abc import Awaitable, Callable
-from dataclasses import asdict
+from dataclasses import asdict, replace
 from typing import TypeVar, cast
 
 from ..clock import ManualClock
@@ -61,6 +61,7 @@ class RedisStore:
         self.coordinator = RedisCoordinator(redis=redis, prefix=prefix)
         profile = asdict(config)
         profile.pop("root")
+        profile.pop("engine")
         profile["session_seconds"] = float(config.session_seconds)
         profile["recovery_seconds"] = float(config.recovery_seconds)
         self.profile = encode(profile)
@@ -123,7 +124,7 @@ class RedisStore:
         memory._storage_format = self.storage_format
         raw = text(values[1])
         if raw:
-            memory._records[key] = loads(raw, key)
+            memory._records[key] = loads(raw, key, engine=self.config.engine)
         return raw, memory
 
     async def apply(
@@ -139,7 +140,17 @@ class RedisStore:
             raw, memory = await self.read(key)
             if scope is not None and not self.coordinator.scope_matches(key, scope):
                 raise OwnershipLost("Navigation coordination capability expired")
-            before = loads(raw, key) if raw and deadline is not None else None
+            original = memory._records.get(key)
+            previous_actions = (
+                {name: entry.prepared for name, entry in original.operations.items()}
+                if original is not None and deadline is not None
+                else {}
+            )
+            previous_tokens = (
+                {entry.token.token: replace(entry) for entry in _known_tokens(original)}
+                if original is not None and deadline is not None
+                else {}
+            )
             result = await callback(memory)
             record = memory._records.get(key)
             if prune and record is not None and memory._removable(record):
@@ -154,14 +165,12 @@ class RedisStore:
             except ConfigurationError as error:
                 raise Overloaded("Redis navigation envelope exceeds supported limits") from error
             expires = deadline(result) if deadline is not None and updated != raw else 0
-            if before is not None and isinstance(result, PreparedAction):
-                old = before.operations.get(result.operation_id)
-                if old is not None and old.prepared == result:
+            if isinstance(result, PreparedAction):
+                if previous_actions.get(result.operation_id) == result:
                     expires = 0
-            if before is not None and record is not None and isinstance(result, NavigationToken):
-                old_tokens = [
-                    item for item in _known_tokens(before) if item.token.token == result.token
-                ]
+            if record is not None and isinstance(result, NavigationToken):
+                old = previous_tokens.get(result.token)
+                old_tokens = [old] if old is not None else []
                 new_tokens = [
                     item for item in _known_tokens(record) if item.token.token == result.token
                 ]
