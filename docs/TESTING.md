@@ -49,3 +49,7 @@ CI uploads generated JSON reports as artifacts and fails on findings. Local outp
 are ignored. See the [repository security policy](https://github.com/ArmanAvanesyan/aiogram-cmds/blob/main/SECURITY.md)
 for private reporting guidance. Library tests do not validate application-owned
 Redis persistence, distributed coordination or authorization.
+
+Dependency auditing runs on Python 3.11+ because the audit tool's patched
+transitive dependencies require it. Runtime and test support still includes
+Python 3.10.

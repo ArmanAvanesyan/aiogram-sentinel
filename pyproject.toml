@@ -44,7 +44,7 @@ dev = [
     "pyright>=1.1.0",
     "ruff>=0.1.0",
     "bandit>=1.7.0",
-    "pip-audit>=2.0.0",
+    "pip-audit>=2.9.0; python_version >= '3.11'",
     "build>=1.0.0",
     "twine>=5.0.0",
 ]
