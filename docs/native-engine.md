@@ -8,7 +8,7 @@ engine never adds a local Redis counter cache.
 **Publication is withheld:** the serial qualification failed the required CPU
 improvement gate. The companion remains available from source; there is no
 native release or `[native]` extra. The Python base can ship independently. See
-[measured results and host limitations](../native/BENCHMARKS.md).
+[measured results and host limitations](https://github.com/ArmanAvanesyan/aiogram-sentinel/blob/main/native/BENCHMARKS.md).
 
 The source companion `aiogram-sentinel-native==1.3.0` is built separately with
 Maturin and ABI3 for Python 3.10+. It has no dependency on the base distribution.
