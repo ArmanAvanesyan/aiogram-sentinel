@@ -63,7 +63,13 @@ class Receipts:
                 del receipts[previous]
         duplicate = self.lookup(key, operation_id, digest)
         if duplicate is None and len(receipts) >= self.limit:
-            raise Overloaded("Operation receipt capacity is exhausted")
+            raise Overloaded(
+                "Operation receipt capacity is exhausted",
+                reason="replay_slots",
+                limit=self.limit,
+                used=len(receipts),
+                earliest_safe_expiry=min(receipt.expires_at for receipt in receipts.values()),
+            )
         return duplicate
 
     def save(self, key: Hashable, operation_id: str, digest: str, result: T, *, now: float) -> T:

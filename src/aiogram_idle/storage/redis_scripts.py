@@ -36,9 +36,10 @@ redis.call('SET',KEYS[1],value); return value
 READ = (
     _TYPES
     + r"""
-if not types(KEYS, {'string','string','set','string','string','string'}) then return redis.error_reply('IDLE_INCONSISTENT key type') end
+if not types(KEYS, {'string','string','set','string','string','string','hash'}) then return redis.error_reply('IDLE_INCONSISTENT key type') end
 if not namespace(KEYS[5],ARGV[2],KEYS[4],KEYS[6]) then return redis.error_reply('IDLE_INCONSISTENT namespace history') end
-return {redis.call('GET',KEYS[1]) or '',redis.call('GET',KEYS[2]) or '',redis.call('GET',KEYS[4]) or '',redis.call('SISMEMBER',KEYS[3],ARGV[1])}
+local tm=redis.call('TIME')
+return {redis.call('GET',KEYS[1]) or '',redis.call('GET',KEYS[2]) or '',redis.call('GET',KEYS[4]) or '',redis.call('SISMEMBER',KEYS[3],ARGV[1]),tm[1],tm[2],redis.call('HEXISTS',KEYS[7],ARGV[1])}
 """
 )
 

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "aiogram-idle"
-version = "0.2.0"
+version = "0.2.1"
 description = "Standalone inactivity policies and recoverable conversation prompts for aiogram 3"
 readme = "README.md"
 requires-python = ">=3.10"

@@ -196,11 +196,7 @@ class RedisStore:
     async def read(
         self, key: IdleConversationKey, *, allow_parked: bool = False
     ) -> tuple[Engine, str, str]:
-        now = await self.ready()
-        if not allow_parked and await self.quarantine.contains(key):
-            raise BackendInconsistent(
-                "Redis conversation is parked; explicit administrative release required"
-            )
+        await self.initialize()
         keys = self.keys(key)
         values = array(
             await self.connection.script(
@@ -212,11 +208,18 @@ class RedisStore:
                     keys[4],
                     self.prefix + ":created",
                     self.prefix + ":config-established",
+                    self.prefix + ":parked",
                 ],
                 [self.member(key), self.history],
                 mutation=False,
             )
         )
+        now = int(text(values[4])) + int(text(values[5])) / 1_000_000
+        self.clock.update(now)
+        if not allow_parked and values[6]:
+            raise BackendInconsistent(
+                "Redis conversation is parked; explicit administrative release required"
+            )
         raw, job, config = (text(value) for value in values[:3])
         if not raw and (job or values[3]):
             raise BackendInconsistent(

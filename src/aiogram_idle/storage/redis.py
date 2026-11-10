@@ -7,7 +7,6 @@ from collections.abc import Callable, Mapping
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from ..clock import Clock
 from ..config import IdleConfig
 from ..errors import ConfigurationError, ConfigurationMismatch
 from ..models import (
@@ -29,6 +28,7 @@ from .redis_coordinator import RedisCoordinator
 from .redis_engine import Engine
 from .redis_jobs import RedisJobs
 from .redis_store import RedisStore
+from .redis_transport import RedisClock
 from .state import Claim, ControlToken, OperationLookup
 
 if TYPE_CHECKING:
@@ -65,7 +65,7 @@ class RedisIdleBackend(RedisJobs):
         self._store = RedisStore(redis, prefix, self.config, deployment)
         self._owns_client = False
         self._index_recovery = IndexRecovery(self._store)
-        self.clock: Clock = self._store.clock
+        self.clock: RedisClock = self._store.clock
         coordinator = RedisCoordinator(redis=redis, prefix=prefix)
         self.coordinator: Coordinator = coordinator
         self._store.fencer = coordinator.fencing

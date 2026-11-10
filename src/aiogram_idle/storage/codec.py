@@ -60,7 +60,11 @@ def encode(value: object, *, schema_version: int = 1) -> str:
         sort_keys=True,
     )
     if len(body.encode()) > _MAX_BYTES:
-        raise Overloaded("Idle persistence envelope exceeds supported limits")
+        raise Overloaded(
+            "Idle persistence envelope exceeds supported limits",
+            reason="bytes",
+            size_bytes=len(body.encode()),
+        )
     return body
 
 

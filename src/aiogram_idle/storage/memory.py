@@ -127,7 +127,13 @@ class MemoryIdleBackend(StorageFormats, SessionBindings, ComponentTransactions):
                 self._policies.pop(key, None)
                 self._receipts.items.pop(key, None)
         if len(self._records) >= self.config.max_conversations:
-            raise Overloaded("Conversation capacity is exhausted")
+            raise Overloaded(
+                "Conversation capacity is exhausted",
+                reason="protected_evidence",
+                limit=self.config.max_conversations,
+                used=len(self._records),
+                protected_evidence=len(self._records),
+            )
 
     async def load(self, key: IdleConversationKey) -> RuntimeSnapshot | None:
         async with self._lock:

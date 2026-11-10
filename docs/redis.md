@@ -243,3 +243,27 @@ Retained EFFECT_UNKNOWN or QUARANTINED business operations block ordinary handle
 and public activity replacement until trusted recovery resolves the outcome.
 Do not use clear/enter/touch to discard that evidence. DELIVERY_UNKNOWN still
 supports its separately documented ordinary-activity supersession behavior.
+
+### Storage settings and diagnostics
+
+Retention and storage capacities belong to the backend. If a separately supplied
+runtime configuration differs for `recovery_retention_seconds`,
+`max_conversations`, `max_receipts_per_conversation`, `max_tokens_per_conversation`,
+`max_params_bytes` or `max_components_bytes`, construction raises
+`ConfigurationMismatch` naming the fields. Configure these on the backend and
+copy them into the runtime configuration. Worker concurrency, polling and other
+runtime-only settings may differ.
+
+Completed operation receipts are pruned lazily during admission or maintenance,
+not by advancing a clock alone. Unexpired promised replay results are never evicted
+to make room. `Overloaded` remains the catchable base and retains standard exception
+arguments; available payload-free diagnostics include `reason`, `limit`, `used`,
+`earliest_safe_expiry`, `protected_evidence` and `size_bytes`. Fields that cannot be
+observed safely are `None`. Receipt saturation uses `reason="replay_slots"`.
+
+Redis clock diagnostics distinguish fresh server samples from monotonic
+interpolation: `backend.clock.diagnostics()` on Redis backends reports
+`sample_count`, `sample_age_seconds` and `last_jump_seconds`. A normal `now()` call
+interpolates the last observation and does not increment the sample count. Each
+atomic Redis state read samples `TIME` together with history/configuration and
+parked-state checks; it does not cache away those boundaries.

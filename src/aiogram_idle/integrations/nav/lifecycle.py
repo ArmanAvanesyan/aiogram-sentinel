@@ -47,6 +47,11 @@ def compose(
     snapshot = ledger.current.snapshot if ledger.current else None
     session_id = prepared.session_id if prepared else snapshot.session_id if snapshot else None
     expiry = prepared.expires_at if prepared else snapshot.expires_at if snapshot else None
+    if session_id is None and expiry is None and current is not None:
+        # Abandoning the first prepared view leaves no current/pending Nav view.
+        # The already committed Idle session remains authoritative, including expiry.
+        session_id = current.session.session_id
+        expiry = round(current.session.expires_at * 1000)
     if session_id is None or expiry is None:
         raise ActivityConflict("Navigation component lacks a session generation")
     if current is None:
