@@ -23,7 +23,10 @@ debounce = MemoryDebounce(engine="rust")
 Explicit Rust selection checks the companion's distribution identity, exact
 version and ABI1 capabilities before creating an engine. Missing wheels raise
 `NativeEngineUnavailable`; mismatches raise `NativeEngineIncompatible`. Both are
-configuration errors. A kernel error propagates; no request is replayed against
+configuration errors. Capability fields require exact tuple/string/integer
+types (a boolean is not ABI1), and both complete kernel interfaces are checked
+using fresh empty instances before either backend is exposed. This check never
+calls a state-mutating operation. A kernel error propagates; no request is replayed against
 Python after a native mutation. Do not catch the error and retry with a fresh
 engine: that would discard the limiting history.
 

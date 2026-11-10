@@ -191,3 +191,68 @@ async def test_surrogate_and_composite_key_parity(native):
                 1,
                 1,
             ]
+
+
+@pytest.mark.parametrize("error", [ImportError, OSError])
+def test_unloadable_native_extension(error):
+    with patch(
+        "aiogram_sentinel.native.import_module", side_effect=error("cannot load")
+    ):
+        with pytest.raises(NativeEngineUnavailable):
+            MemoryDebounce(engine="rust")
+
+
+@pytest.mark.parametrize(
+    "capabilities",
+    [
+        ("aiogram-sentinel-native", True, "1.3.0"),
+        ["aiogram-sentinel-native", 1, "1.3.0"],
+        ("aiogram-sentinel-native", 1.0, "1.3.0"),
+    ],
+)
+def test_capability_types_are_exact(capabilities):
+    module = SimpleNamespace(capabilities=lambda: capabilities)
+    with patch("aiogram_sentinel.native.import_module", return_value=module):
+        with pytest.raises(NativeEngineIncompatible):
+            MemoryRateLimiter(engine="rust")
+
+
+@pytest.mark.parametrize(
+    "kind,missing",
+    [
+        *[
+            ("RateLimiterCore", name)
+            for name in (
+                "allow",
+                "remaining",
+                "increment",
+                "count",
+                "reset",
+                "snapshot",
+            )
+        ],
+        *[("DebounceCore", name) for name in ("seen", "set", "active", "snapshot")],
+    ],
+)
+def test_partial_native_core_rejected_before_any_operation(kind, missing):
+    calls = []
+
+    def operation(*args):
+        calls.append(args)
+        raise AssertionError("ABI validation must not call mutating operations")
+
+    rate = dict.fromkeys(
+        ("allow", "remaining", "increment", "count", "reset", "snapshot"), operation
+    )
+    debounce = dict.fromkeys(("seen", "set", "active", "snapshot"), operation)
+    (rate if kind == "RateLimiterCore" else debounce)[missing] = None
+    module = SimpleNamespace(
+        capabilities=lambda: ("aiogram-sentinel-native", 1, "1.3.0"),
+        RateLimiterCore=lambda: SimpleNamespace(**rate),
+        DebounceCore=lambda: SimpleNamespace(**debounce),
+    )
+    with patch("aiogram_sentinel.native.import_module", return_value=module):
+        for backend in (MemoryRateLimiter, MemoryDebounce):
+            with pytest.raises(NativeEngineIncompatible):
+                backend(engine="rust")
+    assert calls == []

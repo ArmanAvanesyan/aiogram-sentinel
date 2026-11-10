@@ -51,10 +51,29 @@ def load_native() -> NativeModule:
         ) from error
     try:
         native = cast(NativeModule, module)
-        if native.capabilities() != ("aiogram-sentinel-native", 1, __version__):
+        capabilities: object = native.capabilities()
+        if (
+            type(capabilities) is not tuple
+            or len(capabilities) != 3
+            or type(capabilities[0]) is not str
+            or type(capabilities[1]) is not int
+            or type(capabilities[2]) is not str
+            or capabilities != ("aiogram-sentinel-native", 1, __version__)
+        ):
             raise ValueError("Native capability/version mismatch")
         if not callable(native.RateLimiterCore) or not callable(native.DebounceCore):
             raise ValueError("Missing native kernel")
+        # Validate the whole ABI before exposing either backend. Construction is
+        # pure: never probe methods by calling operations that could mutate state.
+        for core, methods in (
+            (
+                native.RateLimiterCore(),
+                ("allow", "remaining", "increment", "count", "reset", "snapshot"),
+            ),
+            (native.DebounceCore(), ("seen", "set", "active", "snapshot")),
+        ):
+            if any(not callable(getattr(core, method, None)) for method in methods):
+                raise ValueError("Incomplete native kernel interface")
     except Exception as error:
         raise NativeEngineIncompatible(
             "Rust engine requires matching aiogram-sentinel-native version and ABI1"
