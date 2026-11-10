@@ -1,8 +1,4 @@
-"""Atomic single-process idle storage with bounded recovery evidence.
-
-All public snapshots are immutable. The lock protects only in-memory mutations;
-no await or user callback occurs while state is being changed.
-"""
+"""Atomic single-process idle storage with bounded recovery evidence."""
 
 from __future__ import annotations
 
@@ -43,15 +39,17 @@ from ..protocols import Coordinator
 from .component_transaction import ComponentTransactions, component_deadline
 from .control_tokens import reserve, resolve
 from .coordination import bind, check_manifest
+from .format import StorageFormats
 from .queue import DeadlineQueue
 from .receipts import Receipts, fingerprint, lookup_operation
 from .retention import ensure_activity_mutable, may_prune
+from .session_bindings import SessionBindings
 from .state import Claim, ControlToken, OperationLookup
 
 Policy = ExemptPolicy | PromptPolicy | QuietRestorePolicy
 
 
-class MemoryIdleBackend(ComponentTransactions):
+class MemoryIdleBackend(StorageFormats, SessionBindings, ComponentTransactions):
     """Memory backend. Share one instance within one process only."""
 
     capabilities = frozenset(
@@ -62,6 +60,8 @@ class MemoryIdleBackend(ComponentTransactions):
         self.clock = clock or SystemClock()
         self.config = config or IdleConfig()
         self._created_at = self.clock.now()
+        self._storage_format = 1
+        self._activation_operation: str | None = None
         self._lock = asyncio.Lock()
         self.coordinator: Coordinator = MemoryCoordinator()
         self._records: dict[IdleConversationKey, RuntimeSnapshot] = {}
@@ -497,3 +497,4 @@ class MemoryIdleBackend(ComponentTransactions):
 
     def bind_coordinator(self, coordinator: Coordinator) -> None:
         self.coordinator = bind(self.coordinator, coordinator, has_records=bool(self._records))
+        self._explicit_coordinator = True

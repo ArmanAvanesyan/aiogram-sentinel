@@ -1,13 +1,13 @@
 # Releasing
 
 This maintainer checklist describes deliberate releases. Repository pushes and
-documentation builds do not publish a package. The first release is `0.1.0`.
+documentation builds do not publish a package. The first release is `0.2.0`.
 
 1. Review compatibility, recovery/storage schema changes and dependency boundaries.
    Check the supported Python/aiogram and real-Redis jobs, plus optional navigation
    integration against a compatible peer revision.
 2. Review the fragments in `CHANGES/`. Preview with
-   `uv run --no-sync towncrier build --draft --version 0.1.0`, substituting the
+   `uv run --no-sync towncrier build --draft --version 0.2.0`, substituting the
    intended release version when preparing a future release.
 3. Set the intended version in `pyproject.toml`, the authoritative source. Runtime
    version reporting reads installed distribution metadata. Refresh `uv.lock` and
@@ -30,7 +30,7 @@ documentation builds do not publish a package. The first release is `0.1.0`.
    digest rather than a digest newly downloaded from GitHub:
 
    ```sh
-   gh workflow run publish.yml --ref v0.1.0 -f manifest_sha256=<reviewed-manifest-digest>
+   gh workflow run publish.yml --ref v0.2.0 -f manifest_sha256=<reviewed-manifest-digest>
    ```
 
    The workflow verifies tag/version equality and exact artifact filenames and
@@ -43,3 +43,17 @@ documentation builds do not publish a package. The first release is `0.1.0`.
 Substitute the actual release version consistently. Do not add credentials,
 generated security reports or build output to commits. Repository pushes never
 trigger the manual publication workflow.
+
+## Unpublished peer candidates
+
+Candidate PR verification currently checks out the pinned public coordination
+0.1.0 tag and the reviewed navigation candidate beside this repository. Artifact
+checks build coordination as a normal wheel and explicitly pass it using
+`tools/check_artifacts.py --peer /absolute/path/aiogram_coordination.whl ...`.
+Without `--peer`, the helper remains registry-only. Candidate checks prove artifact
+compatibility with the named peer; they do not prove PyPI availability.
+
+Before release, publish coordination, then navigation; remove both temporary
+`tool.uv.sources` entries, regenerate `uv.lock` against indexed peers, update the
+source-development recipes, and restore ordinary checkout/indexed dependency CI.
+Run registry-only artifact and optional-extra installs before publishing idle.

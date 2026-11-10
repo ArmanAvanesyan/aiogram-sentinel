@@ -9,11 +9,13 @@ from collections.abc import Awaitable, Callable, Mapping
 from dataclasses import replace
 from typing import TYPE_CHECKING
 
+from aiogram_coordination import ExternalSession, SessionAuthority
+
 from .activity import IdleContext
 from .compat import bounded
 from .config import IdleConfig
 from .controls import ControlContext, ControlResult
-from .errors import ConfigurationError, ConfigurationMismatch
+from .errors import ConfigurationError, ConfigurationMismatch, SessionExpired
 from .events import EventSink, emit
 from .machine import Trigger, reduce_phase
 from .models import (
@@ -58,6 +60,7 @@ class IdleRuntime:
         dependencies: DependencyFactory | None = None,
         locale_resolver: Callable[[IdleConversationKey], Awaitable[str]] | None = None,
         on_event: EventSink | None = None,
+        session_authority: SessionAuthority | None = None,
         bot: Bot | None = None,
     ) -> None:
         presenter_bot = presenter.bot if isinstance(presenter, TelegramPromptPresenter) else None
@@ -71,10 +74,14 @@ class IdleRuntime:
         self.presenter = presenter
         self.config = config or backend.config
         self.namespace = namespace
+        self._explicit_coordinator = isolation is not None or getattr(
+            backend, "_explicit_coordinator", False
+        )
         if isolation is not None:
             backend.bind_coordinator(isolation)
         self.dependencies = dependencies
         self.on_event = on_event
+        self._session_authority = session_authority
         self.locale_resolver = locale_resolver
         # Optional generic component hooks are registered before startup by a
         # transaction-owning integration. Core never interprets its payload.
@@ -98,6 +105,10 @@ class IdleRuntime:
         self.worker = IdleWorker(self)
 
     @property
+    def session_authority(self) -> SessionAuthority | None:
+        return self._session_authority
+
+    @property
     def component_validator(self) -> Callable[[], None] | None:
         return self._component_validator
 
@@ -113,6 +124,7 @@ class IdleRuntime:
 
     @coordinator.setter
     def coordinator(self, value: Coordinator) -> None:
+        self._explicit_coordinator = True
         self.backend.bind_coordinator(value)
 
     def adapter(self, key: str) -> FlowAdapter:
@@ -126,6 +138,18 @@ class IdleRuntime:
         if not locale or len(locale) > 32:
             raise ConfigurationError("Locale resolver returned an invalid locale")
         return locale
+
+    async def external_session(self, key: IdleConversationKey) -> ExternalSession:
+        from .sessions import current_external
+
+        return await current_external(self, key)
+
+    async def authorize(
+        self, record: RuntimeSnapshot, *, observation: ExternalSession | None = None
+    ) -> ExternalSession | None:
+        from .sessions import authorize
+
+        return await authorize(self, record, observation=observation)
 
     async def initialize(self) -> None:
         if self.component_validator is not None:
@@ -234,6 +258,13 @@ class IdleRuntime:
                 or context.actor_id != context.key.user_id
             ):
                 return ControlResult(False, "stale")
+            try:
+                await self.authorize(record)
+            except SessionExpired:
+                from .sessions import retire
+
+                await retire(self, record)
+                return ControlResult(False, "expired")
             owner = record.components.get("__idle_owner__")
             if isinstance(owner, Mapping) and owner.get("pending") is True:
                 return ControlResult(False, "busy")

@@ -45,6 +45,10 @@ class PersistenceUnavailable(IdleError):
     """The authoritative backend is unavailable."""
 
 
+class SessionAuthorityUnavailable(PersistenceUnavailable):
+    """Application session lookup failed; no expiration may be inferred."""
+
+
 class CommitUnknown(PersistenceUnavailable):
     """A backend mutation may have committed; lookup before retrying effects."""
 

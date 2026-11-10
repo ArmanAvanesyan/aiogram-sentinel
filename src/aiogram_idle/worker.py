@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 
 from .compat import bounded
 from .effects import OperationEffects, internal_id
-from .errors import ConfigurationError, EffectUnknown, IdleError, OwnershipLost
+from .errors import ConfigurationError, EffectUnknown, IdleError, OwnershipLost, SessionExpired
 from .machine import Trigger, reduce_phase
 from .models import (
     ActionReceipt,
@@ -114,6 +114,13 @@ class IdleWorker:
             await self.record_failure(current, exc, claim)
 
     async def _execute(self, record: RuntimeSnapshot, claim: Claim | None) -> None:
+        try:
+            await self.runtime.authorize(record)
+        except SessionExpired:
+            from .sessions import retire
+
+            await retire(self.runtime, record, claim=claim)
+            return
         if self.runtime.component_validator is not None:
             self.runtime.component_validator()
         recovery = self.runtime.component_recovery

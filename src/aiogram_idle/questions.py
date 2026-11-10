@@ -37,12 +37,14 @@ async def deliver_question(
         return
     context = await self.context(record, effects)
     eligibility = await self.runtime.adapter(record.activity.adapter_key).inspect(context)
+    external = await self.runtime.authorize(record)
     policy = await self.runtime.backend.frozen_policy(record.key)
     # Reserved prompt state invariant.
     assert isinstance(policy, PromptPolicy)  # nosec B101
     expiry = min(
         record.session.expires_at,
         record.activity.expires_at,
+        external.expires_at / 1000 if external is not None else record.session.expires_at,
         (
             eligibility.expires_at
             if eligibility.expires_at is not None

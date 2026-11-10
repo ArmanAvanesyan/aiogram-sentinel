@@ -82,6 +82,10 @@ async def apply(
     for _ in range(16):
         current = await repo.idle.backend.load(idle_key)
         memory = reducer(repo, key, current)
+        from .sessions import binding, observe, seed
+
+        external = await observe(repo, key)
+        await seed(repo, key, current, memory, external)
         old_ledger = memory._records.get(key)
         old_ids: set[str] = set(old_ledger.operations) if old_ledger else set()
         previous_nav = (
@@ -98,7 +102,18 @@ async def apply(
         if isinstance(result, PreparedAction) and result.operation_id not in old_ids:
             expiry = result.expires_at
             session_id = result.session_id
-            if current is not None and current.session.expires_at > repo.idle.clock.now():
+            source_binding = binding(current)
+            if (
+                current is not None
+                and current.session.expires_at > repo.idle.clock.now()
+                and (
+                    external is None
+                    or (
+                        source_binding is not None
+                        and source_binding.get("session_id") == external.session_id
+                    )
+                )
+            ):
                 session_id = current.session.session_id
                 cap = int(current.session.expires_at * 1000)
                 if result.intent.expires_at is not None and expiry > cap:
@@ -173,6 +188,8 @@ async def apply(
             and ledger.operations[completed_operation].prepared is not None
         ):
             reply_overlay = False
+        if external is not None:
+            ledger.external_session = replace(external, idle_expires_at=None)
         value = save_component(ledger, key, expected_profile=repo.profile)
         if old_raw == value["ledger"]:
             if scope is not None and not repo.coordinator.scope_matches(key, scope):

@@ -12,6 +12,95 @@ mode and eviction policy, so the connection must be authorized for `INFO`, `ROLE
 and `CONFIG GET` as well as the backend data and scripting commands. Redis
 Cluster is currently rejected.
 
+In managed environments, denied introspection requires an explicit operator
+attestation rather than a general "skip checks" switch:
+
+```python
+from aiogram_idle import RedisDeploymentAttestation
+from aiogram_idle.storage.redis import RedisIdleBackend
+
+deployment = RedisDeploymentAttestation(
+    server_major=7,
+    writable_primary=True,
+    cluster_enabled=False,
+    maxmemory_policy="noeviction",
+    operator_reference="reviewed infrastructure change identifier",
+)
+backend = RedisIdleBackend(redis=redis, prefix="my-bot:idle", deployment=deployment)
+```
+
+The library still attempts each inspection. Only a Redis ACL permission denial
+permits the corresponding attested fact to be substituted. Connection failures,
+malformed responses and observed unsafe facts still fail closed. The reference
+records which infrastructure configuration was reviewed; it must not contain a
+credential. A new primary or infrastructure change requires the operator to
+recheck these facts. Actual writes and Lua scripts must still be permitted.
+
+## Redis ACL and durability
+
+The backend requires `TIME`, `GET`, `SET`, `DEL`, `EXISTS`, `TYPE`, `PTTL`,
+`PEXPIRE`, `EVAL`, `EVALSHA`, `SCRIPT LOAD`, `SADD`, `SREM`, `SCARD`,
+`SISMEMBER`, `SSCAN`, `SCAN`, `HGET`, `HSET`, `HDEL`, `HEXISTS`, `HLEN`,
+`HSCAN`, `ZADD`, `ZREM`, `ZCARD`, `ZRANGE` and `ZRANGEBYSCORE` for its namespace,
+including conversation locks. Lua execution needs permission for its constituent
+commands. Strict deployment checks also require `INFO server`, `INFO cluster`,
+`ROLE` and `CONFIG GET maxmemory-policy`. Administrative ACL creation/deletion
+belongs to the operator, not the backend.
+
+Configure persistence and replication for the application's durability needs.
+`noeviction` prevents memory-pressure eviction; it does not guarantee that a
+crashed primary's last acknowledged writes survive failover. There is no Redis
+Cluster support or memory fallback. Caller-supplied clients remain caller-owned;
+`from_url` creates a client closed by the backend.
+
+## Staged 0.1 to 0.2 storage activation
+
+Version 0.2 reads envelope formats 1 and 2, but continues writing format 1 until
+explicit activation. External application-session binding requires format 2.
+Conversation identity encoding and Redis key names never change.
+
+Roll out 0.2 in compatibility mode first. Stop idle pollers, drain protected
+handlers and remove every 0.1 writer before activation. Take a Redis backup, then
+initialize a 0.2 backend and assess the namespace:
+
+```python
+report = await backend.activate_storage_format(operation_id="upgrade-0.2")
+assert report.dry_run
+await backend.activate_storage_format(
+    operation_id="upgrade-0.2", old_workers_drained=True, dry_run=False
+)
+```
+
+Activation refuses active claims or local scopes. It atomically records the
+stable operation ID and rotates the namespace profile/history, preserving the
+original creation timestamp. Existing 0.1 writers lose their old history fence;
+0.1 startup cannot accept the new profile. Reopen all other backend instances
+after activation. A lost activation response can be retried with the same ID;
+another ID cannot silently claim that administrative operation. Repeated Redis
+activation returns `changed=False` with unassessed statistics set to `None`, not
+a false claim that the namespace contains zero records.
+
+Activation does not rewrite or delete conversations, claims, policies or operation
+receipts. Format-1 records are rewritten to format 2 on their next normal CAS
+mutation. A bounded administrative pass can assess or convert dormant records:
+
+```python
+page = await backend.migrate_storage_records(cursor="0", limit=100)
+page = await backend.migrate_storage_records(cursor="0", limit=100, dry_run=False)
+# Continue with page.cursor until it is "0". Repeated pages are safe.
+```
+
+Migration preserves uncertain effects, control tokens, receipts and deadlines;
+it invokes no presenter, business callback or Telegram API. The corresponding
+`tools/storage_format.py` command reads `AIOGRAM_IDLE_REDIS_URL` from the
+environment and defaults to assessment. Run `--help` for activation, bounded
+migration and optional attestation-file arguments.
+
+Before activation, binaries may be rolled back without format migration. After
+activation, do not run 0.1 against that namespace. Use a compatible forward fix
+or a coordinated restore from the pre-activation backup; never erase unresolved
+effect evidence to make a downgrade start.
+
 The Redis backend implements the same idle-owned session, activity, control-token,
 operation receipt and deadline contracts as memory storage. It does not depend on
 `aiogram-nav`. Applications can use commands, reply keyboards, inline keyboards,

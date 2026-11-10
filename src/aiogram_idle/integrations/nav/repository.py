@@ -119,6 +119,11 @@ class NavigationRepository:
         except IdleError as error:
             raise navigation_error(error) from error
 
+    async def authorize_session(self, key: ConversationKey, expected_session_id: str | None = None):
+        from .sessions import authorize
+
+        return await authorize(self, key, expected_session_id)
+
     async def load(self, key: ConversationKey) -> VersionedSnapshot | None:
         from .overlay import visible
 
@@ -126,6 +131,9 @@ class NavigationRepository:
             await self.idle.initialize()
             record = await self.idle.backend.load(self.mapping.to_idle(key))
             memory = reducer(self, key, record)
+            from .sessions import observe, seed
+
+            await seed(self, key, record, memory, await observe(self, key))
             return visible(await memory.load(key), record)
         except IdleError as error:
             raise navigation_error(error) from error

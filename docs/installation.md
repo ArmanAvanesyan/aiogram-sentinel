@@ -3,13 +3,13 @@
 Requires Python 3.10+ and `aiogram>=3.22,<4`.
 
 ```sh
-python -m pip install aiogram-idle==0.1.0
+python -m pip install aiogram-idle==0.2.0
 # Optional standalone Redis backend:
-python -m pip install 'aiogram-idle[redis]==0.1.0'
+python -m pip install 'aiogram-idle[redis]==0.2.0'
 # Optional navigation integration:
-python -m pip install 'aiogram-idle[nav]==0.1.0'
+python -m pip install 'aiogram-idle[nav]==0.2.0'
 # Navigation and Redis together:
-python -m pip install 'aiogram-idle[nav,redis]==0.1.0'
+python -m pip install 'aiogram-idle[nav,redis]==0.2.0'
 ```
 
 Base installations do not install Redis or aiogram-nav. The Redis-only extra does

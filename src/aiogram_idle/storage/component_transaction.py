@@ -34,6 +34,7 @@ from .coordination import check_manifest
 from .receipts import Receipts
 from .receipts import fingerprint as value_fingerprint
 from .retention import PENDING_PHASES
+from .session_bindings import EXTERNAL_SESSION
 from .state import Claim
 
 if TYPE_CHECKING:
@@ -82,6 +83,7 @@ class ComponentOwner(Protocol):
     _policies: dict[IdleConversationKey, IdlePolicy]
     _queue: DeadlineQueue
 
+    async def require_storage_format(self, version: int) -> None: ...
     def _now(self) -> float: ...
     def _capacity(self) -> None: ...
     def _save(self, record: RuntimeSnapshot, *, claim: Claim | None = None) -> RuntimeSnapshot: ...
@@ -123,6 +125,20 @@ class ComponentTransactions:
             or len(fingerprint) > 256
         ):
             raise ConfigurationError("Component fingerprint must contain 1 to 256 characters")
+        external = record.components.get(EXTERNAL_SESSION)
+        if external is not None:
+            await self.require_storage_format(2)
+            if (
+                not isinstance(external, Mapping)
+                or set(external) != {"session_id", "revision", "absolute_expires_at"}
+                or not isinstance(external["session_id"], str)
+                or not external["session_id"]
+                or not isinstance(external["revision"], str)
+                or not external["revision"]
+                or type(external["absolute_expires_at"]) is not int
+                or record.session.expires_at != external["absolute_expires_at"] / 1000
+            ):
+                raise ConfigurationError("Malformed external session component binding")
         marker = ownership(record)
         if marker is None or marker["component"] != component or component not in record.components:
             raise ConfigurationError("Component commit requires its ownership marker and payload")
@@ -155,6 +171,20 @@ class ComponentTransactions:
             if previous is None:
                 self._capacity()
             else:
+                old_external = previous.components.get(EXTERNAL_SESSION)
+                external_rotation = (
+                    isinstance(external, Mapping)
+                    and isinstance(old_external, Mapping)
+                    and external.get("session_id") != old_external.get("session_id")
+                )
+                if (
+                    isinstance(external, Mapping)
+                    and isinstance(old_external, Mapping)
+                    and not external_rotation
+                    and external.get("absolute_expires_at")
+                    != old_external.get("absolute_expires_at")
+                ):
+                    raise ActivityConflict("Application absolute expiry changed")
                 old_marker = ownership(previous)
                 if old_marker is not None and old_marker["component"] != component:
                     raise ActivityConflict("Another component owns this activity slot")
@@ -174,19 +204,31 @@ class ComponentTransactions:
                     raise ActivityConflict(
                         "Staged components cannot replace the idle operation or activity"
                     )
-                if set(record.components) - set(previous.components) - {component, OWNER_COMPONENT}:
+                if (
+                    set(record.components)
+                    - set(previous.components)
+                    - {component, OWNER_COMPONENT, EXTERNAL_SESSION}
+                ):
                     raise ActivityConflict("Component commit added an unrelated slot")
                 if (
                     previous.session.session_id == record.session.session_id
                     and previous.session.expires_at != record.session.expires_at
                 ):
                     raise ActivityConflict("Component commit cannot change absolute session expiry")
-                if previous.session != record.session and previous.session.expires_at > now:
+                if (
+                    previous.session != record.session
+                    and previous.session.expires_at > now
+                    and not external_rotation
+                ):
                     raise ActivityConflict("Component commit cannot replace a live session")
                 for name, value in previous.components.items():
-                    if name not in {component, OWNER_COMPONENT} and value_fingerprint(
-                        record.components.get(name)
-                    ) != value_fingerprint(value):
+                    if name not in {
+                        component,
+                        OWNER_COMPONENT,
+                        EXTERNAL_SESSION,
+                    } and value_fingerprint(record.components.get(name)) != value_fingerprint(
+                        value
+                    ):
                         raise ActivityConflict("Component commit changed an unrelated slot")
             if record.activity is not None:
                 activity = record.activity

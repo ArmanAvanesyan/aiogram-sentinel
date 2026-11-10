@@ -49,10 +49,12 @@ def _bad() -> BackendInconsistent:
     return BackendInconsistent("malformed persisted idle record")
 
 
-def encode(value: object) -> str:
+def encode(value: object, *, schema_version: int = 1) -> str:
     """Encode a supported record or string-keyed envelope, without lossy coercion."""
+    if type(schema_version) is not int or schema_version not in (1, 2):
+        raise SchemaUnsupported("unsupported persistence schema")
     body = json.dumps(
-        {"schema_version": 1, "value": encode_value(value)},
+        {"schema_version": schema_version, "value": encode_value(value)},
         allow_nan=False,
         separators=(",", ":"),
         sort_keys=True,
@@ -72,7 +74,7 @@ def _pairs(items: list[tuple[str, object]]) -> dict[str, object]:
 
 
 def decode(text: str) -> object:
-    """Decode only schema 1; corruption fails closed, without dynamic imports."""
+    """Decode supported schema 1 or 2; corruption fails closed, without dynamic imports."""
     if not isinstance(cast(object, text), str) or len(text.encode()) > _MAX_BYTES:
         raise _bad()
     try:
@@ -81,7 +83,7 @@ def decode(text: str) -> object:
         if set(root) != {"schema_version", "value"}:
             raise _bad()
         version = root["schema_version"]
-        if type(version) is not int or version != 1:
+        if type(version) is not int or version not in (1, 2):
             raise SchemaUnsupported("unsupported persistence schema")
         return decode_value(root["value"])
     except SchemaUnsupported:

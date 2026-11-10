@@ -131,6 +131,7 @@ class OperationEffects:
             raise EffectUnknown("Unconfirmed effect cannot be replayed")
         if state == "confirmed":
             return cast(T, decode_result(operation.effects.get(f"result:{stage}")))
+        await self.runtime.authorize(record)
         if min(record.session.expires_at, record.activity.expires_at) <= self.runtime.clock.now():
             raise OwnershipLost("Logical activity expired before an external stage")
         if state != "started":
@@ -142,6 +143,12 @@ class OperationEffects:
             raise OwnershipLost("Logical activity expired before an external stage")
         if self.claim is not None:
             await self.runtime.backend.validate_claim(self.claim)
+        try:
+            await self.runtime.authorize(record)
+        except Exception:
+            if state != "started":
+                await self.checkpoint(stage, "not_sent")
+            raise
         if self.before_effect is not None:
             try:
                 self.before_effect(record, stage)

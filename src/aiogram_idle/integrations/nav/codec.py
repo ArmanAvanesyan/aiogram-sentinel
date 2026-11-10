@@ -73,6 +73,12 @@ def save_component(
     ledger: Conversation, key: ConversationKey, *, expected_profile: str
 ) -> JsonObject:
     return freeze_object(
-        {"schema": 1, "profile": expected_profile, "ledger": dumps(key, ledger)},
+        {
+            "schema": 1,
+            "profile": expected_profile,
+            "ledger": dumps(
+                key, ledger, storage_format=2 if ledger.external_session is not None else 1
+            ),
+        },
         max_bytes=8_388_608,
     )

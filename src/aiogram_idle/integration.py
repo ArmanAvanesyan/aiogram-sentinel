@@ -11,6 +11,7 @@ from aiogram.fsm.storage.base import KeyBuilder, StorageKey
 from aiogram.fsm.storage.memory import DisabledEventIsolation, SimpleEventIsolation
 from aiogram.fsm.strategy import FSMStrategy
 from aiogram.types import CallbackQuery, Message, TelegramObject, Update
+from aiogram_coordination import BorrowedFsmCoordinator, TrackedEventIsolation
 
 from .controls import ControlContext, ControlResult, handle_control
 from .coordinator import AiogramMemoryCoordinator, MemoryCoordinator
@@ -18,7 +19,6 @@ from .errors import ConfigurationError, UnsupportedContext
 from .models import IdleConversationKey, RuntimeSnapshot
 from .presentation import PromptReceipt, PromptTexts, TelegramPromptPresenter
 from .protocols import Coordinator, PromptPresenter
-from .storage.redis_coordinator import RedisCoordinator
 
 MiddlewareHandler = Callable[[TelegramObject, dict[str, Any]], Awaitable[Any]]
 
@@ -67,7 +67,7 @@ class IdleContextMiddleware(BaseMiddleware):
         runtime: IntegrationRuntime,
         *,
         fsm_enabled: bool = False,
-        fsm_isolation: SimpleEventIsolation | None = None,
+        fsm_isolation: SimpleEventIsolation | TrackedEventIsolation | None = None,
         dispatcher: Dispatcher | None = None,
     ) -> None:
         self.runtime = runtime
@@ -111,14 +111,7 @@ class IdleContextMiddleware(BaseMiddleware):
                 raise ConfigurationError("FSM and idle conversation identities differ")
         if (
             self.fsm_enabled
-            and isinstance(coordinator, AiogramMemoryCoordinator)
-            and coordinator.isolation is self.fsm_isolation
-            and isinstance(state, FSMContext)
-        ):
-            scope = coordinator.borrowed(key)
-        elif (
-            self.fsm_enabled
-            and isinstance(coordinator, RedisCoordinator)
+            and isinstance(coordinator, BorrowedFsmCoordinator)
             and coordinator.fsm_isolation is self.fsm_isolation
             and self.fsm_isolation is not None
             and isinstance(state, FSMContext)
@@ -188,22 +181,32 @@ def install(
     distributed = getattr(runtime.coordinator, "distributed", False) is True
     if distributed:
         _validate_fsm_storage(dispatcher)
-    if isinstance(isolation, SimpleEventIsolation) and isinstance(
-        runtime.coordinator, RedisCoordinator
+    if isinstance(isolation, (SimpleEventIsolation, TrackedEventIsolation)) and isinstance(
+        runtime.coordinator, BorrowedFsmCoordinator
     ):
         runtime.coordinator.configure_fsm_isolation(isolation)
-    elif isinstance(isolation, SimpleEventIsolation) and not distributed:
+    elif isinstance(isolation, (SimpleEventIsolation, TrackedEventIsolation)) and not distributed:
         current = runtime.coordinator
         if isinstance(current, AiogramMemoryCoordinator):
             if current.isolation is not isolation:
                 raise ConfigurationError(
                     "Shared idle storage requires the same FSM isolation instance"
                 )
-        else:
+        elif type(current) is MemoryCoordinator and not (
+            getattr(runtime, "_explicit_coordinator", False)
+            or getattr(getattr(runtime, "backend", None), "_explicit_coordinator", False)
+        ):
             runtime.coordinator = AiogramMemoryCoordinator(isolation)
-    elif isinstance(isolation, SimpleEventIsolation) and distributed:
+        else:
+            raise ConfigurationError(
+                "Application coordinators must implement BorrowedFsmCoordinator; "
+                "the supplied coordinator cannot be replaced implicitly"
+            )
+    elif isinstance(isolation, (SimpleEventIsolation, TrackedEventIsolation)) and distributed:
         raise ConfigurationError("Distributed FSM isolation requires a verified RedisCoordinator")
-    elif not isinstance(isolation, (DisabledEventIsolation, SimpleEventIsolation)):
+    elif not isinstance(
+        isolation, (DisabledEventIsolation, SimpleEventIsolation, TrackedEventIsolation)
+    ):
         raise ConfigurationError(
             "Unsupported FSM isolation; configure an explicitly supported integration"
         )
@@ -214,7 +217,9 @@ def install(
         IdleContextMiddleware(
             runtime,
             fsm_enabled=any(item is dispatcher.fsm for item in dispatcher.update.outer_middleware),
-            fsm_isolation=isolation if isinstance(isolation, SimpleEventIsolation) else None,
+            fsm_isolation=isolation
+            if isinstance(isolation, (SimpleEventIsolation, TrackedEventIsolation))
+            else None,
             dispatcher=dispatcher,
         )
     )
@@ -229,6 +234,9 @@ def install(
 
         dispatcher.startup.register(startup)
         dispatcher.shutdown.register(shutdown)
+        # aiogram registered FSM.close during Dispatcher construction. Stop
+        # workers before their borrowed isolation and storage are closed.
+        dispatcher.shutdown.handlers.insert(0, dispatcher.shutdown.handlers.pop())
 
 
 def _bind_bot(runtime: IntegrationRuntime, bot: Bot) -> None:

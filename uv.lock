@@ -34,11 +34,44 @@ wheels = [
 ]
 
 [[package]]
-name = "aiogram-idle"
+name = "aiogram-coordination"
 version = "0.1.0"
+source = { editable = "../aiogram-coordination" }
+dependencies = [
+    { name = "aiogram" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "aiogram", specifier = ">=3.22,<4" },
+    { name = "redis", marker = "extra == 'redis'", specifier = ">=5.0.8,<8" },
+]
+provides-extras = ["redis"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "bandit", specifier = ">=1.8" },
+    { name = "build", specifier = ">=1.2" },
+    { name = "mkdocs", specifier = ">=1.6,<2" },
+    { name = "mkdocs-material", specifier = ">=9.6,<10" },
+    { name = "pip-audit", marker = "python_full_version >= '3.11'", specifier = ">=2.9" },
+    { name = "pyright", specifier = ">=1.1.400" },
+    { name = "pytest", specifier = ">=8" },
+    { name = "pytest-asyncio", specifier = ">=0.24" },
+    { name = "pytest-cov", specifier = ">=6" },
+    { name = "ruff", specifier = ">=0.11" },
+    { name = "tomli", marker = "python_full_version < '3.11'", specifier = ">=2" },
+    { name = "towncrier", specifier = ">=24.8" },
+    { name = "twine", specifier = ">=6" },
+]
+
+[[package]]
+name = "aiogram-idle"
+version = "0.2.0"
 source = { editable = "." }
 dependencies = [
     { name = "aiogram" },
+    { name = "aiogram-coordination" },
 ]
 
 [package.optional-dependencies]
@@ -70,6 +103,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "aiogram", specifier = ">=3.22,<4" },
+    { name = "aiogram-coordination", editable = "../aiogram-coordination" },
     { name = "aiogram-nav", marker = "extra == 'nav'", editable = "../aiogram-nav" },
     { name = "redis", marker = "extra == 'redis'", specifier = ">=5.0.8,<8" },
 ]
@@ -94,15 +128,17 @@ dev = [
 
 [[package]]
 name = "aiogram-nav"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "../aiogram-nav" }
 dependencies = [
     { name = "aiogram" },
+    { name = "aiogram-coordination" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "aiogram", specifier = ">=3.22,<4" },
+    { name = "aiogram-coordination", editable = "../aiogram-coordination" },
     { name = "redis", marker = "extra == 'redis'", specifier = ">=5.0.8,<8" },
 ]
 provides-extras = ["redis"]

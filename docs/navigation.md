@@ -8,12 +8,12 @@ no idle dependency.
 Install the integration in a bot environment:
 
 ```sh
-python -m pip install 'aiogram-idle[nav]==0.1.0'
+python -m pip install 'aiogram-idle[nav]==0.2.0'
 # Select both optional integrations when using Redis:
-python -m pip install 'aiogram-idle[nav,redis]==0.1.0'
+python -m pip install 'aiogram-idle[nav,redis]==0.2.0'
 ```
 
-The `nav` extra resolves `aiogram-nav>=0.1.0,<0.2` from PyPI. Base and Redis-only
+The `nav` extra resolves `aiogram-nav>=0.2.0,<0.2` from PyPI. Base and Redis-only
 installations remain independent of aiogram-nav.
 
 For source development, put compatible `aiogram-idle` and `aiogram-nav` checkouts

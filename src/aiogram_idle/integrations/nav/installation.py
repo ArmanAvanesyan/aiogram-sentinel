@@ -4,6 +4,7 @@ from __future__ import annotations
 
 # This adapter intentionally uses the matching, reviewed nav installation helpers.
 # pyright: reportPrivateUsage=false
+import logging
 from typing import TYPE_CHECKING, Any, cast
 
 from aiogram import Bot, Dispatcher, Router
@@ -12,20 +13,24 @@ from aiogram.fsm.storage.base import StorageKey
 from aiogram.fsm.storage.memory import DisabledEventIsolation, SimpleEventIsolation
 from aiogram.fsm.strategy import FSMStrategy
 from aiogram.types import CallbackQuery, Message, TelegramObject, Update
+from aiogram_coordination import BorrowedFsmCoordinator, TrackedEventIsolation
+from aiogram_nav import create_bindings_router
 from aiogram_nav.errors import UnsupportedContext as NavUnsupportedContext
 from aiogram_nav.identity import private_identity
-from aiogram_nav.inputs.bindings import CallbackEntry, CommandEntry, MatchedEntry, ReplyEntry
 from aiogram_nav.inputs.callbacks import acknowledge as _ack
 from aiogram_nav.integration import (
-    CallbackFilter,
-    EntryFilter,
     Handler,
     NavigationMiddleware,
-    _bind_bot,
-    _is_navigation_input,
-    _validate_fsm_storage,
-    dispatch_action,
-    handle_callback,
+    callback_is_current,
+)
+from aiogram_nav.integration import (
+    bind_bot as _bind_bot,
+)
+from aiogram_nav.integration import (
+    is_navigation_input as _is_navigation_input,
+)
+from aiogram_nav.integration import (
+    validate_fsm_storage as _validate_fsm_storage,
 )
 from aiogram_nav.navigation import Navigation
 
@@ -43,9 +48,17 @@ if TYPE_CHECKING:
 
 class CombinedMiddleware(NavigationMiddleware):
     def __init__(
-        self, integration: NavigationIntegration, navigation: Navigation, dispatcher: Dispatcher
+        self,
+        integration: NavigationIntegration,
+        navigation: Navigation,
+        dispatcher: Dispatcher,
+        *,
+        manual: bool = False,
+        allow_root_handlers: bool = False,
     ):
-        super().__init__(navigation, dispatcher)
+        super().__init__(
+            navigation, dispatcher, manual=manual, allow_root_handlers=allow_root_handlers
+        )
         self.integration = integration
         self.idle_coordinator = integration.idle.coordinator
 
@@ -61,7 +74,7 @@ class CombinedMiddleware(NavigationMiddleware):
             is not coordinator
         ):
             raise ConfigurationError("Integrated coordinator changed after installation")
-        if type(self.isolation) is SimpleEventIsolation:
+        if isinstance(self.isolation, (SimpleEventIsolation, TrackedEventIsolation)):
             actual = (
                 coordinator.fsm_isolation
                 if isinstance(coordinator, RedisCoordinator)
@@ -125,7 +138,9 @@ class CombinedMiddleware(NavigationMiddleware):
         ):
             raise ConfigurationError("FSM context does not match shared conversation ownership")
         coordinator = idle.coordinator
-        if self.fsm_enabled and type(self.isolation) is SimpleEventIsolation:
+        if self.fsm_enabled and isinstance(
+            self.isolation, (SimpleEventIsolation, TrackedEventIsolation)
+        ):
             if not isinstance(state, FSMContext):
                 raise ConfigurationError(
                     "Borrowing the held FSM lock requires its original context"
@@ -143,6 +158,8 @@ class CombinedMiddleware(NavigationMiddleware):
             if isinstance(state, FSMContext):
                 data["raw_state"] = await state.get_state()
                 self.validate()
+            if nav.draining:
+                raise ConfigurationError("Navigation is draining")
             context = nav.for_conversation(key, operation_prefix=f"update:{event.update_id}")
             data.update(
                 nav_context=context,
@@ -152,6 +169,13 @@ class CombinedMiddleware(NavigationMiddleware):
                 idle_key=mapped,
                 navigation_integration=self.integration,
             )
+            reserved = isinstance(payload, CallbackQuery) and (payload.data or "").startswith(
+                "nav:"
+            )
+            if self.manual and reserved and isinstance(payload, CallbackQuery):
+                if not await callback_is_current(nav, payload, context):
+                    await nav.reject_callback(payload, bot, "stale")
+                    return None
             if isinstance(payload, (Message, CallbackQuery)):
                 prompt = await idle.current_prompt(mapped)
                 presenter = idle.presenter
@@ -180,14 +204,38 @@ class CombinedMiddleware(NavigationMiddleware):
                             await _ack(bot, payload.id, texts.busy)
                         return None
             self.validate()
-            return await handler(event, data)
+            result = await handler(event, data)
+            if self.manual and reserved and not context.control_handled:
+                logging.getLogger(__name__).warning(
+                    "Reserved navigation callback was not handled in manual routing"
+                )
+            return result
 
 
 def validate_install(
-    integration: NavigationIntegration, dispatcher: Dispatcher, navigation: Navigation
+    integration: NavigationIntegration,
+    dispatcher: Dispatcher,
+    navigation: Navigation,
+    *,
+    bindings_mode: str = "automatic",
+    bindings_router: Router | None = None,
+    allow_root_handlers: bool = False,
 ) -> None:
     """Reject incompatible setup before binding presenters or changing locks."""
     integration.validate()
+    if bindings_mode not in {"automatic", "manual"} or type(allow_root_handlers) is not bool:
+        raise ConfigurationError("Invalid combined routing configuration")
+    manual = bindings_mode == "manual"
+    if not manual and (bindings_router is not None or allow_root_handlers):
+        raise ConfigurationError("Custom routing requires manual mode")
+    if manual and navigation.bindings is not None:
+        if bindings_router is None or bindings_router is not navigation.bindings_router:
+            raise ConfigurationError("Use create_bindings_router for this Navigation")
+        parent: Router | None = bindings_router
+        while parent is not None and parent is not dispatcher:
+            parent = parent.parent_router
+        if parent is None:
+            raise ConfigurationError("Include the bindings router before installation")
     if dispatcher.get("_aiogram_idle_installed") or dispatcher.get("_aiogram_nav_installed"):
         raise ConfigurationError(
             "Install the combined integration instead of separate idle/nav middleware"
@@ -200,18 +248,26 @@ def validate_install(
     bindings = navigation.bindings
     if bindings is not None:
         bindings.validate(navigation.registry)
-        if dispatcher.message.handlers or dispatcher.callback_query.handlers:
+        if not allow_root_handlers and (
+            dispatcher.message.handlers or dispatcher.callback_query.handlers
+        ):
             raise ConfigurationError("Use business Routers after integrated navigation bindings")
     isolation = dispatcher.fsm.events_isolation
     coordinator = integration.idle.coordinator
     if integration.idle._task is not None or coordinator.active_scopes:
         raise ConfigurationError("Install integrated middleware before starting protected work")
-    if type(coordinator) not in {MemoryCoordinator, AiogramMemoryCoordinator, RedisCoordinator}:
+    if not isinstance(coordinator, BorrowedFsmCoordinator) and type(coordinator) not in {
+        MemoryCoordinator,
+        AiogramMemoryCoordinator,
+        RedisCoordinator,
+    }:
         raise ConfigurationError("Unsupported integrated coordinator implementation")
     mapped = integration.navigation_repository.coordinator
     if not isinstance(mapped, MappedCoordinator) or mapped.underlying is not coordinator:
         raise ConfigurationError("Integrated navigation must use its shared coordinator")
-    if type(isolation) not in {SimpleEventIsolation, DisabledEventIsolation}:
+    if type(isolation) not in {SimpleEventIsolation, DisabledEventIsolation} and not isinstance(
+        isolation, TrackedEventIsolation
+    ):
         raise ConfigurationError(
             "Only verified SimpleEventIsolation or disabled isolation is supported"
         )
@@ -223,18 +279,31 @@ def install(
     navigation: Navigation,
     *,
     lifecycle: bool,
+    bindings_mode: str = "automatic",
+    bindings_router: Router | None = None,
+    allow_root_handlers: bool = False,
 ) -> None:
-    validate_install(integration, dispatcher, navigation)
+    validate_install(
+        integration,
+        dispatcher,
+        navigation,
+        bindings_mode=bindings_mode,
+        bindings_router=bindings_router,
+        allow_root_handlers=allow_root_handlers,
+    )
     bindings = navigation.bindings
     isolation = dispatcher.fsm.events_isolation
     coordinator = integration.idle.coordinator
-    if type(isolation) is SimpleEventIsolation:
-        if isinstance(coordinator, RedisCoordinator):
+    if isinstance(isolation, (SimpleEventIsolation, TrackedEventIsolation)):
+        if isinstance(coordinator, BorrowedFsmCoordinator):
             coordinator.configure_fsm_isolation(isolation)
         elif isinstance(coordinator, AiogramMemoryCoordinator):
             if coordinator.isolation is not isolation:
                 raise ConfigurationError("Integrated runtimes require the same FSM isolation")
-        elif isinstance(coordinator, MemoryCoordinator):
+        elif type(coordinator) is MemoryCoordinator and not (
+            integration.idle._explicit_coordinator
+            or getattr(integration.idle.backend, "_explicit_coordinator", False)
+        ):
             integration.idle.coordinator = AiogramMemoryCoordinator(isolation)
             cast(
                 MappedCoordinator, integration.navigation_repository.coordinator
@@ -245,37 +314,20 @@ def install(
         raise ConfigurationError(
             "Only verified SimpleEventIsolation or disabled isolation is supported"
         )
-    middleware = CombinedMiddleware(integration, navigation, dispatcher)
+    manual = bindings_mode == "manual"
+    middleware = CombinedMiddleware(
+        integration, navigation, dispatcher, manual=manual, allow_root_handlers=allow_root_handlers
+    )
     dispatcher.update.outer_middleware(middleware)
     if bindings is not None:
-        router = Router(name="aiogram-idle-nav")
-        if any(isinstance(entry, (CommandEntry, ReplyEntry)) for entry in bindings.entries):
-
-            async def entry_handler(
-                message: Message, nav_context: Any, nav_match: MatchedEntry, event_update: Update
-            ) -> None:
-                await dispatch_action(
-                    nav_context,
-                    nav_match.action,
-                    source=nav_match.source,
-                    operation_id=f"update:{event_update.update_id}:nav:{nav_match.entry.id}",
-                )
-
-            router.message.register(entry_handler, EntryFilter(navigation))
-        if any(isinstance(entry, CallbackEntry) for entry in bindings.entries):
-
-            async def callback_handler(
-                callback: CallbackQuery, nav_context: Any, bot: Bot, event_update: Update
-            ) -> None:
-                await handle_callback(
-                    navigation, callback, nav_context, bot, event_update.update_id
-                )
-
-            router.callback_query.register(callback_handler, CallbackFilter())
-        dispatcher.include_router(router)
-        dispatcher.sub_routers.remove(router)
-        dispatcher.sub_routers.insert(0, router)
-        middleware.bindings_router = router
+        if manual:
+            middleware.bindings_router = bindings_router
+        else:
+            router = create_bindings_router(navigation)
+            dispatcher.include_router(router)
+            dispatcher.sub_routers.remove(router)
+            dispatcher.sub_routers.insert(0, router)
+            middleware.bindings_router = router
     dispatcher["_aiogram_idle_installed"] = dispatcher["_aiogram_nav_installed"] = True
     integration.idle._installed = navigation._installed = True
     if lifecycle:

@@ -29,8 +29,19 @@ class IdleBackend(Protocol):
     coordinator: Coordinator
 
     def bind_coordinator(self, coordinator: Coordinator) -> None: ...
+    async def storage_format(self) -> int: ...
+    async def require_storage_format(self, version: int) -> None: ...
 
     async def load(self, key: IdleConversationKey) -> RuntimeSnapshot | None: ...
+    async def bind_external_session(
+        self,
+        key: IdleConversationKey,
+        *,
+        session_id: str,
+        revision: str,
+        absolute_expires_at: int,
+        operation_id: str,
+    ) -> SessionSnapshot: ...
     async def open_session(
         self, key: IdleConversationKey, *, lifetime_seconds: float, operation_id: str
     ) -> SessionSnapshot: ...

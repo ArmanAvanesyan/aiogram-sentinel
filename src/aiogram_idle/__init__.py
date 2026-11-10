@@ -26,10 +26,12 @@ from .errors import (
     OwnershipLost,
     PersistenceUnavailable,
     SchemaUnsupported,
+    SessionAuthorityUnavailable,
     SessionExpired,
     UnsupportedContext,
     VersionConflict,
 )
+from .events import IdleOutcome, coarse_event_sink
 from .models import (
     ActionReceipt,
     ActivityGuard,
@@ -64,8 +66,12 @@ from .presentation import (
     TelegramPromptPresenter,
 )
 from .protocols import Coordinator, EffectRecorder, FlowAdapter, PromptPresenter, SessionAuthority
+from .registration import ActivityRegistration
 from .runtime import IdleRuntime
+from .storage.activation import StorageMigrationPage
 from .storage.base import IdleBackend
+from .storage.deployment import RedisDeploymentAttestation
+from .storage.format import StorageActivation
 from .storage.memory import MemoryIdleBackend
 from .storage.state import OperationLookup
 
@@ -76,6 +82,7 @@ except PackageNotFoundError:  # Allow direct source imports before installation.
 __all__ = [
     "ActionReceipt",
     "ActivityConflict",
+    "ActivityRegistration",
     "ActivityGuard",
     "ActivitySnapshot",
     "ActivitySpec",
@@ -106,6 +113,7 @@ __all__ = [
     "IdleConversationKey",
     "IdleError",
     "IdleEvent",
+    "IdleOutcome",
     "IdlePolicies",
     "IdleRuntime",
     "IdleSnapshot",
@@ -132,10 +140,15 @@ __all__ = [
     "QuietHoursResolver",
     "QuietRestorePolicy",
     "ReconcileReport",
+    "RedisDeploymentAttestation",
+    "StorageActivation",
+    "StorageMigrationPage",
     "ReplyPromptControls",
     "RuntimeSnapshot",
     "SchemaUnsupported",
     "SessionAuthority",
+    "SessionAuthorityUnavailable",
+    "coarse_event_sink",
     "SessionExpired",
     "SessionGuard",
     "SessionSnapshot",
