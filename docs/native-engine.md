@@ -5,7 +5,12 @@ Python is the default and needs neither Rust nor the companion. Redis backends
 always use Redis atomic operations as their distributed authority; selecting an
 engine never adds a local Redis counter cache.
 
-The candidate companion `aiogram-sentinel-native==1.3.0` is built separately with
+**Publication is withheld:** the serial qualification failed the required CPU
+improvement gate. The companion remains available from source; there is no
+native release or `[native]` extra. The Python base can ship independently. See
+[measured results and host limitations](../native/BENCHMARKS.md).
+
+The source companion `aiogram-sentinel-native==1.3.0` is built separately with
 Maturin and ABI3 for Python 3.10+. It has no dependency on the base distribution.
 There is no native extra until publication and performance qualification succeed.
 
@@ -60,7 +65,13 @@ keyword. `benchmarks/pyperf_memory.py` records calibrated pyperf samples; set
 `SENTINEL_ENGINE=rust` for native. `cargo bench --manifest-path native/Cargo.toml`
 records Criterion kernels. Neither script injects the source tree into imports.
 
-Development results are not release qualification. Root-level serial comparison
-must establish at least 20% process CPU benefit in a representative kernel and
-no more than 5% end-to-end p95 regression. The native release remains blocked
-until that gate and the complete installed platform artifact checks pass.
+Development results are not release qualification. The completed serial comparison
+measured Rust/Python CPU ratios of 0.88350 for accepted rate-limit operations over
+many keys and 0.92370 for accepted debounce operations over many keys. Neither
+meets the required 20% reduction. The middleware update p95 ratio was 0.71225, but
+Python repeat spread exceeded 10%; no tail-latency gain can be claimed.
+
+These are host-specific macOS x86_64 / CPython 3.12.13 observations, not universal
+performance claims. Constructor ABI hardening does not change the measured hot
+paths or native artifact and does not qualify speed. Native publication is
+withheld; functional platform checks do not override the failed gate.
