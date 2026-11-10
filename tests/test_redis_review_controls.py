@@ -139,34 +139,48 @@ async def test_revoked_owner_never_starts_post_commit_cleanup(nav_redis_client):
 
     from aiogram_nav.storage.redis_coordinator import RedisCoordinator
 
+    revoke_ready = asyncio.Event()
+
+    class ObserverCoordinator(RedisCoordinator):
+        async def _renew(self, *args):
+            # Exercise revocation during the observer, rather than a short lease
+            # or I/O timeout expiring incidentally during preparation on CI.
+            await revoke_ready.wait()
+            await super()._renew(*args)
+
     repo = await repository(nav_redis_client)
-    coordinator = RedisCoordinator(
+    coordinator = ObserverCoordinator(
         redis=nav_redis_client,
         prefix=repo.prefix,
-        lease_seconds=0.3,
         renew_seconds=0.05,
-        io_timeout=0.02,
     )
     repo._store.coordinator = coordinator
     repo.coordinator = coordinator
     presenter = Presenter()
     nav = navigation(repo, presenter)
     cancelled = False
+    revoked = False
 
     async def observer(event):
-        nonlocal cancelled
-        await nav_redis_client.delete(coordinator.lock_key(KEY))
+        nonlocal cancelled, revoked
         try:
-            await asyncio.sleep(2)
+            # The cancellation handler must already cover the await that deletes
+            # the lock: a renewal can observe that deletion before its response.
+            await nav_redis_client.delete(coordinator.lock_key(KEY))
+            revoke_ready.set()
+            await asyncio.Event().wait()
         except asyncio.CancelledError:
             # A caller hook cannot restore the revoked lease by suppressing its
             # cancellation. New post-commit cleanup must still remain forbidden.
             cancelled = True
+            revoked = not coordinator.owns(KEY)
 
     nav.on_event = observer
     with pytest.raises(OwnershipLost):
-        await nav.for_conversation(KEY).go("main", operation_id="committed")
-    assert cancelled and presenter.cleanups == []
+        await asyncio.wait_for(
+            nav.for_conversation(KEY).go("main", operation_id="committed"), timeout=5
+        )
+    assert cancelled and revoked and presenter.cleanups == []
     assert (await repo.lookup_operation(KEY, operation_id="committed")).status == "completed"
 
 
