@@ -1,5 +1,6 @@
 """aiogram-sentinel: Rate limiting and debouncing middleware for aiogram bots."""
 
+from .actions import ActionKind, ActionPolicy, SentinelExemptions
 from .config import SentinelConfig
 from .decorators import debounce, rate_limit
 from .errors import ErrorConfig, ErrorEvent, ErrorHandlingMiddleware
@@ -26,6 +27,9 @@ from .version import __version__
 __all__: list[str] = [
     "__version__",
     "SentinelConfig",
+    "ActionKind",
+    "ActionPolicy",
+    "SentinelExemptions",
     "InfraBundle",
     "RateLimiterBackend",
     "DebounceBackend",

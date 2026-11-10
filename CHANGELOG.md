@@ -1,9 +1,35 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+<!-- towncrier release notes start -->
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [1.2.0] - 2026-11-10
+
+### Added
+
+- Opt-in message, command and callback-query policies and action-kind buckets.
+- Explicit command/callback-prefix spam exemptions without bypassing application guards.
+- Configurable exception passthrough for infrastructure failures and webhook HTTP 503 handling.
+- Startup warning for empty protected router subtrees, application-owned Redis guidance,
+  migration documentation and a runnable protected-router example.
+
+### Fixed
+
+- Resolve named and legacy handler policies from the registered aiogram callback.
+- Preserve application/error middleware when replacing rate-limit hooks and validate installation ownership.
+- Make Redis optional at import/install time and commit rate-counter expiry atomically.
+- Keep Sentry availability guards active under optimized Python and validate backend intervals.
+- Correct project metadata/runtime version checks, ship py.typed, and maintain strict typing.
+- Correct published repository links and verify minimum/current artifacts and real Redis in CI.
+
+### Release process
+
+- Publish exact reviewed distributions through the manual tag-bound release workflow.
+- Keep generated security evidence in CI artifacts and update patched dependency locks.
+
+## [1.1.0] - 2025-10-14
+
+Published baseline containing the policy registry, scope/key-builder APIs and error middleware.
+Version 1.2.0 corrects policy propagation and integration behavior; these baseline APIs are not new in 1.2.0.
 
 ## [0.1.1] - 2025-01-03
 

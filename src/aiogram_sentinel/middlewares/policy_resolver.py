@@ -5,11 +5,12 @@ from __future__ import annotations
 import logging
 import warnings
 from collections.abc import Awaitable, Callable
-from typing import Any
+from typing import Any, cast
 
 from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject
 
+from ..actions import classify_action
 from ..config import SentinelConfig
 from ..policy import (
     DebounceCfg,
@@ -47,8 +48,32 @@ class PolicyResolverMiddleware(BaseMiddleware):
         data: dict[str, Any],
     ) -> Any:
         """Process the event through policy resolution."""
-        # Resolve policies and legacy decorators
-        throttle_cfg, debounce_cfg = self._resolve_configurations(handler)
+        kind = classify_action(event)
+        data["sentinel_action_kind"] = kind
+        if self._cfg.exemptions.matches(event):
+            data["sentinel_exempt"] = True
+            return await handler(event, data)
+
+        # aiogram passes a continuation here. The registered callback is in its
+        # HandlerObject, populated after filters have selected the handler.
+        registered = data.get("handler")
+        callback: object = getattr(registered, "callback", None)
+        actual = cast(Callable[..., Any], callback) if callable(callback) else handler
+        throttle_cfg, debounce_cfg = self._resolve_configurations(actual)
+        kind_policy = self._cfg.action_policies.get(kind)
+        if kind_policy is not None:
+            throttle_cfg = throttle_cfg or kind_policy.throttle
+            debounce_cfg = debounce_cfg or kind_policy.debounce
+
+        # Filter/earlier-middleware values take precedence over handler defaults.
+        if "sentinel_rate_limit" in data:
+            throttle_cfg = convert_from_legacy_throttle(data["sentinel_rate_limit"])
+        if "sentinel_debounce" in data:
+            debounce_cfg = convert_from_legacy_debounce(data["sentinel_debounce"])
+        if isinstance(data.get("sentinel_throttle_cfg"), ThrottleCfg):
+            throttle_cfg = data["sentinel_throttle_cfg"]
+        if isinstance(data.get("sentinel_debounce_cfg"), DebounceCfg):
+            debounce_cfg = data["sentinel_debounce_cfg"]
 
         # Inject resolved configurations into data
         if throttle_cfg is not None:

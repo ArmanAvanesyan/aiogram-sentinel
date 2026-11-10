@@ -1,32 +1,91 @@
-name: Release
+name: Publish verified release
+
 on:
-  push:
-    tags: ['v*.*.*']
+  workflow_dispatch:
+    inputs:
+      manifest_sha256:
+        description: SHA256 of the independently verified GitHub release SHA256SUMS
+        required: true
+        type: string
+
 permissions:
   contents: read
+
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
-  release:
+  verify:
+    if: github.ref_type == 'tag' && startsWith(github.ref_name, 'v')
     runs-on: ubuntu-latest
-    environment: pypi
-    permissions:
-      contents: write
-      id-token: write
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
         with:
-          fetch-depth: 0
+          persist-credentials: false
       - uses: astral-sh/setup-uv@v7
         with:
           python-version: '3.12'
-      - run: uv sync --frozen --all-extras
-      - name: Validate package version against the release tag
-        run: uv run --no-sync python tools/check_version_tag.py
-      - run: uv build
-      - run: uv run --no-sync python -m twine check dist/*
-      - name: Publish the explicitly tagged release
-        uses: pypa/gh-action-pypi-publish@release/v1
-      - name: Attach artifacts and generated release notes
-        uses: softprops/action-gh-release@v2
+      - name: Download the exact reviewed release artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release download "$GITHUB_REF_NAME" --pattern '*.whl' --pattern '*.tar.gz' --pattern SHA256SUMS --dir dist
+      - name: Validate tag, distribution names and independently supplied checksums
+        env:
+          MANIFEST_SHA256: ${{ inputs.manifest_sha256 }}
+        run: |
+          python - <<'PYVERIFY'
+          import hashlib
+          import os
+          import re
+          import tomllib
+          from pathlib import Path
+          project = tomllib.loads(Path('pyproject.toml').read_text())['project']
+          version = project['version']
+          if os.environ['GITHUB_REF_NAME'] != 'v' + version:
+              raise SystemExit('Tag does not match project version')
+          expected_digest = os.environ['MANIFEST_SHA256']
+          if not re.fullmatch(r'[a-f0-9]{64}', expected_digest):
+              raise SystemExit('Expected an independently verified SHA256 digest')
+          manifest = Path('dist/SHA256SUMS')
+          if hashlib.sha256(manifest.read_bytes()).hexdigest() != expected_digest:
+              raise SystemExit('Release checksum manifest differs from reviewed input')
+          name = project['name'].replace('-', '_')
+          expected = {f'{name}-{version}-py3-none-any.whl', f'{name}-{version}.tar.gz'}
+          if {p.name for p in Path('dist').iterdir()} != expected | {'SHA256SUMS'}:
+              raise SystemExit('Unexpected release files')
+          checked = set()
+          for line in manifest.read_text().splitlines():
+              digest, filename = line.split()
+              if filename not in expected or filename in checked:
+                  raise SystemExit('Unexpected or repeated checksum entry')
+              if hashlib.sha256((Path('dist') / filename).read_bytes()).hexdigest() != digest:
+                  raise SystemExit('Distribution checksum mismatch')
+              checked.add(filename)
+          if checked != expected:
+              raise SystemExit('Missing distribution checksum')
+          PYVERIFY
+      - run: uvx twine check dist/*.whl dist/*.tar.gz
+      - uses: actions/upload-artifact@v6
         with:
-          files: dist/*
-          generate_release_notes: true
+          name: verified-distributions
+          path: |
+            dist/*.whl
+            dist/*.tar.gz
+          if-no-files-found: error
+
+  publish:
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          name: verified-distributions
+          path: dist
+      - name: Publish verified distributions using PyPI Trusted Publishing
+        uses: pypa/gh-action-pypi-publish@release/v1

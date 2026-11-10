@@ -4,12 +4,10 @@ Complete guide to configuring aiogram-sentinel for your needs.
 
 ## Configuration Sources
 
-aiogram-sentinel supports multiple configuration sources in order of precedence:
-
-1. **Code configuration** (highest priority)
-2. **Environment variables**
-3. **Configuration files**
-4. **Default values** (lowest priority)
+`SentinelConfig` is constructed explicitly. The library does not read environment
+variables or configuration files automatically; the adapters below are application
+examples. For action-kind policies, exemptions and handler precedence see
+[application integration](application-integration.md).
 
 ## Basic Configuration
 
@@ -40,7 +38,9 @@ router, infra = await Sentinel.setup(dp, config)
 | `backend` | `str` | `"memory"` | Storage backend ("memory" or "redis") |
 | `redis_url` | `str` | `"redis://localhost:6379"` | Redis connection URL |
 | `redis_prefix` | `str` | `"sentinel"` | Redis key prefix |
-| `auto_block_on_limit` | `bool` | `True` | Auto-block users who exceed limits (unused) |
+| `bucket_mode` | `str` | `"shared"` | Opt-in `"action_kind"` splits bounded action namespaces |
+| `action_policies` | mapping | `{}` | ActionPolicy defaults for message/command/callback_query |
+| `exemptions` | SentinelExemptions | empty | Explicit command/prefix spam exemptions |
 
 ## Environment Variables
 
@@ -57,7 +57,7 @@ export DEBOUNCE_WINDOW=3
 # Backend
 export BACKEND=redis
 export REDIS_URL=redis://localhost:6379
-export REDIS_PREFIX=mybot:
+export REDIS_PREFIX=mybot
 ```
 
 ```python

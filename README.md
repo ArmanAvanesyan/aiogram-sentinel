@@ -1,124 +1,90 @@
 # aiogram-sentinel
 
-<p align="center">
-  <!-- Essentials -->
-  <a href="https://github.com/ArmanAvanesyan/aiogram-sentinel/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/ArmanAvanesyan/aiogram-sentinel/actions/workflows/ci.yml/badge.svg?branch=main"></a>
-  <a href="https://pypi.org/project/aiogram-sentinel/"><img alt="PyPI" src="https://img.shields.io/pypi/v/aiogram-sentinel.svg"></a>
-  <a href="https://pypi.org/project/aiogram-sentinel/"><img alt="Python versions" src="https://img.shields.io/pypi/pyversions/aiogram-sentinel.svg"></a>
-  <a href="https://armanavanesyan.github.io/aiogram-sentinel/"><img alt="Docs" src="https://github.com/ArmanAvanesyan/aiogram-sentinel/actions/workflows/docs.yml/badge.svg?branch=main"></a>
-  <a href="LICENSE"><img alt="License" src="https://img.shields.io/github/license/ArmanAvanesyan/aiogram-sentinel.svg"></a>
-</p>
+Rate limiting and debouncing for aiogram 3. Sentinel protects handlers on its
+router and descendant routers while retaining application authorization middleware.
 
-<details>
-<summary>More badges</summary>
+## Install
 
-<p>
-  <a href="https://app.codecov.io/gh/ArmanAvanesyan/aiogram-sentinel"><img alt="Coverage" src="https://codecov.io/gh/ArmanAvanesyan/aiogram-sentinel/branch/main/graph/badge.svg"></a>
-  <a href="https://docs.astral.al/ruff/"><img alt="Ruff" src="https://img.shields.io/badge/lint-ruff-%2300A1D6"></a>
-  <a href="https://github.com/microsoft/pyright"><img alt="Pyright" src="https://img.shields.io/badge/types-pyright-blue"></a>
-  <a href="https://pepy.tech/project/aiogram-sentinel"><img alt="Downloads" src="https://static.pepy.tech/badge/aiogram-sentinel/month"></a>
-</p>
-
-</details>
-
-**Rate limiting and debouncing middleware for aiogram v3** - Protect your Telegram bots from spam and abuse with powerful middleware and storage backends.
-
-## ✨ Features
-
-* **Rate Limiting:** Per-user/handler scopes; memory uses a sliding window and Redis uses a fixed window
-* **Debouncing:** Suppress duplicate messages/callbacks within a configurable window
-* **Storage Backends:** Memory (single worker) or Redis (multi-worker) with configurable prefixes
-* **Decorators:** `@rate_limit` and `@debounce` for easy handler configuration
-* **Hooks:** Optional `on_rate_limited` callback for custom user feedback
-* **Setup Helper:** `Sentinel.setup(dp, cfg)` wires middleware in recommended order
-* **Typed and async-first.**
-
-## 📦 Installation
-
-```bash
-# Basic installation
+```sh
 pip install aiogram-sentinel
-
-# With Redis support
-pip install aiogram-sentinel[redis]
+# Optional shared Redis storage:
+pip install 'aiogram-sentinel[redis]'
 ```
 
-## ⚡ Quick Start
+## Protect an application router
 
 ```python
-from aiogram import Bot, Dispatcher
-from aiogram.types import Message
-from aiogram_sentinel import Sentinel, SentinelConfig, rate_limit, debounce
+from aiogram import Dispatcher, Router
+from aiogram_sentinel import ActionPolicy, Sentinel, SentinelConfig, ThrottleCfg
 
-# Create bot and dispatcher
-bot = Bot(token="YOUR_BOT_TOKEN")
+app = Router()
+features = Router()
+app.include_router(features)
+# Register application handlers on features or app, then during async startup:
 dp = Dispatcher()
-
-# Configure aiogram-sentinel
-config = SentinelConfig(
-    throttling_default_max=10,  # 10 messages per window
-    throttling_default_per_seconds=60,  # 60 second window
-    debounce_default_window=2,  # 2 second debounce
+router, infra = await Sentinel.setup(
+    dp,
+    SentinelConfig(
+        bucket_mode="action_kind",
+        action_policies={
+            "message": ActionPolicy(throttle=ThrottleCfg(rate=5, per=10)),
+            "command": ActionPolicy(throttle=ThrottleCfg(rate=3, per=10)),
+            "callback_query": ActionPolicy(throttle=ThrottleCfg(rate=20, per=10)),
+        },
+    ),
+    router=app,
 )
-
-# Setup with one call - wires all middleware in recommended order
-router, infra = await Sentinel.setup(dp, config)
-
-# Your handlers with protection
-@router.message()
-@rate_limit(5, 60)  # 5 messages per minute
-@debounce(1.0)      # 1 second debounce
-async def handle_message(message: Message):
-    await message.answer(f"Hello! Your message: {message.text}")
-
-# Start your bot
-await dp.start_polling(bot)
 ```
 
-## 📚 Documentation
+These rates are examples, not new defaults. `bucket_mode="shared"` remains the
+default, with the existing limit of 5 events per 10 seconds and 2-second debounce.
+A command is a message with an initial Telegram `bot_command` entity. Command,
+message and callback namespaces are distinct only when explicitly requested.
 
-👉 **[Full Documentation](https://armanavanesyan.github.io/aiogram-sentinel/)** ← Start here!
+**Attachment matters:** middleware on a sibling router does not wrap another
+router's handlers. Pass the application's ancestor router to `setup`, or register
+handlers on the returned router. Startup warns once when its protected subtree
+has no message/callback handlers. Do not attach the router to the Dispatcher
+before calling `setup`.
 
-- **[Quickstart](docs/quickstart.md)** - Get started in 5 minutes
-- **[Configuration](docs/configuration.md)** - Complete configuration guide
-- **[API Reference](docs/api/)** - Full API documentation
-- **[Tutorials](docs/tutorials/)** - Step-by-step guides
-- **[Performance](docs/performance.md)** - Benchmarks and optimization
-- **[Examples](examples/)** - Complete working examples
+Named handler policies and legacy decorators now resolve the registered aiogram
+callback, including on aiogram 3.31. See [configuration](docs/configuration.md) for
+precedence and explicit `/start` or callback-prefix exemptions. Exemptions bypass
+only Sentinel spam protections, never application guards.
 
-## 🤝 Contributing
+## Infrastructure failures
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for frozen development setup, verification
-and the shared repository convention. Maintainers use [releasing](docs/releasing.md);
-branch pushes do not publish packages. Repository automation lives in `tools/`,
-release fragments in `CHANGES/`, and maintained verification evidence in `reports/`.
+`ErrorConfig(reraise_exceptions=(TimeoutError,))` propagates matching exceptions
+unchanged instead of sending friendly feedback. Add `redis.exceptions.RedisError`
+when using Redis, and `aiogram_sentinel.exceptions.BackendOperationError` for
+failures wrapped by Sentinel storage. This alone does not select an HTTP status: Dispatcher error
+handlers must re-raise, and a foreground webhook adapter must map the failure to
+503. Background acknowledgement cannot be changed retroactively.
 
-## 💬 Community & Support
+See the [application integration guide](docs/application-integration.md) for
+existing-client ownership, middleware/error ordering and the webhook recipe.
 
-- 💬 **[Discussions](https://github.com/ArmanAvanesyan/aiogram-sentinel/discussions)** - Questions, ideas, and community chat
-- 🐛 **[Issues](https://github.com/ArmanAvanesyan/aiogram-sentinel/issues)** - Bug reports and concrete feature requests
-- 📖 **[Documentation](https://armanavanesyan.github.io/aiogram-sentinel/)** - Complete guides and API reference
+## Compatibility and verification
 
-### 🎯 Where to Get Help
+| Component | Supported/tested contract |
+| --- | --- |
+| Python | 3.10–3.13 in required CI |
+| aiogram | >=3.0,<4; minimum 3.0 and current 3.x tested |
+| redis-py | Optional >=5.0.8,<8; minimum/current endpoints tested |
+| Redis server | 7 and 8 tested; older servers are not qualified |
+| Memory storage | Single process/event loop; sliding-window rate limiter |
+| Redis storage | Shared clients; fixed-window counter with atomic expiry |
 
-| Need Help With | Go To |
-|----------------|--------|
-| Usage questions | 💬 **[Q&A Discussions](https://github.com/ArmanAvanesyan/aiogram-sentinel/discussions/categories/q-a)** |
-| Feature suggestions | 💡 **[Ideas & Feature Requests](https://github.com/ArmanAvanesyan/aiogram-sentinel/discussions/categories/ideas-feature-requests)** |
-| Bug reports | 🐛 **[Issues](https://github.com/ArmanAvanesyan/aiogram-sentinel/issues)** |
-| General chat | 💬 **[General Discussion](https://github.com/ArmanAvanesyan/aiogram-sentinel/discussions/categories/general-discussion)** |
-| Share projects | 🎉 **[Show and tell](https://github.com/ArmanAvanesyan/aiogram-sentinel/discussions/categories/show-and-tell)** |
-| Project updates | 📢 **[Announcements](https://github.com/ArmanAvanesyan/aiogram-sentinel/discussions/categories/announcements)** |
+Redis rate limiting requires `EVAL`, `INCR`, `TTL`, `EXPIRE`, `GET`; debounce
+requires `SET` with `NX`/`EX`. The middleware's retry-after lookup also uses `TTL`.
+No `INFO`, `ROLE` or `CONFIG` privileges are required by Sentinel. Availability,
+eviction and persistence remain deployment responsibilities; Sentinel does not
+provide Idle/Nav scheduling or durable business-effect recovery.
 
-## 🔒 Security
+- [Migration to 1.2](docs/migration-1.2.md)
+- [Configuration](docs/configuration.md), [API](docs/api/core.md), [examples](examples/README.md)
+- [Testing](docs/TESTING.md), [release procedure](docs/releasing.md)
+- [Contributing](CONTRIBUTING.md), [security](SECURITY.md), [MIT license](LICENSE)
 
-For security issues, see [SECURITY.md](SECURITY.md).
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- Built for [aiogram v3](https://github.com/aiogram/aiogram) - Modern Telegram Bot API framework
-- Inspired by the need for robust bot protection in production environments
+The library never configures logging globally. Examples enable scoped debug output
+and use recording Telegram sessions in tests; no real messages are sent by tests.
