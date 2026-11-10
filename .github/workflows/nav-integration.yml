@@ -1,0 +1,54 @@
+name: Optional navigation integration
+on:
+  workflow_dispatch:
+    inputs:
+      nav_repository:
+        description: Compatible aiogram-nav GitHub repository (owner/name)
+        required: true
+        type: string
+      nav_ref:
+        description: Compatible reviewed revision
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  combined:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: aiogram-idle
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        redis: ['redis:7-alpine']
+        include:
+          - python: '3.12'
+            redis: 'redis:8-alpine'
+    services:
+      redis:
+        image: ${{ matrix.redis }}
+        ports: ['6379:6379']
+        options: --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 3s --health-retries 10
+    env:
+      AIOGRAM_IDLE_REDIS_URL: redis://localhost:6379/0
+      AIOGRAM_IDLE_REQUIRE_REDIS: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: aiogram-idle
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.nav_repository }}
+          ref: ${{ inputs.nav_ref }}
+          path: aiogram-nav
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --frozen --extra redis --extra nav --python '${{ matrix.python }}'
+      - run: uv run --no-sync ruff check .
+      - run: uv run --no-sync ruff format --check .
+      - run: uv run --no-sync pyright --project pyright-nav.json
+      - run: uv run --no-sync pytest --cov=aiogram_idle --cov-config=coverage-nav.toml
+      - name: Check optional example CLI without sending messages
+        run: uv run --no-sync python examples/navigation.py --help

@@ -1,0 +1,99 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "aiogram-idle"
+version = "0.1.0"
+description = "Standalone inactivity policies and recoverable conversation prompts for aiogram 3"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{name = "aiogram-idle contributors"}]
+dependencies = ["aiogram>=3.22,<4"]
+
+classifiers = ["Development Status :: 3 - Alpha", "Framework :: AsyncIO", "Typing :: Typed", "Programming Language :: Python :: 3.10", "Programming Language :: Python :: 3.11", "Programming Language :: Python :: 3.12", "Programming Language :: Python :: 3.13", "Programming Language :: Python :: 3.14"]
+
+[project.urls]
+Homepage = "https://github.com/ArmanAvanesyan/aiogram-idle"
+Repository = "https://github.com/ArmanAvanesyan/aiogram-idle"
+Issues = "https://github.com/ArmanAvanesyan/aiogram-idle/issues"
+Changelog = "https://github.com/ArmanAvanesyan/aiogram-idle/blob/main/CHANGELOG.md"
+
+[project.optional-dependencies]
+redis = ["redis>=5.0.8,<8"]
+nav = ["aiogram-nav>=0.1.0,<0.2"]
+
+[dependency-groups]
+# The dependency-audit tool needs Python 3.11+ so its filelock dependency can
+# resolve a security-fixed release. Runtime/minimum compatibility remains 3.10.
+dev = ["pytest>=8", "pytest-asyncio>=0.24", "pytest-cov>=6", "ruff>=0.11", "pyright>=1.1.400", "build>=1.2", "twine>=6", "pip-audit>=2.9; python_version >= '3.11'", "bandit>=1.8", "mkdocs>=1.6,<2", "mkdocs-material>=9.6,<10", "towncrier>=24.8", "tomli>=2; python_version < '3.11'"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/aiogram_idle"]
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "ASYNC"]
+ignore = ["E501"]
+[tool.pyright]
+include = ["src"]
+exclude = ["src/aiogram_idle/integrations"]
+pythonVersion = "3.10"
+typeCheckingMode = "strict"
+venvPath = "."
+venv = ".venv"
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+addopts = "-ra"
+[tool.coverage.run]
+source = ["aiogram_idle"]
+branch = true
+omit = ["*/aiogram_idle/integrations/*"]
+[tool.coverage.report]
+show_missing = true
+fail_under = 80
+
+[tool.uv.sources]
+aiogram-nav = {path = "../aiogram-nav", editable = true}
+
+[tool.towncrier]
+package = "aiogram_idle"
+package_dir = "src"
+filename = "CHANGELOG.md"
+directory = "CHANGES"
+ignore = ["README.md", ".template.rst.jinja2"]
+start_string = "<!-- towncrier release notes start -->\n"
+title_format = "## [{version}] - {project_date}"
+issue_format = "[#{issue}](https://github.com/ArmanAvanesyan/aiogram-idle/issues/{issue})"
+underlines = ["", "", ""]
+wrap = true
+all_bullets = true
+
+[[tool.towncrier.type]]
+directory = "feature"
+name = "Features"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "bugfix"
+name = "Bugfixes"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "doc"
+name = "Documentation"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "removal"
+name = "Removals"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "misc"
+name = "Miscellaneous"
+showcontent = true

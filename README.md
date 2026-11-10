@@ -1,0 +1,101 @@
+# aiogram-idle
+
+Standalone inactivity policies for aiogram 3, with typed session/activity contracts and memory or optional Redis storage. Add Continue/Cancel questions or quiet cleanup to ordinary handlers and FSM conversations without adopting a navigation framework.
+
+The `0.1.0` development distribution has not been published to PyPI.
+
+## Install locally
+
+Requires Python 3.10 or newer.
+
+```bash
+uv sync --frozen --python 3.12
+uv run --no-sync python examples/demo.py --help
+```
+
+To install from the checkout in another bot environment:
+
+```bash
+uv pip install -e .
+```
+
+The core runtime dependency is aiogram 3. Redis and aiogram-nav are not installed by the base package. To use Redis 7 or newer, install the optional client dependency:
+
+```bash
+uv pip install -e '.[redis]'
+```
+
+See [Redis setup and recovery](docs/redis.md). The optional [aiogram-nav integration](docs/navigation.md) is available through `[nav]` or `[nav,redis]`; neither base nor Redis-only installs require navigation.
+
+## Run the examples
+
+Set `BOT_TOKEN` in your environment, then choose the prompt controls:
+
+```bash
+uv run --no-sync python examples/demo.py --controls reply
+uv run --no-sync python examples/demo.py --controls inline
+uv run --no-sync python examples/demo.py --controls commands
+uv run --no-sync python examples/demo.py --controls hybrid
+uv run --no-sync python examples/demo.py --controls inline --fsm
+```
+
+`/draft` starts the sample activity. Accepted text updates its draft and resets inactivity. After the configured delay, the bot asks whether to continue. Continue preserves the draft; Cancel or grace expiry runs the application's abandonment and restoration adapters. `/status` reports safe current lifecycle state. Use `--after` and `--grace` to adjust the demonstration intervals.
+
+The examples configure safe debug logging and read the token only from the environment. They send real Telegram messages when run with a token; automated tests use a fake bot session instead.
+
+## How it fits
+
+1. Define named `ExemptPolicy`, `PromptPolicy` or `QuietRestorePolicy` values.
+2. Supply application `inspect`, `resume`, `abandon` and `restore` adapters.
+3. Construct `IdleRuntime` with `MemoryIdleBackend` or `RedisIdleBackend` and a presenter.
+4. Install its context middleware and controls on a dispatcher.
+5. Explicitly enter an activity or touch it after accepted input.
+
+Activity keys are opaque application labels, not navigation nodes. Draft storage and business rules stay in the application. Inactivity creation is disabled by default; examples explicitly enable it.
+
+See [the standalone guide](docs/standalone.md) for contracts and integration details, and [failure semantics](docs/recovery.md) for the recovery boundaries.
+
+## Guarantees and limits
+
+- Memory storage is for one event loop in one process and loses all state, deadlines and recovery receipts on restart.
+- Generation guards and conditional transitions protect current activity state. They do not create a transaction with an application database or Telegram.
+- Explicit operation IDs identify logical substeps. Reusing one ID with different inputs is an error.
+- Inline controls bind to a prompt generation. Reply text and bare commands resolve only the current authorized prompt and cannot identify an older originating prompt.
+- Unknown Telegram responses are not blindly resent by default. A lease cannot retract an already in-flight request.
+- Silent Telegram messages can still notify without sound.
+- Redis storage supports coordinated multi-process workers on a standalone writable primary with `noeviction`. Infrastructure persistence and replication determine durability; there is no memory fallback.
+- Private chats are the initial supported presentation context. The optional navigation adapter is available separately. External session stores, Redis Cluster and a durable analytics outbox remain deferred.
+
+See the [Redis concurrency and FSM audit](docs/redis-audit.md) for the latest corrected failure paths, and the [memory audit](docs/audit.md) for adapter replay requirements.
+
+## Development
+
+```bash
+uv sync --frozen --extra redis
+uv run --no-sync ruff check .
+uv run --no-sync ruff format --check .
+uv run --no-sync pyright
+AIOGRAM_IDLE_REDIS_URL=redis://localhost:6379/0 AIOGRAM_IDLE_REQUIRE_REDIS=1 uv run --no-sync pytest --cov=aiogram_idle --cov-report=term-missing
+uv build
+uv run --no-sync twine check dist/*
+```
+
+CI tests Python 3.10–3.14 with the latest resolvable aiogram 3 release, and aiogram 3.22.0 on Python 3.10–3.13. The minimum aiogram endpoint pins dependencies predating Python 3.14 support, so that combination is excluded. CI then builds and installs artifacts in clean environments. It has no publishing or deployment step.
+
+See [local verification results](docs/verification.md) for the tested matrix and deferred capabilities.
+
+See [installation](docs/installation.md), [API contracts](docs/api.md),
+[architecture](docs/architecture.md) and [testing](docs/testing.md) for contributor
+guidance. CI also requires strict documentation and security checks and runs a
+separate optional-navigation job; standalone jobs remain navigation-free.
+Dependency auditing uses Python 3.11+; CI uses 3.12.
+
+Read [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md) and the
+[code of conduct](CODE_OF_CONDUCT.md). Maintainers use
+[the release checklist](docs/releasing.md); a repository push does not publish.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
+
+For this unpublished development checkout, use the frozen lock for standalone work: `uv sync --frozen` and `uv run --no-sync ...` work with aiogram-nav absent. Regenerating the lock or selecting the nav extra uses the adjacent navigation checkout declared in tool.uv.sources. Installing the base wheel or Redis extra does not require that checkout.

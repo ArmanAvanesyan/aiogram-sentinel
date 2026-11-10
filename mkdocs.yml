@@ -1,0 +1,26 @@
+site_name: aiogram-idle
+site_description: Standalone inactivity policies and recoverable prompts for aiogram 3
+repo_url: https://github.com/ArmanAvanesyan/aiogram-idle
+repo_name: ArmanAvanesyan/aiogram-idle
+theme:
+  name: material
+markdown_extensions:
+  - admonition
+  - tables
+  - fenced_code
+nav:
+  - Overview: index.md
+  - Installation: installation.md
+  - Quickstart: quickstart.md
+  - Standalone integration: standalone.md
+  - Public API: api.md
+  - Architecture: architecture.md
+  - Redis: redis.md
+  - Recovery: recovery.md
+  - Optional navigation: navigation.md
+  - Testing and compatibility: testing.md
+  - Verification: verification.md
+  - Historical reviews:
+      - Memory: audit.md
+      - Redis: redis-audit.md
+  - Releasing: releasing.md

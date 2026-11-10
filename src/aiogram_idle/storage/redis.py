@@ -1,0 +1,352 @@
+# pyright: reportUnknownMemberType=false
+"""Redis 7+ authoritative idle backend; optional, navigation-independent storage."""
+
+from __future__ import annotations
+
+from collections.abc import Callable, Mapping
+from datetime import datetime
+from typing import TYPE_CHECKING
+
+from ..clock import Clock
+from ..config import IdleConfig
+from ..errors import ConfigurationError, ConfigurationMismatch
+from ..models import (
+    ActivityGuard,
+    ActivitySnapshot,
+    ConfigManifest,
+    IdleConversationKey,
+    RuntimeSnapshot,
+    SessionGuard,
+    SessionSnapshot,
+)
+from ..policies import IdlePolicy
+from ..protocols import Coordinator
+from .redis_admin import IndexRecovery, IndexRecoveryPage
+from .redis_coordinator import RedisCoordinator
+from .redis_engine import Engine
+from .redis_jobs import RedisJobs
+from .redis_store import RedisStore
+from .state import Claim, ControlToken, OperationLookup
+
+if TYPE_CHECKING:
+    pass
+
+
+class RedisIdleBackend(RedisJobs):
+    """Client-owned, single-primary Redis persistence with fenced job leases.
+
+    Call initialize before constructing objects that consume clock.now(). Public
+    asynchronous operations also initialize lazily. No local fallback exists.
+    close does not close the caller's Redis connection.
+    """
+
+    capabilities = frozenset(
+        {
+            "opaque_components",
+            "conditional_commits",
+            "leases",
+            "distributed",
+            "component_transactions",
+        }
+    )
+
+    def __init__(
+        self, *, redis: object, prefix: str = "aiogram-idle", config: IdleConfig | None = None
+    ) -> None:
+        self.config = config or IdleConfig()
+        self._store = RedisStore(redis, prefix, self.config)
+        self._owns_client = False
+        self._index_recovery = IndexRecovery(self._store)
+        self.clock: Clock = self._store.clock
+        coordinator = RedisCoordinator(redis=redis, prefix=prefix)
+        self.coordinator: Coordinator = coordinator
+        self._store.fencer = coordinator.fencing
+
+    @classmethod
+    def from_url(
+        cls, url: str, *, prefix: str = "aiogram-idle", config: IdleConfig | None = None
+    ) -> RedisIdleBackend:
+        """Create a backend; its client is exposed for explicit lifecycle ownership."""
+        from redis.asyncio import Redis
+
+        backend = cls(
+            redis=Redis.from_url(url, socket_timeout=5, socket_connect_timeout=5),
+            prefix=prefix,
+            config=config,
+        )
+        backend._owns_client = True
+        return backend
+
+    @property
+    def redis(self) -> object:
+        return self._store.connection.client
+
+    async def initialize(self) -> None:
+        await self._store.initialize()
+
+    def bind_coordinator(self, coordinator: Coordinator) -> None:
+        if coordinator is not self.coordinator:
+            raise ConfigurationMismatch(
+                "Redis backend requires its renewable distributed coordinator"
+            )
+
+    async def load(self, key: IdleConversationKey) -> RuntimeSnapshot | None:
+        engine, _, _ = await self._store.read(key)
+        if engine.stale_active():
+
+            async def disarm(current: Engine) -> RuntimeSnapshot | None:
+                current.disarm_stale()
+                return await current.load(key)
+
+            return await self._store.mutate(key, disarm)
+        return await engine.load(key)
+
+    async def open_session(
+        self, key: IdleConversationKey, *, lifetime_seconds: float, operation_id: str
+    ) -> SessionSnapshot:
+        return await self._store.mutate(
+            key,
+            lambda engine: engine.open_session(
+                key, lifetime_seconds=lifetime_seconds, operation_id=operation_id
+            ),
+        )
+
+    async def replace_session(
+        self,
+        key: IdleConversationKey,
+        *,
+        expected: SessionGuard,
+        lifetime_seconds: float,
+        operation_id: str,
+    ) -> SessionSnapshot:
+        return await self._store.mutate(
+            key,
+            lambda engine: engine.replace_session(
+                key, expected=expected, lifetime_seconds=lifetime_seconds, operation_id=operation_id
+            ),
+            require_live="session",
+        )
+
+    async def enter(
+        self,
+        key: IdleConversationKey,
+        activity_key: str,
+        *,
+        policy_id: str,
+        policy: IdlePolicy,
+        adapter_key: str,
+        params: Mapping[str, object],
+        session_id: str,
+        expires_at: float | datetime,
+        operation_id: str,
+        expected: ActivityGuard | None = None,
+        enabled: bool = False,
+        expected_manifest: str | None = None,
+    ) -> ActivitySnapshot:
+        from ..models import freeze_object
+
+        frozen = freeze_object(params, max_bytes=self.config.max_params_bytes)
+        return await self._store.mutate(
+            key,
+            lambda engine: engine.enter(
+                key,
+                activity_key,
+                policy_id=policy_id,
+                policy=policy,
+                adapter_key=adapter_key,
+                params=frozen,
+                session_id=session_id,
+                expires_at=expires_at,
+                operation_id=operation_id,
+                expected=expected,
+                enabled=enabled,
+                expected_manifest=expected_manifest,
+            ),
+            require_live=True,
+            arm=True,
+        )
+
+    async def touch(
+        self,
+        key: IdleConversationKey,
+        *,
+        expected: ActivityGuard,
+        operation_id: str,
+        enabled: bool = False,
+        expected_manifest: str | None = None,
+    ) -> ActivitySnapshot:
+        return await self._store.mutate(
+            key,
+            lambda engine: engine.touch(
+                key,
+                expected=expected,
+                operation_id=operation_id,
+                enabled=enabled,
+                expected_manifest=expected_manifest,
+            ),
+            require_live=True,
+            arm=True,
+        )
+
+    async def clear(
+        self, key: IdleConversationKey, *, expected: ActivityGuard, operation_id: str, reason: str
+    ) -> None:
+        await self._store.mutate(
+            key,
+            lambda engine: engine.clear(
+                key, expected=expected, operation_id=operation_id, reason=reason
+            ),
+            require_live=True,
+        )
+
+    async def transition(
+        self,
+        key: IdleConversationKey,
+        *,
+        expected_version: int,
+        operation_id: str,
+        fingerprint: str,
+        transform: Callable[[RuntimeSnapshot], RuntimeSnapshot],
+        claim: Claim | None = None,
+        policy: IdlePolicy | None = None,
+        coordination_scope: object | None = None,
+    ) -> RuntimeSnapshot:
+        async def reduce(engine: Engine) -> RuntimeSnapshot:
+            engine.disarm_stale()
+            return await engine.transition(
+                key,
+                expected_version=expected_version,
+                operation_id=operation_id,
+                fingerprint=fingerprint,
+                transform=transform,
+                claim=claim,
+                policy=policy,
+            )
+
+        return await self._store.mutate(
+            key, reduce, claim=claim, coordination_scope=coordination_scope
+        )
+
+    async def component_transaction(
+        self,
+        key: IdleConversationKey,
+        *,
+        component: str,
+        expected_version: int | None,
+        operation_id: str,
+        fingerprint: str,
+        record: RuntimeSnapshot,
+        policy: IdlePolicy | None = None,
+        coordination_scope: object | None = None,
+        expected_manifest: str | None = None,
+        allow_idle_operation_id: str | None = None,
+        expires_at: float | None = None,
+        claim: Claim | None = None,
+    ) -> RuntimeSnapshot:
+        async def reduce(engine: Engine) -> RuntimeSnapshot:
+            # The scratch reducer borrows validation only; Redis retains the real
+            # task-scoped capability and atomically validates its fencing token.
+            engine.coordinator = self.coordinator
+            return await engine.component_transaction(
+                key,
+                component=component,
+                expected_version=expected_version,
+                operation_id=operation_id,
+                fingerprint=fingerprint,
+                record=record,
+                policy=policy,
+                expected_manifest=expected_manifest,
+                allow_idle_operation_id=allow_idle_operation_id,
+                expires_at=expires_at,
+                coordination_scope=coordination_scope,
+                claim=claim,
+            )
+
+        return await self._store.mutate(
+            key,
+            reduce,
+            arm=True,
+            coordination_scope=coordination_scope,
+            expires_at=expires_at,
+            claim=claim,
+        )
+
+    async def lookup_operation(
+        self, key: IdleConversationKey, operation_id: str, *, not_before: float | None = None
+    ) -> OperationLookup:
+        engine, _, _ = await self._store.read(key)
+        return await engine.lookup_operation(key, operation_id, not_before=not_before)
+
+    async def reserve_control(
+        self,
+        key: IdleConversationKey,
+        *,
+        token: str,
+        prompt_id: str,
+        activity_id: str,
+        expires_at: float,
+    ) -> ControlToken:
+        return await self._store.mutate(
+            key,
+            lambda engine: engine.reserve_control(
+                key,
+                token=token,
+                prompt_id=prompt_id,
+                activity_id=activity_id,
+                expires_at=expires_at,
+            ),
+            require_live=True,
+        )
+
+    async def resolve_control(self, key: IdleConversationKey, token: str) -> ControlToken | None:
+        engine, _, _ = await self._store.read(key)
+        return await engine.resolve_control(key, token)
+
+    async def get_config(self) -> ConfigManifest | None:
+        await self._store.ready()
+        return self._store.config_value(await self._store.raw_config())
+
+    async def bootstrap_config(self, *, enabled: bool, policies_digest: str) -> ConfigManifest:
+        return await self._store.config_change(enabled=enabled, policies_digest=policies_digest)
+
+    async def apply_config(
+        self, *, expected_generation: str, enabled: bool, policies_digest: str, operation_id: str
+    ) -> ConfigManifest:
+        manifest = await self._store.config_change(
+            enabled=enabled,
+            policies_digest=policies_digest,
+            expected=expected_generation,
+            operation_id=operation_id,
+        )
+        if not enabled:
+            await self.reconcile(limit=self.config.max_conversations)
+        return manifest
+
+    async def frozen_policy(self, key: IdleConversationKey) -> IdlePolicy:
+        engine, _, _ = await self._store.read(key)
+        return await engine.frozen_policy(key)
+
+    async def inspect_parked(
+        self, *, cursor: int = 0, limit: int = 100
+    ) -> tuple[int, dict[IdleConversationKey, str]]:
+        """Read a bounded Redis scan page of quarantined conversation reasons."""
+        return await self._store.quarantine.inspect(cursor=cursor, limit=limit)
+
+    async def release_parked(self, key: IdleConversationKey) -> None:
+        """Explicitly release only after operator repair or a compatible upgrade."""
+        await self._store.quarantine.release(key)
+
+    async def close(self) -> None:
+        """Close a from_url-owned client; caller-provided clients remain open."""
+        if self.coordinator.active_scopes:
+            raise ConfigurationError("Drain protected handlers before closing Redis storage")
+        if self._owns_client:
+            from redis.asyncio import Redis
+
+            if isinstance(self.redis, Redis):
+                await self.redis.aclose()
+            self._owns_client = False
+
+    async def recover_indexes(self, *, limit: int = 100) -> IndexRecoveryPage:
+        """Explicit operator recovery; iterate until the returned page is complete."""
+        return await self._index_recovery.run(limit=limit)
