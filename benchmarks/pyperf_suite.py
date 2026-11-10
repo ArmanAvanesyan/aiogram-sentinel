@@ -18,4 +18,7 @@ runner.metadata["engine"] = args.engine
 runner.metadata["seed"] = 1729
 for name, function, _loops, _counters, _new_only in workloads(args.engine, False):
     if "fake_telegram" not in name and args.workload in name:
-        runner.bench_func(name, function)
+        if "confirmation_hit" in name:
+            runner.bench_async_func(name, function)
+        else:
+            runner.bench_func(name, function)

@@ -159,10 +159,8 @@ def workloads(engine: str, quick: bool):
         items.append(
             (
                 f"fake_telegram_1ms/{size}",
-                lambda _manager=manager: asyncio.run(
-                    _manager.apply_profile(
-                        42, "profile_0", language="hy", language_code=None
-                    )
+                lambda _manager=manager: _manager.apply_profile(
+                    42, "profile_0", language="hy", language_code=None
                 ),
                 1,
                 {"bot": bot},
@@ -181,14 +179,12 @@ def workloads(engine: str, quick: bool):
         items.append(
             (
                 f"confirmation_hit/{size}",
-                lambda _manager=hit_manager, _hash=confirmed: asyncio.run(
-                    _manager.apply_profile(
-                        42,
-                        "profile_0",
-                        language="hy",
-                        language_code=None,
-                        previous_fingerprint=_hash,
-                    )
+                lambda _manager=hit_manager, _hash=confirmed: _manager.apply_profile(
+                    42,
+                    "profile_0",
+                    language="hy",
+                    language_code=None,
+                    previous_fingerprint=_hash,
                 ),
                 10,
                 {"bot": hit_bot},
@@ -301,6 +297,57 @@ def sample(name, function, loops, counters, samples, warmups):
     }
 
 
+async def sample_async(name, function, loops, counters, samples, warmups):
+    if "fake_telegram" in name or "explicit_recompile" in name:
+        loops = 1
+    for _ in range(warmups):
+        for _ in range(loops):
+            await function()
+    translator_before = counters.get("translator", 0)
+    bot = counters.get("bot")
+    bot_before = bot.calls if bot else 0
+    wall, cpu = [], []
+    individual = []
+    for _ in range(samples):
+        start_cpu = time.process_time_ns()
+        start_wall = time.perf_counter_ns()
+        for _ in range(loops):
+            await function()
+        wall.append((time.perf_counter_ns() - start_wall) / loops)
+        cpu.append((time.process_time_ns() - start_cpu) / loops)
+    if "fake_telegram" in name or "confirmation_hit" in name:
+        for _ in range(100 if samples == 5 else 1000):
+            started = time.perf_counter_ns()
+            await function()
+            individual.append(time.perf_counter_ns() - started)
+    return {
+        "individual_latency_ns": {
+            "count": len(individual),
+            "p95": sorted(individual)[math.ceil(0.95 * len(individual)) - 1]
+            if individual
+            else None,
+        },
+        "loops": loops,
+        "samples": samples,
+        "warmups": warmups,
+        "wall_ns": {
+            "median": statistics.median(wall),
+            "p95": sorted(wall)[math.ceil(len(wall) * 0.95) - 1],
+            "values": wall,
+        },
+        "cpu_ns": {
+            "median": statistics.median(cpu),
+            "p95": sorted(cpu)[math.ceil(len(cpu) * 0.95) - 1],
+            "values": cpu,
+        },
+        "rss_bytes": psutil.Process().memory_info().rss,
+        "calls": {
+            "translator": counters.get("translator", 0) - translator_before,
+            "telegram": (bot.calls - bot_before) if bot else 0,
+        },
+    }
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--engine", choices=["python", "rust"], default="python")
@@ -334,13 +381,13 @@ def main():
         "cpu": platform.processor(),
         "cpu_count": os.cpu_count(),
         "seed": SEED,
-        "protocol": "serial-inprocess-v1",
+        "protocol": "serial-inprocess-v2-single-loop",
         "exploratory": args.quick,
         "notes": "CPU excludes fake network delay; wall p95 includes it only in separately named fake_telegram workloads. New compiled APIs are not baseline-comparable.",
     }
     results, pyperf_benchmarks = {}, []
     for name, function, loops, counters, new_only in workloads(args.engine, args.quick):
-        result = sample(
+        arguments = (
             name,
             function,
             loops,
@@ -348,6 +395,10 @@ def main():
             5 if args.quick else 31,
             1 if args.quick else 5,
         )
+        if "fake_telegram" in name or "confirmation_hit" in name:
+            result = asyncio.run(sample_async(*arguments))
+        else:
+            result = sample(*arguments)
         result["new_only"] = new_only
         results[name] = result
         values = [value / 1e9 for value in result["wall_ns"]["values"]]
