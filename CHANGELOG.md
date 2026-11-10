@@ -11,7 +11,8 @@
   lookups while retaining subclass key-builder behavior and policy precedence.
 - Add generated native parity tests, installed-package CPU/latency benchmark
   drivers, Criterion kernels and a separate exact-asset native release workflow.
-- Native publication is pending performance qualification and all-platform CI.
+- Withhold native publication after serial CPU qualification fell below the
+  required 20% gain; retain the core from source without a native release or extra.
 
 ## [1.2.0] - 2026-11-10
 
