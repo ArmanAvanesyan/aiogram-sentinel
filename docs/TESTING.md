@@ -48,3 +48,21 @@ uv pip install --python /tmp/sentinel-base/bin/python dist/*.whl
 Repeat in a fresh environment using the sdist to check both artifacts. The
 installation probe asserts version consistency, typing marker, memory startup,
 and a useful missing-extra error without Redis or Sentry installed.
+
+## Framework compatibility environments
+
+CI solves each endpoint's complete dependency graph in a fresh `.test-venv`
+rather than replacing aiogram inside the locked development environment. The
+minimum aiogram 3.0 endpoint requires `typing-extensions<4.8`; its test profile
+therefore uses `pytest-asyncio<1`, since newer releases import `TypeIs`.
+
+```bash
+uv venv --python 3.10 .test-venv
+uv pip install --python .test-venv/bin/python '.[dev,redis,sentry]' 'aiogram==3.0.0' 'pytest-asyncio<1'
+TEST_REDIS_URL=redis://localhost:6379/15 REQUIRE_REDIS=1 \
+  .test-venv/bin/python -m pytest tests/unit tests/integration --cov=aiogram_sentinel --cov-fail-under=80
+```
+
+These endpoint environments verify compatibility; the frozen default environment
+is audited separately. Linux-only locked dependencies are included by running
+the security job on Linux.

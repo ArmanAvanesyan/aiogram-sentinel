@@ -48,12 +48,14 @@ jobs:
       - uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ matrix.python }}
-      - run: uv sync --frozen --all-extras
+      - run: uv venv .test-venv
       - if: matrix.aiogram != 'latest'
-        run: uv pip install 'aiogram==${{ matrix.aiogram }}'
+        # aiogram 3.0 requires typing-extensions <4.8; modern pytest-asyncio
+        # imports TypeIs. Solve the complete compatible test graph together.
+        run: uv pip install --python .test-venv/bin/python '.[dev,redis,sentry]' 'aiogram==${{ matrix.aiogram }}' 'pytest-asyncio<1'
       - if: matrix.aiogram == 'latest'
-        run: uv pip install --upgrade 'aiogram<4'
-      - run: uv run --no-sync pytest tests/unit tests/integration --cov=aiogram_sentinel --cov-report=term-missing --cov-fail-under=80
+        run: uv pip install --python .test-venv/bin/python '.[dev,redis,sentry]' 'aiogram<4'
+      - run: .test-venv/bin/python -m pytest tests/unit tests/integration --cov=aiogram_sentinel --cov-report=term-missing --cov-fail-under=80
   changelog:
     name: Changelog fragment
     if: github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'skip news')

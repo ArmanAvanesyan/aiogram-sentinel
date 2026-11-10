@@ -40,3 +40,20 @@ remote CI, publication or deployment.
 
 Python/platform CI matrices are configured but have not been executed remotely
 as part of this local verification. Security scans are point-in-time evidence.
+
+## Linux CI follow-up
+
+The first remote Linux run exposed two gaps in the local evidence: Linux-only
+`cryptography` 46.0.2 had seven advisories, and Sentry type-guard assertions were
+reported by Bandit. The lock now resolves cryptography 50.0.2, and explicit
+runtime guards replace the assertions without suppressing the scan. A fresh
+Python 3.12 Linux container installed the frozen all-extras graph and passed
+both Bandit and pip-audit with zero findings.
+
+The minimum-aiogram job previously replaced one package inside a locked graph,
+leaving a pytest-asyncio/typing-extensions incompatibility. Endpoint jobs now
+solve fresh complete environments. The minimum profile uses pytest-asyncio<1
+to respect aiogram 3.0's typing-extensions<4.8 requirement. The exact profile
+passed **315 unit/integration tests** with real Redis on Python 3.10, with
+**90.37%** coverage. The independent frozen development environment remains
+the security-audit target.
