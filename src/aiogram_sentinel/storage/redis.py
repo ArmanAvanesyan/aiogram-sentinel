@@ -3,12 +3,14 @@
 from __future__ import annotations
 
 import time
+from collections.abc import Awaitable
+from typing import cast
 
 from redis.asyncio import Redis
 from redis.exceptions import RedisError
 
 from ..exceptions import BackendOperationError
-from .base import DebounceBackend, RateLimiterBackend
+from .base import DebounceBackend, RateLimiterBackend, validate_interval
 
 
 def _k(prefix: str, *parts: str) -> str:
@@ -26,21 +28,30 @@ class RedisRateLimiter(RateLimiterBackend):
 
     async def allow(self, key: str, max_events: int, per_seconds: int) -> bool:
         """Check if request is allowed and increment counter."""
+        validate_interval(max_events, "max_events")
+        validate_interval(per_seconds, "per_seconds")
         try:
             redis_key = _k(self._prefix, "rate", key)
-            # Use pipeline for atomic operation
-            pipe = self._redis.pipeline()
-            pipe.incr(redis_key)
-            pipe.ttl(redis_key)
-            count, ttl = await pipe.execute()
-            if ttl == -1:  # Set TTL if absent
-                await self._redis.expire(redis_key, per_seconds)
+            # Increment and expiry must commit together, including after a worker dies.
+            count = await cast(
+                Awaitable[int],
+                self._redis.eval(
+                    "local n = redis.call('INCR', KEYS[1]); "
+                    "if redis.call('TTL', KEYS[1]) == -1 then "
+                    "redis.call('EXPIRE', KEYS[1], ARGV[1]); end; return n",
+                    1,
+                    redis_key,
+                    str(per_seconds),
+                ),
+            )
             return int(count) <= max_events
         except RedisError as e:
             raise BackendOperationError(f"Failed to check rate limit: {e}") from e
 
     async def get_remaining(self, key: str, max_events: int, per_seconds: int) -> int:
         """Get remaining requests in current window."""
+        validate_interval(max_events, "max_events")
+        validate_interval(per_seconds, "per_seconds")
         try:
             redis_key = _k(self._prefix, "rate", key)
             val = await self._redis.get(redis_key)
@@ -59,6 +70,7 @@ class RedisDebounce(DebounceBackend):
 
     async def seen(self, key: str, window_seconds: int, fingerprint: str) -> bool:
         """Check if fingerprint was seen within window and record it."""
+        validate_interval(window_seconds, "window_seconds")
         try:
             fp = fingerprint  # Use fingerprint directly
             k = _k(self._prefix, "debounce", key, fp)

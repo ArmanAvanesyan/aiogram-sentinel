@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Awaitable, Callable
-from typing import Any
+from typing import Any, cast
 
 from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject
@@ -26,10 +26,9 @@ class ThrottlingMiddleware(BaseMiddleware):
         rate_limiter: RateLimiterBackend,
         cfg: SentinelConfig,
         key_builder: KeyBuilder,
-        on_rate_limited: Callable[
-            [TelegramObject, dict[str, Any], float], Awaitable[None]
-        ]
-        | None = None,
+        on_rate_limited: (
+            Callable[[TelegramObject, dict[str, Any], float], Awaitable[None]] | None
+        ) = None,
     ) -> None:
         """Initialize the throttling middleware.
 
@@ -180,10 +179,12 @@ class ThrottlingMiddleware(BaseMiddleware):
         # Check handler configuration for overrides (if no policy config)
         if method is None and explicit_bucket is None and scope_cap is None:
             if hasattr(handler, "sentinel_rate_limit"):
-                config = handler.sentinel_rate_limit  # type: ignore
+                config = getattr(handler, "sentinel_rate_limit", None)
                 if isinstance(config, dict):
-                    method = config.get("method")  # type: ignore
-                    explicit_bucket = config.get("bucket")  # type: ignore
+                    # Legacy handler metadata is an untyped application boundary.
+                    metadata = cast(dict[str, Any], config)
+                    method = metadata.get("method")
+                    explicit_bucket = metadata.get("bucket")
 
         # Check data for overrides
         if "sentinel_method" in data:

@@ -6,6 +6,7 @@ from unittest.mock import patch
 
 import pytest
 
+from aiogram_sentinel.exceptions import ConfigurationError
 from aiogram_sentinel.storage.memory import (
     MemoryDebounce,
     MemoryRateLimiter,
@@ -264,6 +265,12 @@ class TestMemoryBackendPerformance:
         ]
 
         for key, window, _delay in edge_cases:
+            if window <= 0:
+                with pytest.raises(ConfigurationError):
+                    await limiter.allow(key, 10, window)
+                with pytest.raises(ConfigurationError):
+                    await debounce.seen(key, window, "fingerprint")
+                continue
             # Rate limiter edge cases
             start_time = time.time()
             await limiter.allow(key, 10, window)

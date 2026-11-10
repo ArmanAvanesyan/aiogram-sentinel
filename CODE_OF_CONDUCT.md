@@ -36,7 +36,7 @@ This Code of Conduct applies within all community spaces, and also applies when 
 
 ## Enforcement
 
-Instances of abusive, harassing, or otherwise unacceptable behavior may be reported to the community leaders responsible for enforcement at [INSERT EMAIL ADDRESS]. All complaints will be reviewed and investigated promptly and fairly.
+Instances of abusive, harassing, or otherwise unacceptable behavior may be reported to the community leaders responsible for enforcement at [arman.avanesyan@yahoo.com](mailto:arman.avanesyan@yahoo.com). Reports should include enough context for the maintainers to assess the incident.
 
 All community leaders are obligated to respect the privacy and security of the reporter of any incident.
 
@@ -74,7 +74,6 @@ If you experience or witness unacceptable behavior, or have any other concerns, 
 
 **Contact Information**:
 - **Email**: arman.avanesyan@yahoo.com
-- **GitHub**: [Create a private issue](https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/new?template=security_issue.yml)
 
 When reporting, please include:
 - Your contact information
@@ -82,20 +81,11 @@ When reporting, please include:
 - Description of the incident
 - Any additional context that may be helpful
 
-## Response Process
+## Handling reports
 
-1. **Acknowledgment**: We will acknowledge receipt of your report within 48 hours
-2. **Investigation**: We will investigate the incident promptly and fairly
-3. **Resolution**: We will take appropriate action based on our enforcement guidelines
-4. **Follow-up**: We will follow up with you about the resolution
-
-## Confidentiality
-
-All reports will be handled with the utmost confidentiality. We will not disclose the identity of reporters without their explicit consent, except where required by law.
-
-## Appeals
-
-If you disagree with the resolution of your report, you may appeal by contacting the project maintainers. Appeals will be reviewed by a different member of the community leadership team.
+Maintainers assess reports and may use the enforcement guidelines above. Share
+sensitive incident details by email, not public GitHub issues. This policy does
+not promise a response deadline or a separate appeals team.
 
 ## Attribution
 
@@ -146,7 +136,6 @@ In addition to the general Code of Conduct, we have specific guidelines for our 
 For questions about this Code of Conduct or to report violations:
 
 - **Email**: arman.avanesyan@yahoo.com
-- **GitHub**: [Create a private issue](https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/new?template=security_issue.yml)
 
 ## Updates
 
@@ -155,5 +144,3 @@ This Code of Conduct may be updated from time to time. Changes will be communica
 - GitHub releases
 - Project announcements
 - Community discussions
-
-Last updated: September 2024

@@ -11,6 +11,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   label-pr:
     name: Auto-label PR
@@ -96,63 +99,3 @@ jobs:
                 labels: Array.from(labels),
               });
             }
-
-  changelog-check:
-    name: Check Changelog
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
-    if: ${{ !contains(github.event.pull_request.labels.*.name, 'skip news') }}
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: '0'
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Install UV
-        uses: astral-sh/setup-uv@v3
-        with:
-          version: "0.4.0"
-
-      - name: Install towncrier
-        run: uv tool install towncrier
-
-      - name: Check changelog
-        env:
-          BASE_BRANCH: ${{ github.base_ref }}
-        run: |
-          git fetch --no-tags origin +refs/heads/${BASE_BRANCH}:refs/remotes/origin/${BASE_BRANCH}
-          uv tool run towncrier check --compare-with origin/${BASE_BRANCH}
-
-      - name: Find bot comment
-        if: always()
-        uses: peter-evans/find-comment@v3
-        id: fc
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          comment-author: 'github-actions[bot]'
-          body-includes: 'Changelog check'
-
-      - name: Create or update comment
-        if: always()
-        uses: peter-evans/create-or-update-comment@v4
-        with:
-          comment-id: ${{ steps.fc.outputs.comment-id }}
-          issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            ## Changelog check
-
-            ${{ job.status == 'success' && '✅ Changelog is up to date!' || '❌ Changelog is missing or outdated.' }}
-
-            ${{ job.status == 'failure' && 'Please add a changelog entry in the `CHANGES/` directory. See [CHANGES/README.md](CHANGES/README.md) for instructions.' || '' }}
-
-            ${{ job.status == 'failure' && 'If this PR does not require a changelog entry, add the `skip news` label.' || '' }}
-          edit-mode: replace

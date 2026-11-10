@@ -113,6 +113,13 @@ class SentinelEvents:
             await asyncio.gather(*self._tasks, return_exceptions=True)
             self._tasks.clear()
 
+    def forget_tasks(self) -> None:
+        """Release tracked task references without cancelling running subscribers.
+
+        Call ``wait_for_tasks`` first when subscriber completion is required.
+        """
+        self._tasks.clear()
+
     async def _safe_handle(
         self,
         handler: Callable[[BaseEvent], Awaitable[None]],
@@ -137,6 +144,7 @@ events = SentinelEvents()
 def cleanup_events() -> None:
     """Clean up the global events instance.
 
-    This is useful for tests to ensure no tasks are left running.
+    This forgets task references; it does not cancel running subscribers.
+    Await ``events.wait_for_tasks()`` first when completion is required.
     """
-    events._tasks.clear()
+    events.forget_tasks()

@@ -1,311 +1,40 @@
-# Security Policy
+# Security policy
 
-## Supported Versions
+## Reporting a vulnerability
 
-We provide security updates for the following versions of aiogram-sentinel:
+Do not disclose vulnerabilities, credentials or exploit details in public issues.
+Email the existing maintainer contact at
+[arman.avanesyan@yahoo.com](mailto:arman.avanesyan@yahoo.com). Include the affected
+package and version, Python/aiogram versions, a minimal reproduction and the
+potential impact. Redact bot tokens, Redis URLs and personal data.
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 0.1.x   | :white_check_mark: |
-| < 0.1   | :x:                |
+A [private GitHub security advisory](https://github.com/ArmanAvanesyan/aiogram-sentinel/security/advisories/new)
+is another option when private reporting is available for the repository. If it
+is unavailable, use email. Ordinary issue forms are public.
 
-## Reporting a Vulnerability
+## Versions and fixes
 
-**IMPORTANT**: If you believe you have found a security vulnerability, please **DO NOT** open a public issue.
+The checkout's package version is declared in `pyproject.toml` and exported from
+`src/aiogram_sentinel/version.py`. Report the exact installed version so affected
+releases can be assessed. The repository does not promise backports, response
+SLAs or a fixed support period. Review [release history](CHANGELOG.md) and use a
+current compatible release when available.
 
-### Private Reporting
+## Application responsibilities
 
-Please report security vulnerabilities privately to:
+Sentinel provides rate limiting, debouncing and optional error handling. It does
+not authenticate users, authorize application actions, sanitize arbitrary input
+or guarantee protection from denial of service. Memory storage is process-local;
+Redis deployments must protect their credentials and network access.
 
-- **Email**: arman.avanesyan@yahoo.com
-- **GitHub Security Advisories**: [Create a private security advisory](https://github.com/ArmanAvanesyan/aiogram-sentinel/security/advisories/new)
+Keep dependencies updated, avoid logging message content or secrets, and configure
+application access controls independently. The optional Sentry integration sends
+error information to the application's configured service when enabled.
 
-### What to Include
+## Development checks
 
-When reporting a vulnerability, please include:
-
-1. **Description**: Clear description of the vulnerability
-2. **Steps to Reproduce**: Detailed steps to reproduce the issue
-3. **Impact**: Potential impact and severity
-4. **Environment**: Version information, OS, Python version
-5. **Proof of Concept**: If possible, provide a minimal PoC (without exploiting it)
-
-### Response Timeline
-
-- **Initial Response**: Within 48 hours
-- **Status Update**: Within 7 days
-- **Resolution**: Within 90 days (unless otherwise agreed)
-
-## Security Best Practices
-
-### For Users
-
-#### 1. Keep Dependencies Updated
-
-```bash
-# Regularly update aiogram-sentinel
-pip install --upgrade aiogram-sentinel
-
-# Check for known vulnerabilities
-pip-audit
-```
-
-#### 2. Secure Redis Connections
-
-```python
-# Use SSL/TLS for Redis connections
-storage = RedisStorage(
-    url="rediss://your-redis-server:6380",  # Note: rediss:// for SSL
-    password="strong_password",
-    ssl_cert_reqs="required",
-)
-```
-
-#### 3. Environment Variables
-
-```bash
-# Use environment variables for sensitive data
-export REDIS_PASSWORD="your_secure_password"
-export BOT_TOKEN="your_bot_token"
-```
-
-#### 4. Network Security
-
-- Use firewalls to restrict access to Redis
-- Run Redis on private networks when possible
-- Use VPN or SSH tunnels for remote access
-
-#### 5. Access Control
-
-```python
-# Implement proper user access controls
-@dp.message(Command("admin"))
-async def admin_command(message: Message):
-    if message.from_user.id not in ADMIN_USER_IDS:
-        await message.answer("Access denied")
-        return
-    
-    # Admin functionality
-    await message.answer("Admin panel")
-```
-
-### For Developers
-
-#### 1. Input Validation
-
-```python
-# Always validate user input
-@dp.message()
-async def handle_message(message: Message):
-    # Validate message content
-    if not message.text or len(message.text) > 1000:
-        await message.answer("Invalid message")
-        return
-    
-    # Process message
-    await message.answer("Message processed")
-```
-
-#### 2. Rate Limiting
-
-```python
-# Implement appropriate rate limits
-config = SentinelConfig(
-    throttling_default_max=5,      # Reasonable limit
-    throttling_default_per_seconds=60,
-)
-```
-
-#### 3. Error Handling
-
-```python
-# Don't expose sensitive information in errors
-try:
-    await process_message(message)
-except Exception as e:
-    # Log the full error internally
-    logging.error(f"Error processing message: {e}")
-    
-    # Return generic error to user
-    await message.answer("An error occurred. Please try again.")
-```
-
-#### 4. Logging Security
-
-```python
-# Avoid logging sensitive data
-import logging
-
-# Good: Log user ID (not sensitive)
-logging.info(f"User {message.from_user.id} sent a message")
-
-# Bad: Log message content (might be sensitive)
-logging.info(f"User sent: {message.text}")
-```
-
-## Security Features
-
-### 1. Rate Limiting
-
-aiogram-sentinel provides built-in rate limiting to prevent:
-
-- **Spam attacks**: Excessive message sending
-- **DDoS attacks**: Overwhelming the bot with requests
-- **Resource exhaustion**: Preventing system overload
-
-### 2. User Blocking
-
-```python
-# Block malicious users
-await sentinel.blocklist_backend.set_blocked(user_id, True)
-```
-
-### 3. Input Sanitization
-
-```python
-# Sanitize user input
-from aiogram_sentinel.utils.keys import fingerprint
-
-# Create safe fingerprints
-safe_fingerprint = fingerprint(message.text)
-```
-
-### 4. Storage Security
-
-- **Memory storage**: Data is not persisted
-- **Redis storage**: Supports authentication and SSL
-- **Key isolation**: User data is properly isolated
-
-## Security Considerations
-
-### 1. Data Privacy
-
-- User data is stored locally or in your Redis instance
-- No data is sent to external services
-- You control all data storage and retention
-
-### 2. Network Security
-
-- Use HTTPS for webhook endpoints
-- Encrypt Redis connections in production
-- Implement proper firewall rules
-
-### 3. Access Control
-
-- Implement proper user authentication
-- Use role-based access control
-- Monitor and log access attempts
-
-### 4. Monitoring
-
-```python
-# Monitor for suspicious activity
-async def security_monitor(user_id: int, action: str):
-    # Log security events
-    logging.warning(f"Security event: User {user_id} performed {action}")
-    
-    # Implement automatic blocking for repeated violations
-    if action == "rate_limit_exceeded":
-        # Block user after multiple violations
-        pass
-```
-
-## Compliance
-
-### GDPR Compliance
-
-- User data is stored locally
-- You control data retention policies
-- Users can request data deletion
-
-### Data Retention
-
-```python
-# Implement data retention policies
-async def cleanup_old_data():
-    # Remove old rate limit data
-    await sentinel.rate_limiter_backend.cleanup_expired()
-    
-    # Remove old debounce data
-    await sentinel.debounce_backend.cleanup_expired()
-```
-
-## Security Updates
-
-### Automatic Updates
-
-We recommend enabling automatic security updates:
-
-```bash
-# Use pip-tools for dependency management
-pip-compile requirements.in
-pip-sync requirements.txt
-```
-
-### Monitoring Security Advisories
-
-- Subscribe to GitHub security advisories
-- Monitor Python security announcements
-- Follow aiogram security updates
-
-## Incident Response
-
-### 1. Detection
-
-- Monitor logs for suspicious activity
-- Set up alerts for rate limit violations
-- Track failed authentication attempts
-
-### 2. Response
-
-```python
-# Automatic response to security incidents
-async def handle_security_incident(user_id: int, incident_type: str):
-    if incident_type == "rate_limit_exceeded":
-        # Temporarily block user
-        await sentinel.blocklist_backend.set_blocked(user_id, True)
-        
-        # Log incident
-        logging.warning(f"Security incident: User {user_id} rate limited")
-```
-
-### 3. Recovery
-
-- Have backup and recovery procedures
-- Test incident response procedures
-- Document lessons learned
-
-## Security Checklist
-
-### Before Deployment
-
-- [ ] Update all dependencies
-- [ ] Configure secure Redis connection
-- [ ] Set up proper rate limits
-- [ ] Implement access controls
-- [ ] Configure logging
-- [ ] Test security features
-
-### Regular Maintenance
-
-- [ ] Monitor security advisories
-- [ ] Update dependencies monthly
-- [ ] Review access logs
-- [ ] Test backup procedures
-- [ ] Audit user permissions
-
-## Contact
-
-For security-related questions or concerns:
-
-- **Security Email**: arman.avanesyan@yahoo.com
-- **General Issues**: [GitHub Issues](https://github.com/ArmanAvanesyan/aiogram-sentinel/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/ArmanAvanesyan/aiogram-sentinel/discussions)
-
-## Acknowledgments
-
-We thank the security researchers and community members who help keep aiogram-sentinel secure by responsibly reporting vulnerabilities.
-
-## Changelog
-
-Security-related changes are documented in our [CHANGELOG.md](CHANGELOG.md) and marked with the `[SECURITY]` tag.
+CI runs Bandit over library source and pip-audit over its installed runtime and
+development dependencies. Reports are uploaded as CI artifacts even on scan
+failure; generated JSON is not committed. These checks are point-in-time evidence,
+not a guarantee that a package or application has no vulnerabilities. See
+[reports/README.md](reports/README.md) for local commands.

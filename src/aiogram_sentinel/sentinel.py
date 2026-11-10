@@ -3,11 +3,15 @@
 from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
+from dataclasses import dataclass
 from typing import Any
+from weakref import WeakKeyDictionary
 
 from aiogram import Dispatcher, Router
+from aiogram.types import TelegramObject
 
 from .config import SentinelConfig
+from .exceptions import ConfigurationError
 from .middlewares.debouncing import DebounceMiddleware
 from .middlewares.errors import ErrorConfig, ErrorHandlingMiddleware
 from .middlewares.policy_resolver import PolicyResolverMiddleware
@@ -16,6 +20,29 @@ from .policy import registry
 from .scopes import KeyBuilder
 from .storage.factory import build_infra
 from .types import InfraBundle
+
+RateLimitHook = Callable[[TelegramObject, dict[str, Any], float], Awaitable[None]]
+
+
+@dataclass
+class _Hook:
+    callback: RateLimitHook | None = None
+
+    async def __call__(
+        self, event: TelegramObject, data: dict[str, Any], retry_after: float
+    ) -> None:
+        if self.callback is not None:
+            await self.callback(event, data, retry_after)
+
+
+@dataclass
+class _Installation:
+    infra: InfraBundle
+    cfg: SentinelConfig
+    hook: _Hook
+
+
+_installations: WeakKeyDictionary[Router, _Installation] = WeakKeyDictionary()
 
 
 class Sentinel:
@@ -44,6 +71,11 @@ class Sentinel:
         Returns:
             Tuple of (router, infra_bundle)
         """
+        if router is not None and (
+            router in _installations or router.parent_router is not None
+        ):
+            raise ConfigurationError("Router is already installed or attached")
+
         # Build infrastructure if not provided
         if infra is None:
             infra = build_infra(cfg)
@@ -58,8 +90,9 @@ class Sentinel:
         # Create middlewares in correct order with KeyBuilder
         policy_resolver = PolicyResolverMiddleware(registry, cfg)
         debounce_middleware = DebounceMiddleware(infra.debounce, cfg, key_builder)
+        hook = _Hook()
         throttling_middleware = ThrottlingMiddleware(
-            infra.rate_limiter, cfg, key_builder
+            infra.rate_limiter, cfg, key_builder, on_rate_limited=hook
         )
 
         # Create error handling middleware if configured
@@ -80,6 +113,8 @@ class Sentinel:
 
         # Include router in dispatcher
         dp.include_router(router)
+        _installations[router] = _Installation(infra, cfg, hook)
+        Sentinel._error_config = None
 
         return router, infra
 
@@ -100,36 +135,21 @@ class Sentinel:
         infra: InfraBundle,
         cfg: SentinelConfig,
         *,
-        on_rate_limited: Callable[[Any, dict[str, Any], float], Awaitable[Any]]
-        | None = None,
+        on_rate_limited: RateLimitHook | None = None,
     ) -> None:
-        """Add hooks to existing middlewares.
+        """Update this router's owned hook without replacing any middleware.
 
-        Args:
-            router: Router with middlewares
-            infra: Infrastructure bundle (rate_limiter, debounce)
-            cfg: SentinelConfig configuration
-            on_rate_limited: Optional hook for rate-limited events
+        The router, infrastructure and configuration must come from the same
+        successful ``setup`` call. Passing ``None`` removes the hook.
         """
-        # Create KeyBuilder instance
-        key_builder = KeyBuilder(app=cfg.redis_prefix)
-
-        # Create middlewares with hooks
-        policy_resolver = PolicyResolverMiddleware(registry, cfg)
-        debounce_middleware = DebounceMiddleware(infra.debounce, cfg, key_builder)
-        throttling_middleware = ThrottlingMiddleware(
-            infra.rate_limiter, cfg, key_builder, on_rate_limited=on_rate_limited
-        )
-
-        # Replace middlewares with hook-enabled versions
-        for reg in (router.message, router.callback_query):
-            # Clear existing middlewares
-            reg.middlewares.clear()  # type: ignore
-
-            # Add complete middleware chain with hooks in correct order
-            reg.middleware(policy_resolver)  # FIRST
-            reg.middleware(debounce_middleware)
-            reg.middleware(throttling_middleware)
+        installation = _installations.get(router)
+        if installation is None:
+            raise ConfigurationError("Router was not installed by Sentinel.setup")
+        if installation.infra is not infra or installation.cfg is not cfg:
+            raise ConfigurationError(
+                "Hook configuration does not match router installation"
+            )
+        installation.hook.callback = on_rate_limited
 
 
 async def setup_sentinel(

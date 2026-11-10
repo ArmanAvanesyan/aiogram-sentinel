@@ -6,7 +6,7 @@ import asyncio
 import time
 from collections import defaultdict, deque
 
-from .base import DebounceBackend, RateLimiterBackend
+from .base import DebounceBackend, RateLimiterBackend, validate_interval
 
 
 class MemoryRateLimiter(RateLimiterBackend):
@@ -19,6 +19,8 @@ class MemoryRateLimiter(RateLimiterBackend):
 
     async def allow(self, key: str, max_events: int, per_seconds: int) -> bool:
         """Check if request is allowed and increment counter."""
+        validate_interval(max_events, "max_events")
+        validate_interval(per_seconds, "per_seconds")
         async with self._lock:
             now = time.monotonic()
             # Clean up old entries
@@ -32,6 +34,8 @@ class MemoryRateLimiter(RateLimiterBackend):
 
     async def get_remaining(self, key: str, max_events: int, per_seconds: int) -> int:
         """Get remaining requests in current window."""
+        validate_interval(max_events, "max_events")
+        validate_interval(per_seconds, "per_seconds")
         async with self._lock:
             now = time.monotonic()
             # Clean up old entries
@@ -83,6 +87,7 @@ class MemoryDebounce(DebounceBackend):
 
     async def seen(self, key: str, window_seconds: int, fingerprint: str) -> bool:
         """Check if fingerprint was seen within window and record it."""
+        validate_interval(window_seconds, "window_seconds")
         k = f"{key}:{fingerprint}"
         async with self._lock:
             now = time.monotonic()

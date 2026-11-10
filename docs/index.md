@@ -67,7 +67,7 @@ pip install aiogram-sentinel[redis]
 
 ## 🤝 Contributing
 
-See [CONTRIBUTING.md](../CONTRIBUTING.md) for development guidelines and setup instructions.
+See [CONTRIBUTING.md](https://github.com/ArmanAvanesyan/aiogram-sentinel/blob/main/CONTRIBUTING.md) for development guidelines and setup instructions.
 
 ## 💬 Community & Support
 
@@ -87,7 +87,7 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for development guidelines and setup i
 
 ## Security
 
-For security issues, see [SECURITY.md](../SECURITY.md).
+For security issues, see [SECURITY.md](https://github.com/ArmanAvanesyan/aiogram-sentinel/blob/main/SECURITY.md).
 
 ## License
 
