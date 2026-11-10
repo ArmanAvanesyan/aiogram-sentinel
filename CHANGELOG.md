@@ -2,7 +2,17 @@
 
 <!-- towncrier release notes start -->
 
-## 0.1.0 — local development
+## [0.1.0] - 2026-11-10
+
+### Miscellaneous
+
+- Align repository automation, typed distribution checks, community
+  documentation
+  and changelog fragments with the related aiogram libraries. Runtime version
+  reporting now reads the installed distribution metadata.
+
+
+### Core library
 
 - Introduce standalone conversation identity, session/activity guards, policies and typed adapter contracts.
 - Add single-process memory storage and a recoverable inactivity lifecycle.
@@ -10,9 +20,9 @@
 - Include ordinary-handler and FSM examples, deterministic tests and packaging checks.
 - Add optional Redis 7+ storage, renewable distributed coordination, atomic indexes, retained operation receipts and explicit administrative index recovery.
 - Exercise real-server worker races, process crashes, lease expiry, uncertain commits, corruption and memory/Redis parity.
-- Include optional navigation integration as detailed below; this version is not published.
+- Include optional navigation integration as detailed below.
 
-## Unreleased local audit fixes
+### Memory and lifecycle audit fixes
 
 - Share backend coordination across runtimes and verify FSM borrowing/scope lifetimes.
 - Enforce grace deadlines during answer admission and preserve original delivery grace on recovery.
@@ -21,7 +31,7 @@
 - Protect pending evidence, expire administrative receipts, route namespace/bot claims and tag operation lookup results.
 - Expand automated coverage to 168 tests, including 1,000 abandoned-claim recoveries.
 
-## Unreleased Redis audit fixes
+### Redis audit fixes
 
 - Fence namespace/configuration history, storage profiles and delegated effect checkpoints atomically.
 - Prevent revoked-scope reentry and enforce shared FSM lock order and lossless Redis FSM keys.
@@ -30,7 +40,7 @@
 - Recheck grace before delivery, order heartbeat retries and preserve external cancellation through timeouts.
 - Document backend scope contracts and explicit recovery in docs/redis-audit.md.
 
-## Unreleased optional navigation integration
+### Optional navigation integration
 
 - Add the optional nav extra and aiogram_idle.integrations.nav projection without peer imports in either core.
 - Commit navigation/activity/deadline updates in one memory/Redis transaction with mapped sessions and acceptance counters.

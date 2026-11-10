@@ -2,34 +2,29 @@
 
 Standalone inactivity policies for aiogram 3, with typed session/activity contracts and memory or optional Redis storage. Add Continue/Cancel questions or quiet cleanup to ordinary handlers and FSM conversations without adopting a navigation framework.
 
-The `0.1.0` development distribution has not been published to PyPI.
+Version `0.1.0` supports Python 3.10+ and aiogram 3.22 or newer within the 3.x series.
 
-## Install locally
-
-Requires Python 3.10 or newer.
+## Install
 
 ```bash
-uv sync --frozen --python 3.12
-uv run --no-sync python examples/demo.py --help
+python -m pip install aiogram-idle==0.1.0
+# Optional standalone Redis backend:
+python -m pip install 'aiogram-idle[redis]==0.1.0'
+# Optional navigation integration, with or without Redis:
+python -m pip install 'aiogram-idle[nav]==0.1.0'
+python -m pip install 'aiogram-idle[nav,redis]==0.1.0'
 ```
 
-To install from the checkout in another bot environment:
-
-```bash
-uv pip install -e .
-```
-
-The core runtime dependency is aiogram 3. Redis and aiogram-nav are not installed by the base package. To use Redis 7 or newer, install the optional client dependency:
-
-```bash
-uv pip install -e '.[redis]'
-```
+The core runtime dependency is aiogram 3. Redis and aiogram-nav are not installed
+by the base package. The Redis backend requires Redis 7 or newer.
 
 See [Redis setup and recovery](docs/redis.md). The optional [aiogram-nav integration](docs/navigation.md) is available through `[nav]` or `[nav,redis]`; neither base nor Redis-only installs require navigation.
 
 ## Run the examples
 
-Set `BOT_TOKEN` in your environment, then choose the prompt controls:
+Clone the repository to run its examples, install the frozen development
+requirements with `uv sync --frozen --python 3.12`, then set `BOT_TOKEN` in your
+environment and choose the prompt controls:
 
 ```bash
 uv run --no-sync python examples/demo.py --controls reply
@@ -98,4 +93,4 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md) and the
 
 MIT. See [LICENSE](LICENSE).
 
-For this unpublished development checkout, use the frozen lock for standalone work: `uv sync --frozen` and `uv run --no-sync ...` work with aiogram-nav absent. Regenerating the lock or selecting the nav extra uses the adjacent navigation checkout declared in tool.uv.sources. Installing the base wheel or Redis extra does not require that checkout.
+For a source checkout, use the frozen lock for standalone work: `uv sync --frozen` and `uv run --no-sync ...` work with aiogram-nav absent. Regenerating the lock or selecting the nav extra uses the adjacent navigation checkout declared in tool.uv.sources. Installing the base wheel or Redis extra does not require that checkout.

@@ -1,10 +1,9 @@
 # Redis storage
 
-The development distribution has not been published to PyPI. Install the optional
-Redis dependency from the repository checkout:
+Install the optional Redis client dependency:
 
 ```sh
-uv pip install -e '.[redis]'
+python -m pip install 'aiogram-idle[redis]==0.1.0'
 ```
 
 Use a writable, standalone Redis 7+ primary configured with

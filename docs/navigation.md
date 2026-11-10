@@ -5,8 +5,19 @@ standalone libraries still work independently. Importing `aiogram_idle`, includi
 its Redis backend, does not import or install aiogram-nav. Navigation itself has
 no idle dependency.
 
-This development distribution has not been published to PyPI. With compatible
-`aiogram-idle` and `aiogram-nav` checkouts in adjacent directories:
+Install the integration in a bot environment:
+
+```sh
+python -m pip install 'aiogram-idle[nav]==0.1.0'
+# Select both optional integrations when using Redis:
+python -m pip install 'aiogram-idle[nav,redis]==0.1.0'
+```
+
+The `nav` extra resolves `aiogram-nav>=0.1.0,<0.2` from PyPI. Base and Redis-only
+installations remain independent of aiogram-nav.
+
+For source development, put compatible `aiogram-idle` and `aiogram-nav` checkouts
+in adjacent directories and run the combined example from the idle checkout:
 
 ```sh
 uv sync --frozen --extra nav --extra redis
@@ -18,20 +29,6 @@ navigation and the example's application FSM store. Without it, storage is memor
 and single-process. CLI help does not require either variable. All four styles
 are available: reply, inline, commands and hybrid. Debug logging is configured by
 the example, never globally by the library.
-
-To install in another environment before publication, install the compatible
-navigation checkout first, then the idle extra:
-
-```sh
-uv pip install ../aiogram-nav
-uv pip install '.[nav]'
-# Select [nav,redis] when using Redis.
-```
-
-The optional dependency is `aiogram-nav>=0.1.0,<0.2`. The adapter uses the reviewed
-navigation receipt format; changing registry structure, storage settings or
-mapping requires an explicit migration while writers are stopped. Startup does
-not rewrite an established profile.
 
 ## Construction and installation
 
@@ -191,7 +188,7 @@ AIOGRAM_IDLE_REDIS_URL=redis://localhost:6379/0 AIOGRAM_IDLE_REQUIRE_REDIS=1 \
 uv run --no-sync pyright --project pyright-nav.json
 ```
 
-For standalone development without a neighboring navigation checkout, keep the frozen lock (`uv sync --frozen`) and use `uv run --no-sync`; regenerating this unpublished project lock resolves all extras and needs the local peer source. Base and Redis-only distribution installs do not need it.
+For standalone development without a neighboring navigation checkout, keep the frozen lock (`uv sync --frozen`) and use `uv run --no-sync`; regenerating the development lock resolves all extras and needs the local peer source. Base and Redis-only distribution installs do not need it.
 
 An automatic, separate integration CI job checks out `ArmanAvanesyan/aiogram-nav`
 at `main`, runs the optional strict type profile and exercises navigation/component

@@ -1,8 +1,7 @@
 # Releasing
 
-This is a maintainer checklist, not an automatic publishing workflow. The current
-development version is `0.1.0` and has not been published to PyPI. Repository pushes
-and documentation builds do not publish a package.
+This maintainer checklist describes deliberate releases. Repository pushes and
+documentation builds do not publish a package. The first release is `0.1.0`.
 
 1. Review compatibility, recovery/storage schema changes and dependency boundaries.
    Check the supported Python/aiogram and real-Redis jobs, plus optional navigation
@@ -20,11 +19,27 @@ and documentation builds do not publish a package.
    rebuild wheel/sdist and verify their metadata and isolated installations.
 6. Commit the reviewed release changes. Create a matching tag only when a release
    is authorized; the version tool checks `GITHUB_REF` when run on a tag.
-7. Publish the verified artifacts only through a separately configured and
-   authorized package-index process. Verify availability and install from that
-   index before advertising installation instructions for the released version.
+7. Publish aiogram-nav first when preparing matching releases. The optional `nav`
+   extra requires a compatible aiogram-nav distribution on PyPI.
+8. Create the matching GitHub release with the reviewed wheel, sdist, release
+   notes and a `SHA256SUMS` manifest containing exactly those two artifact names.
+   Keep the independently verified SHA256 digest of the manifest outside the
+   release assets. Configure the PyPI Trusted Publisher for this repository's
+   `publish.yml` workflow and `pypi` environment before dispatching publication.
+9. Dispatch publication against the matching tag, using the reviewed manifest
+   digest rather than a digest newly downloaded from GitHub:
 
-The optional `nav` extra requires a compatible aiogram-nav distribution on the
-target package index. Until that is available, use the documented source/checkout
-installation; do not assume a GitHub push satisfies that dependency on PyPI.
-Do not add credentials, generated security reports or build output to commits.
+   ```sh
+   gh workflow run publish.yml --ref v0.1.0 -f manifest_sha256=<reviewed-manifest-digest>
+   ```
+
+   The workflow verifies tag/version equality and exact artifact filenames and
+   hashes, checks metadata, and publishes those downloaded artifacts through
+   PyPI Trusted Publishing. It does not rebuild or substitute distributions.
+10. Verify the published file hashes and availability on PyPI. Install both the
+    standalone package and `[nav,redis]` in fresh environments from the index;
+    confirm the optional integration resolves without source checkouts.
+
+Substitute the actual release version consistently. Do not add credentials,
+generated security reports or build output to commits. Repository pushes never
+trigger the manual publication workflow.

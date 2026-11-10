@@ -7,7 +7,7 @@ Repository-alignment verification subsequently passed 508 existing tests with
 See the [alignment report](https://github.com/ArmanAvanesyan/aiogram-idle/blob/main/reports/2026-11-10-repository-alignment.md)
 for its exact commands, security scope and remaining boundaries.
 
-Verified locally on 10 November 2026 for the unpublished 0.1.0 distribution,
+The following historical checks ran locally before publication on 10 November 2026 for 0.1.0,
 including the optional navigation projection and its concurrency, recovery, FSM and keyboard tests.
 
 ## Historical implementation results
