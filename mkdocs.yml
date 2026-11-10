@@ -8,6 +8,7 @@ nav:
   - Storage: storage.md
   - Redis: redis.md
   - Redis audit: redis-audit.md
+  - Application ownership: application-integration.md
   - Migration: migration.md
   - Optional idle integration: idle-integration.md
   - Security: security.md

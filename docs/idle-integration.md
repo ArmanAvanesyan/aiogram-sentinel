@@ -8,11 +8,11 @@ explicitly; installing aiogram-nav alone installs neither aiogram-idle nor Redis
 In a bot environment, the optional idle extra selects compatible navigation:
 
 ```sh
-pip install 'aiogram-idle[nav]==0.1.0'
+pip install 'aiogram-idle[nav]==0.2.0'
 # Select aiogram-idle[nav,redis] for the shared Redis backend.
 ```
 
-The adapter supports aiogram-nav `>=0.1.0,<0.2`. Its public entry points are:
+The adapter supports aiogram-nav `>=0.2.0,<0.3`. Its public entry points are:
 
 ```python
 from aiogram_idle.integrations.nav import NavigationIntegration, NodePolicies
@@ -36,8 +36,9 @@ This construction excerpt assumes application-created `idle`, `registry`,
 presenter and flow adapter objects. Policy IDs such as `none` and `draft` must
 exist in the idle policy registry; they are not reserved built-in names.
 
-Use only the combined `integration.install` path, before business routers and
-worker startup. Do not additionally call the standalone `navigation.install` or
+Use only the combined `integration.install` path before worker startup. Its
+automatic mode places bindings before business routers; explicit manual mode
+accepts the application-positioned bindings router. Do not additionally call the standalone `navigation.install` or
 `idle.install`. The combined installer verifies shared coordination and FSM
 mapping. The idle backend owns session/activity state and stores navigation as a
 versioned component; accepted navigation/activity updates commit together there.

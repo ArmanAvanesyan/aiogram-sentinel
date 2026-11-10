@@ -31,6 +31,7 @@ from .models import (
     NavigationMutation,
     NavigationSnapshot,
     PreparedAction,
+    RenderRequest,
     RenderResult,
     ViewState,
 )
@@ -75,6 +76,7 @@ async def prepare(
     view_id: str | None = None,
     history_pop: int = 1,
 ) -> PreparedAction:
+    await nav.authorize_session(key)
     node = nav.registry.get(node_id)
     validated = nav.registry.validate_params(node.id, params)
     await nav.allowed(key, node, validated, source)
@@ -177,7 +179,7 @@ def retry_matches(
         raise OperationIdConflict("Operation ID belongs to another home target")
 
 
-async def perform(
+async def prepare_action(
     nav: Navigation,
     key: ConversationKey,
     kind: ActionKind,
@@ -188,18 +190,20 @@ async def perform(
     history: HistoryMode = "push",
     source: str = "application",
     accepted_activity: bool = True,
-) -> RenderResult:
+) -> PreparedAction:
     if type(accepted_activity) is not bool:
         raise ConfigurationError("accepted_activity must be a boolean")
     async with nav.coordinator.hold(key):
+        await nav.authorize_session(key)
         existing = await nav.repository.lookup_operation(key, operation_id=operation_id)
         if existing.prepared is not None:
             prepared = existing.prepared
+            await nav.authorize_session(key, prepared.session_id)
             retry_matches(prepared, kind, node_id, params, history, source, accepted_activity, nav)
             await nav.allowed(key, nav.registry.get(prepared.node_id), prepared.params, source)
             if existing.result is not None:
-                return as_render(existing.result.snapshot)
-            return await execute(nav, prepared)
+                return prepared
+            return prepared
         loaded = await nav.repository.load(key)
         current = loaded.snapshot if loaded else None
         pending = await nav.repository.pending(key)
@@ -233,6 +237,36 @@ async def perform(
             accepted_activity=accepted_activity,
             history_pop=count,
         )
+        return prepared
+
+
+async def perform(
+    nav: Navigation,
+    key: ConversationKey,
+    kind: ActionKind,
+    *,
+    operation_id: str,
+    node_id: str | None = None,
+    params: Mapping[str, object] | None = None,
+    history: HistoryMode = "push",
+    source: str = "application",
+    accepted_activity: bool = True,
+) -> RenderResult:
+    async with nav.coordinator.hold(key):
+        prepared = await prepare_action(
+            nav,
+            key,
+            kind,
+            operation_id=operation_id,
+            node_id=node_id,
+            params=params,
+            history=history,
+            source=source,
+            accepted_activity=accepted_activity,
+        )
+        status = await nav.repository.lookup_operation(key, operation_id=operation_id)
+        if status.result is not None:
+            return as_render(status.result.snapshot)
         return await execute(nav, prepared)
 
 
@@ -278,17 +312,23 @@ async def execute(nav: Navigation, prepared: PreparedAction) -> RenderResult:
     try:
         rendered = await effects.run("render", render, replay_safe=replay_safe)
         validate_render(prepared, rendered)
-        committed = await complete(nav, prepared, rendered)
+        await complete(nav, prepared, rendered)
     except NavigationError:
         raise
     except Exception as error:
         raise RenderUnknown("Rendering did not complete; inspect the retained action") from error
+    return rendered
+
+
+async def cleanup_committed(
+    nav: Navigation, prepared: PreparedAction, request: RenderRequest, committed: CommitResult
+) -> None:
     previous = request.current.view if request.current else None
     scope = nav.coordinator.scope_token(prepared.key)
     if scope is None or not nav.coordinator.scope_matches(prepared.key, scope):
         # A slow observational hook can outlive its lease. The committed result
         # remains valid, but lost ownership cannot authorize another Telegram call.
-        return rendered
+        return
     try:
         latest = await nav.repository.load(prepared.key)
         if (
@@ -297,7 +337,9 @@ async def execute(nav: Navigation, prepared: PreparedAction) -> RenderResult:
             or latest.snapshot.view.view_id != committed.snapshot.view.view_id
         ):
             # An observational hook may navigate reentrantly under this same lock.
-            return rendered
+            return
+
+        await nav.authorize_session(prepared.key, committed.snapshot.session_id)
 
         def ensure_owned() -> None:
             if not nav.coordinator.scope_matches(prepared.key, scope):
@@ -311,7 +353,7 @@ async def execute(nav: Navigation, prepared: PreparedAction) -> RenderResult:
         from .navigation import logger
 
         logger.warning("Generation-specific navigation cleanup failed after commit")
-    return rendered
+    return
 
 
 async def complete(
@@ -333,16 +375,34 @@ async def complete(
         raise StaleView("The prepared action is no longer retained or its identity changed")
     prepared = canonical
     if status.result is not None:
+        await nav.authorize_session(prepared.key, prepared.session_id)
         if as_render(status.result.snapshot) != rendered:
             raise OperationIdConflict("Completion receipt differs from the retained result")
         return replace(status.result, duplicate=True)
-    request = await nav.request(prepared)
+    # Recording an already known send is not a new external effect. Keep that
+    # evidence even if application authority was revoked before completion.
     await nav.repository.checkpoint(
         prepared.key,
         operation_id=prepared.operation_id,
         effect=EffectCheckpoint("render", "confirmed", rendered),
         coordination_scope=nav.coordinator.scope_token(prepared.key),
     )
+    request = await nav.request(prepared)
+    if (
+        prepared.intent.action == "cancel"
+        and nav.cancel_hook is not None
+        and request.current is not None
+    ):
+        effects = NavigationEffects(nav, prepared)
+
+        async def cancel() -> object:
+            if nav.cancel_hook is None:
+                return None
+            return await nav.cancel_hook(request)
+
+        await effects.run(
+            "cancel", cancel, replay_safe=getattr(nav.cancel_hook, "replay_safe", False) is True
+        )
     loaded = await nav.repository.load(prepared.key)
     committed = await nav.repository.commit(
         prepared.key,
@@ -371,4 +431,6 @@ async def complete(
                 nav.clock.now(),
             ),
         )
+    if not committed.duplicate:
+        await cleanup_committed(nav, prepared, request, committed)
     return committed

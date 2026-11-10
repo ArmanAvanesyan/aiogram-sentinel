@@ -6,7 +6,7 @@ It is independent of aiogram-idle. No idle worker or navigation-to-idle adapter 
 installed.
 
 ```sh
-pip install 'aiogram-nav[redis]==0.1.0'
+pip install 'aiogram-nav[redis]==0.2.0'
 ```
 
 ```python
@@ -98,3 +98,102 @@ The package cannot recover receipts discarded by Redis rollback or total data
 loss. Tests exercise real servers and process death, not infrastructure failover.
 
 The [Redis audit](redis-audit.md) records follow-up fixes to cleanup ownership, sweep validation, strict FSM borrowing and persisted receipt validation. Rejected callbacks are acknowledgement-only; they do not prove ownership of the message containing them.
+
+## Staged storage format activation (0.1 → 0.2)
+
+New repositories write the existing format 1 by default. Version 0.2 reads formats
+1 and 2, but external application-session bindings require explicit format 2.
+A deployment upgrade does not automatically enable new persistence behavior.
+
+Drain all 0.1 writers and protected handlers, take a Redis backup, and assess the
+existing namespace using its exact configured prefix and storage configuration:
+
+```python
+report = await repository.activate_storage_format(operation_id="upgrade-020")
+# Read-only assessment: report.before, after, conversations, pending, applied.
+```
+
+Or use the repository tool; provide credentials through the environment:
+
+```sh
+export AIOGRAM_NAV_REDIS_URL=redis://localhost:6379/0
+uv run --no-sync python tools/migrate_storage.py --prefix my-navigation
+uv run --no-sync python tools/migrate_storage.py --prefix my-navigation \
+  --apply --old-workers-drained --operation-id upgrade-020
+```
+
+A pristine dry run does not bootstrap keys. Applying requires an explicit
+operator drain assertion and zero active local coordination scopes. The CLI uses
+default storage settings and strict deployment probes; deployments with customized
+settings or managed-service attestation should use the API on their configured
+repository. The API call is:
+
+```python
+report = await repository.activate_storage_format(
+    expected=1,
+    target=2,
+    operation_id="upgrade-020",
+    old_workers_drained=True,
+    dry_run=False,
+)
+```
+
+Activation atomically rotates the namespace profile/history witness and records a
+stable operation receipt. An initialized old writer then fails its existing Lua
+history check; an old startup fails the profile check. A lost activation response
+can be retried with the same operation ID. Other operation IDs cannot silently
+replace the activation decision.
+
+Existing records, session IDs, prompt/control tokens, partial renders and operation
+receipts are not rewritten or discarded by activation. New writes migrate an
+individual envelope under the normal guarded transaction. Unresolved effects are
+retained and are never replayed by migration. New readers accept retained format-1
+records while writing format 2. Missing or corrupt format metadata fails closed.
+
+Before activation, binary rollback is possible while format 1 remains in use.
+After activation, old binaries cannot share the namespace. Use a compatible forward
+fix, or a coordinated backup restore after all writers stop. Restoring a backup
+cannot undo Telegram sends or application database effects; review retained
+uncertainty before restarting any delivery.
+
+## Managed Redis with denied introspection
+
+Strict startup probes `INFO server`, `ROLE`, `INFO cluster` and
+`CONFIG GET maxmemory-policy`. Supported storage is Redis 7+, a writable single
+primary, non-cluster, with `noeviction`. Runtime ACLs also need `GET`, `SET`, `DEL`,
+`EXISTS`, `TYPE`, `TIME`, `PTTL`, `PEXPIRE`, `SADD`, `SREM`, `SCARD`, `SISMEMBER`,
+`SSCAN`, `EVALSHA` and `SCRIPT LOAD`, restricted to the chosen namespace. The Lua
+scripts call the corresponding allowed data commands. Tests may use administrative
+commands to create isolated ACL users; those are not runtime requirements.
+
+If managed Redis denies introspection with `NOPERM`, supply facts independently
+verified by the operator:
+
+```python
+from aiogram_nav.storage.deployment import RedisDeploymentAttestation
+from aiogram_nav.storage.redis import RedisNavigationRepository
+
+repository = RedisNavigationRepository(
+    redis=application_redis,
+    prefix="my-navigation",
+    deployment=RedisDeploymentAttestation(
+        server_major=7,
+        writable_primary=True,
+        cluster_enabled=False,
+        maxmemory_policy="noeviction",
+        operator_reference="reviewed-redis-change-123",
+    ),
+)
+```
+
+Attestation substitutes only the specific facts whose probe is denied. Observed
+unsafe configuration, malformed responses, connection errors and timeouts still
+fail startup. The library logs command names when attestation is used, not
+credentials or the operator reference. There is no warning-only unsafe mode and
+no memory fallback. Caller-supplied Redis clients remain caller-owned; `from_url`
+creates a client closed by repository shutdown.
+
+Redis persistence, replication and failover configuration remain deployment-owned.
+A successful commit is not a guarantee against infrastructure data loss; retained
+history detects missing state rather than silently reconstructing it around
+uncertain Telegram effects.

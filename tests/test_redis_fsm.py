@@ -143,3 +143,65 @@ async def test_distributed_fsm_rejects_changed_coordination(nav_redis_client, mu
     finally:
         await dispatcher.fsm.close()
         await bot.session.close()
+
+
+async def test_application_owned_renewable_redis_fsm_isolation(nav_redis_client):
+    from aiogram_coordination import RenewableRedisEventIsolation, TrackedEventIsolation
+
+    application = RenewableRedisEventIsolation(redis=nav_redis_client)
+    tracked = TrackedEventIsolation(application, provider=application)
+    dispatcher = Dispatcher(events_isolation=tracked)
+    bot = Bot("123456:ABC", session=RecordingSession())
+    repo = RedisNavigationRepository(
+        redis=nav_redis_client, prefix=f"custom-fsm:{uuid.uuid4().hex}"
+    )
+    await repo.initialize()
+
+    async def screen(request):
+        return ScreenSpec(request.node_id)
+
+    nav = Navigation(
+        registry=NavigationRegistry(roots={"main"}, nodes=[Node("main", renderer="screen")]),
+        repository=repo,
+        presenter=TextPresenter({"screen": screen}, bot),
+    )
+    nav.install(dispatcher)
+    router = Router()
+    entered, release = asyncio.Event(), asyncio.Event()
+    observed = []
+
+    @router.message()
+    async def handler(message, state, nav_context):
+        assert tracked.owns(state.key)
+        observed.append(message.text)
+        if message.text == "first":
+            entered.set()
+            await release.wait()
+        await state.update_data(last=message.text)
+        await nav_context.go("main", operation_id=message.text)
+
+    dispatcher.include_router(router)
+    tasks = [
+        asyncio.create_task(
+            dispatcher.feed_update(bot, Update(update_id=1, message=incoming("first")))
+        )
+    ]
+    try:
+        await entered.wait()
+        tasks.append(
+            asyncio.create_task(
+                dispatcher.feed_update(bot, Update(update_id=2, message=incoming("second")))
+            )
+        )
+        await asyncio.sleep(0)
+        assert observed == ["first"]
+        release.set()
+        await asyncio.gather(*tasks)
+        assert observed == ["first", "second"]
+        assert nav.coordinator.fsm_isolation is tracked
+        assert await nav_redis_client.ping()
+    finally:
+        release.set()
+        await asyncio.gather(*tasks, return_exceptions=True)
+        await dispatcher.fsm.close()
+        await bot.session.close()

@@ -116,6 +116,8 @@ class NavigationEffects:
             or (not allow_expired and current.expires_at <= self.navigation.clock.now())
         ):
             raise OwnershipLost("The prepared render is no longer current")
+        if not allow_expired:
+            await self.navigation.authorize_session(self.key, current.session_id)
         return current
 
     async def checkpoint(self, stage: str, state: str, result: object = None) -> None:
@@ -173,6 +175,7 @@ class NavigationEffects:
                 if fingerprint(params) != fingerprint(current.params):
                     raise InvalidParameters("Prepared parameters cannot be reinterpreted")
                 await self.navigation.allowed(self.key, node, params, current.intent.source)
+                await self.navigation.authorize_session(self.key, current.session_id)
                 await self.record()
             except (AccessDenied, InvalidParameters):
                 if fresh_intent:

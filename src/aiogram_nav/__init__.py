@@ -1,5 +1,8 @@
 """Standalone navigation for aiogram 3; no idle or Redis dependency."""
 
+from aiogram_coordination import ExternalSession, SessionAuthority, TrackedEventIsolation
+
+from .bindings_router import create_bindings_router
 from .clock import Clock, ManualClock, SystemClock
 from .config import NavigationConfig
 from .context import NavigationContext
@@ -52,13 +55,26 @@ from .models import (
 from .navigation import Navigation
 from .protocols import Coordinator, EffectRecorder
 from .registry import NavigationRegistry
+from .rejections import CallbackRejection, CallbackRejectionResponder
+from .rendering.application import ApplicationPresenter
 from .rendering.base import CleanupRequest, CleanupResult, NavigationPresenter, ScreenSpec
 from .rendering.text import TextPresenter
 from .storage.base import NavigationRepository
+from .storage.deployment import RedisDeploymentAttestation
 from .storage.memory import MemoryNavigationRepository
+from .storage.sessions import StorageMigrationReport
 from .version import __version__ as __version__
 
 __all__ = [
+    "create_bindings_router",
+    "CallbackRejection",
+    "CallbackRejectionResponder",
+    "ExternalSession",
+    "SessionAuthority",
+    "RedisDeploymentAttestation",
+    "StorageMigrationReport",
+    "TrackedEventIsolation",
+    "ApplicationPresenter",
     "AccessDenied",
     "BackendInconsistent",
     "ActionStatus",

@@ -47,9 +47,11 @@ def _pairs(items: list[tuple[str, object]]) -> dict[str, object]:
     return result
 
 
-def encode(value: object, *, max_bytes: int = 8_388_608) -> str:
+def encode(value: object, *, max_bytes: int = 8_388_608, schema_version: int = 1) -> str:
+    if type(schema_version) is not int or schema_version not in (1, 2):
+        raise SchemaUnsupported("Unsupported navigation persistence schema")
     result = json.dumps(
-        {"schema_version": 1, "value": encode_value(value)},
+        {"schema_version": schema_version, "value": encode_value(value)},
         ensure_ascii=False,
         allow_nan=False,
         separators=(",", ":"),
@@ -66,7 +68,7 @@ def decode(value: str, *, max_bytes: int = 8_388_608) -> object:
         root = _mapping(json.loads(value, object_pairs_hook=_pairs))
         if set(root) != {"schema_version", "value"}:
             raise _bad()
-        if type(root["schema_version"]) is not int or root["schema_version"] != 1:
+        if type(root["schema_version"]) is not int or root["schema_version"] not in (1, 2):
             raise SchemaUnsupported("Unsupported navigation persistence schema")
         return decode_value(root["value"])
     except SchemaUnsupported:

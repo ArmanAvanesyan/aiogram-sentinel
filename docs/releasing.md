@@ -1,6 +1,6 @@
 # Releasing aiogram-nav
 
-Repository CI verifies changes; a push does not publish a package. Version 0.1.0
+Repository CI verifies changes; a push does not publish a package. Version 0.2.0
 is the initial alpha release.
 Publication requires a separate maintainer decision, working credentials and
 review of the artifacts being released.
@@ -16,9 +16,9 @@ review of the artifacts being released.
 3. Review the Towncrier draft and consume the release fragments only when ready:
 
    ```sh
-   uv run --no-sync towncrier build --draft --version 0.1.0
-   uv run --no-sync towncrier build --yes --version 0.1.0
-   uv run --no-sync python tools/check_version.py --tag v0.1.0
+   uv run --no-sync towncrier build --draft --version 0.2.0
+   uv run --no-sync towncrier build --yes --version 0.2.0
+   uv run --no-sync python tools/check_version.py --tag v0.2.0
    ```
 
    Substitute the actual version consistently. The non-draft command updates
@@ -55,13 +55,13 @@ to the matching GitHub release, then dispatch publication with the independently
 verified manifest digest. For example, after preparing reviewed release notes:
 
 ```sh
-git tag -a v0.1.0 -m "Release 0.1.0"
-git push origin v0.1.0
+git tag -a v0.2.0 -m "Release 0.2.0"
+git push origin v0.2.0
 (cd dist && shasum -a 256 *.whl *.tar.gz > SHA256SUMS)
-gh release create v0.1.0 dist/*.whl dist/*.tar.gz dist/SHA256SUMS \
+gh release create v0.2.0 dist/*.whl dist/*.tar.gz dist/SHA256SUMS \
   --verify-tag --notes-file release-notes.md
 manifest_sha256=$(shasum -a 256 dist/SHA256SUMS | cut -d ' ' -f 1)
-gh workflow run publish.yml --ref v0.1.0 -f manifest_sha256="$manifest_sha256"
+gh workflow run publish.yml --ref v0.2.0 -f manifest_sha256="$manifest_sha256"
 ```
 
 Substitute the intended version and candidate directory. The workflow checks tag,
@@ -71,3 +71,19 @@ then verify availability and fresh standalone installation from PyPI. Publish
 aiogram-nav before aiogram-idle when releasing the compatible pair, so Idle's
 optional `nav` dependency resolves. Record the release outcome and never replace
 already published version files.
+
+## Candidate CI while coordination publication is pending
+
+The 0.2.0 candidate uses the reviewed coordination `v0.1.0` source, pinned to
+`7dcb06e2e46a57e8b826279c744ab51d368a997d`. CI explicitly checks that source out
+beside Nav for the development-only uv path override. Installed-artifact jobs build
+a normal coordination wheel and supply it alongside the Nav wheel/sdist; they do
+not imply that coordination can already be resolved from PyPI. The security job
+skips the two editable local projects and still audits their registry dependencies.
+
+This is a candidate verification path, not the release freeze. After coordination
+0.1.0 is public on PyPI, remove the uv source override and candidate checkouts,
+resolve and commit a registry-only lock, remove the explicit candidate wheel from
+artifact installs, and repeat clean-index standalone/Redis wheel and sdist checks.
+Only then build and publish the final Nav 0.2.0 artifacts from its release tag.
+Keep changelog fragments until the release commit consumes them.

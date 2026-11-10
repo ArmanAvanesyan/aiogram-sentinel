@@ -5,6 +5,8 @@ from __future__ import annotations
 from collections.abc import Awaitable, Callable
 from typing import Any, Protocol, TypeVar, cast
 
+from aiogram_coordination import ExternalSession
+
 from ..clock import Clock
 from ..config import NavigationConfig
 from ..errors import ConfigurationError, Overloaded
@@ -20,8 +22,10 @@ from ..models import (
     VersionedSnapshot,
 )
 from ..protocols import Coordinator
+from .deployment import RedisDeploymentAttestation
 from .memory import MemoryNavigationRepository
 from .redis_store import RedisStore
+from .sessions import StorageMigrationReport
 
 T = TypeVar("T")
 
@@ -39,25 +43,35 @@ class RedisNavigationRepository:
     )
 
     def __init__(
-        self, *, redis: object, prefix: str = "aiogram-nav", config: NavigationConfig | None = None
+        self,
+        *,
+        redis: object,
+        prefix: str = "aiogram-nav",
+        config: NavigationConfig | None = None,
+        deployment: RedisDeploymentAttestation | None = None,
     ) -> None:
         self.prefix = prefix
         self.config = config or NavigationConfig()
-        self._store = RedisStore(redis, prefix, self.config)
+        self._store = RedisStore(redis, prefix, self.config, deployment)
         self.clock: Clock = self._store.clock
         self.coordinator: Coordinator = self._store.coordinator
         self._owned_client: object | None = None
 
     @classmethod
     async def from_url(
-        cls, url: str, *, prefix: str = "aiogram-nav", config: NavigationConfig | None = None
+        cls,
+        url: str,
+        *,
+        prefix: str = "aiogram-nav",
+        config: NavigationConfig | None = None,
+        deployment: RedisDeploymentAttestation | None = None,
     ) -> RedisNavigationRepository:
         try:
             from redis.asyncio import Redis
         except ImportError as error:
             raise ConfigurationError("Install aiogram-nav[redis] to use from_url") from error
         client = cast(Any, Redis).from_url(url, socket_timeout=5, socket_connect_timeout=5)
-        repository = cls(redis=client, prefix=prefix, config=config)
+        repository = cls(redis=client, prefix=prefix, config=config, deployment=deployment)
         repository._owned_client = client
         try:
             await repository.initialize()
@@ -68,6 +82,57 @@ class RedisNavigationRepository:
 
     async def initialize(self) -> None:
         await self._store.initialize()
+
+    @property
+    def storage_format(self) -> int:
+        """Established format; call initialize before inspecting a new instance."""
+        return self._store.storage_format
+
+    def require_storage_format(self, version: int) -> None:
+        if type(version) is not int or self.storage_format != version:
+            raise ConfigurationError(
+                "Explicitly activate storage format 2 after draining old workers"
+            )
+
+    async def activate_storage_format(
+        self,
+        *,
+        expected: int = 1,
+        target: int = 2,
+        operation_id: str,
+        old_workers_drained: bool = False,
+        dry_run: bool = True,
+    ) -> StorageMigrationReport:
+        from .redis_migration import activate_storage_format
+
+        return await activate_storage_format(
+            self._store,
+            expected=expected,
+            target=target,
+            operation_id=operation_id,
+            old_workers_drained=old_workers_drained,
+            dry_run=dry_run,
+        )
+
+    async def external_session(self, key: ConversationKey) -> ExternalSession | None:
+        _, memory = await self._store.read(key)
+        return await memory.external_session(key)
+
+    async def bind_external_session(
+        self,
+        key: ConversationKey,
+        session: ExternalSession,
+        *,
+        coordination_scope: object | None = None,
+    ) -> None:
+        await self.initialize()
+        self.require_storage_format(2)
+        await self._apply(
+            key,
+            lambda memory: memory.bind_external_session(key, session),
+            scope=coordination_scope,
+            deadline=lambda _: session.expires_at,
+        )
 
     def bind_coordinator(self, coordinator: Coordinator) -> None:
         if coordinator is not self.coordinator:

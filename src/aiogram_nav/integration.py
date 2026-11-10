@@ -2,45 +2,55 @@
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Awaitable, Callable
 from hashlib import sha256
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any
 
 from aiogram import BaseMiddleware, Bot, Dispatcher, Router
 from aiogram.filters import BaseFilter
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.storage.base import KeyBuilder, StorageKey
+from aiogram.fsm.storage.base import StorageKey
 from aiogram.fsm.storage.memory import DisabledEventIsolation, SimpleEventIsolation
 from aiogram.fsm.strategy import FSMStrategy
 from aiogram.types import CallbackQuery, Message, TelegramObject, Update
+from aiogram_coordination import BorrowedFsmCoordinator, TrackedEventIsolation
 
 from .errors import ConfigurationError, StaleView, UnsupportedContext
+from .fsm_validation import validate_fsm_storage as _validate_fsm_storage
 from .identity import private_identity
 from .inputs.bindings import (
     CallbackEntry,
-    CommandEntry,
     InputBindings,
     MatchedEntry,
-    ReplyEntry,
     Translator,
 )
 from .inputs.callbacks import acknowledge as _ack
-from .inputs.callbacks import stale as _stale
 from .inputs.tokens import parse_callback_data
-from .isolation import AiogramMemoryCoordinator
+from .isolation import AiogramMemoryCoordinator, MemoryCoordinator
 from .models import NavigationAction
-from .storage.redis_coordinator import RedisCoordinator
 
 if TYPE_CHECKING:
     from .context import NavigationContext
     from .navigation import Navigation
 
+logger = logging.getLogger(__name__)
+
 Handler = Callable[[TelegramObject, dict[str, Any]], Awaitable[Any]]
 
 
 class NavigationMiddleware(BaseMiddleware):
-    def __init__(self, navigation: Navigation, dispatcher: Dispatcher) -> None:
+    def __init__(
+        self,
+        navigation: Navigation,
+        dispatcher: Dispatcher,
+        *,
+        manual: bool = False,
+        allow_root_handlers: bool = False,
+    ) -> None:
         self.navigation = navigation
+        self.manual = manual
+        self.allow_root_handlers = allow_root_handlers
         self.dispatcher = dispatcher
         self.isolation = dispatcher.fsm.events_isolation
         self.storage = dispatcher.storage
@@ -68,32 +78,37 @@ class NavigationMiddleware(BaseMiddleware):
             raise ConfigurationError(
                 "FSM storage, key mapping and navigation coordinator must remain unchanged"
             )
-        if self.bindings_router is not None and (
-            not dispatcher.sub_routers
-            or dispatcher.sub_routers[0] is not self.bindings_router
-            or self.bindings_router.parent_router is not dispatcher
+        if (
+            not self.manual
+            and self.bindings_router is not None
+            and (
+                not dispatcher.sub_routers
+                or dispatcher.sub_routers[0] is not self.bindings_router
+                or self.bindings_router.parent_router is not dispatcher
+            )
         ):
             raise ConfigurationError("Navigation bindings must precede business routers")
-        if (
-            isinstance(self.coordinator, AiogramMemoryCoordinator)
-            and self.coordinator.isolation is not self.isolation
+        if isinstance(self.coordinator, BorrowedFsmCoordinator) and (
+            self.coordinator.fsm_isolation
+            is not (
+                self.isolation
+                if isinstance(self.isolation, (SimpleEventIsolation, TrackedEventIsolation))
+                else None
+            )
         ):
             raise ConfigurationError(
                 "The coordinator must keep the verified FSM isolation instance"
             )
-        if isinstance(self.coordinator, RedisCoordinator) and (
-            self.coordinator.fsm_isolation
-            is not (self.isolation if type(self.isolation) is SimpleEventIsolation else None)
-        ):
-            raise ConfigurationError("Distributed coordinator FSM isolation changed")
         middlewares = list(dispatcher.update.outer_middleware)
         enabled = dispatcher.fsm in middlewares
         if enabled != self.fsm_enabled or (
             enabled and middlewares.index(dispatcher.fsm) > middlewares.index(self)
         ):
             raise ConfigurationError("Navigation must run after the original FSM middleware")
-        if self.navigation.bindings and (
-            dispatcher.message.handlers or dispatcher.callback_query.handlers
+        if (
+            not self.allow_root_handlers
+            and self.navigation.bindings
+            and (dispatcher.message.handlers or dispatcher.callback_query.handlers)
         ):
             raise ConfigurationError(
                 "Include business Routers after navigation; Dispatcher root handlers outrank bindings"
@@ -114,7 +129,7 @@ class NavigationMiddleware(BaseMiddleware):
             if isinstance(event.event, CallbackQuery) and (event.event.data or "").startswith(
                 "nav:"
             ):
-                await _ack(bot, event.event.id, "This screen is no longer active.")
+                await nav.reject_callback(event.event, bot, "unsupported")
                 return None
             raise
         if key is None:
@@ -149,34 +164,29 @@ class NavigationMiddleware(BaseMiddleware):
                 raise ConfigurationError(
                     "FSM and navigation identities require a lossless shared mapping"
                 )
-        if (
-            self.fsm_enabled
-            and isinstance(coordinator, (AiogramMemoryCoordinator, RedisCoordinator))
-            and type(self.isolation) is SimpleEventIsolation
-            and not isinstance(state, FSMContext)
+        if self.fsm_enabled and isinstance(
+            self.isolation, (SimpleEventIsolation, TrackedEventIsolation)
         ):
-            raise ConfigurationError("The held FSM lock requires its original FSM context")
-        borrowed = (
-            self.fsm_enabled
-            and isinstance(state, FSMContext)
-            and isinstance(coordinator, AiogramMemoryCoordinator)
-            and coordinator.isolation is self.isolation
-        )
-        if borrowed and isinstance(coordinator, AiogramMemoryCoordinator):
-            scope = coordinator.borrowed(key)
-        elif (
-            self.fsm_enabled
-            and isinstance(state, FSMContext)
-            and isinstance(coordinator, RedisCoordinator)
-            and coordinator.fsm_isolation is self.isolation
-            and type(self.isolation) is SimpleEventIsolation
-        ):
+            if not isinstance(state, FSMContext) or not isinstance(
+                coordinator, BorrowedFsmCoordinator
+            ):
+                raise ConfigurationError(
+                    "The held FSM lock requires its verified coordinator and FSM context"
+                )
+            if coordinator.fsm_isolation is not self.isolation:
+                raise ConfigurationError("Coordinator and Dispatcher isolation differ")
+            if isinstance(self.isolation, TrackedEventIsolation) and not self.isolation.owns(
+                state.key
+            ):
+                raise ConfigurationError("The application FSM scope is not owned by this task")
             scope = coordinator.borrowed_fsm(key)
         else:
             scope = coordinator.hold(key)
         async with scope:
             if isinstance(state, FSMContext):
                 data["raw_state"] = await state.get_state()
+            if nav.draining:
+                raise ConfigurationError("Navigation is draining")
             context = nav.for_conversation(key, operation_prefix=f"update:{event.update_id}")
             data["nav_context"] = context
             data["navigation_context"] = context
@@ -187,9 +197,19 @@ class NavigationMiddleware(BaseMiddleware):
                 nav, event.event, context, bot
             ):
                 if isinstance(event.event, CallbackQuery):
-                    await _ack(bot, event.event.id, "Navigation is still being recovered.")
+                    await nav.reject_callback(event.event, bot, "busy")
                 return None
-            return await handler(event, data)
+            reserved = isinstance(payload, CallbackQuery) and (payload.data or "").startswith(
+                "nav:"
+            )
+            if self.manual and reserved and isinstance(payload, CallbackQuery):
+                if not await callback_is_current(nav, payload, context):
+                    await nav.reject_callback(payload, bot, "stale")
+                    return None
+            result = await handler(event, data)
+            if self.manual and reserved and not context.control_handled:
+                logger.warning("Reserved navigation callback was not handled in manual routing")
+            return result
 
 
 async def _match(
@@ -299,6 +319,29 @@ def _callback_entry(
     return entries[0]
 
 
+async def callback_is_current(
+    navigation: Navigation, callback: CallbackQuery, context: NavigationContext
+) -> bool:
+    raw = parse_callback_data(callback.data or "")
+    token = await navigation.repository.resolve_token(context.key, raw) if raw is not None else None
+    current = await context.current()
+    if (
+        token is None
+        or current is None
+        or callback.from_user.id != context.key.user_id
+        or callback.message is None
+        or not any(ref.message_id == callback.message.message_id for ref in current.view.messages)
+    ):
+        return False
+    if navigation.bindings is None:
+        return False
+    try:
+        _callback_entry(navigation.bindings, token.action, token.entry_id, current.node_id)
+    except StaleView:
+        return False
+    return True
+
+
 async def handle_callback(
     navigation: Navigation,
     callback: CallbackQuery,
@@ -316,7 +359,7 @@ async def handle_callback(
         or callback.message is None
         or not any(ref.message_id == callback.message.message_id for ref in current.view.messages)
     ):
-        await _stale(bot, callback)
+        await navigation.reject_callback(callback, bot, "stale")
         return
     bindings = navigation.bindings
     if bindings is None:
@@ -324,7 +367,7 @@ async def handle_callback(
     try:
         _callback_entry(bindings, token.action, token.entry_id, current.node_id)
     except StaleView:
-        await _stale(bot, callback)
+        await navigation.reject_callback(callback, bot, "stale")
         return
     await _ack(bot, callback.id)
     operation_id = "callback:" + sha256((raw or "").encode()).hexdigest()
@@ -348,79 +391,77 @@ def bind(
         navigation.translator = translator
 
 
-def install(navigation: Navigation, dispatcher: Dispatcher) -> None:
-    if dispatcher.get("_aiogram_nav_installed") or getattr(navigation, "_installed", False):
+def install(
+    navigation: Navigation,
+    dispatcher: Dispatcher,
+    *,
+    bindings_mode: str = "automatic",
+    bindings_router: Router | None = None,
+    allow_root_handlers: bool = False,
+) -> None:
+    from .bindings_router import create_bindings_router
+
+    if dispatcher.get("_aiogram_nav_installed") or navigation.installed:
         raise ConfigurationError("Navigation is already installed")
-    bindings = navigation.bindings
-    if bindings is not None:
-        bindings.validate(navigation.registry)
-        if dispatcher.message.handlers or dispatcher.callback_query.handlers:
+    if bindings_mode not in {"automatic", "manual"} or type(allow_root_handlers) is not bool:
+        raise ConfigurationError("Invalid navigation routing configuration")
+    manual = bindings_mode == "manual"
+    if not manual and (bindings_router is not None or allow_root_handlers):
+        raise ConfigurationError("Custom router/root handlers require explicit manual mode")
+    if navigation.bindings is not None:
+        navigation.bindings.validate(navigation.registry)
+        if not allow_root_handlers and (
+            dispatcher.message.handlers or dispatcher.callback_query.handlers
+        ):
             raise ConfigurationError(
                 "Use business Routers after navigation bindings, not Dispatcher root handlers"
             )
+        if manual:
+            if bindings_router is None or bindings_router is not navigation.bindings_router:
+                raise ConfigurationError("Use create_bindings_router for this Navigation instance")
+            parent: Router | None = bindings_router
+            while parent is not None and parent is not dispatcher:
+                parent = parent.parent_router
+            if parent is None:
+                raise ConfigurationError("Include the bindings router before manual installation")
+    elif bindings_router is not None:
+        raise ConfigurationError("Bindings router requires configured bindings")
     if dispatcher.fsm.strategy != FSMStrategy.USER_IN_CHAT:
         raise ConfigurationError("Navigation requires FSMStrategy.USER_IN_CHAT")
     _validate_fsm_storage(dispatcher)
     isolation = dispatcher.fsm.events_isolation
-    if type(isolation) is SimpleEventIsolation and isinstance(
-        navigation.coordinator, RedisCoordinator
-    ):
-        navigation.coordinator.configure_fsm_isolation(isolation)
-    elif type(isolation) is SimpleEventIsolation:
+    if isinstance(isolation, (SimpleEventIsolation, TrackedEventIsolation)):
         current = navigation.coordinator
-        if getattr(current, "distributed", False):
-            raise ConfigurationError("Distributed navigation requires a verified RedisCoordinator")
-        if isinstance(current, AiogramMemoryCoordinator):
-            if current.isolation is not isolation:
-                raise ConfigurationError(
-                    "Shared navigation requires the same FSM isolation instance"
-                )
-        else:
-            navigation.coordinator = AiogramMemoryCoordinator(isolation)
-    elif type(isolation) is not DisabledEventIsolation:
-        raise ConfigurationError("Only disabled or verified SimpleEventIsolation is supported")
-    middleware = NavigationMiddleware(navigation, dispatcher)
-    dispatcher.update.outer_middleware(middleware)
-    bindings = navigation.bindings
-    if bindings is not None:
-        if dispatcher.message.handlers or dispatcher.callback_query.handlers:
+        if isinstance(current, BorrowedFsmCoordinator):
+            current.configure_fsm_isolation(isolation)
+            if current.fsm_isolation is not isolation:
+                raise ConfigurationError("Coordinator did not retain the verified FSM isolation")
+        elif getattr(current, "distributed", False):
             raise ConfigurationError(
-                "Use business Routers after navigation bindings, not Dispatcher root handlers"
+                "Distributed navigation requires its verified fenced coordinator"
             )
-        router = Router(name="aiogram-nav")
-        if any(isinstance(entry, (CommandEntry, ReplyEntry)) for entry in bindings.entries):
-
-            async def entry_handler(
-                message: Message,
-                nav_context: NavigationContext,
-                nav_match: MatchedEntry,
-                event_update: Update,
-            ) -> None:
-                await dispatch_action(
-                    nav_context,
-                    nav_match.action,
-                    source=nav_match.source,
-                    operation_id=f"update:{event_update.update_id}:nav:{nav_match.entry.id}",
-                )
-
-            router.message.register(entry_handler, EntryFilter(navigation))
-        if any(isinstance(entry, CallbackEntry) for entry in bindings.entries):
-
-            async def callback_handler(
-                callback: CallbackQuery,
-                nav_context: NavigationContext,
-                bot: Bot,
-                event_update: Update,
-            ) -> None:
-                await handle_callback(
-                    navigation, callback, nav_context, bot, event_update.update_id
-                )
-
-            router.callback_query.register(callback_handler, CallbackFilter())
-        dispatcher.include_router(router)
-        dispatcher.sub_routers.remove(router)
-        dispatcher.sub_routers.insert(0, router)
-        middleware.bindings_router = router
+        elif type(current) is MemoryCoordinator and not navigation.application_coordinator_selected:
+            navigation.coordinator = AiogramMemoryCoordinator(isolation)
+        else:
+            raise ConfigurationError(
+                "Application coordinators must implement BorrowedFsmCoordinator "
+                "to preserve their FSM ownership semantics"
+            )
+    elif type(isolation) is not DisabledEventIsolation:
+        raise ConfigurationError("Only disabled or verified Simple/Tracked isolation is supported")
+    if navigation.bindings is not None and not manual:
+        if navigation.bindings_router is not None:
+            raise ConfigurationError("An application-created router requires manual mode")
+        bindings_router = create_bindings_router(navigation)
+    middleware = NavigationMiddleware(
+        navigation, dispatcher, manual=manual, allow_root_handlers=allow_root_handlers
+    )
+    if bindings_router is not None and not manual:
+        dispatcher.include_router(bindings_router)
+        dispatcher.sub_routers.remove(bindings_router)
+        dispatcher.sub_routers.insert(0, bindings_router)
+    dispatcher.update.outer_middleware(middleware)
+    middleware.bindings_router = bindings_router
     dispatcher["_aiogram_nav_installed"] = True
 
 
@@ -433,33 +474,6 @@ def _bind_bot(navigation: Navigation, bot: Bot) -> None:
     navigation.bot = bot
 
 
-def _validate_fsm_storage(dispatcher: Dispatcher) -> tuple[str, ...] | None:
-    # A correct StorageKey does not prove the store's builder preserves it.
-    # Inspect known RedisStorage structurally so core never imports Redis.
-    if not any(
-        cls.__module__ == "aiogram.fsm.storage.redis" and cls.__name__ == "RedisStorage"
-        for cls in type(dispatcher.storage).__mro__
-    ):
-        return None
-    builder = getattr(dispatcher.storage, "key_builder", None)
-    if not isinstance(builder, KeyBuilder):
-        raise ConfigurationError("Redis FSM storage requires a verified key builder")
-    identities = [
-        StorageKey(bot_id=1, chat_id=7, user_id=11),
-        StorageKey(bot_id=2, chat_id=7, user_id=11),
-        StorageKey(bot_id=1, chat_id=8, user_id=11),
-        StorageKey(bot_id=1, chat_id=7, user_id=12),
-    ]
-    try:
-        keys = [builder.build(key, field) for key in identities for field in ("state", "data")]
-        valid = (
-            all(isinstance(cast(object, key), str) and key for key in keys) and len(set(keys)) == 8
-        )
-    except Exception as error:
-        raise ConfigurationError("FSM key builder cannot encode navigation identities") from error
-    if not valid:
-        raise ConfigurationError(
-            "FSM keys must separate bot/chat/user/field; use DefaultKeyBuilder(with_bot_id=True)"
-        )
-
-    return tuple(keys)
+bind_bot = _bind_bot
+is_navigation_input = _is_navigation_input
+validate_fsm_storage = _validate_fsm_storage

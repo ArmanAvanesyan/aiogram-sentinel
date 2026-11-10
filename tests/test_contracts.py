@@ -152,7 +152,7 @@ def test_malformed_records_rejected(raw):
 @pytest.mark.parametrize(
     "raw",
     [
-        '{"schema_version":2,"value":1}',
+        '{"schema_version":3,"value":1}',
         '{"schema_version":1,"value":{"type":"FutureType","value":{}}}',
     ],
 )

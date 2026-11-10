@@ -23,6 +23,7 @@ from ..errors import (
     VersionConflict,
 )
 from ..models import ConversationKey, NavigationToken, PreparedAction
+from .deployment import RedisDeploymentAttestation, validate_deployment
 from .memory import MemoryNavigationRepository
 from .redis_codec import dumps, loads
 from .redis_coordinator import RedisCoordinator
@@ -34,7 +35,13 @@ T = TypeVar("T")
 
 
 class RedisStore:
-    def __init__(self, redis: object, prefix: str, config: NavigationConfig) -> None:
+    def __init__(
+        self,
+        redis: object,
+        prefix: str,
+        config: NavigationConfig,
+        deployment: RedisDeploymentAttestation | None = None,
+    ) -> None:
         if (
             not isinstance(cast(object, prefix), str)
             or not prefix
@@ -42,6 +49,12 @@ class RedisStore:
             or any(c.isspace() for c in prefix)
         ):
             raise ConfigurationError("Redis prefix must be bounded and contain no whitespace")
+        if deployment is not None and not isinstance(
+            cast(object, deployment), RedisDeploymentAttestation
+        ):
+            raise ConfigurationError("Expected explicit Redis deployment attestation")
+        self.deployment = deployment
+        self.storage_format = 1
         self.prefix, self.config = prefix, config
         self.clock = RedisClock()
         self.connection = Connection(redis, self.clock)
@@ -51,6 +64,7 @@ class RedisStore:
         profile["session_seconds"] = float(config.session_seconds)
         profile["recovery_seconds"] = float(config.recovery_seconds)
         self.profile = encode(profile)
+        self.base_profile = self.profile
         self.history = ""
         self.initialized = False
         self.cursor = "0"
@@ -71,30 +85,10 @@ class RedisStore:
     async def initialize(self) -> None:
         if self.initialized:
             return
-        info = await self.connection.call("INFO", "server")
-        server = (
-            cast(dict[str, object], info)
-            if isinstance(info, dict)
-            else dict(line.split(":", 1) for line in text(info).splitlines() if ":" in line)
-        )
-        if int(str(server.get("redis_version", "0")).split(".")[0]) < 7:
-            raise ConfigurationError("Redis navigation requires Redis 7 or newer")
-        if text(array(await self.connection.call("ROLE"))[0]) != "master":
-            raise ConfigurationError("Redis navigation requires a writable primary")
-        cluster = await self.connection.call("INFO", "cluster")
-        if (
-            isinstance(cluster, dict)
-            and cast(dict[str, object], cluster).get("cluster_enabled") == 1
-        ) or (not isinstance(cluster, dict) and "cluster_enabled:1" in text(cluster)):
-            raise ConfigurationError("Redis Cluster is unsupported")
-        eviction = await self.connection.call("CONFIG", "GET", "maxmemory-policy")
-        policy = (
-            cast(dict[str, object], eviction).get("maxmemory-policy")
-            if isinstance(eviction, dict)
-            else array(eviction)[1]
-        )
-        if text(policy) != "noeviction":
-            raise ConfigurationError("Redis navigation requires noeviction")
+        from .redis_migration import initialize_format
+
+        await validate_deployment(self.connection, self.deployment)
+        await initialize_format(self)
         marker = text(
             await self.connection.script(
                 INITIALIZE,
@@ -126,6 +120,7 @@ class RedisStore:
         now = int(text(values[2])) * 1000 + int(text(values[3])) // 1000
         self.clock.update(now)
         memory = MemoryNavigationRepository(clock=ManualClock(now), config=self.config)
+        memory._storage_format = self.storage_format
         raw = text(values[1])
         if raw:
             memory._records[key] = loads(raw, key)
@@ -151,7 +146,11 @@ class RedisStore:
                 del memory._records[key]
                 record = None
             try:
-                updated = dumps(key, record) if record is not None else ""
+                updated = (
+                    dumps(key, record, storage_format=self.storage_format)
+                    if record is not None
+                    else ""
+                )
             except ConfigurationError as error:
                 raise Overloaded("Redis navigation envelope exceeds supported limits") from error
             expires = deadline(result) if deadline is not None and updated != raw else 0
