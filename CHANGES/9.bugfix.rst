@@ -1,3 +1,0 @@
-Manager failures now propagate unless best_effort=True, which returns False.
-Successful operations return True. Added generic application-selected update_profile.
-Corrected runtime version export, strict typing, plural i18n and scope validation.

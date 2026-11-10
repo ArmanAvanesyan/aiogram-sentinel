@@ -1,3 +1,39 @@
+## [0.2.0] - 2026-11-10
+
+### Features
+
+- Separate description rendering from Telegram's language slot, add explicit
+  obsolete-language cleanup, and support application-selected profiles with
+  caller-owned payload confirmations and applied/unchanged/failed outcomes.
+  Report partial batch application without claiming Telegram transactions.
+
+### Bugfixes
+
+- Manager failures now propagate unless best_effort=True, which returns False.
+  Successful operations return True. Added generic application-selected
+  update_profile.
+  Corrected runtime version export, strict typing, plural i18n and scope
+  validation. ([#9](https://github.com/ArmanAvanesyan/aiogram-cmds/issues/9))
+- Use aiogram's locale context when translating command menus, so real gettext
+  catalogs are applied instead of silently falling back to untranslated text.
+
+### Documentation
+
+- Clarify that the Redis extra installs a client only; no storage or
+  coordination backend exists.
+  Document failure migration and preserve flag-based APIs as compatibility
+  interfaces. ([#9](https://github.com/ArmanAvanesyan/aiogram-cmds/issues/9))
+- Document the shared repository responsibilities, canonical release process,
+  private vulnerability reporting and reproducible contribution checks. Keep
+  generated scan reports out of source control.
+
+### Miscellaneous
+
+- Fix changelog tooling: towncrier now sees fragments in ``CHANGES/``, the CI
+  changelog check passes, and project contact addresses point to a working
+  mailbox. ([#8](https://github.com/ArmanAvanesyan/aiogram-cmds/issues/8))
+
+
 # Changelog
 
 All notable changes to aiogram-cmds will be documented in this file.

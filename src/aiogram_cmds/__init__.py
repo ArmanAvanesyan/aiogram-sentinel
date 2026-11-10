@@ -29,11 +29,12 @@ Auto-Setup (Recommended):
         command_manager = await setup_commands_auto(bot)
 """
 
-from .apply import apply_config
+from .apply import apply_config, apply_config_result
 from .auto_setup import setup_commands_auto
 from .builder import build_bot_commands
 from .customize import CmdsConfig, CommandDef, MenuButtonDef, ProfileDef, ScopeDef
-from .dynamic import set_user_profile
+from .delivery import UNSET, CommandApplyResult, CommandBatchResult, LanguageCode
+from .dynamic import apply_profile, clear_language_variants, set_user_profile
 from .manager import CommandScopeManager
 from .policy import CommandPolicy, Flags, ProfileResolver, default_policy
 from .settings import CmdsSettings, load_settings
@@ -62,7 +63,14 @@ __all__ = [
     "ScopeDef",
     "MenuButtonDef",
     "apply_config",
+    "apply_config_result",
     "set_user_profile",
+    "apply_profile",
+    "clear_language_variants",
+    "CommandApplyResult",
+    "CommandBatchResult",
+    "LanguageCode",
+    "UNSET",
     "ProfileResolver",
     # Auto-setup (convenience)
     "setup_commands_auto",
