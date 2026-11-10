@@ -193,6 +193,54 @@ def workloads(engine: str, quick: bool):
         )
         if not hasattr(cmds, "compile_config"):
             continue
+        compiled_snapshot = cmds.compile_config(
+            cfg,
+            config_revision="fixture-v1",
+            translator=translate,
+            translation_revision="static-v1",
+            **engine_kw,
+        )
+        for delayed in (False, True):
+            compiled_bot = FakeBot(delay=0.001 if delayed else 0)
+            compiled_manager = cmds.CommandScopeManager(
+                compiled_bot,
+                compiled=compiled_snapshot,
+                **engine_kw,
+            )
+            compiled_confirmation = asyncio.run(
+                compiled_manager.apply_profile(
+                    42,
+                    "profile_0",
+                    language="hy",
+                    language_code=None,
+                )
+            ).confirmed_fingerprint
+
+            def compiled_call(
+                _manager=compiled_manager,
+                _confirmation=compiled_confirmation,
+                _delayed=delayed,
+            ):
+                return _manager.apply_profile(
+                    42,
+                    "profile_0",
+                    language="hy",
+                    language_code=None,
+                    previous_fingerprint=None if _delayed else _confirmation,
+                )
+
+            prefix = (
+                "compiled_fake_telegram_1ms" if delayed else "compiled_confirmation_hit"
+            )
+            items.append(
+                (
+                    f"{prefix}/{size}",
+                    compiled_call,
+                    1 if delayed else 10,
+                    {"bot": compiled_bot},
+                    True,
+                )
+            )
         for profiles in (1, 10, 100):
             snapshot = cmds.compile_config(
                 config(size, profiles),

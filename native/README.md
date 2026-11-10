@@ -9,3 +9,8 @@ The base distribution remains pure Python and defaults to `engine="python"`.
 This native distribution is a release candidate: publication is gated on measured
 benefit, parity, supported-platform wheels and explicit release review. Missing
 or incompatible companions raise before effects; there is no implicit fallback.
+
+The serial performance gate failed for this candidate. Native publication and
+native tags are withheld, and the base package advertises no native dependency
+extra. This directory remains available for explicit source builds. See
+[BENCHMARKS.md](BENCHMARKS.md) for the qualification decision and limitations.

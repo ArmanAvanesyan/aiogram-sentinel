@@ -9,7 +9,8 @@
 - Optimize Python profile resolution and reuse canonical compiled command JSON.
 - Add an explicit optional Rust engine candidate with ABI validation, independent
   native packaging and parity tests. Python remains the default; companion
-  publication requires benchmark qualification.
+  publication was withheld after the serial performance gate failed. No native
+  tag or dependency extra is released; the candidate remains buildable source.
 - Add installed-package CPU/latency evidence, pyperf and Criterion benchmarks,
   and Python 3.14 / native platform CI.
 

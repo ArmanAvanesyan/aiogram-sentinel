@@ -71,3 +71,9 @@ CPU improvement and no greater than 5% realistic p95 regression. No such result 
 claimed merely because correctness tests pass. Seven native platform wheels and
 Python 3.10–3.14 runtime CI are separate from the pure Python package. Native
 release tags use `native-v*`; base tags remain `v*`.
+
+The original serial ABBA native gate failed (selected compiled batch CPU was
+56.7% slower, with dynamic confirmation-hit p95 regressions). Native publication,
+native tags and a dependency extra are withheld. Buildable source is retained;
+the Python 0.3.0 package can release independently. Supplemental compiled manager
+workloads retain the original failed gate and include deferred SDK construction.
