@@ -55,6 +55,10 @@ async def migrate(
         if current != source:
             raise VersionConflict("Canonical migration source changed")
         desired = replace(record, components={**record.components, component: target})
+        # Validate the complete envelope before installing rows or staging progress;
+        # a target may fit individually while unrelated opaque components fill the
+        # remaining conversation budget.
+        freeze_object(desired.components, max_bytes=owner.config.max_components_bytes)
         revision, hot, identity = body(desired, component)
         if identity is None:
             raise ConfigurationMismatch("Canonical migration target has no identity")

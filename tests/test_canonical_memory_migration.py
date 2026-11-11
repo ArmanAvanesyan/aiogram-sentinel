@@ -61,3 +61,39 @@ async def test_changed_source_rejects_staged_cutover_without_replacing_it():
     with pytest.raises(VersionConflict):
         await backend.canonical_component_migrate(KEY, **args)
     assert await backend.load(KEY) == changed
+
+
+async def test_aggregate_component_budget_rejected_before_any_rows_or_stage():
+    from aiogram_idle.errors import ConfigurationError
+
+    backend = MemoryIdleBackend(
+        clock=ManualClock(1000), config=IdleConfig(max_components_bytes=1024), storage_format=3
+    )
+    source = {"schema": 1, "ledger": "legacy"}
+    before = RuntimeSnapshot(
+        KEY,
+        SessionSnapshot("session", 2000),
+        components={COMPONENT: source, "other": {"data": "x" * 500}},
+    )
+    backend._records[KEY] = before
+    target = {
+        "canonical": True,
+        "revision": "1",
+        "hot": hot("1"),
+        "identity": IDENTITY,
+        "extra": "x" * 500,
+    }
+    with pytest.raises(ConfigurationError):
+        await backend.canonical_component_migrate(
+            KEY,
+            component=COMPONENT,
+            source_component=source,
+            target_component=target,
+            ledger_delta=delta(None, "1", put={"a": row("a", "prepared")}),
+            absolute_expiry={},
+            limit=1,
+            dry_run=False,
+        )
+    assert await backend.load(KEY) == before
+    assert (KEY, COMPONENT) not in backend._canonical_rows
+    assert (KEY, COMPONENT) not in backend._canonical_migrations
