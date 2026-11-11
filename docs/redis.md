@@ -39,9 +39,10 @@ recheck these facts. Actual writes and Lua scripts must still be permitted.
 ## Redis ACL and durability
 
 The backend requires `TIME`, `GET`, `SET`, `DEL`, `EXISTS`, `TYPE`, `PTTL`,
-`PEXPIRE`, `EVAL`, `EVALSHA`, `SCRIPT LOAD`, `SADD`, `SREM`, `SCARD`,
+`PEXPIRE`, `PEXPIREAT`, `PEXPIRETIME`, `PERSIST`, `EVAL`, `EVALSHA`, `SCRIPT LOAD`, `SADD`, `SREM`, `SCARD`,
 `SISMEMBER`, `SSCAN`, `SCAN`, `HGET`, `HSET`, `HDEL`, `HEXISTS`, `HLEN`,
-`HSCAN`, `ZADD`, `ZREM`, `ZCARD`, `ZRANGE` and `ZRANGEBYSCORE` for its namespace,
+`HSCAN`, `HSTRLEN`, `ZADD`, `ZREM`, `ZCARD`, `ZCOUNT`, `ZSCORE`,
+`ZRANGE`, `ZREVRANGE` and `ZRANGEBYSCORE` for its namespace,
 including conversation locks. Lua execution needs permission for its constituent
 commands. Strict deployment checks also require `INFO server`, `INFO cluster`,
 `ROLE` and `CONFIG GET maxmemory-policy`. Administrative ACL creation/deletion
