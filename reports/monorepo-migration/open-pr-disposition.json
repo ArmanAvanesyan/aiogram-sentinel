@@ -4,8 +4,8 @@
     "number": 66,
     "kind": "Dependabot GitHub Actions update",
     "retained_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/66",
-    "state": "open",
-    "disposition": "Preserve in the surviving repository. Its legacy workflow paths need rebasing onto the monorepo; no unrelated dependency changes are implicitly merged."
+    "state": "closed",
+    "disposition": "Dependabot automatically closed this superseded Actions update on 2026-11-11 at 05:21:58 UTC after migration. The original PR, comments, branch and history remain retained; no unrelated dependency changes were merged."
   },
   {
     "source_repository": "aiogram-cmds",

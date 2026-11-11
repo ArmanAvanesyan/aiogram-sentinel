@@ -1,0 +1,31 @@
+{
+  "installed_from": "PyPI",
+  "versions": {
+    "aiogram-idle": "0.3.1",
+    "aiogram-nav": "0.3.1",
+    "aiogram-coordination": "0.1.1"
+  },
+  "outside_workspace": true,
+  "source_packages_absent": true,
+  "real_redis": true,
+  "test_files": [
+    "tests/test_nav_atomic_recovery.py",
+    "tests/test_nav_boundary.py",
+    "tests/test_nav_canonical.py",
+    "tests/test_nav_canonical_migration.py",
+    "tests/test_nav_canonical_stage_scope.py",
+    "tests/test_nav_correctness_021.py",
+    "tests/test_nav_example.py",
+    "tests/test_nav_external_sessions.py",
+    "tests/test_nav_manual_application.py",
+    "tests/test_nav_matrix.py",
+    "tests/test_nav_projection.py",
+    "tests/test_nav_reply_restore.py",
+    "tests/test_nav_review_fsm.py",
+    "tests/test_nav_review_policies.py",
+    "tests/test_nav_review_recovery.py",
+    "tests/test_nav_runtime.py",
+    "tests/test_nav_schema_recovery.py"
+  ],
+  "summary": "127 passed in 140.29s (0:02:20)"
+}

@@ -1,0 +1,152 @@
+[
+  {
+    "package": "aiogram-cmds",
+    "version": "0.3.1",
+    "project_urls": {
+      "Changelog": "https://github.com/ArmanAvanesyan/aiogram-kit/blob/main/packages/aiogram-cmds/CHANGELOG.md",
+      "Documentation": "https://armanavanesyan.github.io/aiogram-kit/libraries/aiogram-cmds/",
+      "Homepage": "https://github.com/ArmanAvanesyan/aiogram-kit/tree/main/packages/aiogram-cmds",
+      "Issues": "https://github.com/ArmanAvanesyan/aiogram-kit/issues",
+      "Repository": "https://github.com/ArmanAvanesyan/aiogram-kit"
+    },
+    "artifacts": [
+      {
+        "filename": "aiogram_cmds-0.3.1-py3-none-any.whl",
+        "sha256": "b2ea5ab0c0267264d7a4d1756f86d55b991603dacc1e0cf7e40a07a4322396ba",
+        "published_standalone_install": "passed",
+        "url": "https://files.pythonhosted.org/packages/4f/f9/28d5449d01c8a7155e01273b1fddb1cff1eec7ebaa4a73dfe4bd8398c615/aiogram_cmds-0.3.1-py3-none-any.whl"
+      },
+      {
+        "filename": "aiogram_cmds-0.3.1.tar.gz",
+        "sha256": "d1652c5c10f745b84249da5aa07e5189d55ffa6b48bc97017eff3b69401ef67d",
+        "published_standalone_install": "passed",
+        "url": "https://files.pythonhosted.org/packages/43/35/8e260b29bb37f069bfb2edb02c26bb61bd03f0ed49c44dd5ad7a94f48412/aiogram_cmds-0.3.1.tar.gz"
+      }
+    ]
+  },
+  {
+    "package": "aiogram-coordination",
+    "version": "0.1.1",
+    "project_urls": {
+      "Changelog": "https://github.com/ArmanAvanesyan/aiogram-kit/blob/main/packages/aiogram-coordination/CHANGELOG.md",
+      "Documentation": "https://armanavanesyan.github.io/aiogram-kit/libraries/aiogram-coordination/",
+      "Homepage": "https://github.com/ArmanAvanesyan/aiogram-kit/tree/main/packages/aiogram-coordination",
+      "Issues": "https://github.com/ArmanAvanesyan/aiogram-kit/issues",
+      "Repository": "https://github.com/ArmanAvanesyan/aiogram-kit"
+    },
+    "artifacts": [
+      {
+        "filename": "aiogram_coordination-0.1.1-py3-none-any.whl",
+        "sha256": "e3968449faee82324774f7b9cde8608b842923913e097d362955be5d468c1f68",
+        "published_standalone_install": "passed",
+        "url": "https://files.pythonhosted.org/packages/6d/02/a6d2387a56cdc4b4e11af4371bd12fa52c4dfb9263fd69c740eda9d7b88d/aiogram_coordination-0.1.1-py3-none-any.whl"
+      },
+      {
+        "filename": "aiogram_coordination-0.1.1.tar.gz",
+        "sha256": "e5ec22b5452c3505c2a9cd46f17894e2381f949fd7f9c179e88f35e9faeb14f7",
+        "published_standalone_install": "passed",
+        "url": "https://files.pythonhosted.org/packages/68/67/4758a79f5af98581a34c67a4d7e5d02374b95e4e5eb4dd0a860190f1c48d/aiogram_coordination-0.1.1.tar.gz"
+      }
+    ]
+  },
+  {
+    "package": "aiogram-idle",
+    "version": "0.3.1",
+    "project_urls": {
+      "Changelog": "https://github.com/ArmanAvanesyan/aiogram-kit/blob/main/packages/aiogram-idle/CHANGELOG.md",
+      "Documentation": "https://armanavanesyan.github.io/aiogram-kit/libraries/aiogram-idle/",
+      "Homepage": "https://github.com/ArmanAvanesyan/aiogram-kit/tree/main/packages/aiogram-idle",
+      "Issues": "https://github.com/ArmanAvanesyan/aiogram-kit/issues",
+      "Repository": "https://github.com/ArmanAvanesyan/aiogram-kit"
+    },
+    "artifacts": [
+      {
+        "filename": "aiogram_idle-0.3.1-py3-none-any.whl",
+        "sha256": "0653e9a3ba8523de428768cb711effa207243cc609e89bc80b36c5a2d8c11b13",
+        "published_standalone_install": "passed",
+        "url": "https://files.pythonhosted.org/packages/6d/30/f67f44199f162e7b293c14999b295f607fac1d57e72d129881cfb7ee3e81/aiogram_idle-0.3.1-py3-none-any.whl"
+      },
+      {
+        "filename": "aiogram_idle-0.3.1.tar.gz",
+        "sha256": "fefac3d5aedf1116f51b814051aeb6c23ce4bdb787133c13b30d21dd334c3c98",
+        "published_standalone_install": "passed",
+        "url": "https://files.pythonhosted.org/packages/e2/82/30c9931e5a43449fca93784ce0816632c69f8307fd9e482a0b3a075f017d/aiogram_idle-0.3.1.tar.gz"
+      }
+    ]
+  },
+  {
+    "package": "aiogram-kit",
+    "version": "0.0.2",
+    "project_urls": {
+      "Changelog": "https://github.com/ArmanAvanesyan/aiogram-kit/blob/main/packages/aiogram-kit/CHANGELOG.md",
+      "Documentation": "https://armanavanesyan.github.io/aiogram-kit/",
+      "Homepage": "https://github.com/ArmanAvanesyan/aiogram-kit/tree/main/packages/aiogram-kit",
+      "Issues": "https://github.com/ArmanAvanesyan/aiogram-kit/issues",
+      "Repository": "https://github.com/ArmanAvanesyan/aiogram-kit"
+    },
+    "artifacts": [
+      {
+        "filename": "aiogram_kit-0.0.2-py3-none-any.whl",
+        "sha256": "7ef56d8263b744a18ba4c8ec01823457bde54e0f3249266fc6c51a471ce463da",
+        "published_standalone_install": "passed",
+        "url": "https://files.pythonhosted.org/packages/32/0b/8f42473b88b2573d107c3358740f418f189d1d9c89821c8ace4e54b78c8d/aiogram_kit-0.0.2-py3-none-any.whl"
+      },
+      {
+        "filename": "aiogram_kit-0.0.2.tar.gz",
+        "sha256": "a1d74d68050d88278f644e73ecdc938c232637575f5096e1afc5749a56a73e73",
+        "published_standalone_install": "passed",
+        "url": "https://files.pythonhosted.org/packages/6a/11/1c688f8a7d739038c1e23713749fd2403fbdda59f6da9060e49784148241/aiogram_kit-0.0.2.tar.gz"
+      }
+    ]
+  },
+  {
+    "package": "aiogram-nav",
+    "version": "0.3.1",
+    "project_urls": {
+      "Changelog": "https://github.com/ArmanAvanesyan/aiogram-kit/blob/main/packages/aiogram-nav/CHANGELOG.md",
+      "Documentation": "https://armanavanesyan.github.io/aiogram-kit/libraries/aiogram-nav/",
+      "Homepage": "https://github.com/ArmanAvanesyan/aiogram-kit/tree/main/packages/aiogram-nav",
+      "Issues": "https://github.com/ArmanAvanesyan/aiogram-kit/issues",
+      "Repository": "https://github.com/ArmanAvanesyan/aiogram-kit"
+    },
+    "artifacts": [
+      {
+        "filename": "aiogram_nav-0.3.1-py3-none-any.whl",
+        "sha256": "79106ff0d4259bf58c52082cdfe703d466f6a5292afed975577d9436f87fe578",
+        "published_standalone_install": "passed",
+        "url": "https://files.pythonhosted.org/packages/25/c9/332db6a1314470cbc8d6c5a4248af1fa96c1e7ff85c771875d4c8a86269b/aiogram_nav-0.3.1-py3-none-any.whl"
+      },
+      {
+        "filename": "aiogram_nav-0.3.1.tar.gz",
+        "sha256": "e3dce4169f69f0e206f0eda82371ae8572d4f7e31b9185e9bf106cbcad7c468d",
+        "published_standalone_install": "passed",
+        "url": "https://files.pythonhosted.org/packages/b8/54/8554008557365c1cff632b20e8d02faa34243efb84966880bc5cf5f41dee/aiogram_nav-0.3.1.tar.gz"
+      }
+    ]
+  },
+  {
+    "package": "aiogram-sentinel",
+    "version": "1.3.1",
+    "project_urls": {
+      "Changelog": "https://github.com/ArmanAvanesyan/aiogram-kit/blob/main/packages/aiogram-sentinel/CHANGELOG.md",
+      "Documentation": "https://armanavanesyan.github.io/aiogram-kit/libraries/aiogram-sentinel/",
+      "Homepage": "https://github.com/ArmanAvanesyan/aiogram-kit/tree/main/packages/aiogram-sentinel",
+      "Issues": "https://github.com/ArmanAvanesyan/aiogram-kit/issues",
+      "Repository": "https://github.com/ArmanAvanesyan/aiogram-kit"
+    },
+    "artifacts": [
+      {
+        "filename": "aiogram_sentinel-1.3.1-py3-none-any.whl",
+        "sha256": "c97a7fefb617bd27a413a1c624581976b70807f7000caac1d2d4cdd42779ce5d",
+        "published_standalone_install": "passed",
+        "url": "https://files.pythonhosted.org/packages/c8/a3/39ec75a54ada4f737f1c1d4c6142014f721e18f0334fd608152782f17c85/aiogram_sentinel-1.3.1-py3-none-any.whl"
+      },
+      {
+        "filename": "aiogram_sentinel-1.3.1.tar.gz",
+        "sha256": "252eef06f0282b46991faa3ca1eb9861f3ec2eefaa7be0ffa0e994c439ac9d60",
+        "published_standalone_install": "passed",
+        "url": "https://files.pythonhosted.org/packages/4b/d4/0fcb259bfca69913b748f6d2e6cc4ca41d68ed35ed16b6461987e322d7df/aiogram_sentinel-1.3.1.tar.gz"
+      }
+    ]
+  }
+]

@@ -2,11 +2,12 @@
   {
     "package": "aiogram-kit",
     "version": "0.0.2",
+    "source_tree": "b26ff2ca233850eef52fa2c534dc154911fe6bca",
     "tag": "aiogram-kit-v0.0.2",
     "workflow": "publish-aiogram-kit.yml",
     "environment": "pypi",
     "repository": "ArmanAvanesyan/aiogram-kit",
-    "manifest_sha256": "e70c94c441aa36d839406d83634cf6f7f51e6cf65a05a9e8a8434ce7b7ea1a23",
+    "manifest_sha256": "59daf16838a845cb00a63c13c6014937791e891d0c0acf7aad0d65bff9b665c2",
     "artifacts": [
       "aiogram_kit-0.0.2-py3-none-any.whl",
       "aiogram_kit-0.0.2.tar.gz"
@@ -15,11 +16,12 @@
   {
     "package": "aiogram-coordination",
     "version": "0.1.1",
+    "source_tree": "90bb60f3f8ec183717885b9a228bad57fb72f963",
     "tag": "aiogram-coordination-v0.1.1",
     "workflow": "publish-aiogram-coordination.yml",
     "environment": "pypi",
     "repository": "ArmanAvanesyan/aiogram-kit",
-    "manifest_sha256": "9bb1671ce42d6b11fb93968d048098f8131fa429b7c983104b6894f71a91f162",
+    "manifest_sha256": "e166ebb8543ad71d517b767cd03fe35c5fa7c4b14a8a77bdd3d7673a051a05c7",
     "artifacts": [
       "aiogram_coordination-0.1.1-py3-none-any.whl",
       "aiogram_coordination-0.1.1.tar.gz"
@@ -28,11 +30,12 @@
   {
     "package": "aiogram-sentinel",
     "version": "1.3.1",
+    "source_tree": "8926e504f94cd4f203e2a7f483e1c721a64e9a90",
     "tag": "aiogram-sentinel-v1.3.1",
     "workflow": "publish-aiogram-sentinel.yml",
     "environment": "pypi",
     "repository": "ArmanAvanesyan/aiogram-kit",
-    "manifest_sha256": "f9ff1e9826c1ff56815acd37750a77260c265be1615787d8fbde1db8fce30b60",
+    "manifest_sha256": "7b1c57a52c058c14cd2c4dadd9caf2bb294e332c653e97a675ed160ce730bf40",
     "artifacts": [
       "aiogram_sentinel-1.3.1-py3-none-any.whl",
       "aiogram_sentinel-1.3.1.tar.gz"
@@ -41,11 +44,12 @@
   {
     "package": "aiogram-cmds",
     "version": "0.3.1",
+    "source_tree": "a9af9cc2482adc13124e9644a0c996e6c573b8da",
     "tag": "aiogram-cmds-v0.3.1",
     "workflow": "publish-aiogram-cmds.yml",
     "environment": "pypi",
     "repository": "ArmanAvanesyan/aiogram-kit",
-    "manifest_sha256": "1f49f259dd0e28e39b0a6c5fb16e91dfeeb9bc171185f02c2e5057552daa070b",
+    "manifest_sha256": "31c1e655b4384d7a6571d5470be9a9df26c952b430ed4dc58fe7731673f829cf",
     "artifacts": [
       "aiogram_cmds-0.3.1-py3-none-any.whl",
       "aiogram_cmds-0.3.1.tar.gz"
@@ -54,11 +58,12 @@
   {
     "package": "aiogram-nav",
     "version": "0.3.1",
+    "source_tree": "b64083dd8d0cc4bdc8057e6fd3420006463fac84",
     "tag": "aiogram-nav-v0.3.1",
     "workflow": "publish-aiogram-nav.yml",
     "environment": "pypi",
     "repository": "ArmanAvanesyan/aiogram-kit",
-    "manifest_sha256": "3f807a1fe9b6728c6af410ec8b309dab17dcdef23648349e2ea7e87467a93528",
+    "manifest_sha256": "6f404d35630d6186efd57675175ba687d2627c55ee672887f19710cc3d4693e8",
     "artifacts": [
       "aiogram_nav-0.3.1-py3-none-any.whl",
       "aiogram_nav-0.3.1.tar.gz"
@@ -67,11 +72,12 @@
   {
     "package": "aiogram-idle",
     "version": "0.3.1",
+    "source_tree": "f7899b01bef665f532ae24338af794d090b0d7d3",
     "tag": "aiogram-idle-v0.3.1",
     "workflow": "publish-aiogram-idle.yml",
     "environment": "pypi",
     "repository": "ArmanAvanesyan/aiogram-kit",
-    "manifest_sha256": "d2d2291ac24cc9878f1171241074ef42bee1bdc81e610eaf2c9b3c8e532f494e",
+    "manifest_sha256": "bd160406a7545977aa8a106b08db595a548bbc724df9ade9823a5cbf342eb6b9",
     "artifacts": [
       "aiogram_idle-0.3.1-py3-none-any.whl",
       "aiogram_idle-0.3.1.tar.gz"

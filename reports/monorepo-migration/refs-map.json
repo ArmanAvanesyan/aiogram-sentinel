@@ -564,5 +564,11 @@
     "destination_ref": "refs/heads/history/aiogram-cmds/remote-cutover/dependabot/github_actions/core-actions-1a31fcc15b",
     "object_id": "128685c703f53141b4ebc3ed22b6af6f4862da78",
     "snapshot": "remote-cutover-delta"
+  },
+  {
+    "repository": "aiogram-cmds",
+    "source_ref": "refs/heads/revert-7-chore/fix-project-urls",
+    "destination_ref": "refs/heads/history/aiogram-cmds/heads/revert-7-chore/fix-project-urls",
+    "object_id": "d8ecbb385882894c69e614fbd8a378d57e83db23"
   }
 ]

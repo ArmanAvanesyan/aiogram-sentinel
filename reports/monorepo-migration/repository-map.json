@@ -13,7 +13,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit-legacy/pull/3",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 2,
@@ -21,7 +21,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit-legacy/pull/2",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 1,
@@ -29,7 +29,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit-legacy/pull/1",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       }
     ],
     "releases": [
@@ -133,7 +133,7 @@
         "state": "open",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/66",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 65,
@@ -141,7 +141,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/65",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 64,
@@ -149,7 +149,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/64",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 63,
@@ -157,7 +157,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/63",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 62,
@@ -165,7 +165,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/62",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 61,
@@ -173,7 +173,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/61",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 60,
@@ -181,7 +181,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/60",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 59,
@@ -189,7 +189,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/59",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 58,
@@ -197,7 +197,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/58",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 57,
@@ -205,7 +205,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/57",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 56,
@@ -213,7 +213,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/56",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 55,
@@ -221,7 +221,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/55",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 54,
@@ -229,7 +229,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/54",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 53,
@@ -237,7 +237,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/53",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 52,
@@ -245,7 +245,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/52",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 51,
@@ -253,7 +253,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/51",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 50,
@@ -261,7 +261,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/50",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 49,
@@ -269,7 +269,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/49",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 48,
@@ -277,7 +277,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/48",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 47,
@@ -285,7 +285,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/47",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 46,
@@ -293,7 +293,7 @@
         "state": "open",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/46",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 45,
@@ -301,7 +301,7 @@
         "state": "open",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/45",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 44,
@@ -309,7 +309,7 @@
         "state": "open",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/44",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 43,
@@ -317,7 +317,7 @@
         "state": "open",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/43",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 42,
@@ -325,7 +325,7 @@
         "state": "open",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/42",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 41,
@@ -333,7 +333,7 @@
         "state": "open",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/41",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 40,
@@ -341,7 +341,7 @@
         "state": "open",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/40",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 39,
@@ -349,7 +349,7 @@
         "state": "open",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/39",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 38,
@@ -357,7 +357,7 @@
         "state": "open",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/38",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 37,
@@ -365,7 +365,7 @@
         "state": "open",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/37",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 36,
@@ -373,7 +373,7 @@
         "state": "open",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/36",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 35,
@@ -381,7 +381,7 @@
         "state": "open",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/35",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 34,
@@ -389,7 +389,7 @@
         "state": "open",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/34",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 33,
@@ -397,7 +397,7 @@
         "state": "open",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/33",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 32,
@@ -405,7 +405,7 @@
         "state": "open",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/32",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 31,
@@ -413,7 +413,7 @@
         "state": "open",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/31",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 30,
@@ -421,7 +421,7 @@
         "state": "open",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/30",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 29,
@@ -429,7 +429,7 @@
         "state": "open",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/29",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 28,
@@ -437,7 +437,7 @@
         "state": "open",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/28",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 27,
@@ -445,7 +445,7 @@
         "state": "closed",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/27",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 26,
@@ -453,7 +453,7 @@
         "state": "closed",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/26",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 25,
@@ -461,7 +461,7 @@
         "state": "closed",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/25",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 24,
@@ -469,7 +469,7 @@
         "state": "closed",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/24",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 23,
@@ -477,7 +477,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/23",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 22,
@@ -485,7 +485,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/22",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 21,
@@ -493,7 +493,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/21",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 20,
@@ -501,7 +501,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/20",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 19,
@@ -509,7 +509,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/19",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 18,
@@ -517,7 +517,7 @@
         "state": "closed",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/18",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 17,
@@ -525,7 +525,7 @@
         "state": "closed",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/17",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 16,
@@ -533,7 +533,7 @@
         "state": "closed",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/16",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 15,
@@ -541,7 +541,7 @@
         "state": "closed",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/15",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 14,
@@ -549,7 +549,7 @@
         "state": "closed",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/14",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 13,
@@ -557,7 +557,7 @@
         "state": "closed",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/13",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 12,
@@ -565,7 +565,7 @@
         "state": "closed",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/12",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 11,
@@ -573,7 +573,7 @@
         "state": "closed",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/11",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 10,
@@ -581,7 +581,7 @@
         "state": "closed",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/10",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 9,
@@ -589,7 +589,7 @@
         "state": "closed",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/9",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 8,
@@ -597,7 +597,7 @@
         "state": "closed",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/8",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 7,
@@ -605,7 +605,7 @@
         "state": "closed",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/7",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 6,
@@ -613,7 +613,7 @@
         "state": "closed",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/6",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 5,
@@ -621,7 +621,7 @@
         "state": "closed",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/5",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 4,
@@ -629,7 +629,7 @@
         "state": "closed",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/4",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 3,
@@ -637,7 +637,7 @@
         "state": "closed",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/3",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 2,
@@ -645,7 +645,7 @@
         "state": "closed",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/2",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 1,
@@ -653,7 +653,7 @@
         "state": "closed",
         "kind": "issue",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/1",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       }
     ],
     "releases": [
@@ -845,7 +845,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/18",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 17,
@@ -853,7 +853,7 @@
         "state": "open",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/17",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 16,
@@ -861,7 +861,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/16",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 15,
@@ -869,7 +869,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/15",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 14,
@@ -877,7 +877,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/14",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 13,
@@ -885,7 +885,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/13",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 12,
@@ -893,7 +893,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/12",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 11,
@@ -901,7 +901,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/11",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 10,
@@ -909,7 +909,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/10",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 9,
@@ -917,7 +917,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/9",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 8,
@@ -925,7 +925,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/8",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 7,
@@ -933,7 +933,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/7",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 6,
@@ -941,7 +941,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/6",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 5,
@@ -949,7 +949,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/5",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 4,
@@ -957,7 +957,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/4",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 3,
@@ -965,7 +965,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/3",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 2,
@@ -973,7 +973,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/2",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 1,
@@ -981,7 +981,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/1",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       }
     ],
     "releases": [
@@ -1131,7 +1131,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-nav/pull/2",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 1,
@@ -1139,7 +1139,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-nav/pull/1",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       }
     ],
     "releases": [
@@ -1260,7 +1260,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-idle/pull/3",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 2,
@@ -1268,7 +1268,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-idle/pull/2",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       },
       {
         "number": 1,
@@ -1276,7 +1276,7 @@
         "state": "closed",
         "kind": "pull_request",
         "destination_url": "https://github.com/ArmanAvanesyan/aiogram-idle/pull/1",
-        "migration_status": "planned-retained-record"
+        "migration_status": "verified-retained-record"
       }
     ],
     "releases": [

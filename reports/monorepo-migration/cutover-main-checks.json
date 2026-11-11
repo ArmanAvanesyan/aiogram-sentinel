@@ -1,0 +1,131 @@
+{
+  "commit": "e23adaf9f0720819e6c008f554ee9809a9089dba",
+  "runs": [
+    {
+      "conclusion": "success",
+      "databaseId": 42972813947,
+      "name": "aiogram-idle: CI",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 42972814000,
+      "name": "aiogram-idle: Optional navigation integration",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 42972202797,
+      "name": "Kit marker distribution artifacts",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 42972187668,
+      "name": "aiogram-cmds: CI",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 42972171612,
+      "name": "aiogram-sentinel: CI",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 42972148833,
+      "name": "aiogram-idle: Optional navigation integration",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 42972148809,
+      "name": "aiogram-nav: CI",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 42971441798,
+      "name": "aiogram-idle: Optional navigation integration",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 42971441691,
+      "name": "aiogram-coordination: CI",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 42971394594,
+      "name": "Workspace preservation and release verification",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 42971394582,
+      "name": "aiogram-sentinel: CI",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 42971394564,
+      "name": "Kit marker distribution artifacts",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 42971394603,
+      "name": "aiogram-sentinel: Native wheels",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 42971394707,
+      "name": "aiogram-cmds: CI",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 42971394791,
+      "name": "aiogram-coordination: CI",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 42971394583,
+      "name": "aiogram-nav: CI",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 42971394556,
+      "name": "aiogram-nav: Native companion verification",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 42971394612,
+      "name": "aiogram-idle: CI",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 42971394802,
+      "name": "aiogram-cmds: Native candidate",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 42971394558,
+      "name": "aiogram-idle: Optional navigation integration",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 42971394622,
+      "name": "aiogram-idle: Native companion verification",
+      "status": "completed"
+    }
+  ]
+}
