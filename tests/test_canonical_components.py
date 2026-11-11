@@ -169,3 +169,20 @@ async def test_expired_id_can_be_atomically_replaced_without_early_eviction():
         backend, accepted, delta("1", "2", delete=["one"], put={"one": row("one", "prepared")})
     )
     assert backend._canonical_rows[(KEY, COMPONENT)].expiry == {}
+
+
+def test_explicit_expired_owner_outside_sweep_batch_has_authoritative_proof():
+    from aiogram_idle.storage.canonical import CanonicalRows, observe
+
+    names = [f"op{index:02}" for index in range(40)]
+    state = CanonicalRows(
+        {name: row(name, "completed") for name in names},
+        {name: 1000 for name in names},
+        {"v:explicit": "op39"},
+        set(names),
+    )
+    result = observe(state, "1", hot("1"), now_ms=2000, index_keys=("v:explicit",))
+    assert "op39" in result["expired"]
+    assert len(result["expired"]) == 33
+    assert result["indexes"] == {"v:explicit": "op39"}
+    assert result["operations"] == {}

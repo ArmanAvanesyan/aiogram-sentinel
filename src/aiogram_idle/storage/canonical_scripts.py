@@ -34,6 +34,7 @@ if ARGV[8]~='' then add(redis.call('HGET',KEYS[8],'o:'..ARGV[8]),true) end
 local indexes={}
 for _,field in ipairs(cjson.decode(ARGV[11])) do local owner=redis.call('HGET',KEYS[8],field);add(owner,true);table.insert(indexes,field);table.insert(indexes,owner or '') end
 local expired=redis.call('ZRANGEBYSCORE',KEYS[7],'-inf',now,'LIMIT',0,32)
+local expired_set={};for _,id in ipairs(expired) do expired_set[id]=true end
 for _,id in ipairs(expired) do add(id,false) end
 local metadata={};local expiry={}
 for _,id in ipairs(ids) do
@@ -53,6 +54,7 @@ for _,id in ipairs(ids) do
   else return redis.error_reply('IDLE_INCONSISTENT canonical status') end
   table.insert(metadata,id);table.insert(metadata,raw)
   if score then table.insert(expiry,id);table.insert(expiry,score) end
+  if score and tonumber(score)<=now and not expired_set[id] then expired_set[id]=true;table.insert(expired,id) end
  end
 end
 return {'ok',tm[1],tm[2],redis.call('HLEN',KEYS[6]),metadata,expiry,expired,indexes}

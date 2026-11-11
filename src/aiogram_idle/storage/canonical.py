@@ -207,6 +207,7 @@ def observe(
             wanted.add(cast(str, selected_indexes[index]))
             required.add(cast(str, selected_indexes[index]))
     wanted.update(expired)
+    expired_ids = list(expired)
     selected: dict[str, str] = {}
     expiry: dict[str, int] = {}
     for name in wanted:
@@ -223,13 +224,15 @@ def observe(
             selected[name] = raw
         if until is not None:
             expiry[name] = until
+            if until <= now_ms and name not in expired_ids:
+                expired_ids.append(name)
     return {
         "revision": revision,
         "hot": hot,
         "operations": selected,
         "retained_count": len(rows.known_ids) + rows.unloaded_count,
         "operation_expiry": expiry,
-        "expired": list(expired),
+        "expired": expired_ids,
         "indexes": selected_indexes,
     }
 

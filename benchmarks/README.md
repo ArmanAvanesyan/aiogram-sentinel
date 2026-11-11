@@ -66,3 +66,8 @@ profile. After standalone Python/Rust core runs, `--combined-only` runs just the
 integration corpus for the other two engine combinations. Constructor defaults
 are also propagated into genuine killed/crashed child processes. Explicit engine
 choices inside cross-engine parity tests remain intact.
+
+The shared evaluator reads only `results`: every row there has measured CPU
+batches, their median and a call count. Non-timing evidence (event-loop lag,
+admission outcomes and explicitly unavailable cases) lives in top-level
+`diagnostics`. Comparison identity uses the deterministic input seed `0`.

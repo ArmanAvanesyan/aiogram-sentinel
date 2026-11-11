@@ -89,10 +89,11 @@ async def main():
     if any(value < 1 for value in [*ages, samples, repeats]):
         parser.error("ages/samples/cpu-samples must be positive")
     rows = []
+    diagnostics = []
     for age in ages:
         rows.append(await memory_workload(age, args.engine, samples, repeats))
     rows.append(await claim_workload(args.engine, samples, repeats))
-    rows.append(await loop_lag_workload(args.engine, samples))
+    diagnostics.append(await loop_lag_workload(args.engine, samples))
     if args.redis_url and not args.skip_redis and args.combined and not args.skip_combined:
         if __package__:
             from .dispatcher import workload as dispatcher_workload
@@ -100,8 +101,8 @@ async def main():
             from dispatcher import workload as dispatcher_workload
         rows.append(await dispatcher_workload(args.redis_url, args.engine, samples))
     if not args.skip_admission:
-        rows.extend(await admission_trajectory(args.engine, ages))
-        rows.extend(await admission_trajectory(args.engine, ages, short_replay=True))
+        diagnostics.extend(await admission_trajectory(args.engine, ages))
+        diagnostics.extend(await admission_trajectory(args.engine, ages, short_replay=True))
     for age in ages:
         if args.redis_url and not args.skip_redis:
             rows.append(await redis_workload(args.redis_url, age, args.engine, samples))
@@ -110,7 +111,7 @@ async def main():
             # failure is reported separately, not hidden by an enormous legacy cap.
             legacy = "storage_format" not in inspect.signature(MemoryIdleBackend).parameters
             if legacy and age > 50:
-                rows.append(
+                diagnostics.append(
                     {
                         "scenario": "combined-legacy-age",
                         "workload": f"combined-legacy-age/{age}",
@@ -126,6 +127,7 @@ async def main():
     report = {
         **provenance(),
         "engine": args.engine,
+        "seed": 0,
         "qualification": False,
         "qualification_owner": "external serial comparison gate; two serial runs per engine",
         "representative_workload": "memory-activate-touch/50",
@@ -136,6 +138,7 @@ async def main():
         "samples": samples,
         "cpu_samples": repeats,
         "results": rows,
+        "diagnostics": diagnostics,
         "dependencies": {name: version(name) for name in ("aiogram", "aiogram-coordination")},
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)

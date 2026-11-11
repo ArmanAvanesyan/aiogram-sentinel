@@ -47,7 +47,7 @@ wheels = [
 
 [[package]]
 name = "aiogram-idle"
-version = "0.2.1"
+version = "0.3.0"
 source = { editable = "." }
 dependencies = [
     { name = "aiogram" },
@@ -84,7 +84,7 @@ dev = [
 requires-dist = [
     { name = "aiogram", specifier = ">=3.22,<4" },
     { name = "aiogram-coordination", specifier = ">=0.1.0,<0.2" },
-    { name = "aiogram-nav", marker = "extra == 'nav'", specifier = ">=0.2.0,<0.3" },
+    { name = "aiogram-nav", marker = "extra == 'nav'", specifier = ">=0.3.0,<0.4" },
     { name = "redis", marker = "extra == 'redis'", specifier = ">=5.0.8,<8" },
 ]
 provides-extras = ["redis", "nav"]
@@ -108,15 +108,15 @@ dev = [
 
 [[package]]
 name = "aiogram-nav"
-version = "0.2.0"
+version = "0.3.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiogram" },
     { name = "aiogram-coordination" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f9/d3/9b390427f750b8245779874a6085fd27d2ecabd3199f07a0002ed98b36ca/aiogram_nav-0.2.0.tar.gz", hash = "sha256:6a023108d788f5310cee6a4b5cfe91a3b11098fb833f67f434f7eda8e5a4b149", size = 380909, upload-time = "2026-11-10T12:49:20.938Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f1/d6/7a1a30a4e1db2eafb68d2c791fdbebac66bfbaaa0cecd60a601c7fd4e08c/aiogram_nav-0.3.0.tar.gz", hash = "sha256:8204f3d72fee86b483685f01599f9f86605f516ef31515fc77b4e89cc1dab649", size = 449508, upload-time = "2026-11-11T01:11:34.485Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/df/15/357cec9d57796a18fd3dc1cd839d874e7d6a6e7844cf3a5beb58e4db8e9d/aiogram_nav-0.2.0-py3-none-any.whl", hash = "sha256:f9a4ad682e92d3209e7aace07d4708663a49e1305995757b9a6d1016c26a982b", size = 79609, upload-time = "2026-11-10T12:49:19.551Z" },
+    { url = "https://files.pythonhosted.org/packages/d2/c1/6ac4488933157f1306ef4d3860a0c97b61eebc772e183c7af5dde43741a3/aiogram_nav-0.3.0-py3-none-any.whl", hash = "sha256:f14220d827755e92547bb9fe37880bc8178c32c1b600f44a15fd6b756ee94ce6", size = 105225, upload-time = "2026-11-11T01:11:32.904Z" },
 ]
 
 [[package]]

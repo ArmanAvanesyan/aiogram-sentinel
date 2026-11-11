@@ -147,3 +147,27 @@ async def test_lost_index_hash_fails_closed_with_count_witness(redis_client):
     await redis_client.delete(prefix + ":indexes")
     with pytest.raises(BackendInconsistent):
         await backend.canonical_component_read(KEY, component=COMPONENT)
+
+
+async def test_requested_expired_index_owner_beyond_gc_batch_is_classified(redis_client):
+    backend = await create(redis_client)
+    names = [f"op{index:02}" for index in range(40)]
+    await write(
+        backend,
+        None,
+        delta(
+            None,
+            "1",
+            put={name: row(name, "completed") for name in names},
+            duration={name: 100 for name in names},
+            indexes={"v:explicit": "op39"},
+        ),
+    )
+    await asyncio.sleep(0.15)
+    result = await backend.canonical_component_read(
+        KEY, component=COMPONENT, index_keys=("v:explicit",)
+    )
+    assert "op39" in result["expired"]
+    assert len(result["expired"]) == 33
+    assert result["indexes"] == {"v:explicit": "op39"}
+    assert result["operations"] == {}
