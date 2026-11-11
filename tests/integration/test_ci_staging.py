@@ -70,9 +70,12 @@ def test_cmds_pypy_uses_locked_test_dependencies_without_publication_tools():
     result = module.port(package, package / ".github/workflows/ci.yml")
     runs = "\n".join(s.get("run", "") for s in result["jobs"]["pypy-tests"]["steps"])
     assert "uv export --frozen" in runs
-    assert "uv sync --frozen --no-default-groups --python pypy3.10" in runs
+    assert "uv venv --python pypy3.10" in runs
+    assert "--prune pydantic" in runs
+    assert "pydantic>=2.12,<2.13" in runs
     assert "uv pip install --constraint" in runs
-    assert "pytest pytest-asyncio pytest-mock pytest-cov hypothesis babel redis" in runs
+    assert "hypothesis==6.140.3" in runs
+    assert "--prune hypothesis" in runs
     assert "uv sync --frozen --all-extras" not in runs
 
 

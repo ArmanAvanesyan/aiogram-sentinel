@@ -128,12 +128,13 @@ jobs:
     - uses: astral-sh/setup-uv@v7
       with:
         cache-dependency-glob: distribution/uv.lock
-    - run: 'uv export --frozen --all-extras --all-groups --no-hashes --no-emit-project --output-file "$RUNNER_TEMP/cmds-pypy-constraints.txt"
+    - run: 'uv export --frozen --all-extras --all-groups --no-hashes --no-emit-project --prune pydantic --prune hypothesis
+        --output-file "$RUNNER_TEMP/cmds-pypy-constraints.txt"
 
-        uv sync --frozen --no-default-groups --python pypy3.10
+        uv venv --python pypy3.10
 
-        uv pip install --constraint "$RUNNER_TEMP/cmds-pypy-constraints.txt" pytest pytest-asyncio pytest-mock pytest-cov
-        hypothesis babel redis'
+        uv pip install --constraint "$RUNNER_TEMP/cmds-pypy-constraints.txt" ''.[redis]'' ''pydantic>=2.12,<2.13'' pytest
+        pytest-asyncio pytest-mock pytest-cov ''hypothesis==6.140.3'' babel'
     - run: uv run --no-sync pytest tests/unit tests/integration
     defaults:
       run:

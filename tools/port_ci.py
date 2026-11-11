@@ -115,14 +115,17 @@ def port(package: pathlib.Path, source: pathlib.Path) -> dict:
                     and job_name == "pypy-tests"
                     and "uv sync" in step["run"]
                 ):
-                    # Publishing/documentation tools are not runtime compatibility dependencies.
-                    # Preserve locked test versions without building Twine's cryptography on PyPy.
+                    # PyPy 3.10 needs the supported Pydantic 2.12 line: current
+                    # Pydantic-core and publishing tools require newer PyPy.
+                    # Keep other test/runtime dependencies locked and exercise the
+                    # same public dependency range, without changing package bounds.
                     step["run"] = (
                         "uv export --frozen --all-extras --all-groups --no-hashes --no-emit-project "
-                        '--output-file "$RUNNER_TEMP/cmds-pypy-constraints.txt"\n'
-                        "uv sync --frozen --no-default-groups --python pypy3.10\n"
+                        '--prune pydantic --prune hypothesis --output-file "$RUNNER_TEMP/cmds-pypy-constraints.txt"\n'
+                        "uv venv --python pypy3.10\n"
                         'uv pip install --constraint "$RUNNER_TEMP/cmds-pypy-constraints.txt" '
-                        "pytest pytest-asyncio pytest-mock pytest-cov hypothesis babel redis"
+                        "'.[redis]' 'pydantic>=2.12,<2.13' "
+                        "pytest pytest-asyncio pytest-mock pytest-cov 'hypothesis==6.140.3' babel"
                     )
                 if package.name == "aiogram-cmds" and job_name == "performance":
                     # These tests use timing probes, not the pytest-benchmark fixture.
