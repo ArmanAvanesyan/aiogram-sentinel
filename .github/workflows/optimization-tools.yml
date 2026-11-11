@@ -1,0 +1,39 @@
+name: Optimization tooling
+
+on:
+  push:
+    branches: [main]
+    paths: ['tools/optimization/**', '.github/workflows/optimization-tools.yml']
+  pull_request:
+    paths: ['tools/optimization/**', '.github/workflows/optimization-tools.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: optimization-tools-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.10', '3.12', '3.14']
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Verify evidence and instrumentation guards
+        run: >-
+          uv run --no-project --python '${{ matrix.python }}'
+          --with 'pytest>=8,<10' --with 'pytest-asyncio>=0.26,<2'
+          --with 'redis>=5,<8' pytest -q
+          -o asyncio_default_fixture_loop_scope=function tools/optimization/tests
+      - name: Lint tool sources
+        run: uvx ruff check tools/optimization

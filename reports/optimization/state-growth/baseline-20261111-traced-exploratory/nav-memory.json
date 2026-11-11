@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "qualification": false,
+  "metadata": {
+    "driver_sha256": "839b5a1f18089b85b94b1627e0574b0387ec8b1e99c9241952d88134dba9d7ae",
+    "mode": "nav",
+    "engine": "python",
+    "backend": "memory",
+    "external_sessions": false,
+    "idle_operation": "activate",
+    "requested_checkpoints": [
+      1,
+      10,
+      16
+    ],
+    "artifacts": [
+      {
+        "name": "aiogram-nav",
+        "version": "0.2.0",
+        "module": "/private/tmp/aiogram-optimization-published-baseline/lib/python3.12/site-packages/aiogram_nav/__init__.py",
+        "direct_url": {}
+      },
+      {
+        "name": "aiogram",
+        "version": "3.31.0",
+        "module": "/private/tmp/aiogram-optimization-published-baseline/lib/python3.12/site-packages/aiogram/__init__.py",
+        "direct_url": {}
+      },
+      {
+        "name": "aiogram-coordination",
+        "version": "0.1.0",
+        "module": "/private/tmp/aiogram-optimization-published-baseline/lib/python3.12/site-packages/aiogram_coordination/__init__.py",
+        "direct_url": {}
+      }
+    ],
+    "python": "3.12.13 (main, Apr 14 2026, 14:36:32) [Clang 22.1.3 ]",
+    "executable": "/tmp/aiogram-optimization-published-baseline/bin/python",
+    "platform": "macOS-15.8.1-x86_64-i386-64bit",
+    "cpu": "i386",
+    "cpu_count": 16,
+    "prefix": "aiogram-state-growth:5731ef204c214d92ba0b5d615b101a85",
+    "redis_endpoint": null,
+    "history_limit": 20,
+    "parameter_payload_bytes": 16,
+    "parameters_json_bytes": 30,
+    "real_telegram": false,
+    "storage_format3": false,
+    "tracemalloc_enabled": true,
+    "timing_excludes_state_inspection": true,
+    "command_measurement": "client invocations and computed RESP2 requests; not TCP round trips, replies, retries or Lua subcommands",
+    "started_at": 1794354321.057239,
+    "config": {
+      "root": null,
+      "session_seconds": 3600,
+      "history_limit": 20,
+      "recovery_seconds": 3600,
+      "max_conversations": 10000,
+      "max_receipts": 256,
+      "max_tokens": 128,
+      "max_params_bytes": 16384
+    },
+    "finished_at": 1794354321.104616
+  },
+  "checkpoints": [
+    {
+      "operations": 1,
+      "wall_seconds": 0.004694978939369321,
+      "process_cpu_seconds": 0.004364999999999952,
+      "client_commands": {
+        "client_command_calls": 0,
+        "pipeline_execute_calls": 0,
+        "command_argument_bytes": 0,
+        "computed_resp_request_bytes": 0,
+        "command_histogram": {}
+      },
+      "event_loop_lag": {
+        "samples": 0,
+        "retained_samples": 0,
+        "maximum_seconds": 0.0,
+        "p95_seconds": null,
+        "interval_seconds": 0.005
+      },
+      "public_snapshot_json_bytes": 394,
+      "traced_current_bytes": 66328,
+      "traced_peak_bytes": 73364
+    },
+    {
+      "operations": 10,
+      "wall_seconds": 0.025708581088110805,
+      "process_cpu_seconds": 0.025244999999999962,
+      "client_commands": {
+        "client_command_calls": 0,
+        "pipeline_execute_calls": 0,
+        "command_argument_bytes": 0,
+        "computed_resp_request_bytes": 0,
+        "command_histogram": {}
+      },
+      "event_loop_lag": {
+        "samples": 1,
+        "retained_samples": 1,
+        "maximum_seconds": 0.006450215121731162,
+        "p95_seconds": 0.006450215121731162,
+        "interval_seconds": 0.005
+      },
+      "public_snapshot_json_bytes": 932,
+      "traced_current_bytes": 112118,
+      "traced_peak_bytes": 116729
+    },
+    {
+      "operations": 16,
+      "wall_seconds": 0.04114205529913306,
+      "process_cpu_seconds": 0.04059699999999955,
+      "client_commands": {
+        "client_command_calls": 0,
+        "pipeline_execute_calls": 0,
+        "command_argument_bytes": 0,
+        "computed_resp_request_bytes": 0,
+        "command_histogram": {}
+      },
+      "event_loop_lag": {
+        "samples": 1,
+        "retained_samples": 1,
+        "maximum_seconds": 0.006450215121731162,
+        "p95_seconds": 0.006450215121731162,
+        "interval_seconds": 0.005
+      },
+      "public_snapshot_json_bytes": 1289,
+      "traced_current_bytes": 143596,
+      "traced_peak_bytes": 146528
+    }
+  ],
+  "outcome": "completed"
+}
