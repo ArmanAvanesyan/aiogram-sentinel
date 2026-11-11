@@ -29,8 +29,10 @@ from .models import (
     PollReport,
     ReconcileReport,
     RuntimeSnapshot,
+    validate_identifier,
 )
-from .policies import IdlePolicies
+from .observation import IdleObservation
+from .policies import IdlePolicies, IdlePolicy
 from .presentation import PromptReceipt, TelegramPromptPresenter
 from .protocols import Coordinator, FlowAdapter, PromptPresenter
 from .storage.base import IdleBackend
@@ -41,6 +43,10 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 DependencyFactory = Callable[[IdleConversationKey], Awaitable[Mapping[str, object]]]
+ComponentCommitter = Callable[
+    [RuntimeSnapshot, RuntimeSnapshot, ActionReceipt, IdlePolicy | None, Claim | None],
+    Awaitable[RuntimeSnapshot | None],
+]
 ComponentFinalizer = Callable[[RuntimeSnapshot, RuntimeSnapshot, ActionReceipt], RuntimeSnapshot]
 ComponentRecovery = Callable[[RuntimeSnapshot, Claim | None], Awaitable[bool]]
 ComponentObserver = Callable[[RuntimeSnapshot, RuntimeSnapshot, ActionReceipt], Awaitable[None]]
@@ -73,14 +79,14 @@ class IdleRuntime:
         self.adapters = dict(adapters)
         self.presenter = presenter
         self.config = config or backend.config
+        if self.config.engine != backend.config.engine:
+            raise ConfigurationMismatch("Runtime and backend must select the same execution engine")
         mismatches = [
             field
             for field in STORAGE_CONFIG_FIELDS
             if getattr(self.config, field) != getattr(backend.config, field)
         ]
         if mismatches:
-            from .errors import ConfigurationMismatch
-
             raise ConfigurationMismatch(
                 "Backend owns storage settings; configure these on the backend: "
                 + ", ".join(mismatches)
@@ -98,6 +104,7 @@ class IdleRuntime:
         self.locale_resolver = locale_resolver
         # Optional generic component hooks are registered before startup by a
         # transaction-owning integration. Core never interprets its payload.
+        self.component_committer: ComponentCommitter | None = None
         self.component_finalizer: ComponentFinalizer | None = None
         self.component_recovery: ComponentRecovery | None = None
         self.component_after_commit: ComponentObserver | None = None
@@ -109,6 +116,7 @@ class IdleRuntime:
         self._stopping = False
         self._wake = asyncio.Event()
         self._installed = False
+        validate_identifier(namespace, "namespace")
         if not namespace or len(namespace) > 128:
             raise ConfigurationError("Invalid namespace")
         if not self.adapters:
@@ -206,6 +214,11 @@ class IdleRuntime:
     async def inspect(self, key: IdleConversationKey) -> RuntimeSnapshot | None:
         return await self.backend.load(key)
 
+    async def observe(self, key: IdleConversationKey) -> IdleObservation:
+        from .observation import observe
+
+        return observe(await self.backend.load(key), self.clock.now())
+
     async def is_busy(self, key: IdleConversationKey) -> bool:
         record = await self.backend.load(key)
         return (
@@ -301,7 +314,7 @@ class IdleRuntime:
                     return ControlResult(False, "stale")
             operation_id = context.operation_id or f"answer:{prompt.prompt_id}:{action}"
             trigger = Trigger.CONTINUE if action == "continue" else Trigger.CANCEL
-            phase = reduce_phase(record.idle.phase, trigger)
+            phase = reduce_phase(record.idle.phase, trigger, engine=self.config.engine)
             operation = PendingOperation(
                 operation_id=operation_id,
                 kind=action,

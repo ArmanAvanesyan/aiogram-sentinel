@@ -248,7 +248,19 @@ async def test_staged_cancel_recovers_failed_final_commit_without_repeating_effe
             raise PersistenceUnavailable("Completion was not available")
         return await original(*args, **kwargs)
 
-    monkeypatch.setattr(backend, "transition", fail_final_once)
+    if backend.active_storage_format == 3:
+        original_canonical = backend.canonical_component_transaction
+
+        async def fail_canonical_final_once(*args, **kwargs):
+            nonlocal failed
+            if not failed and kwargs.get("finalize_idle_operation_id") is not None:
+                failed = True
+                raise PersistenceUnavailable("Completion was not available")
+            return await original_canonical(*args, **kwargs)
+
+        monkeypatch.setattr(backend, "canonical_component_transaction", fail_canonical_final_once)
+    else:
+        monkeypatch.setattr(backend, "transition", fail_final_once)
     answer = await idle.cancel_current(ControlContext(mapped, 42, operation_id="cancel"))
     assert answer.accepted and failed
     staged = await backend.load(mapped)

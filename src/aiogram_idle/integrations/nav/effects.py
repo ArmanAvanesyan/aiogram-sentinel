@@ -18,6 +18,7 @@ from aiogram_nav.navigation import Navigation
 from ...effects import OperationEffects
 from ...errors import EffectUnknown, OwnershipLost
 from ...protocols import EffectRecorder
+from .canonical_effects import CanonicalNavigationEffects
 
 T = TypeVar("T")
 
@@ -43,7 +44,11 @@ class NavigationEffects:
             else "nav:effect:hash:" + sha256(stage.encode()).hexdigest()
         )
         async with self._serialized(stage):
-            recorder = self.effects if isinstance(self.effects, OperationEffects) else None
+            recorder = (
+                self.effects
+                if isinstance(self.effects, (OperationEffects, CanonicalNavigationEffects))
+                else None
+            )
             fresh = False
             if recorder is not None:
                 record = await recorder.record()

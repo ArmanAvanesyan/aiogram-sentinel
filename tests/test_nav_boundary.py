@@ -12,8 +12,8 @@ def test_optional_integration_rejects_incompatible_navigation_version(monkeypatc
 
     original = nav.__version__
     try:
-        monkeypatch.setattr(nav, "__version__", "0.3.0")
-        with pytest.raises(ImportError, match="aiogram-nav>=0.2.0,<0.3"):
+        monkeypatch.setattr(nav, "__version__", "0.4.0")
+        with pytest.raises(ImportError, match="aiogram-nav>=0.3.0,<0.4"):
             importlib.reload(integration)
     finally:
         monkeypatch.setattr(nav, "__version__", original)

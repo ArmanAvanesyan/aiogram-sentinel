@@ -1,0 +1,65 @@
+name: Publish verified native companion
+
+on:
+  workflow_dispatch:
+    inputs:
+      manifest_sha256:
+        description: SHA256 of the independently reviewed native release SHA256SUMS
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-native-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    if: github.ref_type == 'tag' && startsWith(github.ref_name, 'native-v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: '3.12'
+      - name: Download exact reviewed native artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release download "$GITHUB_REF_NAME" --pattern '*.whl' --pattern '*.tar.gz' --pattern SHA256SUMS --dir native-dist
+      - name: Validate exact identity, versions, checksums and complete wheel matrix
+        env:
+          MANIFEST_SHA256: ${{ inputs.manifest_sha256 }}
+        run: >-
+          uv run --no-project python tools/verify_native_artifacts.py
+          --directory native-dist --tag "$GITHUB_REF_NAME"
+          --manifest-sha256 "$MANIFEST_SHA256"
+      - run: uvx twine check native-dist/*.whl native-dist/*.tar.gz
+      - run: uvx abi3audit --strict native-dist/*.whl
+      - uses: actions/upload-artifact@v6
+        with:
+          name: verified-native-distributions
+          path: |
+            native-dist/*.whl
+            native-dist/*.tar.gz
+          if-no-files-found: error
+  publish:
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          name: verified-native-distributions
+          path: native-dist
+      - name: Publish verified companion using Trusted Publishing
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: native-dist/

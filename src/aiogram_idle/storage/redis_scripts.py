@@ -18,18 +18,31 @@ end
 INITIALIZE = (
     _TYPES
     + r"""
-if not types(KEYS, {'string','set','string','zset','set','string','hash'}) then return redis.error_reply('IDLE_INCONSISTENT key type') end
+if not types(KEYS, {'string','set','string','zset','set','string','hash','string','zset','zset','string'}) then return redis.error_reply('IDLE_INCONSISTENT key type') end
 local existing=redis.call('GET',KEYS[1])
 if existing then
  local at,profile=string.match(existing,'^([^:]+):(.+)$')
  local stamp=tonumber(at)
  if not stamp or stamp~=stamp or stamp<=0 or stamp==math.huge then return redis.error_reply('IDLE_INCONSISTENT namespace history') end
  if profile~=ARGV[1] then return 'profile-mismatch' end
+ if tonumber(ARGV[2])==3 then
+  local format=redis.call('GET',KEYS[8]);if not format then return redis.error_reply('IDLE_INCONSISTENT missing format marker') end
+  local ok,body=pcall(cjson.decode,format)
+  if not ok or body.format~=3 or body.history~=existing then return redis.error_reply('IDLE_INCONSISTENT storage format history') end
+ end
+ local proof=redis.call('GET',KEYS[11])
+ if proof and proof~=at then return redis.error_reply('IDLE_INCONSISTENT namespace history proof') end
+ if not proof then redis.call('SET',KEYS[11],at) end
  return existing
 end
-if redis.call('SCARD',KEYS[2])>0 or redis.call('EXISTS',KEYS[3])>0 or redis.call('ZCARD',KEYS[4])>0 or redis.call('SCARD',KEYS[5])>0 or redis.call('EXISTS',KEYS[6])>0 or redis.call('HLEN',KEYS[7])>0 then return redis.error_reply('IDLE_INCONSISTENT missing history marker') end
+if redis.call('SCARD',KEYS[2])>0 or redis.call('EXISTS',KEYS[3])>0 or redis.call('ZCARD',KEYS[4])>0 or redis.call('SCARD',KEYS[5])>0 or redis.call('EXISTS',KEYS[6])>0 or redis.call('HLEN',KEYS[7])>0 or redis.call('EXISTS',KEYS[8])>0 or redis.call('ZCARD',KEYS[9])>0 or redis.call('ZCARD',KEYS[10])>0 or redis.call('EXISTS',KEYS[11])>0 then return redis.error_reply('IDLE_INCONSISTENT missing history marker') end
 local tm=redis.call('TIME'); local value=tm[1]..'.'..string.format('%06d',tonumber(tm[2]))..':'..ARGV[1]
-redis.call('SET',KEYS[1],value); return value
+redis.call('SET',KEYS[1],value)
+redis.call('SET',KEYS[11],tm[1]..'.'..string.format('%06d',tonumber(tm[2])))
+if tonumber(ARGV[2])==3 then
+ redis.call('SET',KEYS[8],cjson.encode({format=3,operation_id='namespace-bootstrap',previous_history=value,history=value}))
+end
+return value
 """
 )
 

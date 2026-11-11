@@ -2,6 +2,44 @@
 
 <!-- towncrier release notes start -->
 
+## [0.3.0] - 2026-11-11
+
+### Features
+
+- Add explicit Python/Rust deterministic engine selection, with a separately built
+  `aiogram-idle-native` 0.3.0 ABI 1 companion. Python remains the default; invalid
+  native selection fails before initialization and never falls back after mutation.
+  Native publication is withheld: the representative CPU gate was about 6.6%
+  slower than Python. Source and functional CI remain; no native tag, PyPI release
+  or dependency extra is provided for 0.3.0.
+- Add opt-in storage format 3: bounded current state, protected pending evidence,
+  server-time anchored physical receipt expiry, immutable original result blocks,
+  bounded reconciliation and effect-free staged migration with verified cutover.
+- Add independently configurable completed replay retention, inheriting existing
+  recovery retention by default. Preserve unexpired replay and unknown effects
+  rather than evicting them under pressure.
+- Fuse standalone activity activation into one canonical receipt and combine
+  navigation operations with their first activity result in one canonical ledger.
+  Application-owned adopted renders commit navigation/activity/deadline together.
+- Reuse one decision observation inside combined middleware while keeping external
+  authority checks fresh. Add installed-package workload benchmarks and explicit
+  format 3 Python/Rust, real-Redis and mixed-engine verification profiles.
+
+### Behavior changes and fixes
+
+- Fresh combined navigation uses the verified Idle absolute session generation
+  upfront. Existing shorter legacy navigation caps remain immutable; expired
+  generations require explicit replacement. Navigation milliseconds never round
+  authorization expiry upward.
+- Serialize canonical external stages across recorder instances, reject recursive
+  stage reuse, and preserve guarded explicit replay of safe uncertain effects.
+  Check deadline claims again after application authorization hooks.
+- Validate UTF-8 Unicode scalar identifiers and JSON early, consistently across
+  engines and backends, without replacing or normalizing valid Unicode.
+- Preserve original receipt expiry through rewrites and migration; fail closed on
+  missing promised rows, reverse-index corruption or contradictory cleanup proof.
+
+
 ## [0.2.1] - 2026-11-11
 
 ### Bugfixes

@@ -183,7 +183,9 @@ class IdleWorker:
             record = await self.save(
                 record,
                 IdleSnapshot(
-                    phase=reduce_phase(record.idle.phase, trigger),
+                    phase=reduce_phase(
+                        record.idle.phase, trigger, engine=self.runtime.config.engine
+                    ),
                     deadline=now,
                     operation=operation,
                     prompt=receipt,
@@ -201,7 +203,9 @@ class IdleWorker:
                 record,
                 replace(
                     record.idle,
-                    phase=reduce_phase(record.idle.phase, Trigger.TIMEOUT),
+                    phase=reduce_phase(
+                        record.idle.phase, Trigger.TIMEOUT, engine=self.runtime.config.engine
+                    ),
                     operation=operation,
                 ),
                 step="reserve-timeout",
@@ -387,24 +391,30 @@ class IdleWorker:
         )
         if self.runtime.component_validator is not None:
             self.runtime.component_validator()
-        finalizer = self.runtime.component_finalizer
-        if receipt.component_updates:
-            if finalizer is None:
-                raise ConfigurationError("Component completion requires its owning integration")
-            changed = replace(
-                changed, components={**changed.components, **receipt.component_updates}
+        committed = None
+        if self.runtime.component_committer is not None:
+            committed = await self.runtime.component_committer(
+                record, changed, receipt, policy, claim
             )
-        if finalizer is not None:
-            changed = finalizer(record, changed, receipt)
-        committed = await self.runtime.backend.transition(
-            record.key,
-            expected_version=record.store_version,
-            operation_id=internal_id(effects.operation_id, "complete"),
-            fingerprint=f"{effects.operation_id}:complete",
-            transform=lambda _: changed,
-            claim=claim,
-            policy=policy,
-        )
+        if committed is None:
+            finalizer = self.runtime.component_finalizer
+            if receipt.component_updates:
+                if finalizer is None:
+                    raise ConfigurationError("Component completion requires its owning integration")
+                changed = replace(
+                    changed, components={**changed.components, **receipt.component_updates}
+                )
+            if finalizer is not None:
+                changed = finalizer(record, changed, receipt)
+            committed = await self.runtime.backend.transition(
+                record.key,
+                expected_version=record.store_version,
+                operation_id=internal_id(effects.operation_id, "complete"),
+                fingerprint=f"{effects.operation_id}:complete",
+                transform=lambda _: changed,
+                claim=claim,
+                policy=policy,
+            )
         observer = self.runtime.component_after_commit
         if observer is not None:
             try:

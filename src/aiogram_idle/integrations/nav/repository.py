@@ -75,6 +75,45 @@ class NavigationRepository:
         self.coordinator: Coordinator = MappedCoordinator(idle.coordinator, self.mapping)
         self.navigation: Navigation | None = None
 
+    async def migrate_canonical(
+        self, key: ConversationKey, *, limit: int = 32, dry_run: bool = True
+    ):
+        from .canonical_migration import migrate
+
+        try:
+            return await migrate(self, key, limit=limit, dry_run=dry_run)
+        except IdleError as error:
+            raise navigation_error(error) from error
+
+    @property
+    def atomic_adoption(self) -> bool:
+        return getattr(self.idle.backend, "active_storage_format", 1) == 3
+
+    async def adopt_render(
+        self,
+        key: ConversationKey,
+        *,
+        expected_version: str | None,
+        intent: NavigationIntent,
+        rendered: RenderResult,
+        coordination_scope: object | None = None,
+    ) -> CommitResult:
+        return await self._apply(
+            key,
+            lambda memory: memory.adopt_render(
+                key,
+                expected_version=expected_version,
+                intent=intent,
+                rendered=rendered,
+                coordination_scope=None,
+            ),
+            scope=coordination_scope,
+            accepted=intent.accepted_activity,
+            deadline=lambda result: 0 if result.duplicate else result.snapshot.expires_at,
+            operation_id=intent.operation_id,
+            view_id=intent.view_id or "",
+        )
+
     def key_to_idle(self, key: ConversationKey):
         return self.mapping.to_idle(key)
 
@@ -89,9 +128,28 @@ class NavigationRepository:
         if coordinator is not self.coordinator:
             raise ConfigurationError("Integrated navigation must share idle coordination")
 
-    async def _memory(self, key: ConversationKey) -> MemoryNavigationRepository:
+    async def _memory(
+        self,
+        key: ConversationKey,
+        *,
+        operation_id: str = "",
+        token: str = "",
+        reservation_id: str = "",
+    ) -> MemoryNavigationRepository:
         try:
             await self.idle.initialize()
+            if getattr(self.idle.backend, "active_storage_format", 1) == 3:
+                from .canonical import read
+
+                return (
+                    await read(
+                        self,
+                        key,
+                        operation_id=operation_id,
+                        token=token,
+                        reservation_id=reservation_id,
+                    )
+                ).repository
             return reducer(self, key, await self.idle.backend.load(self.mapping.to_idle(key)))
         except IdleError as error:
             raise navigation_error(error) from error
@@ -105,6 +163,11 @@ class NavigationRepository:
         deadline: Callable[[T], int] | None = None,
         accepted: bool = False,
         restart: bool = False,
+        operation_id: str = "",
+        token: str = "",
+        reservation_id: str = "",
+        index_keys: tuple[str, ...] = (),
+        view_id: str = "",
     ) -> T:
         try:
             return await apply(
@@ -115,6 +178,11 @@ class NavigationRepository:
                 deadline=deadline,
                 accepted=accepted,
                 restart=restart,
+                operation_id=operation_id,
+                token=token,
+                reservation_id=reservation_id,
+                index_keys=index_keys,
+                view_id=view_id,
             )
         except IdleError as error:
             raise navigation_error(error) from error
@@ -130,7 +198,23 @@ class NavigationRepository:
         try:
             await self.idle.initialize()
             record = await self.idle.backend.load(self.mapping.to_idle(key))
-            memory = reducer(self, key, record)
+            if getattr(self.idle.backend, "active_storage_format", 1) == 3:
+                from .codec import load_ledger
+                from .sessions import authorize
+
+                observed = await authorize(self, key)
+                if observed is not None:
+                    from .sessions import binding
+
+                    source = binding(record)
+                    if source is None or source.get("session_id") != observed.session_id:
+                        return None
+                ledger = load_ledger(record, key, expected_profile=self.profile)
+                loaded = ledger.current if ledger else None
+                if loaded is not None and loaded.snapshot.expires_at <= self.clock.now():
+                    loaded = None
+                return visible(loaded, record)
+            memory = await self._memory(key)
             from .sessions import observe, seed
 
             await seed(self, key, record, memory, await observe(self, key))
@@ -151,6 +235,8 @@ class NavigationRepository:
             lambda memory: memory.prepare(key, expected_version=expected_version, intent=intent),
             scope=coordination_scope,
             deadline=lambda result: result.expires_at,
+            operation_id=intent.operation_id,
+            view_id=intent.view_id or "",
         )
 
     async def checkpoint(
@@ -166,10 +252,13 @@ class NavigationRepository:
             lambda memory: memory.checkpoint(key, operation_id=operation_id, effect=effect),
             scope=coordination_scope,
             deadline=(lambda result: result.expires_at) if effect.state == "started" else None,
+            operation_id=operation_id,
         )
 
     async def lookup_operation(self, key: ConversationKey, *, operation_id: str) -> ActionStatus:
-        return await (await self._memory(key)).lookup_operation(key, operation_id=operation_id)
+        return await (await self._memory(key, operation_id=operation_id)).lookup_operation(
+            key, operation_id=operation_id
+        )
 
     async def commit(
         self,
@@ -185,6 +274,7 @@ class NavigationRepository:
             scope=coordination_scope,
             accepted=mutation.accepted_activity,
             deadline=lambda result: 0 if result.duplicate else result.snapshot.expires_at,
+            operation_id=mutation.operation_id,
         )
         if mutation.kind == "touch":
             await self._recover_overlay(key, mutation.operation_id)
@@ -194,7 +284,11 @@ class NavigationRepository:
         return await (await self._memory(key)).pending(key)
 
     async def mark_unknown(self, key: ConversationKey, *, operation_id: str) -> None:
-        await self._apply(key, lambda memory: memory.mark_unknown(key, operation_id=operation_id))
+        await self._apply(
+            key,
+            lambda memory: memory.mark_unknown(key, operation_id=operation_id),
+            operation_id=operation_id,
+        )
 
     async def abandon(
         self, key: ConversationKey, operation_id: str, *, expected_session_id: str
@@ -204,6 +298,7 @@ class NavigationRepository:
             lambda memory: memory.abandon(
                 key, operation_id, expected_session_id=expected_session_id
             ),
+            operation_id=operation_id,
         )
 
     async def reserve_token(
@@ -213,10 +308,13 @@ class NavigationRepository:
             key,
             lambda memory: memory.reserve_token(key, token, operation_id=operation_id),
             deadline=lambda result: result.expires_at,
+            operation_id=operation_id,
+            token=token.token,
+            reservation_id=operation_id,
         )
 
     async def resolve_token(self, key: ConversationKey, token: str) -> NavigationToken | None:
-        return await (await self._memory(key)).resolve_token(key, token)
+        return await (await self._memory(key, token=token)).resolve_token(key, token)
 
     async def consume_token(
         self, key: ConversationKey, token: str, *, actor_id: int, operation_id: str
@@ -227,6 +325,9 @@ class NavigationRepository:
                 key, token, actor_id=actor_id, operation_id=operation_id
             ),
             deadline=lambda result: result.expires_at,
+            operation_id=operation_id,
+            token=token,
+            reservation_id=operation_id,
         )
 
     async def integration_touch(
@@ -272,6 +373,7 @@ class NavigationRepository:
                 accepted=True,
                 restart=restart,
                 deadline=lambda result: 0 if result.duplicate else result.snapshot.expires_at,
+                operation_id=operation_id,
             )
             await self._recover_overlay(key, operation_id)
             updated = await self.idle.backend.load(self.mapping.to_idle(key))
@@ -285,6 +387,10 @@ class NavigationRepository:
 
             if not isinstance(value, Mapping):
                 raise ActivityConflict("Mapped navigation component is unavailable")
+            if value.get("schema") == 3:
+                from .canonical import accepted_activity
+
+                return await accepted_activity(self, key, operation_id)
             return resolve(value, operation_id)
 
     async def _recover_overlay(self, key: ConversationKey, touch_id: str) -> None:
@@ -344,6 +450,8 @@ class NavigationRepository:
             ),
             coordination_scope=self.coordinator.scope_token(key),
         )
+        if getattr(self.idle.backend, "active_storage_format", 1) == 3:
+            return prepared
         if prepared.effects.get("render") is not None:
             # Reserving the navigation intent is itself a recoverable stage.
             # A lost outer receipt must not restart or downgrade that intent.
@@ -369,6 +477,18 @@ class NavigationRepository:
         return await stage(
             self, context, prepared, rendered, operation_id=operation_id, disposition=disposition
         )
+
+    async def complete_canonical(
+        self,
+        old: RuntimeSnapshot,
+        changed: RuntimeSnapshot,
+        receipt: ActionReceipt,
+        policy: object,
+        claim: object,
+    ) -> RuntimeSnapshot | None:
+        from .canonical_completion import complete
+
+        return await complete(self, old, changed, receipt, policy, claim)
 
     def finalize(
         self, old: RuntimeSnapshot, changed: RuntimeSnapshot, receipt: ActionReceipt

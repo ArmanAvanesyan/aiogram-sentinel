@@ -30,7 +30,7 @@ def may_prune(record: RuntimeSnapshot, job: Job | None, now: float) -> bool:
         return False
     # A worker must explicitly resolve or quarantine pending effects before
     # retention may discard their only recovery evidence.
-    return record.idle.operation is None or record.idle.phase not in PENDING_PHASES
+    return record.idle.operation is None
 
 
 def ensure_activity_mutable(record: RuntimeSnapshot) -> None:

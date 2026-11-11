@@ -37,6 +37,12 @@ class RedisJobs:
         store = self._store
         now = await store.ready()
         store.config_value(await store.raw_config())
+        if store.format_version == 3:
+            from .canonical_gc import sweep as sweep_components
+            from .cold_gc import sweep as sweep_receipts
+
+            await sweep_receipts(store, limit=min(limit, 32))
+            await sweep_components(store, limit=min(limit, 32))
         # Routes contain bounded metadata rather than conversation payloads. Rotate the
         # start so an unfiltered worker cannot starve a busy route behind another.
         if namespace is not None and bot_id is not None:
@@ -185,6 +191,12 @@ class RedisJobs:
         store = self._store
         await store.ready()
         store.config_value(await store.raw_config())
+        if store.format_version == 3:
+            from .canonical_gc import sweep as sweep_components
+            from .cold_gc import sweep as sweep_receipts
+
+            await sweep_receipts(store, limit=min(limit, 32))
+            await sweep_components(store, limit=min(limit, 32))
         if not store.reconcile_pending:
             response = array(
                 await store.connection.call(

@@ -1,40 +1,88 @@
 name: Optional navigation integration
 on:
+  push:
+    branches: [main]
+  pull_request:
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: integration-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   combined:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     defaults:
       run:
         working-directory: aiogram-idle
     strategy:
       fail-fast: false
+      max-parallel: 4
       matrix:
-        python: ['3.10', '3.11', '3.12', '3.13', '3.14']
-        redis: ['redis:7-alpine']
+        python: ['3.12']
+        redis: ['7', '8']
+        idle: [python, rust]
+        nav: [python, rust]
+        aiogram: [latest]
         include:
-          - python: '3.12'
-            redis: 'redis:8-alpine'
+          - {python: '3.10', redis: '7', idle: python, nav: python, aiogram: minimum}
+          - {python: '3.11', redis: '7', idle: python, nav: python, aiogram: latest}
+          - {python: '3.13', redis: '7', idle: rust, nav: rust, aiogram: latest}
+          - {python: '3.14', redis: '7', idle: rust, nav: rust, aiogram: latest}
     services:
       redis:
-        image: ${{ matrix.redis }}
+        image: redis:${{ matrix.redis }}-alpine
         ports: ['6379:6379']
         options: --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 3s --health-retries 10
     env:
       AIOGRAM_IDLE_REDIS_URL: redis://localhost:6379/0
       AIOGRAM_IDLE_REQUIRE_REDIS: '1'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           path: aiogram-idle
-      - uses: astral-sh/setup-uv@v6
+          persist-credentials: false
+      # The native companion is source-only until its performance gate passes.
+      # Build the exact reviewed base release's core without a checkout override
+      # for the Python peer: aiogram-nav itself resolves from PyPI below.
+      - uses: actions/checkout@v6
+        if: matrix.nav == 'rust'
+        with:
+          repository: ArmanAvanesyan/aiogram-nav
+          ref: v0.3.0
+          path: nav-native-source
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v7
+      - uses: dtolnay/rust-toolchain@stable
+        if: matrix.idle == 'rust' || matrix.nav == 'rust'
       - run: uv sync --frozen --extra redis --extra nav --python '${{ matrix.python }}'
-      - run: uv run --no-sync ruff check .
-      - run: uv run --no-sync ruff format --check .
+      - name: Select the minimum aiogram endpoint
+        if: matrix.aiogram == 'minimum'
+        run: uv pip install 'aiogram==3.22.0'
+      - name: Build and install the optional Idle core
+        if: matrix.idle == 'rust'
+        run: |
+          uvx maturin build --manifest-path native/Cargo.toml --release --locked --out native-dist
+          uv pip install native-dist/*.whl
+      - name: Build and install the matching optional Nav core
+        if: matrix.nav == 'rust'
+        run: |
+          uvx maturin build --manifest-path ../nav-native-source/native/Cargo.toml --release --locked --out nav-native-dist
+          uv pip install nav-native-dist/*.whl
       - run: uv run --no-sync pyright --project pyright-nav.json
-      - run: uv run --no-sync pytest --cov=aiogram_idle --cov-config=coverage-nav.toml
-      - name: Check optional example CLI without sending messages
+      - name: Existing optional integration recovery and FSM corpus on format three
+        run: >-
+          uv run --no-sync python -m tests.profile_format3 --combined-only
+          --engine '${{ matrix.idle }}' --nav-engine '${{ matrix.nav }}'
+          --manifest combined-profile.json -q
+      - name: Canonical host, migration and collection regressions
+        run: uv run --no-sync pytest -q tests/test_nav_canonical.py tests/test_canonical_components.py tests/test_canonical_redis.py tests/test_canonical_gc.py tests/test_cold_migration.py
+      - name: Check optional example without sending Telegram messages
         run: uv run --no-sync python examples/navigation.py --help
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: combined-profile-${{ matrix.python }}-${{ matrix.redis }}-${{ matrix.idle }}-${{ matrix.nav }}-${{ matrix.aiogram }}
+          path: aiogram-idle/combined-profile.json
+          if-no-files-found: error

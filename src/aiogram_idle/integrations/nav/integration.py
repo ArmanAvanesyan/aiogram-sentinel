@@ -55,7 +55,8 @@ class NavigationIntegration:
                 "Construct navigation integration before starting/installing idle"
             )
         if (
-            idle.component_finalizer is not None
+            idle.component_committer is not None
+            or idle.component_finalizer is not None
             or idle.component_recovery is not None
             or idle.component_after_commit is not None
             or idle.component_validator is not None
@@ -83,6 +84,7 @@ class NavigationIntegration:
         self._installed = False
         self._flow_adapter = NavigationFlowAdapter(self)
         idle.adapters["aiogram_nav"] = self._flow_adapter
+        idle.component_committer = self.navigation_repository.complete_canonical
         idle.component_finalizer = self.navigation_repository.finalize
         idle.component_recovery = self.navigation_repository.recover_component
         idle.component_after_commit = self.after_commit
@@ -101,6 +103,7 @@ class NavigationIntegration:
             raise ConfigurationError("Unsupported integrated coordinator implementation")
         if (
             idle.adapters.get(repository.adapter_key) is not self._flow_adapter
+            or idle.component_committer != repository.complete_canonical
             or idle.component_finalizer != repository.finalize
             or idle.component_recovery != repository.recover_component
             or idle.component_after_commit != self.after_commit

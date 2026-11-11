@@ -130,7 +130,7 @@ def test_malformed_json(body):
         decode(body)
 
 
-@pytest.mark.parametrize("version", [0, 3, True, "1"])
+@pytest.mark.parametrize("version", [0, 4, True, "1"])
 def test_schema_versions(version):
     with pytest.raises(SchemaUnsupported):
         decode(json.dumps({"schema_version": version, "value": None}))

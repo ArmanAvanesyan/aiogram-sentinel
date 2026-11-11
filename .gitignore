@@ -18,3 +18,8 @@ bandit-report.json
 pip-audit-report.json
 reports/generated/
 .DS_Store
+
+# Optional native companion build products
+native/target/
+native/.venv/
+native/dist/

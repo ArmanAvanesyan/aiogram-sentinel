@@ -41,6 +41,7 @@ def compose(
     restart: bool = False,
     operation_id: str | None = None,
     reply_overlay: bool = False,
+    canonical: bool = False,
 ) -> tuple[RuntimeSnapshot, IdlePolicy | None]:
     now = repo.idle.clock.now()
     prepared = ledger.operations[ledger.pending_id].prepared if ledger.pending_id else None
@@ -122,11 +123,13 @@ def compose(
         )
     if prepared is not None:
         if accepted:
-            body["suspended_idle"] = encode(idle)
+            body["suspended_idle"] = encode(replace(idle, operation=None) if canonical else idle)
         elif isinstance(previous_component, Mapping) and "suspended_idle" in previous_component:
             body["suspended_idle"] = previous_component["suspended_idle"]
         else:
-            body["suspended_idle"] = encode(current.idle)
+            body["suspended_idle"] = encode(
+                replace(current.idle, operation=None) if canonical else current.idle
+            )
         if STAGING.get() is None:
             idle = replace(idle, deadline=now + repo.idle.config.poll_seconds)
     elif (
@@ -143,13 +146,16 @@ def compose(
     )
     from .receipts import preserve
 
-    components[COMPONENT] = preserve(
-        freeze_object(body, max_bytes=8_388_608),
-        cast(object, previous_component),
-        ledger,
-        operation_id=operation_id if accepted else None,
-        activity=activity if accepted else None,
-    )
+    if canonical:
+        components[COMPONENT] = freeze_object(body, max_bytes=8_388_608)
+    else:
+        components[COMPONENT] = preserve(
+            freeze_object(body, max_bytes=8_388_608),
+            cast(object, previous_component),
+            ledger,
+            operation_id=operation_id if accepted else None,
+            activity=activity if accepted else None,
+        )
     components[OWNER] = {
         "component": COMPONENT,
         "pending": prepared is not None,

@@ -4,20 +4,22 @@ from __future__ import annotations
 
 import hashlib
 import math
-from collections.abc import Awaitable, Callable, Hashable
+from collections.abc import Awaitable, Callable, Hashable, Mapping
+from contextlib import AbstractAsyncContextManager
 from typing import Literal, Protocol, TypeVar, cast
 
 from ..config import IdleConfig
 from ..errors import (
     BackendInconsistent,
     ConfigurationMismatch,
+    OperationIdConflict,
     Overloaded,
     OwnershipLost,
     PersistenceUnavailable,
     SessionExpired,
     VersionConflict,
 )
-from ..models import ConfigManifest, IdleConversationKey, RuntimeSnapshot
+from ..models import ConfigManifest, IdleConversationKey, RuntimeSnapshot, validate_identifier
 from .activation import format_manifest
 from .codec import decode, encode
 from .deployment import RedisDeploymentAttestation, validate_deployment
@@ -51,9 +53,11 @@ class RedisStore:
         prefix: str,
         config: IdleConfig,
         deployment: RedisDeploymentAttestation | None = None,
+        requested_format: int | None = None,
     ) -> None:
         if not prefix or len(prefix) > 200 or any(char.isspace() for char in prefix):
             raise ValueError("Redis prefix must be a nonempty bounded string without whitespace")
+        self.requested_format = requested_format
         self.prefix = prefix
         self.config = config
         self.deployment = deployment
@@ -70,6 +74,9 @@ class RedisStore:
         self.reconcile_pending: list[object] = []
         self.route_pending: list[object] = []
         self.fencer: Fencer = _unbound_fencer
+        self.migration_scope: (
+            Callable[[IdleConversationKey], AbstractAsyncContextManager[object]] | None
+        ) = None
 
     def member(self, key: IdleConversationKey) -> str:
         return encode(key)
@@ -101,15 +108,20 @@ class RedisStore:
             "max_components_bytes": self.config.max_components_bytes,
         }
         selected = self.format_version if version is None else version
-        if selected == 2:
-            values["storage_format"] = 2
+        if selected >= 2:
+            values["storage_format"] = selected
+        if self.config.replay_retention_seconds is not None or selected >= 3:
+            values["replay_retention_seconds"] = float(
+                self.config.effective_replay_retention_seconds
+            )
         return hashlib.sha256(encode(values).encode()).hexdigest()
 
     async def initialize(self) -> None:
         if self.initialized:
             return
         await validate_deployment(self.connection, self.deployment)
-        self.format_version, _, _ = await format_manifest(self)
+        observed, _, _ = await format_manifest(self)
+        self.format_version = self.requested_format or observed
         await self.connection.time()
         # Namespace history cannot be silently recreated around retained state.
         marker = await self.connection.script(
@@ -122,10 +134,18 @@ class RedisStore:
                 f"{self.prefix}:routes",
                 f"{self.prefix}:config-established",
                 f"{self.prefix}:parked",
+                f"{self.prefix}:storage-format",
+                f"{self.prefix}:receipt-sweep",
+                f"{self.prefix}:component-sweep",
+                f"{self.prefix}:history-established",
             ],
-            [self.storage_profile()],
+            [self.storage_profile(), self.format_version],
         )
         if text(marker) == "profile-mismatch":
+            if self.requested_format == 3 and observed != 3:
+                raise ConfigurationMismatch(
+                    "Existing storage requires explicit drained migration before requesting format 3"
+                )
             raise ConfigurationMismatch(
                 "Redis replicas require the same storage limits and retention"
             )
@@ -194,9 +214,15 @@ class RedisStore:
         return cast(ConfigManifest, self.config_envelope(raw)["manifest"]) if raw else None
 
     async def read(
-        self, key: IdleConversationKey, *, allow_parked: bool = False
+        self, key: IdleConversationKey, *, allow_parked: bool = False, operation_id: str = ""
     ) -> tuple[Engine, str, str]:
+        if operation_id:
+            validate_identifier(operation_id, "operation_id")
         await self.initialize()
+        if self.format_version == 3:
+            from .cold import read
+
+            return await read(self, key, operation_id=operation_id, allow_parked=allow_parked)
         keys = self.keys(key)
         values = array(
             await self.connection.script(
@@ -249,11 +275,32 @@ class RedisStore:
         arm: bool = False,
         coordination_scope: object | None = None,
         expires_at: float | None = None,
+        operation_id: str = "",
+        canonical: tuple[str, Mapping[str, object]] | None = None,
     ) -> T:
         fence = self.fencer(key, scope=coordination_scope)
         capacity_pruned = False
         for _ in range(12):
-            engine, previous, config = await self.read(key)
+            engine, previous, config = await self.read(key, operation_id=operation_id)
+            if canonical is not None:
+                from .canonical_redis import observe, seed
+
+                try:
+                    observation = await observe(
+                        self,
+                        engine,
+                        previous,
+                        config,
+                        canonical[0],
+                        requested_ids=tuple(
+                            set(cast(Mapping[str, object], canonical[1]["put"]))
+                            | set(cast(list[str] | tuple[str, ...], canonical[1]["delete"]))
+                        ),
+                    )
+                except VersionConflict:
+                    continue
+                engine.canonical_observation = observation
+                seed(engine, canonical[0], observation)
             before = await engine.load(key)
             result = await action(engine)
             after = await engine.load(key)
@@ -288,9 +335,39 @@ class RedisStore:
                 and (before is None or after.version != before.version)
             ):
                 expiry = min(expiry, expires_at) if expiry else expires_at
+            cold_keys: list[str] = []
+            cold_args: list[object] = []
+            script = COMMIT
+            if self.format_version == 3:
+                from .cold import commit_payload
+                from .cold_scripts import COMMIT_COLD
+
+                cold_keys, payload = commit_payload(self, engine)
+                cold_args = [payload, self.config.max_receipts_per_conversation]
+                script = COMMIT_COLD
+                if canonical is not None:
+                    from .canonical_redis import commit_payload as canonical_payload
+                    from .canonical_scripts import commit_script
+
+                    suffix, wire = canonical_payload(
+                        self, engine, canonical[0], canonical[1], cold_key_count=len(cold_keys)
+                    )
+                    cold_keys.extend(suffix)
+                    cold_args.append(wire)
+                    script = commit_script()
+                elif before is not None and after is None:
+                    from .canonical_gc import RETIRE_PREFLIGHT, retirement_payload
+                    from .cold_scripts import compose_commit
+
+                    retirement = retirement_payload(self, before, cold_key_count=len(cold_keys))
+                    if retirement is not None:
+                        suffix, wire = retirement
+                        cold_keys.extend(suffix)
+                        cold_args.append(wire)
+                        script = compose_commit(extra_preflight=RETIRE_PREFLIGHT)
             status = text(
                 await self.connection.script(
-                    COMMIT,
+                    script,
                     self.keys(key)
                     + [
                         fence[0] if fence else self.prefix + ":unused-lock",
@@ -298,7 +375,8 @@ class RedisStore:
                         self.prefix + ":created",
                         self.prefix + ":config-established",
                         self.prefix + ":parked",
-                    ],
+                    ]
+                    + cold_keys,
                     [
                         previous,
                         engine.envelope(),
@@ -314,9 +392,28 @@ class RedisStore:
                         self.retention_check(after),
                         expiry,
                         self.history,
-                    ],
+                    ]
+                    + cold_args,
                 )
             )
+            if status == "canonical_retained":
+                return cast(T, False)
+            if status == "canonical_capacity":
+                raise Overloaded(
+                    "Canonical receipt capacity is exhausted",
+                    reason="replay_slots",
+                    limit=self.config.max_receipts_per_conversation,
+                )
+            if status in {"canonical_protected", "canonical_expired", "canonical_conflict"}:
+                raise VersionConflict("Canonical evidence changed before commit")
+            if status == "fingerprint":
+                raise OperationIdConflict("The operation ID was reused for different input")
+            if status == "receipt_capacity":
+                raise Overloaded(
+                    "Operation receipt capacity is exhausted",
+                    reason="replay_slots",
+                    limit=self.config.max_receipts_per_conversation,
+                )
             if status == "ok":
                 return result
             if status == "expired":

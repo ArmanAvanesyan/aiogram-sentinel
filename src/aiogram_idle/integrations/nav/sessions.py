@@ -41,8 +41,8 @@ async def authorize(
     session = await observe(repo, key)
     if session is None:
         return None
-    record = await repo.idle.backend.load(repo.mapping.to_idle(key))
     if expected_session_id is not None:
+        record = await repo.idle.backend.load(repo.mapping.to_idle(key))
         if record is None or record.session.session_id != expected_session_id:
             raise SessionExpired("Integrated session generation changed")
         try:
@@ -69,7 +69,7 @@ async def seed(
         if old is None and current.session.expires_at > repo.idle.clock.now():
             raise ActivityConflict("Cannot adopt an existing library-owned session")
     # The scratch backend is private to this one already-coordinated transaction.
-    memory._storage_format = 2  # pyright: ignore[reportPrivateUsage]
+    memory._storage_format = max(memory._storage_format, 2)  # pyright: ignore[reportPrivateUsage]
     previous = await memory.external_session(key)
     source = (
         replace(session, revision=previous.revision)

@@ -48,9 +48,10 @@ async def build(client):
     now = int(backend.clock.now() * 1000)
     authority.value = ExternalSession("application", "1", now + 3600000, now + 1800000)
     runtime, adapter, presenter = await runtime_for(backend, authority)
-    await backend.activate_storage_format(
-        operation_id="activate", old_workers_drained=True, dry_run=False
-    )
+    if await backend.storage_format() < 2:
+        await backend.activate_storage_format(
+            operation_id="activate", old_workers_drained=True, dry_run=False
+        )
     activity = await runtime.for_conversation(KEY).activate(
         ActivityRegistration("form", "prompt", "form", {"draft_id": "draft"}), operation_id="enter"
     )
@@ -67,7 +68,8 @@ async def test_external_binding_round_trips_and_fences_old_generation(redis_clie
     )
     second, _, _ = await runtime_for(replica, authority)
     assert (await second.inspect(KEY)).session == record.session
-    assert await replica.storage_format() == 2
+    assert await replica.storage_format() == await backend.storage_format()
+    assert await replica.storage_format() >= 2
     authority.value = replace(authority.value, session_id="replacement")
     from aiogram_idle import SessionExpired
 

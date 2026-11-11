@@ -6,7 +6,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import cast
 
-from .models import JsonObject, freeze_object
+from .models import JsonObject, freeze_object, validate_identifier
 
 
 @dataclass(frozen=True)
@@ -20,6 +20,7 @@ class ActivityRegistration:
 
     def __post_init__(self) -> None:
         for value in (self.activity_key, self.policy_id, self.adapter_key):
+            validate_identifier(value, "activity registration identifier")
             if not isinstance(cast(object, value), str) or not value or len(value) > 128:
                 raise ValueError("Registration identifiers must contain 1 to 128 characters")
         object.__setattr__(self, "params", freeze_object(self.params))

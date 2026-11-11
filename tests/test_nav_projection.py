@@ -264,7 +264,14 @@ async def test_navigation_expiry_inside_live_auth_session_allocates_fresh_activi
     await nav.for_conversation(KEY).go("form", operation_id="next")
     after = await state(integration, backend)
     assert after.session == session
-    assert after.activity.activity_id != first.activity.activity_id
+    if getattr(backend, "active_storage_format", 1) == 3:
+        # Fresh canonical host sessions take their immutable absolute expiry from
+        # Idle upfront; a shorter NavigationConfig is subordinate to that authority.
+        assert after.activity.activity_id == first.activity.activity_id
+        assert after.activity.expires_at <= session.expires_at
+        assert session.expires_at - after.activity.expires_at < 0.0011
+    else:
+        assert after.activity.activity_id != first.activity.activity_id
     assert after.activity.activity_revision == 2
     latest = await nav.for_conversation(KEY).current()
     assert latest.activity_revision == 2 and latest.nav_revision == 2

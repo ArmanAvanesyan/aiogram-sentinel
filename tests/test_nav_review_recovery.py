@@ -44,7 +44,13 @@ async def test_staged_prepare_can_recover_lost_outer_receipt(combined_backend):
         repo = integration.navigation_repository
         async with repo.staging(context):
             reserved = await repo.prepare_staged(context, "editor", operation_id="answer")
-        assert reserved.effects["render"].state == "started"
+        if backend.active_storage_format == 3:
+            # Canonical prepare persists the reservation; the render effect is
+            # started only immediately before the presenter is invoked.
+            assert reserved.effects.get("render") is None
+            assert (await repo.pending(KEY)).operation_id == "answer"
+        else:
+            assert reserved.effects["render"].state == "started"
         before = presenter.calls
         # The process can die here, before nav:prepare's outer receipt exists.
         receipt = await idle.adapters["aiogram_nav"].resume(context, operation_id="answer")
@@ -185,6 +191,22 @@ async def test_finalization_rejects_staged_ledger_unrelated_to_reservation(
         receipt = await idle.adapters["aiogram_nav"].resume(context, operation_id="answer")
         old = await backend.load(mapped)
         component = dict(receipt.component_updates["aiogram_nav"])
+        if backend.active_storage_format == 3:
+            # Canonical receipts contain only an operation reference. They cannot
+            # submit a rewritten target, history row, or current draft snapshot.
+            # Test the same untrusted-adapter boundary using that wire contract.
+            if corruption == "target":
+                component["canonical_stage"] = "foreign-answer"
+            elif corruption == "retained_receipt":
+                component["ledger"] = {"entry": {"retention_until": 999999999}}
+            else:
+                component["current_params"] = {"draft_id": 1}
+            updates = {**receipt.component_updates, "aiogram_nav": component}
+            forged = replace(receipt, component_updates=freeze_object(updates, max_bytes=8_388_608))
+            with pytest.raises(ActivityConflict, match="staged operation reference"):
+                await repo.complete_canonical(old, old, forged, None, None)
+            assert (await repo.load(KEY)).snapshot.node_id == "editor"
+            return
         ledger = loads(component["ledger"], KEY)
         if corruption == "target":
             action = ledger.operations["answer"]
