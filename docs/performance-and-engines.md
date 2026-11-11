@@ -133,7 +133,9 @@ With concurrent admissions, repeat assessment/passes as with any SSCAN traversal
 `--redis-url` adds whole protected `Dispatcher.feed_update` measurements, exact
 consumed RESP bytes, library round trips, separate Lua command counts and cold
 bootstrap diagnostics. It removes only its newly generated benchmark prefixes.
-`--quick` marks results as exploratory, never qualification evidence.
+Every driver result sets `qualification=false`; the independent release gate owns
+qualification. `--quick` is only a smoke test. Normal CPU results use at least ten
+independent batches, and individual-update p95 uses nearest-rank sampling.
 
 Run full comparisons serially on the same machine. The native publication gate
 requires at least 20% representative CPU benefit and no greater than 5% realistic
