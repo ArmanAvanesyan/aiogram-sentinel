@@ -12,6 +12,11 @@ means old original-Kit issue and PR URLs must be mapped explicitly rather than t
 | `aiogram-kit/pull/2` | [Original Kit PR 2](https://github.com/ArmanAvanesyan/aiogram-kit-legacy/pull/2) |
 | `aiogram-kit/pull/3` | [Original Kit PR 3](https://github.com/ArmanAvanesyan/aiogram-kit-legacy/pull/3) |
 
+Original Kit's historical [v0.0.1 release](https://github.com/ArmanAvanesyan/aiogram-kit-legacy/releases/tag/v0.0.1)
+and its assets also remain in the legacy repository. For original Kit branch, tag, workflow-run
+and source-file links, replace the repository segment with `aiogram-kit-legacy`; source commit IDs
+also remain reachable through the imported histories in the monorepo.
+
 These are planned destinations until the rename is complete. The current Sentinel issue and PR
 numbers remain attached to its surviving repository identity. Cmds, Coordination, Nav and Idle
 historical PRs and release assets remain in their original repositories after archival.

@@ -24,7 +24,7 @@ def main() -> None:
         expected = tomllib.load(source)["project"]["version"]
     if expected != version("aiogram-nav") or expected != aiogram_nav.__version__:
         raise RuntimeError("Project, installed metadata and runtime versions must agree")
-    if options.tag is not None and options.tag != f"v{expected}":
+    if options.tag is not None and options.tag not in {f"v{expected}", f"aiogram-nav-v{expected}"}:
         raise RuntimeError("Release tag does not match the project version")
     print(f"aiogram-nav {expected}: project, metadata and runtime versions agree")
 

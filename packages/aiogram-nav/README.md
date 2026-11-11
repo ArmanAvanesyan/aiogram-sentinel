@@ -1,5 +1,7 @@
 # aiogram-nav
 
+Source development and releases are maintained in the [aiogram-kit monorepo](https://github.com/ArmanAvanesyan/aiogram-kit). See the [workspace contributing guide](https://github.com/ArmanAvanesyan/aiogram-kit/blob/main/CONTRIBUTING.md); package examples live under `packages/aiogram-nav/`.
+
 Standalone screen navigation for aiogram 3, with a typed registry, memory or Redis
 repositories, prepared rendering and explicit input bindings. Use reply keyboards,
 inline controls, commands or hybrids without adopting an idle framework.
@@ -31,13 +33,14 @@ storage; installing 0.3.1 alone does not upgrade an existing Redis namespace.
 Clone the repository for its runnable examples, then set `BOT_TOKEN` in the environment:
 
 ```sh
-git clone https://github.com/ArmanAvanesyan/aiogram-nav.git
-cd aiogram-nav
-uv sync --python 3.12
-uv run python examples/demo.py --style reply
-uv run python examples/demo.py --style inline
-uv run python examples/demo.py --style commands
-uv run python examples/demo.py --style hybrid --fsm
+git clone https://github.com/ArmanAvanesyan/aiogram-kit.git
+cd aiogram-kit
+uv sync --frozen --all-packages --all-groups --all-extras --python 3.12
+cd packages/aiogram-nav
+uv run --no-sync python examples/demo.py --style reply
+uv run --no-sync python examples/demo.py --style inline
+uv run --no-sync python examples/demo.py --style commands
+uv run --no-sync python examples/demo.py --style hybrid --fsm
 ```
 
 `/start` opens a neutral example menu. Back preserves application drafts; Cancel

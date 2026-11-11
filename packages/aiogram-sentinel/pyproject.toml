@@ -61,6 +61,9 @@ Issues = "https://github.com/ArmanAvanesyan/aiogram-kit/issues"
 Documentation = "https://armanavanesyan.github.io/aiogram-kit/libraries/aiogram-sentinel/"
 Changelog = "https://github.com/ArmanAvanesyan/aiogram-kit/blob/main/packages/aiogram-sentinel/CHANGELOG.md"
 
+[tool.hatch.build.targets.sdist]
+exclude = ["/native/target", "/native/dist", "/native/.venv", "/site", "/.venv"]
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/aiogram_sentinel"]
 
@@ -209,6 +212,7 @@ name = "Miscellaneous"
 showcontent = true
 
 [tool.semantic_release]
+tag_format = "aiogram-sentinel-v{version}"
 version_toml = ["pyproject.toml:project.version"]
 version_variables = ["src/aiogram_sentinel/version.py:__version__"]
 build_command = "uv run python -m hatchling build"

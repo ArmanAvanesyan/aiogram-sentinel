@@ -1,6 +1,8 @@
 # aiogram-cmds
 
-[![CI](https://github.com/ArmanAvanesyan/aiogram-cmds/workflows/CI/badge.svg)](https://github.com/ArmanAvanesyan/aiogram-cmds/actions)
+Source development and releases are maintained in the [aiogram-kit monorepo](https://github.com/ArmanAvanesyan/aiogram-kit). See the [workspace contributing guide](https://github.com/ArmanAvanesyan/aiogram-kit/blob/main/CONTRIBUTING.md); package examples live under `packages/aiogram-cmds/`.
+
+[![CI](https://github.com/ArmanAvanesyan/aiogram-kit/actions/workflows/aiogram-cmds-ci.yml/badge.svg)](https://github.com/ArmanAvanesyan/aiogram-kit/actions/workflows/aiogram-cmds-ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/aiogram-cmds.svg)](https://pypi.org/project/aiogram-cmds/)
 [![Python versions](https://img.shields.io/pypi/pyversions/aiogram-cmds.svg)](https://pypi.org/project/aiogram-cmds/)
 [![License](https://img.shields.io/pypi/l/aiogram-cmds.svg)](https://pypi.org/project/aiogram-cmds/)
@@ -200,16 +202,13 @@ We welcome contributions! See our [Contributing Guide](CONTRIBUTING.md) for deta
 
 ```bash
 # Clone the repository
-git clone https://github.com/ArmanAvanesyan/aiogram-cmds.git
-cd aiogram-cmds
-
-# Set up development environment
-uv venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-uv pip install -e ".[dev]"
+git clone https://github.com/ArmanAvanesyan/aiogram-kit.git
+cd aiogram-kit
+uv sync --frozen --all-packages --all-groups --all-extras --python 3.12
+cd packages/aiogram-cmds
 
 # Run tests
-uv run pytest
+uv run --no-sync pytest
 
 # Run linting
 uv run ruff check .
@@ -218,8 +217,8 @@ uv run ruff format .
 
 ## 💬 Community & Support
 
-* 💬 **[Discussions](https://github.com/ArmanAvanesyan/aiogram-cmds/discussions)** - Questions, ideas, and community chat
-* 🐛 **[Issues](https://github.com/ArmanAvanesyan/aiogram-cmds/issues)** - Bug reports and feature requests
+* 💬 **[Discussions](https://github.com/ArmanAvanesyan/aiogram-kit/discussions)** - Questions, ideas, and community chat
+* 🐛 **[Issues](https://github.com/ArmanAvanesyan/aiogram-kit/issues)** - Bug reports and feature requests
 * 📖 **[Documentation](https://aiogram-cmds.dev)** - Complete guides and API reference
 
 ## 🔒 Security
@@ -270,7 +269,7 @@ example. The library never configures application logging.
 
 Compiled immutable profiles and explicit optional engines are described in [performance guidance](docs/compiled-profiles.md). Python remains the default; native publication is benchmark-gated.
 
-The 0.3.1 native candidate **did not pass its release performance gate**. Native
+The recorded 0.3.0 native candidate **did not pass its release performance gate**. Native
 publication, native tags and a dependency extra are withheld. Rust code remains
 available to build from source; the Python 0.3.1 distribution can release
 independently. Use compiled Python profiles for explicit snapshot reuse.

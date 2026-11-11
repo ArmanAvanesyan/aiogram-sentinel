@@ -88,7 +88,9 @@ def get_git_tag_version() -> str | None:
             tag = github_ref[10:]  # Remove "refs/tags/" prefix
 
             # Remove 'v' prefix if present
-            if tag.startswith("v"):
+            if tag.startswith("aiogram-cmds-v"):
+                version = tag.removeprefix("aiogram-cmds-v")
+            elif tag.startswith("v"):
                 version = tag[1:]
             else:
                 version = tag

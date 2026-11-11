@@ -1,14 +1,16 @@
 # aiogram-coordination
 
+Source development and releases are maintained in the [aiogram-kit monorepo](https://github.com/ArmanAvanesyan/aiogram-kit). See the [workspace contributing guide](https://github.com/ArmanAvanesyan/aiogram-kit/blob/main/CONTRIBUTING.md); package examples live under `packages/aiogram-coordination/`.
+
 Shared task-scoped ownership for aiogram applications and independent libraries.
 The package has no dependency on aiogram-idle, aiogram-nav or aiogram-kit.
 
-Initial alpha version: 0.1.0. Requires Python 3.10+ and aiogram 3.22–3.x.
+Alpha version: 0.1.1. Requires Python 3.10+ and aiogram 3.22–3.x.
 
 ```sh
-pip install aiogram-coordination==0.1.0
+pip install aiogram-coordination==0.1.1
 # Optional renewable Redis coordination:
-pip install 'aiogram-coordination[redis]==0.1.0'
+pip install 'aiogram-coordination[redis]==0.1.1'
 ```
 
 ## Memory coordination

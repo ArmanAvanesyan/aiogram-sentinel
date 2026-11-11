@@ -26,11 +26,26 @@ Raw configuration inventories are not committed because they can contain operati
 - Nav with real Redis: 439 passed, 13 optional native cases skipped.
 - Idle with real Redis: 705 passed, 23 optional native cases skipped.
 - Sentinel and Cmds Python suites passed; Sentinel real-Redis tests passed.
-- Publishing verifier: 12 passed. Root Ruff, Actionlint and unified strict documentation build passed.
+- Root release/staging/workflow contracts plus shared optimization tools: 125 passed. Root Ruff, Actionlint and unified strict documentation build passed.
+- A true external standalone staging smoke passed frozen locking, current-peer installation, namespaced tag checks, lint, formatting, typing, builds and sibling-checkout exclusion.
+- All six new project-specific PyPI publisher bindings are registered and verified; old bindings remain until successful cutover releases.
+- Runtime source audit confirms changes are only version markers and native version identities; APIs, algorithms and storage formats are unchanged.
 
 ## Remaining gates
 
 Full GitHub compatibility/native CI, clean native verification, final inventory delta,
-remote history-ref preservation, repository renames, project/link mappings, publisher
-configuration, independent patch releases, PyPI install verification and legacy notices.
+remote history-ref preservation, repository renames, project/link mappings, publisher deployment-tag policy updates, independent patch releases, PyPI install verification and legacy notices.
 No old repository may be archived until its gates pass. No migration release has been published yet.
+
+## Shared ownership and retained work
+
+Shared benchmark/evidence tools now live under root `tools/optimization/`; their Python
+3.10/3.12/3.14 checks are retained. Cross-library reports retain their original root paths.
+Original Kit working-document copies remain byte-preserved under `packages/aiogram-kit/`;
+root documentation is the maintained site source.
+
+The two pre-existing open dependency PRs are explicitly retained in `open-pr-disposition.json`.
+They are not silently merged or closed by this migration. All related issue/PR project
+associations were inventoried; the only project is project 12, with three unfiltered views.
+The current publisher environment admits only legacy `v*` tags; six exact package tag
+prefixes must be added before new releases, preserving tag-only deployment protection.

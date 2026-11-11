@@ -93,3 +93,38 @@ def test_rejects_changed_artifacts(release, change):
         digest = hashlib.sha256(manifest.read_bytes()).hexdigest()
     with pytest.raises(ValueError):
         module.verify(root, package, tag, dist, digest)
+
+
+@pytest.mark.parametrize("kind", ["foreign-wheel", "nested-workspace", "native-target"])
+def test_rejects_workspace_contamination(release, kind):
+    root, package, tag, dist, _ = release
+    if kind == "foreign-wheel":
+        with zipfile.ZipFile(dist / "aiogram_nav-0.3.1-py3-none-any.whl", "a") as archive:
+            archive.writestr("aiogram_idle/__init__.py", b"")
+    else:
+        path = dist / "aiogram_nav-0.3.1.tar.gz"
+        with tarfile.open(path) as archive:
+            metadata = archive.extractfile(archive.getmembers()[0]).read()
+        with tarfile.open(path, "w:gz") as archive:
+            member = tarfile.TarInfo("aiogram_nav-0.3.1/PKG-INFO")
+            member.size = len(metadata)
+            archive.addfile(member, io.BytesIO(metadata))
+            forbidden = (
+                "monorepo-source/packages/aiogram-idle/src/unrelated.py"
+                if kind == "nested-workspace"
+                else "native/target/build-output"
+            )
+            member = tarfile.TarInfo("aiogram_nav-0.3.1/" + forbidden)
+            member.size = 1
+            archive.addfile(member, io.BytesIO(b"x"))
+    manifest = dist / "SHA256SUMS"
+    manifest.write_text(
+        "".join(
+            f"{hashlib.sha256(p.read_bytes()).hexdigest()}  {p.name}\n"
+            for p in sorted(dist.iterdir())
+            if p.name != "SHA256SUMS"
+        )
+    )
+    digest = hashlib.sha256(manifest.read_bytes()).hexdigest()
+    with pytest.raises(ValueError):
+        module.verify(root, package, tag, dist, digest)

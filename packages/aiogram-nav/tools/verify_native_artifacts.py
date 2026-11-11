@@ -178,7 +178,10 @@ def verify(
         native["name"] == name and native["version"] == version,
         "Base/native project mismatch",
     )
-    require(tag == "native-v" + version, "Native release tag mismatch")
+    require(
+        tag in {"native-v" + version, base["name"] + "-native-v" + version},
+        "Native release tag mismatch",
+    )
     require(
         re.fullmatch(r"[a-f0-9]{64}", manifest_sha256) is not None,
         "Invalid independent manifest digest",

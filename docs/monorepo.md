@@ -30,3 +30,24 @@ checkouts retain their original layout; migration commits introduce the package 
 Git history does not contain GitHub issues, PRs, projects, releases or assets. These have a
 separate inventory and cutover checklist. Repositories remain unarchived until every required
 gate passes. Do not reuse the old Sentinel repository name after the final rename.
+
+The migration patch changes native identity versions without changing their ABI or kernel behavior.
+Applications opting into source-built native engines must rebuild the matching companion.
+Python remains the default; this migration requires no Redis data-format change.
+
+Cross-package benchmark orchestration is under `tools/optimization/`; package-owned drivers
+remain under each package's `benchmarks/`. The controller defaults to this workspace's
+`packages/` directory and still accepts an explicit external repository directory.
+
+## Git-based installations
+
+PyPI names and Python imports are unchanged. New Git-based installations select the package
+subdirectory and its independent tag, for example:
+
+```sh
+pip install 'git+https://github.com/ArmanAvanesyan/aiogram-kit.git@aiogram-nav-v0.3.1#subdirectory=packages/aiogram-nav'
+```
+
+An unqualified install from the repository root is not a library installation. Historical
+Git tags retain their original layouts. Update floating Sentinel Git URLs and CI checkout
+commands to select the new subdirectory; GitHub's repository redirect does not add it.

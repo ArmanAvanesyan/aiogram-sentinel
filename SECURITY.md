@@ -1,40 +1,19 @@
 # Security policy
 
-## Reporting a vulnerability
+Report vulnerabilities privately to [arman.avanesyan@yahoo.com](mailto:arman.avanesyan@yahoo.com)
+or use a [private GitHub advisory](https://github.com/ArmanAvanesyan/aiogram-kit/security/advisories/new)
+when private reporting is available. Ordinary issues are public. Include the exact affected
+distribution/version, Python/aiogram versions, impact and a minimal reproduction. Redact bot
+tokens, Redis credentials, message content and personal data.
 
-Do not disclose vulnerabilities, credentials or exploit details in public issues.
-Email the existing maintainer contact at
-[arman.avanesyan@yahoo.com](mailto:arman.avanesyan@yahoo.com). Include the affected
-package and version, Python/aiogram versions, a minimal reproduction and the
-potential impact. Redact bot tokens, Redis URLs and personal data.
+Each distribution has its own version and changelog under `packages/`. The repository does not
+promise backports, response SLAs or a fixed support period. Use a current compatible release.
 
-A [private GitHub security advisory](https://github.com/ArmanAvanesyan/aiogram-sentinel/security/advisories/new)
-is another option when private reporting is available for the repository. If it
-is unavailable, use email. Ordinary issue forms are public.
+Applications own authentication, authorization and infrastructure security. Preserve the libraries'
+documented callback/session ownership and coordination guards. Memory storage is process-local;
+protect Redis credentials, network access and persistence as documented. Sentinel's optional
+Sentry integration sends information to the application's configured service when enabled.
 
-## Versions and fixes
-
-The checkout's package version is declared in `pyproject.toml` and exported from
-`src/aiogram_sentinel/version.py`. Report the exact installed version so affected
-releases can be assessed. The repository does not promise backports, response
-SLAs or a fixed support period. Review [release history](CHANGELOG.md) and use a
-current compatible release when available.
-
-## Application responsibilities
-
-Sentinel provides rate limiting, debouncing and optional error handling. It does
-not authenticate users, authorize application actions, sanitize arbitrary input
-or guarantee protection from denial of service. Memory storage is process-local;
-Redis deployments must protect their credentials and network access.
-
-Keep dependencies updated, avoid logging message content or secrets, and configure
-application access controls independently. The optional Sentry integration sends
-error information to the application's configured service when enabled.
-
-## Development checks
-
-CI runs Bandit over library source and pip-audit over its installed runtime and
-development dependencies. Reports are uploaded as CI artifacts even on scan
-failure; generated JSON is not committed. These checks are point-in-time evidence,
-not a guarantee that a package or application has no vulnerabilities. See
-[reports/README.md](reports/README.md) for local commands.
+CI preserves package-specific security scans and dependency audits. These provide point-in-time
+evidence, not a guarantee that a package or application has no vulnerabilities. See the package
+security policies and reports for local commands and integration-specific responsibilities.

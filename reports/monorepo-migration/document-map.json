@@ -1,917 +1,1693 @@
 [
   {
-    "destination": "packages/aiogram-cmds/CODE_OF_CONDUCT.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "CODE_OF_CONDUCT.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/CHANGELOG.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "CHANGELOG.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/README.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "README.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/DEPLOYMENT.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "DEPLOYMENT.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/CONTRIBUTING.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "CONTRIBUTING.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/SECURITY.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "SECURITY.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/tools/README.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "tools/README.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/native/BENCHMARKS.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "native/BENCHMARKS.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/native/README.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "native/README.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/CHANGES/README.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "CHANGES/README.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/docs/deployment-guide.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "docs/deployment-guide.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/docs/command-registration-guide.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "docs/command-registration-guide.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/docs/i18n.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "docs/i18n.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/docs/ARCHITECTURE.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "docs/ARCHITECTURE.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/docs/releasing.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "docs/releasing.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/docs/troubleshooting.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "docs/troubleshooting.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/docs/quickstart.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "docs/quickstart.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/docs/faq.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "docs/faq.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/docs/TESTING.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "docs/TESTING.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/docs/performance.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "docs/performance.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/docs/verification.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "docs/verification.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/docs/release.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "docs/release.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/docs/ROADMAP.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "docs/ROADMAP.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/docs/index.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "docs/index.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/docs/configuration.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "docs/configuration.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/docs/compiled-profiles.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "docs/compiled-profiles.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/docs/migration-0.2.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "docs/migration-0.2.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/docs/installation.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "docs/installation.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/examples/README.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "examples/README.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/.github/PULL_REQUEST_TEMPLATE.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": ".github/PULL_REQUEST_TEMPLATE.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/reports/shared-repository-conventions.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "reports/shared-repository-conventions.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/reports/README.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "reports/README.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/reports/application-profiles-0.2.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "reports/application-profiles-0.2.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/reports/implementation/0.3.0-performance-rust.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "reports/implementation/0.3.0-performance-rust.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/docs/api/translator.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "docs/api/translator.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/docs/api/configuration.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "docs/api/configuration.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/docs/api/core.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "docs/api/core.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/docs/tutorials/basic-setup.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "docs/tutorials/basic-setup.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/docs/tutorials/i18n-integration.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "docs/tutorials/i18n-integration.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/docs/tutorials/dynamic-commands.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "docs/tutorials/dynamic-commands.md"
-  },
-  {
-    "destination": "packages/aiogram-cmds/docs/tutorials/advanced-profiles.md",
-    "source_repository": "aiogram-cmds",
-    "source_path": "docs/tutorials/advanced-profiles.md"
-  },
-  {
-    "destination": "packages/aiogram-coordination/CODE_OF_CONDUCT.md",
-    "source_repository": "aiogram-coordination",
-    "source_path": "CODE_OF_CONDUCT.md"
-  },
-  {
-    "destination": "packages/aiogram-coordination/CHANGELOG.md",
-    "source_repository": "aiogram-coordination",
-    "source_path": "CHANGELOG.md"
-  },
-  {
-    "destination": "packages/aiogram-coordination/README.md",
-    "source_repository": "aiogram-coordination",
-    "source_path": "README.md"
-  },
-  {
-    "destination": "packages/aiogram-coordination/CONTRIBUTING.md",
-    "source_repository": "aiogram-coordination",
-    "source_path": "CONTRIBUTING.md"
-  },
-  {
-    "destination": "packages/aiogram-coordination/SECURITY.md",
-    "source_repository": "aiogram-coordination",
-    "source_path": "SECURITY.md"
-  },
-  {
-    "destination": "packages/aiogram-coordination/tools/README.md",
-    "source_repository": "aiogram-coordination",
-    "source_path": "tools/README.md"
-  },
-  {
-    "destination": "packages/aiogram-coordination/CHANGES/README.rst",
-    "source_repository": "aiogram-coordination",
-    "source_path": "CHANGES/README.rst"
-  },
-  {
-    "destination": "packages/aiogram-coordination/docs/releasing.md",
-    "source_repository": "aiogram-coordination",
-    "source_path": "docs/releasing.md"
-  },
-  {
-    "destination": "packages/aiogram-coordination/docs/api.md",
-    "source_repository": "aiogram-coordination",
-    "source_path": "docs/api.md"
-  },
-  {
-    "destination": "packages/aiogram-coordination/docs/redis.md",
-    "source_repository": "aiogram-coordination",
-    "source_path": "docs/redis.md"
-  },
-  {
-    "destination": "packages/aiogram-coordination/docs/index.md",
-    "source_repository": "aiogram-coordination",
-    "source_path": "docs/index.md"
-  },
-  {
-    "destination": "packages/aiogram-coordination/docs/isolation.md",
-    "source_repository": "aiogram-coordination",
-    "source_path": "docs/isolation.md"
-  },
-  {
-    "destination": "packages/aiogram-coordination/docs/sessions.md",
-    "source_repository": "aiogram-coordination",
-    "source_path": "docs/sessions.md"
-  },
-  {
-    "destination": "packages/aiogram-coordination/.github/pull_request_template.md",
-    "source_repository": "aiogram-coordination",
-    "source_path": ".github/pull_request_template.md"
-  },
-  {
-    "destination": "packages/aiogram-coordination/reports/README.md",
-    "source_repository": "aiogram-coordination",
-    "source_path": "reports/README.md"
-  },
-  {
-    "destination": "packages/aiogram-coordination/reports/verification.md",
-    "source_repository": "aiogram-coordination",
-    "source_path": "reports/verification.md"
-  },
-  {
-    "destination": "packages/aiogram-idle/CODE_OF_CONDUCT.md",
-    "source_repository": "aiogram-idle",
-    "source_path": "CODE_OF_CONDUCT.md"
-  },
-  {
-    "destination": "packages/aiogram-idle/CHANGELOG.md",
-    "source_repository": "aiogram-idle",
-    "source_path": "CHANGELOG.md"
-  },
-  {
-    "destination": "packages/aiogram-idle/README.md",
-    "source_repository": "aiogram-idle",
-    "source_path": "README.md"
-  },
-  {
-    "destination": "packages/aiogram-idle/CONTRIBUTING.md",
-    "source_repository": "aiogram-idle",
-    "source_path": "CONTRIBUTING.md"
-  },
-  {
-    "destination": "packages/aiogram-idle/SECURITY.md",
-    "source_repository": "aiogram-idle",
-    "source_path": "SECURITY.md"
-  },
-  {
-    "destination": "packages/aiogram-idle/tools/README.md",
-    "source_repository": "aiogram-idle",
-    "source_path": "tools/README.md"
-  },
-  {
-    "destination": "packages/aiogram-idle/native/README.md",
-    "source_repository": "aiogram-idle",
-    "source_path": "native/README.md"
-  },
-  {
-    "destination": "packages/aiogram-idle/CHANGES/README.md",
-    "source_repository": "aiogram-idle",
-    "source_path": "CHANGES/README.md"
-  },
-  {
-    "destination": "packages/aiogram-idle/docs/architecture.md",
-    "source_repository": "aiogram-idle",
-    "source_path": "docs/architecture.md"
-  },
-  {
-    "destination": "packages/aiogram-idle/docs/releasing.md",
-    "source_repository": "aiogram-idle",
-    "source_path": "docs/releasing.md"
-  },
-  {
-    "destination": "packages/aiogram-idle/docs/api.md",
-    "source_repository": "aiogram-idle",
-    "source_path": "docs/api.md"
-  },
-  {
-    "destination": "packages/aiogram-idle/docs/redis.md",
-    "source_repository": "aiogram-idle",
-    "source_path": "docs/redis.md"
-  },
-  {
-    "destination": "packages/aiogram-idle/docs/quickstart.md",
-    "source_repository": "aiogram-idle",
-    "source_path": "docs/quickstart.md"
-  },
-  {
-    "destination": "packages/aiogram-idle/docs/application-integration.md",
-    "source_repository": "aiogram-idle",
-    "source_path": "docs/application-integration.md"
-  },
-  {
-    "destination": "packages/aiogram-idle/docs/navigation.md",
-    "source_repository": "aiogram-idle",
-    "source_path": "docs/navigation.md"
-  },
-  {
-    "destination": "packages/aiogram-idle/docs/testing.md",
-    "source_repository": "aiogram-idle",
-    "source_path": "docs/testing.md"
-  },
-  {
-    "destination": "packages/aiogram-idle/docs/audit.md",
-    "source_repository": "aiogram-idle",
-    "source_path": "docs/audit.md"
-  },
-  {
-    "destination": "packages/aiogram-idle/docs/recovery.md",
-    "source_repository": "aiogram-idle",
-    "source_path": "docs/recovery.md"
-  },
-  {
-    "destination": "packages/aiogram-idle/docs/verification.md",
-    "source_repository": "aiogram-idle",
-    "source_path": "docs/verification.md"
-  },
-  {
-    "destination": "packages/aiogram-idle/docs/migration-0.3.md",
-    "source_repository": "aiogram-idle",
-    "source_path": "docs/migration-0.3.md"
-  },
-  {
-    "destination": "packages/aiogram-idle/docs/index.md",
-    "source_repository": "aiogram-idle",
-    "source_path": "docs/index.md"
-  },
-  {
-    "destination": "packages/aiogram-idle/docs/redis-audit.md",
-    "source_repository": "aiogram-idle",
-    "source_path": "docs/redis-audit.md"
-  },
-  {
-    "destination": "packages/aiogram-idle/docs/migration-0.2.md",
-    "source_repository": "aiogram-idle",
-    "source_path": "docs/migration-0.2.md"
-  },
-  {
-    "destination": "packages/aiogram-idle/docs/standalone.md",
-    "source_repository": "aiogram-idle",
-    "source_path": "docs/standalone.md"
-  },
-  {
-    "destination": "packages/aiogram-idle/docs/installation.md",
-    "source_repository": "aiogram-idle",
-    "source_path": "docs/installation.md"
-  },
-  {
-    "destination": "packages/aiogram-idle/examples/README.md",
-    "source_repository": "aiogram-idle",
-    "source_path": "examples/README.md"
-  },
-  {
-    "destination": "packages/aiogram-idle/benchmarks/README.md",
-    "source_repository": "aiogram-idle",
-    "source_path": "benchmarks/README.md"
-  },
-  {
-    "destination": "packages/aiogram-idle/.github/PULL_REQUEST_TEMPLATE.md",
-    "source_repository": "aiogram-idle",
-    "source_path": ".github/PULL_REQUEST_TEMPLATE.md"
-  },
-  {
-    "destination": "packages/aiogram-idle/reports/2026-11-10-repository-alignment.md",
-    "source_repository": "aiogram-idle",
-    "source_path": "reports/2026-11-10-repository-alignment.md"
-  },
-  {
-    "destination": "packages/aiogram-idle/reports/2026-11-10-0.2-application-integration.md",
-    "source_repository": "aiogram-idle",
-    "source_path": "reports/2026-11-10-0.2-application-integration.md"
-  },
-  {
-    "destination": "packages/aiogram-idle/reports/0.3.0-implementation.md",
-    "source_repository": "aiogram-idle",
-    "source_path": "reports/0.3.0-implementation.md"
-  },
-  {
-    "destination": "packages/aiogram-idle/reports/2026-11-11-0.2.1-correctness.md",
-    "source_repository": "aiogram-idle",
-    "source_path": "reports/2026-11-11-0.2.1-correctness.md"
-  },
-  {
+    "source_repository": "aiogram-kit",
+    "source_path": "README.md",
+    "source_sha256": "97a579d9a4dff65e02366625f57d2b42c79ba73c3b3e7ec26cc5fdd7b182faf7",
     "destination": "packages/aiogram-kit/README.md",
-    "source_repository": "aiogram-kit",
-    "source_path": "README.md"
+    "destination_sha256": "78a502f0caf41e1ff77c582e365df5e24dd612929e7a2ee8ed11cccc32d4f870",
+    "status": "updated-for-migration",
+    "additional_locations": []
   },
   {
-    "destination": "packages/aiogram-kit/docs/index.md",
     "source_repository": "aiogram-kit",
-    "source_path": "docs/index.md"
-  },
-  {
-    "destination": "packages/aiogram-kit/docs/standalone-nav.md",
-    "source_repository": "aiogram-kit",
-    "source_path": "docs/standalone-nav.md"
-  },
-  {
-    "destination": "packages/aiogram-kit/docs/standalone-idle.md",
-    "source_repository": "aiogram-kit",
-    "source_path": "docs/standalone-idle.md"
-  },
-  {
-    "destination": "packages/aiogram-kit/reports/2026-11-11-optimization-program/REPORT.md",
-    "source_repository": "aiogram-kit",
-    "source_path": "reports/2026-11-11-optimization-program/REPORT.md"
-  },
-  {
-    "destination": "packages/aiogram-kit/reports/optimization/state-growth/baseline-20261111-traced-exploratory/README.md",
-    "source_repository": "aiogram-kit",
-    "source_path": "reports/optimization/state-growth/baseline-20261111-traced-exploratory/README.md"
-  },
-  {
-    "destination": "packages/aiogram-kit/reports/optimization/state-growth/candidate-idle-030/README.md",
-    "source_repository": "aiogram-kit",
-    "source_path": "reports/optimization/state-growth/candidate-idle-030/README.md"
-  },
-  {
-    "destination": "packages/aiogram-kit/reports/optimization/state-growth/baseline-20261111/README.md",
-    "source_repository": "aiogram-kit",
-    "source_path": "reports/optimization/state-growth/baseline-20261111/README.md"
-  },
-  {
-    "destination": "packages/aiogram-kit/reports/optimization/state-growth/candidate-nav-030/README.md",
-    "source_repository": "aiogram-kit",
-    "source_path": "reports/optimization/state-growth/candidate-nav-030/README.md"
-  },
-  {
-    "destination": "packages/aiogram-kit/reports/2026-11-11-optimization-program/idle-serial/REPORT.md",
-    "source_repository": "aiogram-kit",
-    "source_path": "reports/2026-11-11-optimization-program/idle-serial/REPORT.md"
-  },
-  {
-    "destination": "packages/aiogram-kit/reports/2026-11-11-optimization-program/nav-serial/REPORT.md",
-    "source_repository": "aiogram-kit",
-    "source_path": "reports/2026-11-11-optimization-program/nav-serial/REPORT.md"
-  },
-  {
-    "destination": "packages/aiogram-kit/reports/2026-11-11-optimization-program/sentinel-serial/REPORT.md",
-    "source_repository": "aiogram-kit",
-    "source_path": "reports/2026-11-11-optimization-program/sentinel-serial/REPORT.md"
-  },
-  {
-    "destination": "packages/aiogram-kit/reports/2026-11-11-optimization-program/cmds-serial/REPORT.md",
-    "source_repository": "aiogram-kit",
-    "source_path": "reports/2026-11-11-optimization-program/cmds-serial/REPORT.md"
-  },
-  {
-    "destination": "packages/aiogram-kit/docs/design/library-release-verification.md",
-    "source_repository": "aiogram-kit",
-    "source_path": "docs/design/library-release-verification.md"
-  },
-  {
-    "destination": "packages/aiogram-kit/docs/design/consumer-integration-roadmap.md",
-    "source_repository": "aiogram-kit",
-    "source_path": "docs/design/consumer-integration-roadmap.md"
-  },
-  {
-    "destination": "packages/aiogram-kit/docs/design/application-migration-guide.md",
-    "source_repository": "aiogram-kit",
-    "source_path": "docs/design/application-migration-guide.md"
-  },
-  {
+    "source_path": "docs/design/aiogram-idle.md",
+    "source_sha256": "dc64cd8c08b7a284257bd07e5512ee16bc278bd0b65e02a5a5aa05c1c20e2552",
     "destination": "packages/aiogram-kit/docs/design/aiogram-idle.md",
-    "source_repository": "aiogram-kit",
-    "source_path": "docs/design/aiogram-idle.md"
+    "destination_sha256": "dc64cd8c08b7a284257bd07e5512ee16bc278bd0b65e02a5a5aa05c1c20e2552",
+    "status": "preserved",
+    "additional_locations": [
+      "docs/design/aiogram-idle.md"
+    ]
   },
   {
-    "destination": "packages/aiogram-kit/docs/design/index.md",
     "source_repository": "aiogram-kit",
-    "source_path": "docs/design/index.md"
-  },
-  {
-    "destination": "packages/aiogram-kit/docs/design/optimization-rust-implementation.md",
-    "source_repository": "aiogram-kit",
-    "source_path": "docs/design/optimization-rust-implementation.md"
-  },
-  {
-    "destination": "packages/aiogram-kit/docs/design/review.md",
-    "source_repository": "aiogram-kit",
-    "source_path": "docs/design/review.md"
-  },
-  {
-    "destination": "packages/aiogram-kit/docs/design/performance-and-retention-review.md",
-    "source_repository": "aiogram-kit",
-    "source_path": "docs/design/performance-and-retention-review.md"
-  },
-  {
+    "source_path": "docs/design/aiogram-nav.md",
+    "source_sha256": "296b654c87ab50cb742e79d28f2c3bb32248fce66090624c2312098968ff1093",
     "destination": "packages/aiogram-kit/docs/design/aiogram-nav.md",
-    "source_repository": "aiogram-kit",
-    "source_path": "docs/design/aiogram-nav.md"
+    "destination_sha256": "296b654c87ab50cb742e79d28f2c3bb32248fce66090624c2312098968ff1093",
+    "status": "preserved",
+    "additional_locations": [
+      "docs/design/aiogram-nav.md"
+    ]
   },
   {
+    "source_repository": "aiogram-kit",
+    "source_path": "docs/design/application-migration-guide.md",
+    "source_sha256": "9e4fbc35ee72d275bed5d294d44f7bfd992ddfd78622bbbb3714f6c7f450c0a0",
+    "destination": "packages/aiogram-kit/docs/design/application-migration-guide.md",
+    "destination_sha256": "9e4fbc35ee72d275bed5d294d44f7bfd992ddfd78622bbbb3714f6c7f450c0a0",
+    "status": "preserved",
+    "additional_locations": [
+      "docs/design/application-migration-guide.md"
+    ]
+  },
+  {
+    "source_repository": "aiogram-kit",
+    "source_path": "docs/design/consumer-integration-roadmap.md",
+    "source_sha256": "bc2e286da4dac3440bb8b1bba5739abead7975d556cd7a6c954581c65d8bc3dd",
+    "destination": "packages/aiogram-kit/docs/design/consumer-integration-roadmap.md",
+    "destination_sha256": "bc2e286da4dac3440bb8b1bba5739abead7975d556cd7a6c954581c65d8bc3dd",
+    "status": "preserved",
+    "additional_locations": [
+      "docs/design/consumer-integration-roadmap.md"
+    ]
+  },
+  {
+    "source_repository": "aiogram-kit",
+    "source_path": "docs/design/index.md",
+    "source_sha256": "ca378ce62aaf999100a4dc933d5089453748317ea30eab46cde0b0e7d42fa91b",
+    "destination": "packages/aiogram-kit/docs/design/index.md",
+    "destination_sha256": "ca378ce62aaf999100a4dc933d5089453748317ea30eab46cde0b0e7d42fa91b",
+    "status": "preserved",
+    "additional_locations": [
+      "docs/design/index.md"
+    ]
+  },
+  {
+    "source_repository": "aiogram-kit",
+    "source_path": "docs/design/library-release-verification.md",
+    "source_sha256": "6d2cad10021e4a75bb99c5545b6385a7f03493fae4bffc57037ef81c63df8723",
+    "destination": "packages/aiogram-kit/docs/design/library-release-verification.md",
+    "destination_sha256": "6d2cad10021e4a75bb99c5545b6385a7f03493fae4bffc57037ef81c63df8723",
+    "status": "preserved",
+    "additional_locations": [
+      "docs/design/library-release-verification.md"
+    ]
+  },
+  {
+    "source_repository": "aiogram-kit",
+    "source_path": "docs/design/optimization-rust-implementation.md",
+    "source_sha256": "340a87feeedd80f5ef069eb07df5c7fc92598661a7f1fa58e6f5ac8ee1314ffd",
+    "destination": "packages/aiogram-kit/docs/design/optimization-rust-implementation.md",
+    "destination_sha256": "340a87feeedd80f5ef069eb07df5c7fc92598661a7f1fa58e6f5ac8ee1314ffd",
+    "status": "preserved",
+    "additional_locations": [
+      "docs/design/optimization-rust-implementation.md"
+    ]
+  },
+  {
+    "source_repository": "aiogram-kit",
+    "source_path": "docs/design/performance-and-retention-review.md",
+    "source_sha256": "d64dc01e57845cb71cf51890ff7aa020e28cdea068fb3521f603b209a39d763f",
+    "destination": "packages/aiogram-kit/docs/design/performance-and-retention-review.md",
+    "destination_sha256": "d64dc01e57845cb71cf51890ff7aa020e28cdea068fb3521f603b209a39d763f",
+    "status": "preserved",
+    "additional_locations": [
+      "docs/design/performance-and-retention-review.md"
+    ]
+  },
+  {
+    "source_repository": "aiogram-kit",
+    "source_path": "docs/design/review.md",
+    "source_sha256": "a922075815681d6ae597e9fed3a1b09c4b56f9920416d9e6353c7d1b47d03581",
+    "destination": "packages/aiogram-kit/docs/design/review.md",
+    "destination_sha256": "a922075815681d6ae597e9fed3a1b09c4b56f9920416d9e6353c7d1b47d03581",
+    "status": "preserved",
+    "additional_locations": [
+      "docs/design/review.md"
+    ]
+  },
+  {
+    "source_repository": "aiogram-kit",
+    "source_path": "docs/design/storage-and-verification.md",
+    "source_sha256": "056f2bf9f5338e7730119b3ca317c5a13176af9e55a98f6880460fa24a403dd5",
     "destination": "packages/aiogram-kit/docs/design/storage-and-verification.md",
+    "destination_sha256": "056f2bf9f5338e7730119b3ca317c5a13176af9e55a98f6880460fa24a403dd5",
+    "status": "preserved",
+    "additional_locations": [
+      "docs/design/storage-and-verification.md"
+    ]
+  },
+  {
     "source_repository": "aiogram-kit",
-    "source_path": "docs/design/storage-and-verification.md"
+    "source_path": "docs/index.md",
+    "source_sha256": "1c229a6e33fc4950cd2ca500c2b8f07c89347b1233912764cd96e56c162b17f4",
+    "destination": "packages/aiogram-kit/docs/index.md",
+    "destination_sha256": "1c229a6e33fc4950cd2ca500c2b8f07c89347b1233912764cd96e56c162b17f4",
+    "status": "preserved",
+    "additional_locations": [
+      "docs/index.md"
+    ]
   },
   {
-    "destination": "packages/aiogram-kit/tools/optimization/README.md",
     "source_repository": "aiogram-kit",
-    "source_path": "tools/optimization/README.md"
+    "source_path": "docs/standalone-idle.md",
+    "source_sha256": "eab977b56afe7a126360641b78b384ce48d6a8fa4162bc2386c98eb39497aeed",
+    "destination": "packages/aiogram-kit/docs/standalone-idle.md",
+    "destination_sha256": "eab977b56afe7a126360641b78b384ce48d6a8fa4162bc2386c98eb39497aeed",
+    "status": "preserved",
+    "additional_locations": [
+      "docs/standalone-idle.md"
+    ]
   },
   {
-    "destination": "packages/aiogram-nav/CODE_OF_CONDUCT.md",
-    "source_repository": "aiogram-nav",
-    "source_path": "CODE_OF_CONDUCT.md"
+    "source_repository": "aiogram-kit",
+    "source_path": "docs/standalone-nav.md",
+    "source_sha256": "4482b307c13985b98fd3a30ca9b8842508445875a212bc29ae1bd8daca27a86a",
+    "destination": "packages/aiogram-kit/docs/standalone-nav.md",
+    "destination_sha256": "4482b307c13985b98fd3a30ca9b8842508445875a212bc29ae1bd8daca27a86a",
+    "status": "preserved",
+    "additional_locations": [
+      "docs/standalone-nav.md"
+    ]
   },
   {
-    "destination": "packages/aiogram-nav/CHANGELOG.md",
-    "source_repository": "aiogram-nav",
-    "source_path": "CHANGELOG.md"
+    "source_repository": "aiogram-kit",
+    "source_path": "reports/2026-11-11-optimization-program/REPORT.md",
+    "source_sha256": "79bbccecd009a09673d73e1d5d7861bbe5c892c32185ff6314b1f3aa50fb3cad",
+    "destination": "packages/aiogram-kit/reports/2026-11-11-optimization-program/REPORT.md",
+    "destination_sha256": "79bbccecd009a09673d73e1d5d7861bbe5c892c32185ff6314b1f3aa50fb3cad",
+    "status": "preserved",
+    "additional_locations": [
+      "reports/2026-11-11-optimization-program/REPORT.md"
+    ]
   },
   {
-    "destination": "packages/aiogram-nav/README.md",
-    "source_repository": "aiogram-nav",
-    "source_path": "README.md"
+    "source_repository": "aiogram-kit",
+    "source_path": "reports/2026-11-11-optimization-program/cmds-serial/REPORT.md",
+    "source_sha256": "db349a60567933b0226daa20efd1a211457ea20eceb43cd788efe95d987d500b",
+    "destination": "packages/aiogram-kit/reports/2026-11-11-optimization-program/cmds-serial/REPORT.md",
+    "destination_sha256": "db349a60567933b0226daa20efd1a211457ea20eceb43cd788efe95d987d500b",
+    "status": "preserved",
+    "additional_locations": [
+      "reports/2026-11-11-optimization-program/cmds-serial/REPORT.md"
+    ]
   },
   {
-    "destination": "packages/aiogram-nav/CONTRIBUTING.md",
-    "source_repository": "aiogram-nav",
-    "source_path": "CONTRIBUTING.md"
+    "source_repository": "aiogram-kit",
+    "source_path": "reports/2026-11-11-optimization-program/idle-serial/REPORT.md",
+    "source_sha256": "15dc3ce759a2ddac0d6c2c80b6d80042df8fa81ae767975e40faa107900bc1f2",
+    "destination": "packages/aiogram-kit/reports/2026-11-11-optimization-program/idle-serial/REPORT.md",
+    "destination_sha256": "15dc3ce759a2ddac0d6c2c80b6d80042df8fa81ae767975e40faa107900bc1f2",
+    "status": "preserved",
+    "additional_locations": [
+      "reports/2026-11-11-optimization-program/idle-serial/REPORT.md"
+    ]
   },
   {
-    "destination": "packages/aiogram-nav/SECURITY.md",
-    "source_repository": "aiogram-nav",
-    "source_path": "SECURITY.md"
+    "source_repository": "aiogram-kit",
+    "source_path": "reports/2026-11-11-optimization-program/nav-serial/REPORT.md",
+    "source_sha256": "a5f446982022ca1dce7090a8ac6951155329a878a52d30ed25bcb08f75f7d1a3",
+    "destination": "packages/aiogram-kit/reports/2026-11-11-optimization-program/nav-serial/REPORT.md",
+    "destination_sha256": "a5f446982022ca1dce7090a8ac6951155329a878a52d30ed25bcb08f75f7d1a3",
+    "status": "preserved",
+    "additional_locations": [
+      "reports/2026-11-11-optimization-program/nav-serial/REPORT.md"
+    ]
   },
   {
-    "destination": "packages/aiogram-nav/tools/README.md",
-    "source_repository": "aiogram-nav",
-    "source_path": "tools/README.md"
+    "source_repository": "aiogram-kit",
+    "source_path": "reports/2026-11-11-optimization-program/sentinel-serial/REPORT.md",
+    "source_sha256": "e0df6997a6b7ed2985e54d9e78c9bd290535a86e0f4854b9dfaec26e15a56c94",
+    "destination": "packages/aiogram-kit/reports/2026-11-11-optimization-program/sentinel-serial/REPORT.md",
+    "destination_sha256": "e0df6997a6b7ed2985e54d9e78c9bd290535a86e0f4854b9dfaec26e15a56c94",
+    "status": "preserved",
+    "additional_locations": [
+      "reports/2026-11-11-optimization-program/sentinel-serial/REPORT.md"
+    ]
   },
   {
-    "destination": "packages/aiogram-nav/native/BENCHMARKS.md",
-    "source_repository": "aiogram-nav",
-    "source_path": "native/BENCHMARKS.md"
+    "source_repository": "aiogram-kit",
+    "source_path": "reports/optimization/state-growth/baseline-20261111-traced-exploratory/README.md",
+    "source_sha256": "925624b0bf869d50b472cfab76f758332764d8ab13896e894777a3900b031bd7",
+    "destination": "packages/aiogram-kit/reports/optimization/state-growth/baseline-20261111-traced-exploratory/README.md",
+    "destination_sha256": "925624b0bf869d50b472cfab76f758332764d8ab13896e894777a3900b031bd7",
+    "status": "preserved",
+    "additional_locations": [
+      "reports/optimization/state-growth/baseline-20261111-traced-exploratory/README.md"
+    ]
   },
   {
-    "destination": "packages/aiogram-nav/native/README.md",
-    "source_repository": "aiogram-nav",
-    "source_path": "native/README.md"
+    "source_repository": "aiogram-kit",
+    "source_path": "reports/optimization/state-growth/baseline-20261111/README.md",
+    "source_sha256": "ed505173069db55b07e18cdd8c3d73b60739447bd776f624454b786939455bbc",
+    "destination": "packages/aiogram-kit/reports/optimization/state-growth/baseline-20261111/README.md",
+    "destination_sha256": "ed505173069db55b07e18cdd8c3d73b60739447bd776f624454b786939455bbc",
+    "status": "preserved",
+    "additional_locations": [
+      "reports/optimization/state-growth/baseline-20261111/README.md"
+    ]
   },
   {
-    "destination": "packages/aiogram-nav/CHANGES/README.rst",
-    "source_repository": "aiogram-nav",
-    "source_path": "CHANGES/README.rst"
+    "source_repository": "aiogram-kit",
+    "source_path": "reports/optimization/state-growth/candidate-idle-030/README.md",
+    "source_sha256": "338fdd41d24d6a2de602d43259ab08f40a64b0ae55785155937d03e62229472d",
+    "destination": "packages/aiogram-kit/reports/optimization/state-growth/candidate-idle-030/README.md",
+    "destination_sha256": "338fdd41d24d6a2de602d43259ab08f40a64b0ae55785155937d03e62229472d",
+    "status": "preserved",
+    "additional_locations": [
+      "reports/optimization/state-growth/candidate-idle-030/README.md"
+    ]
   },
   {
-    "destination": "packages/aiogram-nav/docs/storage.md",
-    "source_repository": "aiogram-nav",
-    "source_path": "docs/storage.md"
+    "source_repository": "aiogram-kit",
+    "source_path": "reports/optimization/state-growth/candidate-nav-030/README.md",
+    "source_sha256": "015695c4ab52de7ec19596e3efe51415488967ed5b7535e9a6b50db8298f405b",
+    "destination": "packages/aiogram-kit/reports/optimization/state-growth/candidate-nav-030/README.md",
+    "destination_sha256": "015695c4ab52de7ec19596e3efe51415488967ed5b7535e9a6b50db8298f405b",
+    "status": "preserved",
+    "additional_locations": [
+      "reports/optimization/state-growth/candidate-nav-030/README.md"
+    ]
   },
   {
-    "destination": "packages/aiogram-nav/docs/public-api.md",
-    "source_repository": "aiogram-nav",
-    "source_path": "docs/public-api.md"
+    "source_repository": "aiogram-kit",
+    "source_path": "tools/optimization/README.md",
+    "source_sha256": "a87b72d6d95ed3a9fec371e3b61d437659ef187da225e1ce2ff808cba618a794",
+    "destination": "tools/optimization/README.md",
+    "destination_sha256": "a87b72d6d95ed3a9fec371e3b61d437659ef187da225e1ce2ff808cba618a794",
+    "status": "preserved",
+    "additional_locations": []
   },
   {
-    "destination": "packages/aiogram-nav/docs/releasing.md",
-    "source_repository": "aiogram-nav",
-    "source_path": "docs/releasing.md"
+    "source_repository": "aiogram-coordination",
+    "source_path": ".github/pull_request_template.md",
+    "source_sha256": "c2e269af463803c86a9d248f4e51892ebb44e47c9614a8450ae07819b4742bb2",
+    "destination": "packages/aiogram-coordination/.github/pull_request_template.md",
+    "destination_sha256": "c2e269af463803c86a9d248f4e51892ebb44e47c9614a8450ae07819b4742bb2",
+    "status": "preserved",
+    "additional_locations": []
   },
   {
-    "destination": "packages/aiogram-nav/docs/redis.md",
-    "source_repository": "aiogram-nav",
-    "source_path": "docs/redis.md"
+    "source_repository": "aiogram-coordination",
+    "source_path": "CHANGELOG.md",
+    "source_sha256": "ca7a8e32701cf5e92b36a4b68cb2533b6e4efbb63a41534821fe20b040bbe23d",
+    "destination": "packages/aiogram-coordination/CHANGELOG.md",
+    "destination_sha256": "0432e0573deeae1c6e2d3ffdfe870b4a00960c98bb0d6fe7f18dbe20e0d95502",
+    "status": "updated-for-migration",
+    "additional_locations": []
   },
   {
-    "destination": "packages/aiogram-nav/docs/concepts.md",
-    "source_repository": "aiogram-nav",
-    "source_path": "docs/concepts.md"
+    "source_repository": "aiogram-coordination",
+    "source_path": "CHANGES/README.rst",
+    "source_sha256": "bc7e51008ef8a179e58a158f2e77a009f82dd04d06400642f0b3a3dcb3a0e064",
+    "destination": "packages/aiogram-coordination/CHANGES/README.rst",
+    "destination_sha256": "bc7e51008ef8a179e58a158f2e77a009f82dd04d06400642f0b3a3dcb3a0e064",
+    "status": "preserved",
+    "additional_locations": []
   },
   {
-    "destination": "packages/aiogram-nav/docs/quickstart.md",
-    "source_repository": "aiogram-nav",
-    "source_path": "docs/quickstart.md"
+    "source_repository": "aiogram-coordination",
+    "source_path": "CODE_OF_CONDUCT.md",
+    "source_sha256": "657f356911992425a04aa2f79de9e683dbcc3ec24144542e0a0f590f0d986a46",
+    "destination": "packages/aiogram-coordination/CODE_OF_CONDUCT.md",
+    "destination_sha256": "657f356911992425a04aa2f79de9e683dbcc3ec24144542e0a0f590f0d986a46",
+    "status": "preserved",
+    "additional_locations": []
   },
   {
-    "destination": "packages/aiogram-nav/docs/application-integration.md",
-    "source_repository": "aiogram-nav",
-    "source_path": "docs/application-integration.md"
+    "source_repository": "aiogram-coordination",
+    "source_path": "CONTRIBUTING.md",
+    "source_sha256": "2f4e189beca7b93d652eb3a7779c6c14d94a8f81fbcf72f1cebf6603642edacd",
+    "destination": "packages/aiogram-coordination/CONTRIBUTING.md",
+    "destination_sha256": "2f4e189beca7b93d652eb3a7779c6c14d94a8f81fbcf72f1cebf6603642edacd",
+    "status": "preserved",
+    "additional_locations": []
   },
   {
-    "destination": "packages/aiogram-nav/docs/migration.md",
-    "source_repository": "aiogram-nav",
-    "source_path": "docs/migration.md"
+    "source_repository": "aiogram-coordination",
+    "source_path": "README.md",
+    "source_sha256": "6655953e57c716cb8a302086c48e418ae76326a431e66f8dcb9de10daa5040b7",
+    "destination": "packages/aiogram-coordination/README.md",
+    "destination_sha256": "7efa44f2725f8a6aceb828c0a90cb79bfe7fb4b9949d44154d7133af9643a221",
+    "status": "updated-for-migration",
+    "additional_locations": []
   },
   {
-    "destination": "packages/aiogram-nav/docs/memory-audit.md",
-    "source_repository": "aiogram-nav",
-    "source_path": "docs/memory-audit.md"
+    "source_repository": "aiogram-coordination",
+    "source_path": "SECURITY.md",
+    "source_sha256": "a3bc80aa92288272fe597615029368a7ba991243e3a3371566346acf3ceec8b4",
+    "destination": "packages/aiogram-coordination/SECURITY.md",
+    "destination_sha256": "a3bc80aa92288272fe597615029368a7ba991243e3a3371566346acf3ceec8b4",
+    "status": "preserved",
+    "additional_locations": []
   },
   {
-    "destination": "packages/aiogram-nav/docs/verification.md",
-    "source_repository": "aiogram-nav",
-    "source_path": "docs/verification.md"
+    "source_repository": "aiogram-coordination",
+    "source_path": "docs/api.md",
+    "source_sha256": "2a8a89666d150f4833f5e112191d1d17656b93c58e6c4b7af8c0734b84f2b976",
+    "destination": "packages/aiogram-coordination/docs/api.md",
+    "destination_sha256": "2a8a89666d150f4833f5e112191d1d17656b93c58e6c4b7af8c0734b84f2b976",
+    "status": "preserved",
+    "additional_locations": []
   },
   {
-    "destination": "packages/aiogram-nav/docs/index.md",
-    "source_repository": "aiogram-nav",
-    "source_path": "docs/index.md"
+    "source_repository": "aiogram-coordination",
+    "source_path": "docs/index.md",
+    "source_sha256": "b172dcabac421f06f8b2e7c25a23eb1b2b0a16cac98a303d0aff63ee5e74cb1f",
+    "destination": "packages/aiogram-coordination/docs/index.md",
+    "destination_sha256": "b172dcabac421f06f8b2e7c25a23eb1b2b0a16cac98a303d0aff63ee5e74cb1f",
+    "status": "preserved",
+    "additional_locations": []
   },
   {
-    "destination": "packages/aiogram-nav/docs/redis-audit.md",
-    "source_repository": "aiogram-nav",
-    "source_path": "docs/redis-audit.md"
+    "source_repository": "aiogram-coordination",
+    "source_path": "docs/isolation.md",
+    "source_sha256": "40d7e83e503c345b0724f845bc8768bc651b43f5d8355b19977cf001e99ae8ef",
+    "destination": "packages/aiogram-coordination/docs/isolation.md",
+    "destination_sha256": "40d7e83e503c345b0724f845bc8768bc651b43f5d8355b19977cf001e99ae8ef",
+    "status": "preserved",
+    "additional_locations": []
   },
   {
-    "destination": "packages/aiogram-nav/docs/idle-integration.md",
-    "source_repository": "aiogram-nav",
-    "source_path": "docs/idle-integration.md"
+    "source_repository": "aiogram-coordination",
+    "source_path": "docs/redis.md",
+    "source_sha256": "855567da34e38eb3a58e765cbff799f8537c32479d8b33da4199bcc0b4cb20b1",
+    "destination": "packages/aiogram-coordination/docs/redis.md",
+    "destination_sha256": "855567da34e38eb3a58e765cbff799f8537c32479d8b33da4199bcc0b4cb20b1",
+    "status": "preserved",
+    "additional_locations": []
   },
   {
-    "destination": "packages/aiogram-nav/docs/performance-and-engines.md",
-    "source_repository": "aiogram-nav",
-    "source_path": "docs/performance-and-engines.md"
+    "source_repository": "aiogram-coordination",
+    "source_path": "docs/releasing.md",
+    "source_sha256": "b031f6c3ebe1711073504140c4702b48a380f8ddd854f576cafff1ba4d2489e4",
+    "destination": "packages/aiogram-coordination/docs/releasing.md",
+    "destination_sha256": "b031f6c3ebe1711073504140c4702b48a380f8ddd854f576cafff1ba4d2489e4",
+    "status": "preserved",
+    "additional_locations": []
   },
   {
-    "destination": "packages/aiogram-nav/docs/security.md",
-    "source_repository": "aiogram-nav",
-    "source_path": "docs/security.md"
+    "source_repository": "aiogram-coordination",
+    "source_path": "docs/sessions.md",
+    "source_sha256": "1de8e658c6e20dd13aeead92a4cff4d0a4d175aa1e73ab99c56d9aa954d09d83",
+    "destination": "packages/aiogram-coordination/docs/sessions.md",
+    "destination_sha256": "1de8e658c6e20dd13aeead92a4cff4d0a4d175aa1e73ab99c56d9aa954d09d83",
+    "status": "preserved",
+    "additional_locations": []
   },
   {
-    "destination": "packages/aiogram-nav/.github/pull_request_template.md",
-    "source_repository": "aiogram-nav",
-    "source_path": ".github/pull_request_template.md"
+    "source_repository": "aiogram-coordination",
+    "source_path": "reports/README.md",
+    "source_sha256": "bcc839c15f6c07ad4e62a880c4cf38d2147c5299562da8f5519d9e98c7e4cc89",
+    "destination": "packages/aiogram-coordination/reports/README.md",
+    "destination_sha256": "bcc839c15f6c07ad4e62a880c4cf38d2147c5299562da8f5519d9e98c7e4cc89",
+    "status": "preserved",
+    "additional_locations": []
   },
   {
-    "destination": "packages/aiogram-nav/reports/performance-core-0.3.0.md",
-    "source_repository": "aiogram-nav",
-    "source_path": "reports/performance-core-0.3.0.md"
+    "source_repository": "aiogram-coordination",
+    "source_path": "reports/verification.md",
+    "source_sha256": "b0cca40f81f27702443ec8c09b4557a8c3bc143b7ab7cb86a5f7af105aba2c08",
+    "destination": "packages/aiogram-coordination/reports/verification.md",
+    "destination_sha256": "b0cca40f81f27702443ec8c09b4557a8c3bc143b7ab7cb86a5f7af105aba2c08",
+    "status": "preserved",
+    "additional_locations": []
   },
   {
-    "destination": "packages/aiogram-nav/reports/application-ownership-0.2.0.md",
-    "source_repository": "aiogram-nav",
-    "source_path": "reports/application-ownership-0.2.0.md"
+    "source_repository": "aiogram-coordination",
+    "source_path": "tools/README.md",
+    "source_sha256": "e1f05c917a03f166a6103680b1ba06afffaaec939f44c7c2e2472da9ca32d5d9",
+    "destination": "packages/aiogram-coordination/tools/README.md",
+    "destination_sha256": "e1f05c917a03f166a6103680b1ba06afffaaec939f44c7c2e2472da9ca32d5d9",
+    "status": "preserved",
+    "additional_locations": []
   },
   {
-    "destination": "packages/aiogram-nav/reports/README.md",
-    "source_repository": "aiogram-nav",
-    "source_path": "reports/README.md"
-  },
-  {
-    "destination": "packages/aiogram-nav/reports/standardization.md",
-    "source_repository": "aiogram-nav",
-    "source_path": "reports/standardization.md"
-  },
-  {
-    "destination": "packages/aiogram-sentinel/CODE_OF_CONDUCT.md",
     "source_repository": "aiogram-sentinel",
-    "source_path": "CODE_OF_CONDUCT.md"
-  },
-  {
-    "destination": "packages/aiogram-sentinel/CHANGELOG.md",
-    "source_repository": "aiogram-sentinel",
-    "source_path": "CHANGELOG.md"
-  },
-  {
-    "destination": "packages/aiogram-sentinel/README.md",
-    "source_repository": "aiogram-sentinel",
-    "source_path": "README.md"
-  },
-  {
-    "destination": "packages/aiogram-sentinel/CONTRIBUTING.md",
-    "source_repository": "aiogram-sentinel",
-    "source_path": "CONTRIBUTING.md"
-  },
-  {
-    "destination": "packages/aiogram-sentinel/SECURITY.md",
-    "source_repository": "aiogram-sentinel",
-    "source_path": "SECURITY.md"
-  },
-  {
-    "destination": "packages/aiogram-sentinel/tools/README.md",
-    "source_repository": "aiogram-sentinel",
-    "source_path": "tools/README.md"
-  },
-  {
-    "destination": "packages/aiogram-sentinel/native/BENCHMARKS.md",
-    "source_repository": "aiogram-sentinel",
-    "source_path": "native/BENCHMARKS.md"
-  },
-  {
-    "destination": "packages/aiogram-sentinel/native/README.md",
-    "source_repository": "aiogram-sentinel",
-    "source_path": "native/README.md"
-  },
-  {
-    "destination": "packages/aiogram-sentinel/CHANGES/README.md",
-    "source_repository": "aiogram-sentinel",
-    "source_path": "CHANGES/README.md"
-  },
-  {
-    "destination": "packages/aiogram-sentinel/CHANGES/130.feature.md",
-    "source_repository": "aiogram-sentinel",
-    "source_path": "CHANGES/130.feature.md"
-  },
-  {
-    "destination": "packages/aiogram-sentinel/docs/ARCHITECTURE.md",
-    "source_repository": "aiogram-sentinel",
-    "source_path": "docs/ARCHITECTURE.md"
-  },
-  {
-    "destination": "packages/aiogram-sentinel/docs/releasing.md",
-    "source_repository": "aiogram-sentinel",
-    "source_path": "docs/releasing.md"
-  },
-  {
-    "destination": "packages/aiogram-sentinel/docs/native-engine.md",
-    "source_repository": "aiogram-sentinel",
-    "source_path": "docs/native-engine.md"
-  },
-  {
-    "destination": "packages/aiogram-sentinel/docs/troubleshooting.md",
-    "source_repository": "aiogram-sentinel",
-    "source_path": "docs/troubleshooting.md"
-  },
-  {
-    "destination": "packages/aiogram-sentinel/docs/quickstart.md",
-    "source_repository": "aiogram-sentinel",
-    "source_path": "docs/quickstart.md"
-  },
-  {
-    "destination": "packages/aiogram-sentinel/docs/faq.md",
-    "source_repository": "aiogram-sentinel",
-    "source_path": "docs/faq.md"
-  },
-  {
-    "destination": "packages/aiogram-sentinel/docs/application-integration.md",
-    "source_repository": "aiogram-sentinel",
-    "source_path": "docs/application-integration.md"
-  },
-  {
-    "destination": "packages/aiogram-sentinel/docs/TESTING.md",
-    "source_repository": "aiogram-sentinel",
-    "source_path": "docs/TESTING.md"
-  },
-  {
-    "destination": "packages/aiogram-sentinel/docs/performance.md",
-    "source_repository": "aiogram-sentinel",
-    "source_path": "docs/performance.md"
-  },
-  {
-    "destination": "packages/aiogram-sentinel/docs/release.md",
-    "source_repository": "aiogram-sentinel",
-    "source_path": "docs/release.md"
-  },
-  {
-    "destination": "packages/aiogram-sentinel/docs/migration-1.2.md",
-    "source_repository": "aiogram-sentinel",
-    "source_path": "docs/migration-1.2.md"
-  },
-  {
-    "destination": "packages/aiogram-sentinel/docs/ROADMAP.md",
-    "source_repository": "aiogram-sentinel",
-    "source_path": "docs/ROADMAP.md"
-  },
-  {
-    "destination": "packages/aiogram-sentinel/docs/index.md",
-    "source_repository": "aiogram-sentinel",
-    "source_path": "docs/index.md"
-  },
-  {
-    "destination": "packages/aiogram-sentinel/docs/configuration.md",
-    "source_repository": "aiogram-sentinel",
-    "source_path": "docs/configuration.md"
-  },
-  {
-    "destination": "packages/aiogram-sentinel/docs/error-handling.md",
-    "source_repository": "aiogram-sentinel",
-    "source_path": "docs/error-handling.md"
-  },
-  {
-    "destination": "packages/aiogram-sentinel/docs/installation.md",
-    "source_repository": "aiogram-sentinel",
-    "source_path": "docs/installation.md"
-  },
-  {
-    "destination": "packages/aiogram-sentinel/examples/README.md",
-    "source_repository": "aiogram-sentinel",
-    "source_path": "examples/README.md"
-  },
-  {
+    "source_path": ".github/PULL_REQUEST_TEMPLATE.md",
+    "source_sha256": "97abc1b91ef5f8e26a25147f0bdd28c6875e3beb14b1774e6645c5cd61cbb09a",
     "destination": "packages/aiogram-sentinel/.github/PULL_REQUEST_TEMPLATE.md",
-    "source_repository": "aiogram-sentinel",
-    "source_path": ".github/PULL_REQUEST_TEMPLATE.md"
+    "destination_sha256": "97abc1b91ef5f8e26a25147f0bdd28c6875e3beb14b1774e6645c5cd61cbb09a",
+    "status": "preserved",
+    "additional_locations": []
   },
   {
-    "destination": "packages/aiogram-sentinel/reports/native-performance-development.md",
     "source_repository": "aiogram-sentinel",
-    "source_path": "reports/native-performance-development.md"
+    "source_path": "CHANGELOG.md",
+    "source_sha256": "19d191845910bc5889fa8f75f4cf56361287f43acd211fcad234744b31cbd0ac",
+    "destination": "packages/aiogram-sentinel/CHANGELOG.md",
+    "destination_sha256": "9f757e9fa91ea140196bdc9fc61597f9e69c65e543b7fe87d57e8f8f68f2943d",
+    "status": "updated-for-migration",
+    "additional_locations": []
   },
   {
-    "destination": "packages/aiogram-sentinel/reports/local-review-fixes.md",
     "source_repository": "aiogram-sentinel",
-    "source_path": "reports/local-review-fixes.md"
+    "source_path": "CHANGES/130.feature.md",
+    "source_sha256": "5d131c89a882383865cbec250ed634dc71c34cb08af17c648da1db2f28d44fea",
+    "destination": "packages/aiogram-sentinel/CHANGES/130.feature.md",
+    "destination_sha256": "5d131c89a882383865cbec250ed634dc71c34cb08af17c648da1db2f28d44fea",
+    "status": "preserved",
+    "additional_locations": []
   },
   {
-    "destination": "packages/aiogram-sentinel/reports/README.md",
     "source_repository": "aiogram-sentinel",
-    "source_path": "reports/README.md"
+    "source_path": "CHANGES/README.md",
+    "source_sha256": "d364f831ec04369667707242e7ab9d8d33e8952719fc2b14fbe1c7f8ddae4e8e",
+    "destination": "packages/aiogram-sentinel/CHANGES/README.md",
+    "destination_sha256": "d364f831ec04369667707242e7ab9d8d33e8952719fc2b14fbe1c7f8ddae4e8e",
+    "status": "preserved",
+    "additional_locations": []
   },
   {
-    "destination": "packages/aiogram-sentinel/reports/repository-conventions.md",
     "source_repository": "aiogram-sentinel",
-    "source_path": "reports/repository-conventions.md"
+    "source_path": "CODE_OF_CONDUCT.md",
+    "source_sha256": "a2970976ddd8776a90960584c9d77b190cc4700e05548c3e57534840397f6dca",
+    "destination": "packages/aiogram-sentinel/CODE_OF_CONDUCT.md",
+    "destination_sha256": "a2970976ddd8776a90960584c9d77b190cc4700e05548c3e57534840397f6dca",
+    "status": "preserved",
+    "additional_locations": []
   },
   {
-    "destination": "packages/aiogram-sentinel/reports/1.2.0-application-integration.md",
     "source_repository": "aiogram-sentinel",
-    "source_path": "reports/1.2.0-application-integration.md"
+    "source_path": "CONTRIBUTING.md",
+    "source_sha256": "bbdbfb7bc32b2b5455538aca3b3312f0a01205f8c0227efb39638a293bf06ba3",
+    "destination": "packages/aiogram-sentinel/CONTRIBUTING.md",
+    "destination_sha256": "bbdbfb7bc32b2b5455538aca3b3312f0a01205f8c0227efb39638a293bf06ba3",
+    "status": "preserved",
+    "additional_locations": []
   },
   {
-    "destination": "packages/aiogram-sentinel/docs/api/storage.md",
     "source_repository": "aiogram-sentinel",
-    "source_path": "docs/api/storage.md"
+    "source_path": "README.md",
+    "source_sha256": "409fb37e3cacf1057c0dd544e2c4b01d2637f8085e3f79e197d13e9dcdc62d6a",
+    "destination": "packages/aiogram-sentinel/README.md",
+    "destination_sha256": "fb5c25a19fafa04f283ea1458b1e31e4e1196d429d062e1e960d2f649abd3631",
+    "status": "updated-for-migration",
+    "additional_locations": []
   },
   {
-    "destination": "packages/aiogram-sentinel/docs/api/keys-scopes.md",
     "source_repository": "aiogram-sentinel",
-    "source_path": "docs/api/keys-scopes.md"
+    "source_path": "SECURITY.md",
+    "source_sha256": "73d8d0c9881076d323dbea02c2c3ba79ed2e44cfb8175af7159af3d7b7d08594",
+    "destination": "packages/aiogram-sentinel/SECURITY.md",
+    "destination_sha256": "73d8d0c9881076d323dbea02c2c3ba79ed2e44cfb8175af7159af3d7b7d08594",
+    "status": "preserved",
+    "additional_locations": []
   },
   {
+    "source_repository": "aiogram-sentinel",
+    "source_path": "docs/ARCHITECTURE.md",
+    "source_sha256": "9af18bbfbdc8d0fc658023e144802d32e43f977b674103ad73f4576624ec9240",
+    "destination": "packages/aiogram-sentinel/docs/ARCHITECTURE.md",
+    "destination_sha256": "9af18bbfbdc8d0fc658023e144802d32e43f977b674103ad73f4576624ec9240",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-sentinel",
+    "source_path": "docs/ROADMAP.md",
+    "source_sha256": "762ee5e51140c58d58e51e83a46b64966e57177c543efc26496e1f18dbfb7728",
+    "destination": "packages/aiogram-sentinel/docs/ROADMAP.md",
+    "destination_sha256": "762ee5e51140c58d58e51e83a46b64966e57177c543efc26496e1f18dbfb7728",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-sentinel",
+    "source_path": "docs/TESTING.md",
+    "source_sha256": "f1687e4c5a2cdabfb53263e91fc628dccb1a80031ba0ccc2d051f8ae47f06c16",
+    "destination": "packages/aiogram-sentinel/docs/TESTING.md",
+    "destination_sha256": "f1687e4c5a2cdabfb53263e91fc628dccb1a80031ba0ccc2d051f8ae47f06c16",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-sentinel",
+    "source_path": "docs/api/core.md",
+    "source_sha256": "7891243ac6cada3062ac049b725d7ba326701b93c8f4d5f96065c924ca4a9d40",
     "destination": "packages/aiogram-sentinel/docs/api/core.md",
-    "source_repository": "aiogram-sentinel",
-    "source_path": "docs/api/core.md"
+    "destination_sha256": "7891243ac6cada3062ac049b725d7ba326701b93c8f4d5f96065c924ca4a9d40",
+    "status": "preserved",
+    "additional_locations": []
   },
   {
+    "source_repository": "aiogram-sentinel",
+    "source_path": "docs/api/keys-scopes.md",
+    "source_sha256": "4ae1d1d0b2a5200486e993031191ecffacfc30d9d2fbf488a18963194bb11bad",
+    "destination": "packages/aiogram-sentinel/docs/api/keys-scopes.md",
+    "destination_sha256": "4ae1d1d0b2a5200486e993031191ecffacfc30d9d2fbf488a18963194bb11bad",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-sentinel",
+    "source_path": "docs/api/policy-registry.md",
+    "source_sha256": "29186c6b8011bec78bd5eb7a6a980fee6a9adaf1198769d38239926f71421e9c",
     "destination": "packages/aiogram-sentinel/docs/api/policy-registry.md",
-    "source_repository": "aiogram-sentinel",
-    "source_path": "docs/api/policy-registry.md"
+    "destination_sha256": "29186c6b8011bec78bd5eb7a6a980fee6a9adaf1198769d38239926f71421e9c",
+    "status": "preserved",
+    "additional_locations": []
   },
   {
+    "source_repository": "aiogram-sentinel",
+    "source_path": "docs/api/storage.md",
+    "source_sha256": "3978553ca62c263f3d030b7a019351ce66f3b1bfcb1582e4ca43b8331a05d7b0",
+    "destination": "packages/aiogram-sentinel/docs/api/storage.md",
+    "destination_sha256": "3978553ca62c263f3d030b7a019351ce66f3b1bfcb1582e4ca43b8331a05d7b0",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-sentinel",
+    "source_path": "docs/application-integration.md",
+    "source_sha256": "45407bc06a930ec3637e5c656baaec97ee7d43dc871ea01c499bea3147df3c39",
+    "destination": "packages/aiogram-sentinel/docs/application-integration.md",
+    "destination_sha256": "45407bc06a930ec3637e5c656baaec97ee7d43dc871ea01c499bea3147df3c39",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-sentinel",
+    "source_path": "docs/configuration.md",
+    "source_sha256": "7134bda61df645e8a1d1d534a0a87ce4e78dc8d5c21a34372ad8b557e12d9973",
+    "destination": "packages/aiogram-sentinel/docs/configuration.md",
+    "destination_sha256": "7134bda61df645e8a1d1d534a0a87ce4e78dc8d5c21a34372ad8b557e12d9973",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-sentinel",
+    "source_path": "docs/error-handling.md",
+    "source_sha256": "858e69a05b038eb01afefc2bdfc3e1db1fa3ef449d37713066181aeb4375e94e",
+    "destination": "packages/aiogram-sentinel/docs/error-handling.md",
+    "destination_sha256": "858e69a05b038eb01afefc2bdfc3e1db1fa3ef449d37713066181aeb4375e94e",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-sentinel",
+    "source_path": "docs/faq.md",
+    "source_sha256": "e71197fddd38d844f0b5e180a6268fa0a812eb9589ab7d2576cc86365f174276",
+    "destination": "packages/aiogram-sentinel/docs/faq.md",
+    "destination_sha256": "e71197fddd38d844f0b5e180a6268fa0a812eb9589ab7d2576cc86365f174276",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-sentinel",
+    "source_path": "docs/index.md",
+    "source_sha256": "893fef61753c4e2d9bed016f4d94ee581cb0c2f460f18aaf6fa93a87ec1cd38c",
+    "destination": "packages/aiogram-sentinel/docs/index.md",
+    "destination_sha256": "893fef61753c4e2d9bed016f4d94ee581cb0c2f460f18aaf6fa93a87ec1cd38c",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-sentinel",
+    "source_path": "docs/installation.md",
+    "source_sha256": "0dd8d818e39da57092e9163d9329ba539f8684ba52ed6e961a07c9dc5bf9ad8e",
+    "destination": "packages/aiogram-sentinel/docs/installation.md",
+    "destination_sha256": "0dd8d818e39da57092e9163d9329ba539f8684ba52ed6e961a07c9dc5bf9ad8e",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-sentinel",
+    "source_path": "docs/migration-1.2.md",
+    "source_sha256": "32a2c4f8b8912626c4345fd857821f0021c7f8be356f4d357816fd179cd0e360",
+    "destination": "packages/aiogram-sentinel/docs/migration-1.2.md",
+    "destination_sha256": "32a2c4f8b8912626c4345fd857821f0021c7f8be356f4d357816fd179cd0e360",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-sentinel",
+    "source_path": "docs/native-engine.md",
+    "source_sha256": "8cc14a08b3ed6b0f1fd4746fd623da65c54d3c87e0df21172b4458810c567f5d",
+    "destination": "packages/aiogram-sentinel/docs/native-engine.md",
+    "destination_sha256": "8cc14a08b3ed6b0f1fd4746fd623da65c54d3c87e0df21172b4458810c567f5d",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-sentinel",
+    "source_path": "docs/performance.md",
+    "source_sha256": "414f626c5237a52c5b2a9265f3a494c1b30e27355516843aeb107b2cd9ab4721",
+    "destination": "packages/aiogram-sentinel/docs/performance.md",
+    "destination_sha256": "414f626c5237a52c5b2a9265f3a494c1b30e27355516843aeb107b2cd9ab4721",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-sentinel",
+    "source_path": "docs/quickstart.md",
+    "source_sha256": "4b6f2e35ae2dbaef4859c1a2be00262478d4c16fd06cf01ebfe66ca7ef9c5733",
+    "destination": "packages/aiogram-sentinel/docs/quickstart.md",
+    "destination_sha256": "4b6f2e35ae2dbaef4859c1a2be00262478d4c16fd06cf01ebfe66ca7ef9c5733",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-sentinel",
+    "source_path": "docs/release.md",
+    "source_sha256": "79a2d1c468237e71f841770227e21598a8f9898a5fc01f868732cdc34c7dba52",
+    "destination": "packages/aiogram-sentinel/docs/release.md",
+    "destination_sha256": "79a2d1c468237e71f841770227e21598a8f9898a5fc01f868732cdc34c7dba52",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-sentinel",
+    "source_path": "docs/releasing.md",
+    "source_sha256": "16364827b9e43532ead8368a907fdea5dd661c3f6ca36d002574dc6de5bcfe28",
+    "destination": "packages/aiogram-sentinel/docs/releasing.md",
+    "destination_sha256": "16364827b9e43532ead8368a907fdea5dd661c3f6ca36d002574dc6de5bcfe28",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-sentinel",
+    "source_path": "docs/troubleshooting.md",
+    "source_sha256": "1bde03a3bc790c29505c1788323c65ad2d143af56fab14a1cd6857c4c83ec366",
+    "destination": "packages/aiogram-sentinel/docs/troubleshooting.md",
+    "destination_sha256": "1bde03a3bc790c29505c1788323c65ad2d143af56fab14a1cd6857c4c83ec366",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-sentinel",
+    "source_path": "docs/tutorials/advanced-configuration.md",
+    "source_sha256": "ad709bfa3695aae4c3512e479d919313fc55921f5bb6a3677d4531a26c621fe9",
     "destination": "packages/aiogram-sentinel/docs/tutorials/advanced-configuration.md",
-    "source_repository": "aiogram-sentinel",
-    "source_path": "docs/tutorials/advanced-configuration.md"
+    "destination_sha256": "ad709bfa3695aae4c3512e479d919313fc55921f5bb6a3677d4531a26c621fe9",
+    "status": "preserved",
+    "additional_locations": []
   },
   {
-    "destination": "packages/aiogram-sentinel/docs/tutorials/policy-patterns.md",
     "source_repository": "aiogram-sentinel",
-    "source_path": "docs/tutorials/policy-patterns.md"
-  },
-  {
+    "source_path": "docs/tutorials/basic-protection.md",
+    "source_sha256": "d6aa0ed9c98bfa49ad6ebf383c2d3d094794496bfed97c3dc70848ecdfc9cf43",
     "destination": "packages/aiogram-sentinel/docs/tutorials/basic-protection.md",
-    "source_repository": "aiogram-sentinel",
-    "source_path": "docs/tutorials/basic-protection.md"
+    "destination_sha256": "d6aa0ed9c98bfa49ad6ebf383c2d3d094794496bfed97c3dc70848ecdfc9cf43",
+    "status": "preserved",
+    "additional_locations": []
   },
   {
-    "destination": "packages/aiogram-sentinel/docs/tutorials/redis-storage.md",
     "source_repository": "aiogram-sentinel",
-    "source_path": "docs/tutorials/redis-storage.md"
+    "source_path": "docs/tutorials/policy-patterns.md",
+    "source_sha256": "7c5c42553d0850a96e650dde9d2f567bc8487a7a66dd3fc65cd5690f85a620a1",
+    "destination": "packages/aiogram-sentinel/docs/tutorials/policy-patterns.md",
+    "destination_sha256": "7c5c42553d0850a96e650dde9d2f567bc8487a7a66dd3fc65cd5690f85a620a1",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-sentinel",
+    "source_path": "docs/tutorials/redis-storage.md",
+    "source_sha256": "c1ee2bfb4a65192cf86d8167824c9e258c1c1db5474afa40a61953e358c026cb",
+    "destination": "packages/aiogram-sentinel/docs/tutorials/redis-storage.md",
+    "destination_sha256": "c1ee2bfb4a65192cf86d8167824c9e258c1c1db5474afa40a61953e358c026cb",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-sentinel",
+    "source_path": "examples/README.md",
+    "source_sha256": "73d91007bf5cfaf569c1c94074288a6c82422792c058ed8097ace3fc073d14fe",
+    "destination": "packages/aiogram-sentinel/examples/README.md",
+    "destination_sha256": "73d91007bf5cfaf569c1c94074288a6c82422792c058ed8097ace3fc073d14fe",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-sentinel",
+    "source_path": "native/BENCHMARKS.md",
+    "source_sha256": "d324690e7d39744527c2687be024c81c2bd8da383d980d9f749e5625acb10617",
+    "destination": "packages/aiogram-sentinel/native/BENCHMARKS.md",
+    "destination_sha256": "d324690e7d39744527c2687be024c81c2bd8da383d980d9f749e5625acb10617",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-sentinel",
+    "source_path": "native/README.md",
+    "source_sha256": "b1c48aa3d672295668ab638589b4b0a594dff0d393f7c9a8321fd4d204f0c0d9",
+    "destination": "packages/aiogram-sentinel/native/README.md",
+    "destination_sha256": "3748ebcc867e99966d56b8f6e39995ff67562356fd96a07459baaed73b6d20d3",
+    "status": "updated-for-migration",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-sentinel",
+    "source_path": "reports/1.2.0-application-integration.md",
+    "source_sha256": "c56b11356aa3226dab43a6837b4417290abd760f6c8c6ba2bbd46b6fc2038a60",
+    "destination": "packages/aiogram-sentinel/reports/1.2.0-application-integration.md",
+    "destination_sha256": "c56b11356aa3226dab43a6837b4417290abd760f6c8c6ba2bbd46b6fc2038a60",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-sentinel",
+    "source_path": "reports/README.md",
+    "source_sha256": "d0eeae71de5846bc6f93be028725539d0e3d694db3f28c408ead1ee4b9db814b",
+    "destination": "packages/aiogram-sentinel/reports/README.md",
+    "destination_sha256": "d0eeae71de5846bc6f93be028725539d0e3d694db3f28c408ead1ee4b9db814b",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-sentinel",
+    "source_path": "reports/local-review-fixes.md",
+    "source_sha256": "ab81fe3f85eda00458fcceb732d2230bdcbc26f860ace6b99aa0c908f478023f",
+    "destination": "packages/aiogram-sentinel/reports/local-review-fixes.md",
+    "destination_sha256": "ab81fe3f85eda00458fcceb732d2230bdcbc26f860ace6b99aa0c908f478023f",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-sentinel",
+    "source_path": "reports/native-performance-development.md",
+    "source_sha256": "5aed2429c65303669d0120f04fcb7634b25a75296d04bb6faa0d623edea1b737",
+    "destination": "packages/aiogram-sentinel/reports/native-performance-development.md",
+    "destination_sha256": "5aed2429c65303669d0120f04fcb7634b25a75296d04bb6faa0d623edea1b737",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-sentinel",
+    "source_path": "reports/repository-conventions.md",
+    "source_sha256": "e4e1547bc46b532e348bdd554f6658c39b704aa6212a9e68d131565ff6bcd0eb",
+    "destination": "packages/aiogram-sentinel/reports/repository-conventions.md",
+    "destination_sha256": "e4e1547bc46b532e348bdd554f6658c39b704aa6212a9e68d131565ff6bcd0eb",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-sentinel",
+    "source_path": "tools/README.md",
+    "source_sha256": "33668560fed89bd47740316fdc3c7530b36772dada8f3b1ff55d817a277b043f",
+    "destination": "packages/aiogram-sentinel/tools/README.md",
+    "destination_sha256": "33668560fed89bd47740316fdc3c7530b36772dada8f3b1ff55d817a277b043f",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": ".github/PULL_REQUEST_TEMPLATE.md",
+    "source_sha256": "a4f1608265ac40a8454271bc52bd4a03d766de5d0172943bab556ad52bded95b",
+    "destination": "packages/aiogram-cmds/.github/PULL_REQUEST_TEMPLATE.md",
+    "destination_sha256": "a4f1608265ac40a8454271bc52bd4a03d766de5d0172943bab556ad52bded95b",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "CHANGELOG.md",
+    "source_sha256": "2ea730658708944741d137e14bc7594f6b747796cf08bf34fd2da433240abe65",
+    "destination": "packages/aiogram-cmds/CHANGELOG.md",
+    "destination_sha256": "3458cd755b3c94e3a2f5bb6615d29c47f30592437873a74aa2aa789eb2347de2",
+    "status": "updated-for-migration",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "CHANGES/README.md",
+    "source_sha256": "d364f831ec04369667707242e7ab9d8d33e8952719fc2b14fbe1c7f8ddae4e8e",
+    "destination": "packages/aiogram-cmds/CHANGES/README.md",
+    "destination_sha256": "d364f831ec04369667707242e7ab9d8d33e8952719fc2b14fbe1c7f8ddae4e8e",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "CODE_OF_CONDUCT.md",
+    "source_sha256": "266100d370782c3845e7b8d46af31e1e63ef733681f80e96e63d33dc130301d7",
+    "destination": "packages/aiogram-cmds/CODE_OF_CONDUCT.md",
+    "destination_sha256": "266100d370782c3845e7b8d46af31e1e63ef733681f80e96e63d33dc130301d7",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "CONTRIBUTING.md",
+    "source_sha256": "5820cbf56cab0340dc1e4970fd80c0ac08099ecf6b48a73e863aeb97f1bbf303",
+    "destination": "packages/aiogram-cmds/CONTRIBUTING.md",
+    "destination_sha256": "5820cbf56cab0340dc1e4970fd80c0ac08099ecf6b48a73e863aeb97f1bbf303",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "DEPLOYMENT.md",
+    "source_sha256": "cfa89c5ef14a836a381a826a8a11e791ff044054d6c8d80adafc776e1a9a4712",
+    "destination": "packages/aiogram-cmds/DEPLOYMENT.md",
+    "destination_sha256": "cfa89c5ef14a836a381a826a8a11e791ff044054d6c8d80adafc776e1a9a4712",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "README.md",
+    "source_sha256": "0e8991c6c929ce9d5bf383e40ebf673d4909af8f84add31c57b0eda8aa986a24",
+    "destination": "packages/aiogram-cmds/README.md",
+    "destination_sha256": "1935fa87bc06daacdebb1a1dff7e20de6434c0175291de94e56fa19d7225922e",
+    "status": "updated-for-migration",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "SECURITY.md",
+    "source_sha256": "a795c3a14836e7cc88ada1bf0392d4b258cb9a2d70e85a7561dab8867fae8c56",
+    "destination": "packages/aiogram-cmds/SECURITY.md",
+    "destination_sha256": "a795c3a14836e7cc88ada1bf0392d4b258cb9a2d70e85a7561dab8867fae8c56",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "docs/ARCHITECTURE.md",
+    "source_sha256": "89a9a4b6eddacb4b6c525b7b828405017be40c0394739fb0265f3be1ce4d144c",
+    "destination": "packages/aiogram-cmds/docs/ARCHITECTURE.md",
+    "destination_sha256": "89a9a4b6eddacb4b6c525b7b828405017be40c0394739fb0265f3be1ce4d144c",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "docs/ROADMAP.md",
+    "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "destination": "packages/aiogram-cmds/docs/ROADMAP.md",
+    "destination_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "docs/TESTING.md",
+    "source_sha256": "95c2bcbb4a84e986943acd26e8c9f8922b33cc6c8941a40843114d4be44f2628",
+    "destination": "packages/aiogram-cmds/docs/TESTING.md",
+    "destination_sha256": "95c2bcbb4a84e986943acd26e8c9f8922b33cc6c8941a40843114d4be44f2628",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "docs/api/configuration.md",
+    "source_sha256": "0d8d74edd389f5dc93d7f534b5d49ea32d751cb16e5cbfa9a5a0bbb325b2b26a",
+    "destination": "packages/aiogram-cmds/docs/api/configuration.md",
+    "destination_sha256": "0d8d74edd389f5dc93d7f534b5d49ea32d751cb16e5cbfa9a5a0bbb325b2b26a",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "docs/api/core.md",
+    "source_sha256": "fa78b1b4f23f53b1d89bd6ee445ee797add2ef8f60302e61c5969930bbf55a59",
+    "destination": "packages/aiogram-cmds/docs/api/core.md",
+    "destination_sha256": "fa78b1b4f23f53b1d89bd6ee445ee797add2ef8f60302e61c5969930bbf55a59",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "docs/api/translator.md",
+    "source_sha256": "6f32206a3281ecf72afddb67c8d4b9c17d946b1ba708807f15f0e56b2456d6a6",
+    "destination": "packages/aiogram-cmds/docs/api/translator.md",
+    "destination_sha256": "6f32206a3281ecf72afddb67c8d4b9c17d946b1ba708807f15f0e56b2456d6a6",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "docs/command-registration-guide.md",
+    "source_sha256": "61b6c4e5732cf5c33f3f9ba68611c4ed22270203ebc444df226b65c7ada07f19",
+    "destination": "packages/aiogram-cmds/docs/command-registration-guide.md",
+    "destination_sha256": "61b6c4e5732cf5c33f3f9ba68611c4ed22270203ebc444df226b65c7ada07f19",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "docs/compiled-profiles.md",
+    "source_sha256": "55e9f6118364e258ccd3735ecae5d9a72bdc8d7d73a6b20c3b23ed2291db6a19",
+    "destination": "packages/aiogram-cmds/docs/compiled-profiles.md",
+    "destination_sha256": "55e9f6118364e258ccd3735ecae5d9a72bdc8d7d73a6b20c3b23ed2291db6a19",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "docs/configuration.md",
+    "source_sha256": "dc6479a2d317725b59693e36d240428055dce7c79d9cf9fd56eb3a817c6cf24e",
+    "destination": "packages/aiogram-cmds/docs/configuration.md",
+    "destination_sha256": "dc6479a2d317725b59693e36d240428055dce7c79d9cf9fd56eb3a817c6cf24e",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "docs/deployment-guide.md",
+    "source_sha256": "9d02c31ea13c62b5dc76bc5e8a63e4274fe4d197a224ba0c8f7c7971139b1472",
+    "destination": "packages/aiogram-cmds/docs/deployment-guide.md",
+    "destination_sha256": "9d02c31ea13c62b5dc76bc5e8a63e4274fe4d197a224ba0c8f7c7971139b1472",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "docs/faq.md",
+    "source_sha256": "878dda5ad52bc1d51b62931862f9cb5e48d4ba6205eda407a814f04543c80df5",
+    "destination": "packages/aiogram-cmds/docs/faq.md",
+    "destination_sha256": "878dda5ad52bc1d51b62931862f9cb5e48d4ba6205eda407a814f04543c80df5",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "docs/i18n.md",
+    "source_sha256": "b0199bc490f1db8b41d79845216b39e7d6065231ea58aeac6f068b194d67f1bc",
+    "destination": "packages/aiogram-cmds/docs/i18n.md",
+    "destination_sha256": "b0199bc490f1db8b41d79845216b39e7d6065231ea58aeac6f068b194d67f1bc",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "docs/index.md",
+    "source_sha256": "181c963e3711c5106aa80b4ca7442ebadfe666439c45a23f88b487520ca0db7a",
+    "destination": "packages/aiogram-cmds/docs/index.md",
+    "destination_sha256": "181c963e3711c5106aa80b4ca7442ebadfe666439c45a23f88b487520ca0db7a",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "docs/installation.md",
+    "source_sha256": "ce0d5dc3238468ad6bc0c6c7e817a9f82ffacbcd6b8954697f8661dba42cf432",
+    "destination": "packages/aiogram-cmds/docs/installation.md",
+    "destination_sha256": "ce0d5dc3238468ad6bc0c6c7e817a9f82ffacbcd6b8954697f8661dba42cf432",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "docs/migration-0.2.md",
+    "source_sha256": "b4383236de639c207e51f8ef4e626d06f7e83edba834794571a84805afc860d3",
+    "destination": "packages/aiogram-cmds/docs/migration-0.2.md",
+    "destination_sha256": "b4383236de639c207e51f8ef4e626d06f7e83edba834794571a84805afc860d3",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "docs/performance.md",
+    "source_sha256": "9b6b13cb30e07ce481e0d1b3fc89281d1b8cd431151170ed3cf9ca436003f8f2",
+    "destination": "packages/aiogram-cmds/docs/performance.md",
+    "destination_sha256": "9b6b13cb30e07ce481e0d1b3fc89281d1b8cd431151170ed3cf9ca436003f8f2",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "docs/quickstart.md",
+    "source_sha256": "a92f8efad2f8bbcaf5357e7065d0f38ac8a12e5b85223f161d8a75f2d53a53a4",
+    "destination": "packages/aiogram-cmds/docs/quickstart.md",
+    "destination_sha256": "a92f8efad2f8bbcaf5357e7065d0f38ac8a12e5b85223f161d8a75f2d53a53a4",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "docs/release.md",
+    "source_sha256": "7085c0aed7a7152c8b60bd592f407949725bd1c2fe3d2ec500c2ae2e37b9d2a9",
+    "destination": "packages/aiogram-cmds/docs/release.md",
+    "destination_sha256": "7085c0aed7a7152c8b60bd592f407949725bd1c2fe3d2ec500c2ae2e37b9d2a9",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "docs/releasing.md",
+    "source_sha256": "7ec72d85bad835a7a414e9542e537af168b020545d4cbaa3973fb3fc1b9a464e",
+    "destination": "packages/aiogram-cmds/docs/releasing.md",
+    "destination_sha256": "7ec72d85bad835a7a414e9542e537af168b020545d4cbaa3973fb3fc1b9a464e",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "docs/troubleshooting.md",
+    "source_sha256": "10ab9a94e7bcaaf8397bd00fb4fe22ff67ce3ee852c9f54bd03359fc4932b239",
+    "destination": "packages/aiogram-cmds/docs/troubleshooting.md",
+    "destination_sha256": "10ab9a94e7bcaaf8397bd00fb4fe22ff67ce3ee852c9f54bd03359fc4932b239",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "docs/tutorials/advanced-profiles.md",
+    "source_sha256": "f1b8239337e4c529694133f0024e436e01e665567296f9443f72632370ee9d5b",
+    "destination": "packages/aiogram-cmds/docs/tutorials/advanced-profiles.md",
+    "destination_sha256": "f1b8239337e4c529694133f0024e436e01e665567296f9443f72632370ee9d5b",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "docs/tutorials/basic-setup.md",
+    "source_sha256": "1bcbc6fd62c2f211cccad9d7ffb6fc88dbea7b1d828fec53f8febda3f47a33ad",
+    "destination": "packages/aiogram-cmds/docs/tutorials/basic-setup.md",
+    "destination_sha256": "1bcbc6fd62c2f211cccad9d7ffb6fc88dbea7b1d828fec53f8febda3f47a33ad",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "docs/tutorials/dynamic-commands.md",
+    "source_sha256": "5620a49d5b73aed2ee771e035758459e41c4fabee52b600bed5a2581ee038ca0",
+    "destination": "packages/aiogram-cmds/docs/tutorials/dynamic-commands.md",
+    "destination_sha256": "5620a49d5b73aed2ee771e035758459e41c4fabee52b600bed5a2581ee038ca0",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "docs/tutorials/i18n-integration.md",
+    "source_sha256": "2064f3bd216f54b8ecd74ecf29555dcb2af2657bd6a1e410a646f6da0700670b",
+    "destination": "packages/aiogram-cmds/docs/tutorials/i18n-integration.md",
+    "destination_sha256": "2064f3bd216f54b8ecd74ecf29555dcb2af2657bd6a1e410a646f6da0700670b",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "docs/verification.md",
+    "source_sha256": "3b2994d1f32c9954e79e54c200029b31dbdeb86dc549477e334f610b5c523e33",
+    "destination": "packages/aiogram-cmds/docs/verification.md",
+    "destination_sha256": "3b2994d1f32c9954e79e54c200029b31dbdeb86dc549477e334f610b5c523e33",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "examples/README.md",
+    "source_sha256": "6db0f0eec760f66d67e28ba2433e4239cdbc91d495e8075aaa3829dbbd2a5177",
+    "destination": "packages/aiogram-cmds/examples/README.md",
+    "destination_sha256": "6db0f0eec760f66d67e28ba2433e4239cdbc91d495e8075aaa3829dbbd2a5177",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "native/BENCHMARKS.md",
+    "source_sha256": "9d4fa5ccbffc6fbf70eb7ee04b08d6d08a061232c44c13620cc353241ff22566",
+    "destination": "packages/aiogram-cmds/native/BENCHMARKS.md",
+    "destination_sha256": "9d4fa5ccbffc6fbf70eb7ee04b08d6d08a061232c44c13620cc353241ff22566",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "native/README.md",
+    "source_sha256": "e14eb5db0d3964ca14006806834efe2bacdb0afca3e4c71b6e1460ff3f003cb0",
+    "destination": "packages/aiogram-cmds/native/README.md",
+    "destination_sha256": "e14eb5db0d3964ca14006806834efe2bacdb0afca3e4c71b6e1460ff3f003cb0",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "reports/README.md",
+    "source_sha256": "7f1784a38c36ea56a7d40bb9305abae47667631f398d5ba91c8e87038235b300",
+    "destination": "packages/aiogram-cmds/reports/README.md",
+    "destination_sha256": "7f1784a38c36ea56a7d40bb9305abae47667631f398d5ba91c8e87038235b300",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "reports/application-profiles-0.2.md",
+    "source_sha256": "810a0961117e2690042850385b1917d1f5e7b3fe7dfa0ec4ddecaff41c2acd2c",
+    "destination": "packages/aiogram-cmds/reports/application-profiles-0.2.md",
+    "destination_sha256": "810a0961117e2690042850385b1917d1f5e7b3fe7dfa0ec4ddecaff41c2acd2c",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "reports/implementation/0.3.0-performance-rust.md",
+    "source_sha256": "870d4828d8191697a199565a8d8c47d185061dacae0ec383f6ed4755ecadf2b5",
+    "destination": "packages/aiogram-cmds/reports/implementation/0.3.0-performance-rust.md",
+    "destination_sha256": "870d4828d8191697a199565a8d8c47d185061dacae0ec383f6ed4755ecadf2b5",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "reports/shared-repository-conventions.md",
+    "source_sha256": "3b4ceb42b230a7ed1e135af8d803682bdeae437eaf47dce1a7ed09fe5886e5df",
+    "destination": "packages/aiogram-cmds/reports/shared-repository-conventions.md",
+    "destination_sha256": "3b4ceb42b230a7ed1e135af8d803682bdeae437eaf47dce1a7ed09fe5886e5df",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "source_path": "tools/README.md",
+    "source_sha256": "e4e0cc08aa6f5d12de9b578f04a43c5fc44a9701c6fe27856e00c1d967f5d529",
+    "destination": "packages/aiogram-cmds/tools/README.md",
+    "destination_sha256": "e4e0cc08aa6f5d12de9b578f04a43c5fc44a9701c6fe27856e00c1d967f5d529",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-nav",
+    "source_path": ".github/pull_request_template.md",
+    "source_sha256": "c2e269af463803c86a9d248f4e51892ebb44e47c9614a8450ae07819b4742bb2",
+    "destination": "packages/aiogram-nav/.github/pull_request_template.md",
+    "destination_sha256": "c2e269af463803c86a9d248f4e51892ebb44e47c9614a8450ae07819b4742bb2",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-nav",
+    "source_path": "CHANGELOG.md",
+    "source_sha256": "00ae84b450c699feb2b4aa8ffdc96e571cff99640e33fe07da6030718732207c",
+    "destination": "packages/aiogram-nav/CHANGELOG.md",
+    "destination_sha256": "e4dd4f154326a27118b7c04350e760576e4af9c6f638c39a9303e6379ff5033b",
+    "status": "updated-for-migration",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-nav",
+    "source_path": "CHANGES/README.rst",
+    "source_sha256": "d1f21d8541fd82c56bb080985bd223976ca1e382550215a408742c23e1648ac3",
+    "destination": "packages/aiogram-nav/CHANGES/README.rst",
+    "destination_sha256": "d1f21d8541fd82c56bb080985bd223976ca1e382550215a408742c23e1648ac3",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-nav",
+    "source_path": "CODE_OF_CONDUCT.md",
+    "source_sha256": "28b63a9ad0885a90f8a2e0373dc12a95a66f4f3b5ae5263c6b37e052df6db857",
+    "destination": "packages/aiogram-nav/CODE_OF_CONDUCT.md",
+    "destination_sha256": "28b63a9ad0885a90f8a2e0373dc12a95a66f4f3b5ae5263c6b37e052df6db857",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-nav",
+    "source_path": "CONTRIBUTING.md",
+    "source_sha256": "c1b6fae35f4fa527cb1697a7b2911e89b594a2796e827a0b549e57b26e25bb64",
+    "destination": "packages/aiogram-nav/CONTRIBUTING.md",
+    "destination_sha256": "c1b6fae35f4fa527cb1697a7b2911e89b594a2796e827a0b549e57b26e25bb64",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-nav",
+    "source_path": "README.md",
+    "source_sha256": "329c7233675ecce990f6d040532d85e24356bc44d88b94c7a69406a205154737",
+    "destination": "packages/aiogram-nav/README.md",
+    "destination_sha256": "8ad28d6c2a014418cb5f8a80c8c2751dba497e9fc025403e4bb663c87d35d227",
+    "status": "updated-for-migration",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-nav",
+    "source_path": "SECURITY.md",
+    "source_sha256": "2e92f72c4e2f35edbc79fc1290db40a87eae207719aa61cd31068a271ab1837a",
+    "destination": "packages/aiogram-nav/SECURITY.md",
+    "destination_sha256": "2e92f72c4e2f35edbc79fc1290db40a87eae207719aa61cd31068a271ab1837a",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-nav",
+    "source_path": "docs/application-integration.md",
+    "source_sha256": "94af8252b8a6e368989f8b025baa2ebbfa558b4e11c42cff9392103b8f205e6f",
+    "destination": "packages/aiogram-nav/docs/application-integration.md",
+    "destination_sha256": "94af8252b8a6e368989f8b025baa2ebbfa558b4e11c42cff9392103b8f205e6f",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-nav",
+    "source_path": "docs/concepts.md",
+    "source_sha256": "d4cd5a144b07b60c733fba0b2bfc93caad0e851536b647f2dded26c069d58a55",
+    "destination": "packages/aiogram-nav/docs/concepts.md",
+    "destination_sha256": "d4cd5a144b07b60c733fba0b2bfc93caad0e851536b647f2dded26c069d58a55",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-nav",
+    "source_path": "docs/idle-integration.md",
+    "source_sha256": "d112644f187f9096ee04b4baa1f5b96670d6960c6bc74b0f53cc5b2c37035877",
+    "destination": "packages/aiogram-nav/docs/idle-integration.md",
+    "destination_sha256": "d112644f187f9096ee04b4baa1f5b96670d6960c6bc74b0f53cc5b2c37035877",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-nav",
+    "source_path": "docs/index.md",
+    "source_sha256": "442b7b108481b4f36e48913f5bfe45cb7940803eb777379458c1d05a60ab0d57",
+    "destination": "packages/aiogram-nav/docs/index.md",
+    "destination_sha256": "442b7b108481b4f36e48913f5bfe45cb7940803eb777379458c1d05a60ab0d57",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-nav",
+    "source_path": "docs/memory-audit.md",
+    "source_sha256": "c8abd81dd3689c7ebd6b77d83369127d3e997f81dcf4f7267d90b4e029f604ef",
+    "destination": "packages/aiogram-nav/docs/memory-audit.md",
+    "destination_sha256": "c8abd81dd3689c7ebd6b77d83369127d3e997f81dcf4f7267d90b4e029f604ef",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-nav",
+    "source_path": "docs/migration.md",
+    "source_sha256": "c92603775947cfa9871a4bba03d3febc46d7edf2952eeabc3a5b8ccc6d464ecf",
+    "destination": "packages/aiogram-nav/docs/migration.md",
+    "destination_sha256": "c92603775947cfa9871a4bba03d3febc46d7edf2952eeabc3a5b8ccc6d464ecf",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-nav",
+    "source_path": "docs/performance-and-engines.md",
+    "source_sha256": "36ce21f435b56fb1607d288c95e342a5875f8ccdbcecbb773e251d3906e3045d",
+    "destination": "packages/aiogram-nav/docs/performance-and-engines.md",
+    "destination_sha256": "36ce21f435b56fb1607d288c95e342a5875f8ccdbcecbb773e251d3906e3045d",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-nav",
+    "source_path": "docs/public-api.md",
+    "source_sha256": "a9d92d844483daeaa7b58a59082513503a85af408a0839d68f1dd454c47862b5",
+    "destination": "packages/aiogram-nav/docs/public-api.md",
+    "destination_sha256": "a9d92d844483daeaa7b58a59082513503a85af408a0839d68f1dd454c47862b5",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-nav",
+    "source_path": "docs/quickstart.md",
+    "source_sha256": "2b7db5412be1c84933ff0e20c9d488fbdbf7b8dc6d06cc2bb3bb19fe183d61d0",
+    "destination": "packages/aiogram-nav/docs/quickstart.md",
+    "destination_sha256": "2b7db5412be1c84933ff0e20c9d488fbdbf7b8dc6d06cc2bb3bb19fe183d61d0",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-nav",
+    "source_path": "docs/redis-audit.md",
+    "source_sha256": "42b0244f587780c3d93b7892e758fa462224f49c490b9da01f19b9b8e57b7957",
+    "destination": "packages/aiogram-nav/docs/redis-audit.md",
+    "destination_sha256": "42b0244f587780c3d93b7892e758fa462224f49c490b9da01f19b9b8e57b7957",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-nav",
+    "source_path": "docs/redis.md",
+    "source_sha256": "8b1a17dac608ab65c7300ee93675385fa31c36cdd9112767df6075144d500b82",
+    "destination": "packages/aiogram-nav/docs/redis.md",
+    "destination_sha256": "8b1a17dac608ab65c7300ee93675385fa31c36cdd9112767df6075144d500b82",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-nav",
+    "source_path": "docs/releasing.md",
+    "source_sha256": "c3ea91ef5aefdaa2f2df6aaacedd2c7afeac564f8090c7d3aea12cf50b3bc116",
+    "destination": "packages/aiogram-nav/docs/releasing.md",
+    "destination_sha256": "c3ea91ef5aefdaa2f2df6aaacedd2c7afeac564f8090c7d3aea12cf50b3bc116",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-nav",
+    "source_path": "docs/security.md",
+    "source_sha256": "4493c32126793bbf481cd4f9c304fa297fefa372ef22e36bdde9d84fc6cee86f",
+    "destination": "packages/aiogram-nav/docs/security.md",
+    "destination_sha256": "4493c32126793bbf481cd4f9c304fa297fefa372ef22e36bdde9d84fc6cee86f",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-nav",
+    "source_path": "docs/storage.md",
+    "source_sha256": "35ec0108cef91f671e24ce2d1ea1451db732ad5a0bacb8ceb13aa644b7135e2a",
+    "destination": "packages/aiogram-nav/docs/storage.md",
+    "destination_sha256": "35ec0108cef91f671e24ce2d1ea1451db732ad5a0bacb8ceb13aa644b7135e2a",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-nav",
+    "source_path": "docs/verification.md",
+    "source_sha256": "d3fe2bffb33789efb9d94302ce5684e2ba293892bff983b2a07d603d47d4a967",
+    "destination": "packages/aiogram-nav/docs/verification.md",
+    "destination_sha256": "d3fe2bffb33789efb9d94302ce5684e2ba293892bff983b2a07d603d47d4a967",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-nav",
+    "source_path": "native/BENCHMARKS.md",
+    "source_sha256": "9afc096a318710bcd62a67a31ab736816ed1fc60f1edbb335499646640810095",
+    "destination": "packages/aiogram-nav/native/BENCHMARKS.md",
+    "destination_sha256": "9afc096a318710bcd62a67a31ab736816ed1fc60f1edbb335499646640810095",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-nav",
+    "source_path": "native/README.md",
+    "source_sha256": "6c4ffe339ca8caf56c803f3eaf155a86ebe599824a93a55cb282162543ddbbfe",
+    "destination": "packages/aiogram-nav/native/README.md",
+    "destination_sha256": "85d1f0f7c9cae8f65d0f86d89409d8849d084e217509726ce9483f8452122e6f",
+    "status": "updated-for-migration",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-nav",
+    "source_path": "reports/README.md",
+    "source_sha256": "65322c58d0dceef7d2154aefe9b29567d39edc0880974538492b1137f663045e",
+    "destination": "packages/aiogram-nav/reports/README.md",
+    "destination_sha256": "65322c58d0dceef7d2154aefe9b29567d39edc0880974538492b1137f663045e",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-nav",
+    "source_path": "reports/application-ownership-0.2.0.md",
+    "source_sha256": "cd75f19f7944e1e61456b89dfe2ca1c67ad90ca93c17bf1375227d0aa9a71ace",
+    "destination": "packages/aiogram-nav/reports/application-ownership-0.2.0.md",
+    "destination_sha256": "cd75f19f7944e1e61456b89dfe2ca1c67ad90ca93c17bf1375227d0aa9a71ace",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-nav",
+    "source_path": "reports/performance-core-0.3.0.md",
+    "source_sha256": "b88ce147667928d43583c1605a267373f06cdfa3ddcc7434bfc384793c0e301b",
+    "destination": "packages/aiogram-nav/reports/performance-core-0.3.0.md",
+    "destination_sha256": "b88ce147667928d43583c1605a267373f06cdfa3ddcc7434bfc384793c0e301b",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-nav",
+    "source_path": "reports/standardization.md",
+    "source_sha256": "a8c378b0fcfc5730e6115560c62d44cd9af111d9cc8bfbaa456300a609534b75",
+    "destination": "packages/aiogram-nav/reports/standardization.md",
+    "destination_sha256": "a8c378b0fcfc5730e6115560c62d44cd9af111d9cc8bfbaa456300a609534b75",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-nav",
+    "source_path": "tools/README.md",
+    "source_sha256": "43f46ab1d8b544a59435469a7581aa2d12ae22b83890978b2b461af19390d74f",
+    "destination": "packages/aiogram-nav/tools/README.md",
+    "destination_sha256": "43f46ab1d8b544a59435469a7581aa2d12ae22b83890978b2b461af19390d74f",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-idle",
+    "source_path": ".github/PULL_REQUEST_TEMPLATE.md",
+    "source_sha256": "1c53d0bc747ecb02b9b64d87c008f89781bbac57e2aaee0821e8351a318e18c2",
+    "destination": "packages/aiogram-idle/.github/PULL_REQUEST_TEMPLATE.md",
+    "destination_sha256": "1c53d0bc747ecb02b9b64d87c008f89781bbac57e2aaee0821e8351a318e18c2",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-idle",
+    "source_path": "CHANGELOG.md",
+    "source_sha256": "4add8908711a5266941e11463d14c661fc0745c9bbc7ab2567339ac79cac2ff2",
+    "destination": "packages/aiogram-idle/CHANGELOG.md",
+    "destination_sha256": "3fb017b932cb39dd49ba2834b87f17fd948d60b60121f40e220dadc847cf90ca",
+    "status": "updated-for-migration",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-idle",
+    "source_path": "CHANGES/README.md",
+    "source_sha256": "b7bdc74661b64382db9e158d27568774085369feb27dda8c801f05a1b205d9fb",
+    "destination": "packages/aiogram-idle/CHANGES/README.md",
+    "destination_sha256": "b7bdc74661b64382db9e158d27568774085369feb27dda8c801f05a1b205d9fb",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-idle",
+    "source_path": "CODE_OF_CONDUCT.md",
+    "source_sha256": "de01fb5b762a2adfc5259bec4c82a15cb8bfa3b7254713637714b4d2d781b804",
+    "destination": "packages/aiogram-idle/CODE_OF_CONDUCT.md",
+    "destination_sha256": "de01fb5b762a2adfc5259bec4c82a15cb8bfa3b7254713637714b4d2d781b804",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-idle",
+    "source_path": "CONTRIBUTING.md",
+    "source_sha256": "9f048c6a8fffa97aeeac7624304c6beec1f8f73c83c60dab7e8411aa06c16d5e",
+    "destination": "packages/aiogram-idle/CONTRIBUTING.md",
+    "destination_sha256": "9f048c6a8fffa97aeeac7624304c6beec1f8f73c83c60dab7e8411aa06c16d5e",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-idle",
+    "source_path": "README.md",
+    "source_sha256": "fddcb7abe28bb6e89718b620c5b32a5589030727da678493f5594e0af769ee69",
+    "destination": "packages/aiogram-idle/README.md",
+    "destination_sha256": "46174e1f28c1a9b6f6d8c4080f87879d5c1c5caccdcb6691200294294bb3c293",
+    "status": "updated-for-migration",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-idle",
+    "source_path": "SECURITY.md",
+    "source_sha256": "b0ad1141ecb4686518964a4a718f4c30830d08a00bc23c986bde31beee189f8b",
+    "destination": "packages/aiogram-idle/SECURITY.md",
+    "destination_sha256": "b0ad1141ecb4686518964a4a718f4c30830d08a00bc23c986bde31beee189f8b",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-idle",
+    "source_path": "benchmarks/README.md",
+    "source_sha256": "1442f09fb8f8e575254190127f5c61db2c455b8088d022119b643df645a5a6e1",
+    "destination": "packages/aiogram-idle/benchmarks/README.md",
+    "destination_sha256": "1442f09fb8f8e575254190127f5c61db2c455b8088d022119b643df645a5a6e1",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-idle",
+    "source_path": "docs/api.md",
+    "source_sha256": "68f1da59cc608f7a41c0b3139a5aeadb226eb801af4923bc29acc668318c6e06",
+    "destination": "packages/aiogram-idle/docs/api.md",
+    "destination_sha256": "68f1da59cc608f7a41c0b3139a5aeadb226eb801af4923bc29acc668318c6e06",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-idle",
+    "source_path": "docs/application-integration.md",
+    "source_sha256": "03c9b80eac3c72a881906ecf3eb527ed67b8c317c646f027d22a669e4b265666",
+    "destination": "packages/aiogram-idle/docs/application-integration.md",
+    "destination_sha256": "03c9b80eac3c72a881906ecf3eb527ed67b8c317c646f027d22a669e4b265666",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-idle",
+    "source_path": "docs/architecture.md",
+    "source_sha256": "66480eebade07d32189977694fb4064b8b136524f65969936ebe88b34d6ca694",
+    "destination": "packages/aiogram-idle/docs/architecture.md",
+    "destination_sha256": "66480eebade07d32189977694fb4064b8b136524f65969936ebe88b34d6ca694",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-idle",
+    "source_path": "docs/audit.md",
+    "source_sha256": "ef5e2cca498e6ed60d22ddc9538146bea61fb83d0a79b4ce756c7c2c130b36ae",
+    "destination": "packages/aiogram-idle/docs/audit.md",
+    "destination_sha256": "ef5e2cca498e6ed60d22ddc9538146bea61fb83d0a79b4ce756c7c2c130b36ae",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-idle",
+    "source_path": "docs/index.md",
+    "source_sha256": "53bb327e60d5cd874438c8314228b541e7d6b498ea038300a9259f68c69c7280",
+    "destination": "packages/aiogram-idle/docs/index.md",
+    "destination_sha256": "53bb327e60d5cd874438c8314228b541e7d6b498ea038300a9259f68c69c7280",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-idle",
+    "source_path": "docs/installation.md",
+    "source_sha256": "c45d07efdfdd70b9aa6af9cc03101ad31de58e834bb9e17d6e937ef7ab5366fd",
+    "destination": "packages/aiogram-idle/docs/installation.md",
+    "destination_sha256": "c45d07efdfdd70b9aa6af9cc03101ad31de58e834bb9e17d6e937ef7ab5366fd",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-idle",
+    "source_path": "docs/migration-0.2.md",
+    "source_sha256": "17605c536292022b5551d1ecaaabbaf482b927e84edd52f753297f11693d06e6",
+    "destination": "packages/aiogram-idle/docs/migration-0.2.md",
+    "destination_sha256": "17605c536292022b5551d1ecaaabbaf482b927e84edd52f753297f11693d06e6",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-idle",
+    "source_path": "docs/migration-0.3.md",
+    "source_sha256": "f1ea58e0078ab78ecf728211748fc4e2ea8d28061636744e58a0554c826bdeca",
+    "destination": "packages/aiogram-idle/docs/migration-0.3.md",
+    "destination_sha256": "f1ea58e0078ab78ecf728211748fc4e2ea8d28061636744e58a0554c826bdeca",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-idle",
+    "source_path": "docs/navigation.md",
+    "source_sha256": "2fe66ea0bddcf13d5b19db827e7076f2405c76031c1280a3729a2c95fad8fb6e",
+    "destination": "packages/aiogram-idle/docs/navigation.md",
+    "destination_sha256": "2fe66ea0bddcf13d5b19db827e7076f2405c76031c1280a3729a2c95fad8fb6e",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-idle",
+    "source_path": "docs/quickstart.md",
+    "source_sha256": "3d3f01aa8b3dfaa636c7df48b5dec9a9ba2c25d44c2847d7c28b8ff875e41292",
+    "destination": "packages/aiogram-idle/docs/quickstart.md",
+    "destination_sha256": "3d3f01aa8b3dfaa636c7df48b5dec9a9ba2c25d44c2847d7c28b8ff875e41292",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-idle",
+    "source_path": "docs/recovery.md",
+    "source_sha256": "e71a07c7d3a4951dcb7b07fe3296c8a3d517922baf577ad8a0d732f3988da5ce",
+    "destination": "packages/aiogram-idle/docs/recovery.md",
+    "destination_sha256": "e71a07c7d3a4951dcb7b07fe3296c8a3d517922baf577ad8a0d732f3988da5ce",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-idle",
+    "source_path": "docs/redis-audit.md",
+    "source_sha256": "91d0329e31b3fab5a7624429381bae76d18658f4d293db30d33d3fe0cd1539aa",
+    "destination": "packages/aiogram-idle/docs/redis-audit.md",
+    "destination_sha256": "91d0329e31b3fab5a7624429381bae76d18658f4d293db30d33d3fe0cd1539aa",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-idle",
+    "source_path": "docs/redis.md",
+    "source_sha256": "e954884b84f8f45233b6bc95d62608a0a4ff5c1b335ab6b122e8816b069ca4f6",
+    "destination": "packages/aiogram-idle/docs/redis.md",
+    "destination_sha256": "e954884b84f8f45233b6bc95d62608a0a4ff5c1b335ab6b122e8816b069ca4f6",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-idle",
+    "source_path": "docs/releasing.md",
+    "source_sha256": "a55a6835e75616d1893eeaa4d26e20724f1e03ecefc70a8f0113bc868b314326",
+    "destination": "packages/aiogram-idle/docs/releasing.md",
+    "destination_sha256": "a55a6835e75616d1893eeaa4d26e20724f1e03ecefc70a8f0113bc868b314326",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-idle",
+    "source_path": "docs/standalone.md",
+    "source_sha256": "48f330d59596430227d22a50cf0cfe2b9c330f5eba46bba6a52e2edb8ecbd5d7",
+    "destination": "packages/aiogram-idle/docs/standalone.md",
+    "destination_sha256": "48f330d59596430227d22a50cf0cfe2b9c330f5eba46bba6a52e2edb8ecbd5d7",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-idle",
+    "source_path": "docs/testing.md",
+    "source_sha256": "2a461c36228b8e0fbad71b8961167d954a402b7685cb8c87b0a2fb66971179c1",
+    "destination": "packages/aiogram-idle/docs/testing.md",
+    "destination_sha256": "2a461c36228b8e0fbad71b8961167d954a402b7685cb8c87b0a2fb66971179c1",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-idle",
+    "source_path": "docs/verification.md",
+    "source_sha256": "dd0f3e4fd33bacfbdfc12744e0c473eda3317a974a16e0ea51cb8a9031e00351",
+    "destination": "packages/aiogram-idle/docs/verification.md",
+    "destination_sha256": "dd0f3e4fd33bacfbdfc12744e0c473eda3317a974a16e0ea51cb8a9031e00351",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-idle",
+    "source_path": "examples/README.md",
+    "source_sha256": "f4234a2be5ce498a51bae7e3bfe8c191a229fc84be4d983e3d7987d2601c572d",
+    "destination": "packages/aiogram-idle/examples/README.md",
+    "destination_sha256": "f4234a2be5ce498a51bae7e3bfe8c191a229fc84be4d983e3d7987d2601c572d",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-idle",
+    "source_path": "native/README.md",
+    "source_sha256": "214c73d34314872735c66fbd613222e67cee4bf11d498e2d1e94fb02c5159426",
+    "destination": "packages/aiogram-idle/native/README.md",
+    "destination_sha256": "1b500136e7e4a5dc8d8ff712b33670ad2e9e27c2480dc4af9607e36ae4e17359",
+    "status": "updated-for-migration",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-idle",
+    "source_path": "reports/0.3.0-implementation.md",
+    "source_sha256": "33d8d4abbb6f1d1b95611a2137910f10f3f646abc1874c0d48431b5bc6490b8c",
+    "destination": "packages/aiogram-idle/reports/0.3.0-implementation.md",
+    "destination_sha256": "33d8d4abbb6f1d1b95611a2137910f10f3f646abc1874c0d48431b5bc6490b8c",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-idle",
+    "source_path": "reports/2026-11-10-0.2-application-integration.md",
+    "source_sha256": "e842a504bfd7c24403f8d549e82d228d9823a1ebd58c2e63d2c9540b79a4c64b",
+    "destination": "packages/aiogram-idle/reports/2026-11-10-0.2-application-integration.md",
+    "destination_sha256": "e842a504bfd7c24403f8d549e82d228d9823a1ebd58c2e63d2c9540b79a4c64b",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-idle",
+    "source_path": "reports/2026-11-10-repository-alignment.md",
+    "source_sha256": "9f6a651aa67bb1b47c26c5749083c168efbe99c637610e5f1267d007c034978d",
+    "destination": "packages/aiogram-idle/reports/2026-11-10-repository-alignment.md",
+    "destination_sha256": "9f6a651aa67bb1b47c26c5749083c168efbe99c637610e5f1267d007c034978d",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-idle",
+    "source_path": "reports/2026-11-11-0.2.1-correctness.md",
+    "source_sha256": "928f226da118e67f00f2e28f7a7186d74dfbc521cb3152bbbbefbf6fb0479558",
+    "destination": "packages/aiogram-idle/reports/2026-11-11-0.2.1-correctness.md",
+    "destination_sha256": "928f226da118e67f00f2e28f7a7186d74dfbc521cb3152bbbbefbf6fb0479558",
+    "status": "preserved",
+    "additional_locations": []
+  },
+  {
+    "source_repository": "aiogram-idle",
+    "source_path": "tools/README.md",
+    "source_sha256": "b731bf42452d9a3fbf2d40de09b55d4125c5e5917794a24a20401f9d5b3983fb",
+    "destination": "packages/aiogram-idle/tools/README.md",
+    "destination_sha256": "b731bf42452d9a3fbf2d40de09b55d4125c5e5917794a24a20401f9d5b3983fb",
+    "status": "preserved",
+    "additional_locations": []
   }
 ]

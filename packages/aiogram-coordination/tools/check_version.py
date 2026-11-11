@@ -24,7 +24,7 @@ def main() -> None:
     tag = args.tag or (
         os.environ.get("GITHUB_REF_NAME") if os.environ.get("GITHUB_REF_TYPE") == "tag" else None
     )
-    if tag is not None and tag != "v" + expected:
+    if tag is not None and tag not in {"v" + expected, "aiogram-coordination-v" + expected}:
         raise SystemExit("Tag/project version mismatch")
     print("Version verified:", expected)
 

@@ -41,6 +41,7 @@ packages = ["src/aiogram_kit"]
 dev = [
     "build>=1.0.0",
     "twine>=5.0.0",
+    "tomli>=2; python_version<'3.11'",
     "mkdocs>=1.6.1",
     "mkdocs-material>=9.6.20",
 ]

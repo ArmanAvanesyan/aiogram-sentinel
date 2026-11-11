@@ -121,7 +121,9 @@ def main() -> int:
     parser.add_argument("--python", required=True, type=Path)
     parser.add_argument("--profile", required=True, choices=("baseline", "optimized", "native"))
     parser.add_argument("--package", action="append", choices=PACKAGES)
-    parser.add_argument("--repositories", type=Path, default=Path(__file__).resolve().parents[3])
+    parser.add_argument(
+        "--repositories", type=Path, default=Path(__file__).resolve().parents[2] / "packages"
+    )
     parser.add_argument("--output-dir", required=True, type=Path)
     parser.add_argument("--redis-url")
     parser.add_argument(

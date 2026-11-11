@@ -12,7 +12,9 @@ readme = "README.md"
 classifiers = ["Programming Language :: Rust", "Programming Language :: Python :: 3"]
 
 [project.urls]
-Repository = "https://github.com/ArmanAvanesyan/aiogram-sentinel"
+Repository = "https://github.com/ArmanAvanesyan/aiogram-kit"
+Homepage = "https://github.com/ArmanAvanesyan/aiogram-kit/tree/main/packages/aiogram-sentinel/native"
+Issues = "https://github.com/ArmanAvanesyan/aiogram-kit/issues"
 
 [tool.maturin]
 module-name = "_aiogram_sentinel_native"

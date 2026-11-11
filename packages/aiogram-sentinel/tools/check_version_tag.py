@@ -50,7 +50,9 @@ def get_version_from_pyproject() -> str:
 def get_tag_version() -> str:
     """Get version from git tag."""
     ref = os.environ.get("GITHUB_REF", "")
-    if ref.startswith("refs/tags/v"):
+    if ref.startswith("refs/tags/aiogram-sentinel-v"):
+        tag_version = ref.removeprefix("refs/tags/aiogram-sentinel-v")
+    elif ref.startswith("refs/tags/v"):
         # Extract version from tag (remove 'refs/tags/v' prefix)
         tag_version = ref[11:]  # Remove 'refs/tags/v'
     else:
@@ -58,16 +60,34 @@ def get_tag_version() -> str:
         import subprocess
 
         try:
-            result = subprocess.run(
-                ["git", "describe", "--tags", "--abbrev=0"],
-                capture_output=True,
-                text=True,
-                check=True,
-            )
+            try:
+                result = subprocess.run(
+                    [
+                        "git",
+                        "describe",
+                        "--tags",
+                        "--abbrev=0",
+                        "--match",
+                        "aiogram-sentinel-v*",
+                    ],
+                    capture_output=True,
+                    text=True,
+                    check=True,
+                )
+            except subprocess.CalledProcessError:
+                result = subprocess.run(
+                    ["git", "describe", "--tags", "--abbrev=0", "--match", "v*"],
+                    capture_output=True,
+                    text=True,
+                    check=True,
+                )
             latest_tag = result.stdout.strip()
-            if not latest_tag.startswith("v"):
-                raise RuntimeError(f"Tag does not start with 'v': {latest_tag}")
-            tag_version = latest_tag[1:]  # Remove 'v' prefix
+            if latest_tag.startswith("aiogram-sentinel-v"):
+                tag_version = latest_tag.removeprefix("aiogram-sentinel-v")
+            elif latest_tag.startswith("v"):
+                tag_version = latest_tag[1:]
+            else:
+                raise RuntimeError(f"Unexpected Sentinel tag: {latest_tag}")
         except subprocess.CalledProcessError as e:
             raise RuntimeError(f"Failed to get git tag: {e}") from e
 

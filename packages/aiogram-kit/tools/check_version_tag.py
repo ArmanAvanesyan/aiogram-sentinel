@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Version consistency checker for aiogram-kit.
 
@@ -21,7 +20,10 @@ import re
 import sys
 from pathlib import Path
 
-import tomllib
+try:
+    import tomllib
+except ModuleNotFoundError:  # Python 3.10 development environments.
+    import tomli as tomllib
 
 
 def get_package_version() -> str | None:
@@ -43,7 +45,7 @@ def get_package_version() -> str | None:
         print(f"📦 Package version: {version}")
         return version
 
-    except Exception as e:
+    except (OSError, ValueError, TypeError) as e:
         print(f"❌ Error reading package version: {e}")
         return None
 
@@ -67,7 +69,7 @@ def get_pyproject_version() -> str | None:
         print(f"📋 PyProject version: {version}")
         return version
 
-    except Exception as e:
+    except (OSError, ValueError, TypeError) as e:
         print(f"❌ Error reading PyProject version: {e}")
         return None
 
@@ -85,7 +87,9 @@ def get_git_tag_version() -> str | None:
             tag = github_ref[10:]  # Remove "refs/tags/" prefix
 
             # Remove 'v' prefix if present
-            if tag.startswith("v"):
+            if tag.startswith("aiogram-kit-v"):
+                version = tag.removeprefix("aiogram-kit-v")
+            elif tag.startswith("v"):
                 version = tag[1:]
             else:
                 version = tag
@@ -96,7 +100,7 @@ def get_git_tag_version() -> str | None:
             print(f"ℹ️  GITHUB_REF is not a tag: {github_ref}")
             return None
 
-    except Exception as e:
+    except (OSError, ValueError, TypeError) as e:
         print(f"❌ Error reading git tag version: {e}")
         return None
 
@@ -107,8 +111,7 @@ def normalize_version(version: str) -> str:
     version = version.strip()
 
     # Remove 'v' prefix if present
-    if version.startswith("v"):
-        version = version[1:]
+    version = version.removeprefix("v")
 
     return version
 
@@ -126,11 +129,7 @@ def check_version_consistency() -> int:
     print()
 
     # Check if we have at least two versions to compare
-    versions = [
-        v
-        for v in [package_version, pyproject_version, git_tag_version]
-        if v is not None
-    ]
+    versions = [v for v in [package_version, pyproject_version, git_tag_version] if v is not None]
 
     if len(versions) < 2:
         print("⚠️  Not enough version sources to perform consistency check")
@@ -150,7 +149,7 @@ def check_version_consistency() -> int:
 
     if len(unique_versions) == 1:
         print("✅ All versions are consistent!")
-        print(f"   Version: {list(unique_versions)[0]}")
+        print(f"   Version: {next(iter(unique_versions))}")
         return 0
     else:
         print("❌ Version mismatch found!")
@@ -175,7 +174,7 @@ def main() -> int:
         print("\n⏹️  Check interrupted by user")
         return 2
 
-    except Exception as e:
+    except (OSError, ValueError, TypeError) as e:
         print(f"\n❌ Unexpected error: {e}")
         return 2
 

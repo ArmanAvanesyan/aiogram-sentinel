@@ -1,0 +1,38 @@
+[
+  {
+    "package": "aiogram-coordination",
+    "changed_source_files": [],
+    "unexpected_runtime_changes": []
+  },
+  {
+    "package": "aiogram-sentinel",
+    "changed_source_files": [
+      "src/aiogram_sentinel/version.py"
+    ],
+    "unexpected_runtime_changes": []
+  },
+  {
+    "package": "aiogram-cmds",
+    "changed_source_files": [
+      "src/aiogram_cmds/engines.py",
+      "src/aiogram_cmds/version.py"
+    ],
+    "unexpected_runtime_changes": []
+  },
+  {
+    "package": "aiogram-nav",
+    "changed_source_files": [
+      "native/src/lib.rs",
+      "src/aiogram_nav/engine.py"
+    ],
+    "unexpected_runtime_changes": []
+  },
+  {
+    "package": "aiogram-idle",
+    "changed_source_files": [
+      "native/src/lib.rs",
+      "src/aiogram_idle/engines.py"
+    ],
+    "unexpected_runtime_changes": []
+  }
+]

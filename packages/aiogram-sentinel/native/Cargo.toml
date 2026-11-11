@@ -5,7 +5,7 @@ edition = "2024"
 rust-version = "1.86"
 license = "MIT"
 description = "Optional ABI1 memory kernels for aiogram-sentinel"
-repository = "https://github.com/ArmanAvanesyan/aiogram-sentinel"
+repository = "https://github.com/ArmanAvanesyan/aiogram-kit"
 
 [lib]
 name = "_aiogram_sentinel_native"

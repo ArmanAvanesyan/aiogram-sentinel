@@ -20,7 +20,10 @@ Run `uv lock` at the repository root. Run package commands from their package di
 use isolated artifact environments for release verification. Package-local locks are retained
 as historical verification inputs during migration, not the workspace source of truth.
 
-## Migration status
+## Migration evidence
 
-This branch is a migration candidate. No repository has been renamed, archived or published
-as part of this migration yet. See `reports/monorepo-migration/` for preservation evidence.
+History, document and GitHub-record mappings and archival gates are recorded under
+`reports/monorepo-migration/`. Cross-library benchmark tools live under `tools/optimization/`;
+package-owned drivers and tests remain with their distributions.
+
+This community project is not affiliated with the aiogram maintainers.

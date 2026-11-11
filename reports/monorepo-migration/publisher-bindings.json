@@ -1,0 +1,44 @@
+[
+  {
+    "package": "aiogram-sentinel",
+    "repository": "ArmanAvanesyan/aiogram-kit",
+    "workflow": "publish-aiogram-sentinel.yml",
+    "environment": "pypi",
+    "status": "verified"
+  },
+  {
+    "package": "aiogram-coordination",
+    "repository": "ArmanAvanesyan/aiogram-kit",
+    "workflow": "publish-aiogram-coordination.yml",
+    "environment": "pypi",
+    "status": "verified"
+  },
+  {
+    "package": "aiogram-nav",
+    "repository": "ArmanAvanesyan/aiogram-kit",
+    "workflow": "publish-aiogram-nav.yml",
+    "environment": "pypi",
+    "status": "verified"
+  },
+  {
+    "package": "aiogram-idle",
+    "repository": "ArmanAvanesyan/aiogram-kit",
+    "workflow": "publish-aiogram-idle.yml",
+    "environment": "pypi",
+    "status": "verified"
+  },
+  {
+    "package": "aiogram-cmds",
+    "repository": "ArmanAvanesyan/aiogram-kit",
+    "workflow": "publish-aiogram-cmds.yml",
+    "environment": "pypi",
+    "status": "verified"
+  },
+  {
+    "package": "aiogram-kit",
+    "repository": "ArmanAvanesyan/aiogram-kit",
+    "workflow": "publish-aiogram-kit.yml",
+    "environment": "pypi",
+    "status": "verified"
+  }
+]

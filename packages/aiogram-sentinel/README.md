@@ -1,5 +1,7 @@
 # aiogram-sentinel
 
+Source development and releases are maintained in the [aiogram-kit monorepo](https://github.com/ArmanAvanesyan/aiogram-kit). See the [workspace contributing guide](https://github.com/ArmanAvanesyan/aiogram-kit/blob/main/CONTRIBUTING.md); package examples live under `packages/aiogram-sentinel/`.
+
 Rate limiting and debouncing for aiogram 3. Sentinel protects handlers on its
 router and descendant routers while retaining application authorization middleware.
 
@@ -92,7 +94,7 @@ and use recording Telegram sessions in tests; no real messages are sent by tests
 ### Native companion: publication withheld
 
 The source includes optional `engine="rust"` memory infrastructure, but the
-native companion will not be published for 1.3.1: serial qualification measured
+native companion remains withheld for 1.3.1: serial qualification of the 1.3.0 kernels measured
 11.65% and 7.63% CPU reductions in the selected workloads, below the required
 20%. Latency measurements were unstable, so no tail-latency gain is claimed.
 Python remains the default and the optimized base package can ship independently.

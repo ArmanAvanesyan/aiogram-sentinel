@@ -42,19 +42,12 @@ def require(condition: bool, message: str) -> None:
 
 def safe_name(name: str) -> bool:
     path = PurePosixPath(name)
-    return (
-        bool(name)
-        and not path.is_absolute()
-        and ".." not in path.parts
-        and "\\" not in name
-    )
+    return bool(name) and not path.is_absolute() and ".." not in path.parts and "\\" not in name
 
 
 def platform_target(tag: str) -> str:
     if re.fullmatch(r"(?:manylinux_2_17|manylinux2014)_(x86_64|aarch64)", tag):
-        return (
-            "linux-glibc-aarch64" if tag.endswith("aarch64") else "linux-glibc-x86_64"
-        )
+        return "linux-glibc-aarch64" if tag.endswith("aarch64") else "linux-glibc-x86_64"
     if re.fullmatch(r"musllinux_1_2_(x86_64|aarch64)", tag):
         return "linux-musl-aarch64" if tag.endswith("aarch64") else "linux-musl-x86_64"
     if re.fullmatch(r"macosx_\d+_\d+_(x86_64|arm64)", tag):
@@ -81,9 +74,7 @@ def metadata(raw: bytes, name: str, version: str) -> None:
     )
 
 
-def wheel(
-    path: Path, name: str, version: str, *, module_name: str | None = None
-) -> str:
+def wheel(path: Path, name: str, version: str, *, module_name: str | None = None) -> str:
     parts = path.name.removesuffix(".whl").rsplit("-", 4)
     require(len(parts) == 5, "Unexpected wheel filename/build tag")
     dist, found_version, python, abi, platforms = parts
@@ -91,9 +82,7 @@ def wheel(
         dist == name.replace("-", "_") and found_version == version,
         "Wheel filename identity mismatch",
     )
-    require(
-        python == "cp310" and abi == "abi3", "Expected CPython 3.10 stable ABI wheel"
-    )
+    require(python == "cp310" and abi == "abi3", "Expected CPython 3.10 stable ABI wheel")
     targets = {platform_target(tag) for tag in platforms.split(".")}
     require(len(targets) == 1, "One wheel must identify exactly one platform target")
     module = "_" + name.removesuffix("-native").replace("-", "_") + "_native"
@@ -104,9 +93,7 @@ def wheel(
     )
     require(module_parts[-1] == module, "Unexpected native module basename")
     parent = PurePosixPath(*module_parts[:-1])
-    allowed_parents = (
-        {parent} if len(module_parts) > 1 else {parent, PurePosixPath(module)}
-    )
+    allowed_parents = {parent} if len(module_parts) > 1 else {parent, PurePosixPath(module)}
     info_root = f"{name.replace('-', '_')}-{version}.dist-info/"
     with zipfile.ZipFile(path) as archive:
         names = archive.namelist()
@@ -121,8 +108,7 @@ def wheel(
         extensions = [
             item
             for item in names
-            if PurePosixPath(item).name.startswith(module + ".")
-            and item.endswith((".so", ".pyd"))
+            if PurePosixPath(item).name.startswith(module + ".") and item.endswith((".so", ".pyd"))
         ]
         require(len(extensions) == 1, "Expected one correctly named native extension")
         extension_parent = PurePosixPath(extensions[0]).parent
@@ -136,17 +122,14 @@ def wheel(
                 "Native package wrapper is absent",
             )
         descriptors = [item for item in names if item.endswith(".dist-info/WHEEL")]
-        require(
-            descriptors == [info_root + "WHEEL"], "Expected exact wheel descriptor path"
-        )
+        require(descriptors == [info_root + "WHEEL"], "Expected exact wheel descriptor path")
         headers = email.parser.BytesParser().parsebytes(archive.read(descriptors[0]))
         require(
             headers.get("Root-Is-Purelib") == "false",
             "Native wheel incorrectly marked pure Python",
         )
         require(
-            set(headers.get_all("Tag", []))
-            == {f"cp310-abi3-{p}" for p in platforms.split(".")},
+            set(headers.get_all("Tag", [])) == {f"cp310-abi3-{p}" for p in platforms.split(".")},
             "Wheel descriptor tags disagree with filename",
         )
     return targets.pop()
@@ -200,7 +183,10 @@ def verify(
         native["name"] == name and native["version"] == version,
         "Base/native project mismatch",
     )
-    require(tag == "native-v" + version, "Native release tag mismatch")
+    require(
+        tag in {"native-v" + version, base["name"] + "-native-v" + version},
+        "Native release tag mismatch",
+    )
     require(
         re.fullmatch(r"[a-f0-9]{64}", manifest_sha256) is not None,
         "Invalid independent manifest digest",
@@ -215,9 +201,7 @@ def verify(
         parts = line.split()
         require(len(parts) == 2, "Malformed checksum entry")
         digest, filename = parts
-        require(
-            re.fullmatch(r"[a-f0-9]{64}", digest) is not None, "Invalid artifact digest"
-        )
+        require(re.fullmatch(r"[a-f0-9]{64}", digest) is not None, "Invalid artifact digest")
         require(
             Path(filename).name == filename and filename not in declared,
             "Unsafe or duplicate checksum filename",
@@ -266,9 +250,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--directory", required=True, type=Path)
     parser.add_argument("--root-project", type=Path, default=Path("pyproject.toml"))
-    parser.add_argument(
-        "--native-project", type=Path, default=Path("native/pyproject.toml")
-    )
+    parser.add_argument("--native-project", type=Path, default=Path("native/pyproject.toml"))
     parser.add_argument("--tag", required=True)
     parser.add_argument("--manifest-sha256", required=True)
     args = parser.parse_args()

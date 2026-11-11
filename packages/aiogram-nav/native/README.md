@@ -17,7 +17,7 @@ Run Rust tests: `cargo test --manifest-path native/Cargo.toml`.
 Run Criterion: `cargo bench --manifest-path native/Cargo.toml --bench core`.
 Install the wheel in a clean environment, then run `pytest -c native/pytest.ini native/tests`.
 
-Release the companion using its own `native-v0.3.1` tag and an explicitly scoped
+Release the companion using its own `aiogram-nav-native-v0.3.1` tag and an explicitly scoped
 native publishing workflow. It must not be published by the base Python-only
 workflow. Wheels require platform CI and per-platform smoke tests; an sdist
 requires Cargo/Rust when installed. Cargo.lock is committed for reproducibility.

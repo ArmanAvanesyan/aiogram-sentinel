@@ -6,10 +6,11 @@ import argparse
 import hashlib
 import re
 import tarfile
-import tomllib
 import zipfile
 from email.parser import BytesParser
 from pathlib import Path
+
+import tomllib
 
 PACKAGES = frozenset(
     {
@@ -56,12 +57,25 @@ def verify(root: Path, package: str, tag: str, directory: Path, manifest_sha256:
             raise ValueError("Distribution checksum mismatch")
         if filename.endswith(".whl"):
             with zipfile.ZipFile(path) as wheel:
+                allowed = {normalized, f"{normalized}-{version}.dist-info"}
+                if any(member.split("/", 1)[0] not in allowed for member in wheel.namelist()):
+                    raise ValueError("Wheel contains an unrelated namespace or install hook")
                 entries = [n for n in wheel.namelist() if n.endswith(".dist-info/METADATA")]
                 if len(entries) != 1:
                     raise ValueError("Invalid wheel metadata")
                 metadata = wheel.read(entries[0])
         else:
             with tarfile.open(path) as sdist:
+                for member in sdist.getmembers():
+                    parts = Path(member.name).parts
+                    if (
+                        any(part in {"monorepo-source", ".venv", "__pycache__"} for part in parts)
+                        or "target" in parts
+                        and "native" in parts
+                    ):
+                        raise ValueError("Source archive contains workspace or build output")
+                    if len(parts) > 1 and parts[1] == "packages":
+                        raise ValueError("Source archive contains workspace members")
                 entries = [
                     m
                     for m in sdist.getmembers()
