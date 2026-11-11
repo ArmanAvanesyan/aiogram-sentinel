@@ -112,3 +112,64 @@ def test_native_registry_errors_and_targets_match_python():
         NavigationRegistry(
             roots={"main"}, nodes=[*nodes, Node("orphan", parent="missing")], engine="rust"
         )
+
+
+def test_native_shared_library_load_error_is_configuration_error(monkeypatch):
+    native_core.cache_clear()
+
+    def broken(name):
+        raise OSError("loader rejected shared library")
+
+    with monkeypatch.context() as patch:
+        patch.setattr("aiogram_nav.engine.importlib.import_module", broken)
+        with pytest.raises(ConfigurationError, match="aiogram-nav-native==0.3.0"):
+            NavigationConfig(engine="rust")
+    native_core.cache_clear()
+
+
+@pytest.mark.parametrize("failure", ["bool-abi", "string-subclass-version", "partial-registry"])
+def test_skewed_native_capabilities_reject_before_redis_namespace_io(monkeypatch, failure):
+    from aiogram_nav.storage.redis import RedisNavigationRepository
+
+    native_core.cache_clear()
+
+    class Version(str):
+        pass
+
+    fake = SimpleNamespace(API_VERSION=1, ENGINE_VERSION="0.3.0")
+    for name in (
+        "Registry",
+        "strict_loads",
+        "validate_json",
+        "fingerprint_canonical",
+        "transition_history",
+        "transition_state",
+        "token_matches",
+    ):
+        setattr(fake, name, lambda *args: None)
+    if failure == "bool-abi":
+        fake.API_VERSION = True
+    elif failure == "string-subclass-version":
+        fake.ENGINE_VERSION = Version("0.3.0")
+    else:
+        fake.Registry = lambda raw: SimpleNamespace(root_for=lambda node: node)
+
+    class NoIO:
+        calls = 0
+
+        def __getattr__(self, name):
+            self.calls += 1
+            raise AssertionError("Redis must not be inspected before engine acceptance")
+
+    client = NoIO()
+    with monkeypatch.context() as patch:
+        patch.setattr("aiogram_nav.engine.importlib.import_module", lambda name: fake)
+        with pytest.raises(ConfigurationError):
+            RedisNavigationRepository(redis=client, engine="rust")
+    assert client.calls == 0
+    native_core.cache_clear()
+
+
+def test_engine_option_does_not_shift_existing_positional_configuration():
+    config = NavigationConfig(None, 60)
+    assert config.session_seconds == 60 and config.engine == "python"

@@ -84,3 +84,22 @@ Custom presenters must call `CleanupRequest.ensure_owned()` when supplied, immed
 
 [Application ownership](application-integration.md) defines the guarantees and
 required callback responsibilities; [migration](migration.md) covers activation.
+
+## Optimized storage and deterministic engines
+
+`EngineName` is `Literal["python", "rust"]`; `NavigationConfig(engine=...)` is keyword
+only. Direct backends accept the same option, and fresh backends can opt into
+`storage_format=3` explicitly. See [performance and engines](performance-and-engines.md)
+for activation, finite replay retention, physical receipt TTL and native release gates.
+
+`AtomicAdoptionRepository.adopt_render(key, *, expected_version, intent, rendered,
+coordination_scope=None)` is optional. `track()` selects it before mutation when
+supported; failed adoption never falls back to another sequence or engine.
+
+Optional component hosts use `LedgerRead.from_payload()`/`to_payload()`,
+`LedgerDelta.to_payload()` and `NavigationLedgerReducer`. The reducer exposes a
+bounded memory `repository`, detached `integration_payload(operation_id)`,
+`set_integration_payload()`, an owned `record` view, validated `replace_record()` and
+`delta()`. Canonical terminal results are immutable; only their control receipt
+updates and first opaque integration result can be added under the same fence.
+No host should duplicate canonical navigation history in its own action receipts.

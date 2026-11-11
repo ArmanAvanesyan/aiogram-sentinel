@@ -17,7 +17,7 @@ from .context import NavigationContext
 from .effects import NavigationEffects
 from .errors import AccessDenied, ConfigurationError, InvalidParameters, SessionExpired
 from .events import EventHook, emit
-from .json import JsonObject, JsonValue, fingerprint
+from .json import JsonObject, JsonValue, fingerprint, identifier
 from .models import (
     ActionKind,
     ConversationKey,
@@ -89,6 +89,10 @@ class Navigation:
             raise ConfigurationError("The configured root must belong to the registry")
         if not namespace or len(namespace) > 256:
             raise ConfigurationError("Namespace must be a bounded nonempty ID")
+        try:
+            identifier(namespace, "namespace")
+        except ValueError as error:
+            raise ConfigurationError(str(error)) from error
         self.namespace, self.identity = namespace, identity
         self.authorize, self.locale_resolver, self.cancel_hook = (
             authorize,
@@ -345,29 +349,17 @@ class Navigation:
         params: Mapping[str, object] | None = None,
         source: str = "application",
     ) -> NavigationSnapshot:
-        from .actions import complete, prepare
+        from .adoption import track
 
-        if self.draining and self.coordinator.scope_token(key) is None:
-            raise ConfigurationError("Navigation is draining")
-        async with self.coordinator.hold(key):
-            prepared = await prepare(
-                self,
-                key,
-                node_id,
-                operation_id=operation_id,
-                params=params,
-                source=source,
-                kind="track",
-                view_id=rendered.view_id,
-            )
-            if prepared.status != "completed" and "render" not in prepared.effects:
-                await self.repository.checkpoint(
-                    key,
-                    operation_id=operation_id,
-                    effect=EffectCheckpoint("render", "started"),
-                    coordination_scope=self.coordinator.scope_token(key),
-                )
-            return (await complete(self, prepared, rendered)).snapshot
+        return await track(
+            self,
+            key,
+            node_id,
+            rendered=rendered,
+            operation_id=operation_id,
+            params=params,
+            source=source,
+        )
 
     async def touch(
         self, key: ConversationKey, *, operation_id: str, source: str = "application"

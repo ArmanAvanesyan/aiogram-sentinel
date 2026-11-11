@@ -51,14 +51,22 @@ def encode(value: object, *, max_bytes: int = 8_388_608, schema_version: int = 1
         allow_nan=False,
         separators=(",", ":"),
     )
-    if len(result.encode()) > max_bytes:
-        raise _bad()
+    try:
+        if len(result.encode()) > max_bytes:
+            raise _bad()
+    except UnicodeError as error:
+        raise _bad() from error
     return result
 
 
 def decode(value: str, *, max_bytes: int = 8_388_608, engine: EngineName = "python") -> object:
-    if not isinstance(cast(object, value), str) or len(value.encode()) > max_bytes:
+    if not isinstance(cast(object, value), str):
         raise _bad()
+    try:
+        if len(value.encode()) > max_bytes:
+            raise _bad()
+    except UnicodeError as error:
+        raise _bad() from error
     try:
         root = _mapping(strict_loads(value, engine=engine, max_bytes=max_bytes))
         if set(root) != {"schema_version", "value"}:
@@ -117,13 +125,24 @@ def _mapping(value: object) -> dict[str, object]:
     data = cast(dict[object, object], value)
     if not all(isinstance(key, str) for key in data):
         raise _bad()
+    try:
+        for key in data:
+            cast(str, key).encode("utf-8")
+    except UnicodeError as error:
+        raise _bad() from error
     return {cast(str, key): child for key, child in data.items()}
 
 
 def decode_value(value: object, *, _depth: int = 0) -> object:
     if _depth > 64:
         raise _bad()
-    if value is None or type(value) in (str, bool, int):
+    if type(value) is str:
+        try:
+            value.encode("utf-8")
+        except UnicodeError as error:
+            raise _bad() from error
+        return value
+    if value is None or type(value) in (bool, int):
         return value
     if isinstance(value, float):
         if not math.isfinite(value):

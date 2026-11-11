@@ -4,7 +4,7 @@ Standalone screen navigation for aiogram 3, with a typed registry, memory or Red
 repositories, prepared rendering and explicit input bindings. Use reply keyboards,
 inline controls, commands or hybrids without adopting an idle framework.
 
-Version 0.2.0 is an initial alpha release. Review the recovery and storage
+Version 0.3.0 is an initial alpha release. Review the recovery and storage
 boundaries before adopting it in an application.
 
 ## Install
@@ -12,14 +12,19 @@ boundaries before adopting it in an application.
 Requires Python 3.10+ and aiogram 3.22 or newer within the 3.x series.
 
 ```sh
-pip install aiogram-nav==0.2.0
+pip install aiogram-nav==0.3.0
 # Optional persistent storage:
-pip install 'aiogram-nav[redis]==0.2.0'
+pip install 'aiogram-nav[redis]==0.3.0'
 ```
 
 The runtime depends on aiogram and aiogram-coordination; it never imports Idle. Neither aiogram-idle nor Redis is required.
-See [Redis setup and recovery](docs/redis.md). Contributors can install an editable
+See [Redis setup and recovery](docs/redis.md) and [format-three storage and engines](docs/performance-and-engines.md). Contributors can install an editable
 checkout with `uv sync --extra redis`; see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+Redis hot-path improvements require **format three**: choose `storage_format=3`
+for a fresh namespace, or explicitly migrate after draining old workers. Default
+startup remains compatible with formats one/two and retains their whole-record
+storage; installing 0.3.0 alone does not upgrade an existing Redis namespace.
 
 ## Run a demonstration
 
@@ -56,8 +61,9 @@ CLI help runs without a token. Tests use a recording Telegram transport.
 - Opaque callbacks bind actor, conversation, session and view. Localized reply
   text and bare commands act on current state and cannot prove an old origin.
 - Dispatcher middleware protects the whole handler and shares verified FSM
-  isolation. Binding routers precede business routers; Dispatcher root handlers
-  must not outrank installed navigation bindings.
+  isolation. Automatic installation puts bindings before business routers. Manual
+  installation keeps the application's chosen router order; intentional Dispatcher
+  root handlers require `allow_root_handlers=True`.
 
 See [quickstart](docs/quickstart.md), [public API](docs/public-api.md),
 [migration](docs/migration.md), [storage](docs/storage.md) and

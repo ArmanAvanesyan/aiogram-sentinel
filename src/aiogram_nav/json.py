@@ -20,7 +20,13 @@ JsonObject: TypeAlias = Mapping[str, JsonValue]
 def freeze_json(value: object, *, _depth: int = 0) -> JsonValue:
     if _depth > 32:
         raise InvalidParameters("JSON nesting exceeds the supported depth")
-    if value is None or type(value) in (str, bool, int):
+    if type(value) is str:
+        try:
+            value.encode("utf-8")
+        except UnicodeError as error:
+            raise InvalidParameters("JSON strings must contain valid Unicode scalars") from error
+        return value
+    if value is None or type(value) in (bool, int):
         return cast(JsonScalar, value)
     if isinstance(value, float):
         if not math.isfinite(value):
@@ -30,6 +36,13 @@ def freeze_json(value: object, *, _depth: int = 0) -> JsonValue:
         mapping = cast(Mapping[object, object], value)
         if not all(isinstance(key, str) for key in mapping):
             raise InvalidParameters("JSON object keys must be strings")
+        try:
+            for key in mapping:
+                cast(str, key).encode("utf-8")
+        except UnicodeError as error:
+            raise InvalidParameters(
+                "JSON object keys must contain valid Unicode scalars"
+            ) from error
         return MappingProxyType(
             {
                 cast(str, key): freeze_json(child, _depth=_depth + 1)
@@ -88,3 +101,7 @@ def timestamp_ms(value: datetime | int) -> int:
 def identifier(value: object, name: str = "identifier") -> None:
     if not isinstance(value, str) or not value or len(value) > 256:
         raise ValueError(f"{name} must contain 1 to 256 characters")
+    try:
+        value.encode("utf-8")
+    except UnicodeError as error:
+        raise ValueError(f"{name} must contain valid Unicode scalars") from error

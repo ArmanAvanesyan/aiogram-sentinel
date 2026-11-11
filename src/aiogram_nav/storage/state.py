@@ -11,7 +11,7 @@ from typing import Literal, cast
 
 from aiogram_coordination import ExternalSession
 
-from ..engine import EngineName, native_core
+from ..engine import EngineName, native_core, require_engine
 from ..models import (
     CommitResult,
     NavigationToken,
@@ -54,6 +54,7 @@ def payload_size(value: object) -> int:
 
 
 def fingerprint(value: object, *, engine: EngineName = "python") -> str:
+    require_engine(engine)
     raw = json.dumps(_canonical(value), sort_keys=True, separators=(",", ":"), allow_nan=False)
     return (
         native_core().fingerprint_canonical(raw)
@@ -88,6 +89,10 @@ class Conversation:
         default_factory=lambda: list[tuple[int, str]](), kw_only=True
     )
     unloaded_operations: int = field(default=0, kw_only=True)
+    host_session: tuple[str, int] | None = field(default=None, kw_only=True)
+    views: dict[tuple[str, str], str] = field(
+        default_factory=lambda: dict[tuple[str, str], str](), kw_only=True
+    )
     external_session: ExternalSession | None = field(default=None, kw_only=True)
     current: VersionedSnapshot | None = None
     pending_id: str | None = None

@@ -321,16 +321,16 @@ async def execute(nav: Navigation, prepared: PreparedAction) -> RenderResult:
 
 
 async def cleanup_committed(
-    nav: Navigation, prepared: PreparedAction, request: RenderRequest, committed: CommitResult
+    nav: Navigation, key: ConversationKey, request: RenderRequest, committed: CommitResult
 ) -> None:
     previous = request.current.view if request.current else None
-    scope = nav.coordinator.scope_token(prepared.key)
-    if scope is None or not nav.coordinator.scope_matches(prepared.key, scope):
+    scope = nav.coordinator.scope_token(key)
+    if scope is None or not nav.coordinator.scope_matches(key, scope):
         # A slow observational hook can outlive its lease. The committed result
         # remains valid, but lost ownership cannot authorize another Telegram call.
         return
     try:
-        latest = await nav.repository.load(prepared.key)
+        latest = await nav.repository.load(key)
         if (
             latest is None
             or latest.snapshot.session_id != committed.snapshot.session_id
@@ -339,15 +339,15 @@ async def cleanup_committed(
             # An observational hook may navigate reentrantly under this same lock.
             return
 
-        await nav.authorize_session(prepared.key, committed.snapshot.session_id)
+        await nav.authorize_session(key, committed.snapshot.session_id)
 
         def ensure_owned() -> None:
-            if not nav.coordinator.scope_matches(prepared.key, scope):
+            if not nav.coordinator.scope_matches(key, scope):
                 raise OwnershipLost("Post-commit cleanup ownership expired")
 
         ensure_owned()
         await nav.presenter.cleanup(
-            CleanupRequest(prepared.key, previous, committed.snapshot.view, nav.bot, ensure_owned)
+            CleanupRequest(key, previous, committed.snapshot.view, nav.bot, ensure_owned)
         )
     except Exception:
         from .navigation import logger
@@ -432,5 +432,5 @@ async def complete(
             ),
         )
     if not committed.duplicate:
-        await cleanup_committed(nav, prepared, request, committed)
+        await cleanup_committed(nav, prepared.key, request, committed)
     return committed

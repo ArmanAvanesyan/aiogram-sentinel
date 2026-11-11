@@ -80,10 +80,15 @@ async def test_actual_commit_then_lost_response_recovers_same_receipt(nav_redis_
     # Read also uses EVALSHA. Arm only the mutating script, by wrapping the store call.
     original = wire.execute_command
     discarded = False
+    import hashlib
+
+    from aiogram_nav.storage.redis_scripts import COMMIT
+
+    active_sha = hashlib.sha1(COMMIT.encode(), usedforsecurity=False).hexdigest()
 
     async def selective(*args):
         nonlocal discarded
-        if not discarded and args[0] == "EVALSHA" and len(args) > 2 and args[2] == 5:
+        if not discarded and args[0] == "EVALSHA" and len(args) > 2 and args[1] == active_sha:
             discarded = True
             wire.armed = True
         return await original(*args)

@@ -38,6 +38,7 @@ class NavigationRegistry:
         self._safe_root = safe_root
         self._root_ids: dict[str, str] = {}
         self._cancel_targets: dict[str, str] = {}
+        self._validated = False
         if engine == "rust":
             try:
                 self._native = native_core().Registry(
@@ -100,6 +101,11 @@ class NavigationRegistry:
         """Resolve an explicit migration, then an explicitly configured safe root."""
         if node_id in self._nodes:
             return self._nodes[node_id]
+        if self._native is not None:
+            try:
+                return self.get(self._native.resolve(node_id))
+            except ValueError as error:
+                raise NodeNotFound("Persisted navigation node requires migration") from error
         target = self._migrations.get(node_id, self._safe_root)
         if target is None:
             raise NodeNotFound("Persisted navigation node requires migration")
@@ -125,7 +131,8 @@ class NavigationRegistry:
         )
 
     def back_target(self, node_id: str) -> str | None:
-        return self.get(node_id).back_to
+        node = self.get(node_id)
+        return self._native.back_target(node_id) if self._native is not None else node.back_to
 
     def cancel_target(self, node_id: str) -> str:
         self.get(node_id)
@@ -150,7 +157,7 @@ class NavigationRegistry:
             raise InvalidParameters("Node parameter validation failed") from exc
 
     def validate(self, renderers: Collection[str] | None = None) -> None:
-        if self._native is not None:
+        if self._native is not None or self._validated:
             if renderers is not None and any(
                 node.renderer is not None and node.renderer not in renderers
                 for node in self._nodes.values()
@@ -192,6 +199,7 @@ class NavigationRegistry:
                 raise ConfigurationError(
                     "Migrations must explicitly map missing IDs to renderable nodes"
                 )
+        self._validated = True
 
     def _index_graph(self) -> None:
         # Each edge is visited once. No recursive DFS or quadratic ancestor cache.

@@ -56,7 +56,13 @@ def _token(entry: TokenRecord) -> dict[str, object]:
     )
 
 
-def dumps(key: ConversationKey, record: Conversation, *, storage_format: int = 1) -> str:
+def dumps(
+    key: ConversationKey,
+    record: Conversation,
+    *,
+    storage_format: int = 1,
+    max_bytes: int = 8_388_608,
+) -> str:
     values: dict[str, object] = dict(
         key=key,
         version=record.version,
@@ -78,6 +84,8 @@ def dumps(key: ConversationKey, record: Conversation, *, storage_format: int = 1
         },
         tokens={name: _token(value) for name, value in record.tokens.items()},
     )
+    if storage_format == 3:
+        values["host_session"] = record.host_session
     if storage_format >= 2:
         binding = record.external_session
         values["external_session"] = (
@@ -91,17 +99,24 @@ def dumps(key: ConversationKey, record: Conversation, *, storage_format: int = 1
         )
     elif record.external_session is not None:
         raise ConfigurationError("External sessions require storage format 2")
-    return encode(values, schema_version=storage_format)
+    return encode(values, schema_version=storage_format, max_bytes=max_bytes)
 
 
-def loads(raw: str, key: ConversationKey, *, engine: EngineName = "python") -> Conversation:
+def loads(
+    raw: str, key: ConversationKey, *, engine: EngineName = "python", max_bytes: int = 8_388_608
+) -> Conversation:
     try:
-        decoded = decode(raw, engine=engine)
+        decoded = decode(raw, engine=engine, max_bytes=max_bytes)
     except ConfigurationError as error:
         raise SchemaUnsupported("Malformed Redis navigation persistence") from error
     version = json.loads(raw)["schema_version"]
     names = {"key", "version", "current", "pending_id", "operations", "tokens"}
-    data = _map(decoded, names | ({"external_session"} if version >= 2 else set()))
+    data = _map(
+        decoded,
+        names
+        | ({"external_session"} if version >= 2 else set[str]())
+        | ({"host_session"} if version == 3 else set[str]()),
+    )
     if _typed(data["key"], ConversationKey) != key:
         raise SchemaUnsupported("Redis conversation identity mismatch")
     record = Conversation(
@@ -109,6 +124,20 @@ def loads(raw: str, key: ConversationKey, *, engine: EngineName = "python") -> C
         _optional(data["current"], VersionedSnapshot),
         _optional(data["pending_id"], str),
     )
+    if version == 3 and data["host_session"] is not None:
+        raw_bound = data["host_session"]
+        if type(raw_bound) is not tuple:
+            raise SchemaUnsupported("Malformed authoritative host generation")
+        bound = cast(tuple[object, ...], raw_bound)
+        if (
+            len(bound) != 2
+            or type(bound[0]) is not str
+            or type(bound[1]) is not int
+            or bound[1] <= 0
+        ):
+            raise SchemaUnsupported("Malformed authoritative host generation")
+        identifier(bound[0], "host session_id")
+        record.host_session = cast(tuple[str, int], bound)
     if version >= 2 and data["external_session"] is not None:
         binding = _map(data["external_session"], {"session_id", "revision", "absolute_expires_at"})
         try:
@@ -248,6 +277,30 @@ def loads(raw: str, key: ConversationKey, *, engine: EngineName = "python") -> C
             raise SchemaUnsupported("Redis unresolved action lost its pending slot")
     if record.current is not None and record.current.version != record.version:
         raise SchemaUnsupported("Redis navigation version mismatch")
+    for operation_id, entry in record.operations.items():
+        if entry.prepared is not None:
+            pair = entry.prepared.session_id, entry.prepared.view_id
+            previous = record.views.setdefault(pair, operation_id)
+            if previous != operation_id:
+                raise SchemaUnsupported("Redis view generation has conflicting retained owners")
+    if record.host_session is not None:
+        session_id, expires_at = record.host_session
+        if (
+            record.current is not None
+            and record.current.snapshot.session_id == session_id
+            and record.current.snapshot.expires_at != expires_at
+        ):
+            raise SchemaUnsupported("Authoritative host generation expiry is immutable")
+        pending = record.operations.get(record.pending_id) if record.pending_id else None
+        if (
+            pending is not None
+            and pending.prepared is not None
+            and (
+                pending.prepared.session_id != session_id
+                or pending.prepared.expires_at != expires_at
+            )
+        ):
+            raise SchemaUnsupported("Pending render differs from its authoritative host generation")
     record.expiry_heap = [
         (entry.retention_until, operation_id)
         for operation_id, entry in record.operations.items()

@@ -18,6 +18,7 @@ class NativeRegistry(Protocol):
     def back_target(self, id: str) -> str | None: ...
     def cancel_target(self, id: str) -> str: ...
     def resolve(self, id: str) -> str: ...
+    def node_count(self) -> int: ...
 
 
 class NativeCore(Protocol):
@@ -73,12 +74,13 @@ def _pairs(items: list[tuple[str, object]]) -> dict[str, object]:
 def native_core() -> NativeCore:
     try:
         module = cast(NativeCore, importlib.import_module("aiogram_nav_native._aiogram_nav_native"))
-    except ImportError as error:
-        raise ConfigurationError("engine='rust' requires aiogram-nav-native>=0.3.0,<0.4") from error
+    except (ImportError, OSError) as error:
+        raise ConfigurationError("engine='rust' requires aiogram-nav-native==0.3.0") from error
     abi = getattr(module, "API_VERSION", None)
     functions = (
         "Registry",
         "strict_loads",
+        "validate_json",
         "fingerprint_canonical",
         "transition_state",
         "transition_history",
@@ -87,21 +89,61 @@ def native_core() -> NativeCore:
     if (
         type(abi) is not int
         or abi != 1
+        or type(getattr(module, "ENGINE_VERSION", None)) is not str
         or getattr(module, "ENGINE_VERSION", None) != "0.3.0"
         or not all(callable(getattr(module, name, None)) for name in functions)
     ):
         raise ConfigurationError("Incompatible aiogram-nav-native engine ABI/version")
+    try:
+        probe = module.Registry(
+            json.dumps(
+                dict(
+                    roots=["probe"],
+                    nodes=[
+                        dict(
+                            id="probe", parent=None, renderer="probe", back_to=None, cancel_to=None
+                        )
+                    ],
+                    migrations={},
+                    safe_root=None,
+                )
+            )
+        )
+        methods = ("ancestors", "root_for", "back_target", "cancel_target", "resolve", "node_count")
+        if not all(callable(getattr(probe, name, None)) for name in methods):
+            raise ValueError("Native registry capabilities are incomplete")
+        count = probe.node_count()
+        if (
+            type(count) is not int
+            or count != 1
+            or probe.ancestors("probe") != ["probe"]
+            or probe.root_for("probe") != "probe"
+            or probe.cancel_target("probe") != "probe"
+            or probe.back_target("probe") is not None
+            or probe.resolve("probe") != "probe"
+        ):
+            raise ValueError("Native registry probe returned incompatible values")
+    except (AttributeError, TypeError, ValueError, RuntimeError, OSError) as error:
+        raise ConfigurationError("Incompatible aiogram-nav-native registry capabilities") from error
     return module
 
 
 def require_engine(engine: EngineName) -> None:
-    if engine not in ("python", "rust"):
+    if type(engine) is not str or engine not in ("python", "rust"):
         raise ConfigurationError("engine must be 'python' or 'rust'")
     if engine == "rust":
         native_core()
 
 
 def strict_loads(raw: str, *, engine: EngineName, max_bytes: int) -> object:
+    require_engine(engine)
+    if (
+        type(raw) is not str
+        or type(max_bytes) is not int
+        or max_bytes <= 0
+        or len(raw.encode("utf-8")) > max_bytes
+    ):
+        raise ValueError("Strict JSON input exceeds its supported UTF-8 bound")
     if engine == "rust":
         # Typed codec validation independently enforces logical depth <=64.
         return native_core().strict_loads(raw, max_bytes, 512)

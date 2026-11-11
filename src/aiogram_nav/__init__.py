@@ -6,6 +6,7 @@ from .bindings_router import create_bindings_router
 from .clock import Clock, ManualClock, SystemClock
 from .config import NavigationConfig
 from .context import NavigationContext
+from .engine import EngineName
 from .errors import (
     AccessDenied,
     BackendInconsistent,
@@ -59,13 +60,20 @@ from .rejections import CallbackRejection, CallbackRejectionResponder
 from .rendering.application import ApplicationPresenter
 from .rendering.base import CleanupRequest, CleanupResult, NavigationPresenter, ScreenSpec
 from .rendering.text import TextPresenter
-from .storage.base import NavigationRepository
+from .storage.base import AtomicAdoptionRepository, NavigationRepository
 from .storage.deployment import RedisDeploymentAttestation
+from .storage.ledger import LedgerDelta, LedgerRead
+from .storage.ledger_reducer import NavigationLedgerReducer
 from .storage.memory import MemoryNavigationRepository
 from .storage.sessions import StorageMigrationReport
 from .version import __version__ as __version__
 
 __all__ = [
+    "EngineName",
+    "AtomicAdoptionRepository",
+    "LedgerRead",
+    "LedgerDelta",
+    "NavigationLedgerReducer",
     "create_bindings_router",
     "CallbackRejection",
     "CallbackRejectionResponder",

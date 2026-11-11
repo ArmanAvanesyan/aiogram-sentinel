@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Protocol
+from typing import Protocol, runtime_checkable
 
 from ..clock import Clock
 from ..config import NavigationConfig
@@ -15,6 +15,7 @@ from ..models import (
     NavigationMutation,
     NavigationToken,
     PreparedAction,
+    RenderResult,
     VersionedSnapshot,
 )
 from ..protocols import Coordinator
@@ -70,3 +71,18 @@ class NavigationRepository(Protocol):
     ) -> NavigationToken: ...
     async def sweep(self, *, limit: int = 100) -> int: ...
     async def close(self) -> None: ...
+
+
+@runtime_checkable
+class AtomicAdoptionRepository(Protocol):
+    """Optional capability selected before mutation; never a recovery fallback."""
+
+    async def adopt_render(
+        self,
+        key: ConversationKey,
+        *,
+        expected_version: str | None,
+        intent: NavigationIntent,
+        rendered: RenderResult,
+        coordination_scope: object | None = None,
+    ) -> CommitResult: ...

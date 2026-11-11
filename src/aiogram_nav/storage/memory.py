@@ -31,21 +31,25 @@ from ..models import (
     EffectCheckpoint,
     NavigationIntent,
     NavigationMutation,
-    NavigationSnapshot,
     PreparedAction,
     RenderResult,
     VersionedSnapshot,
-    ViewState,
 )
 from ..protocols import Coordinator
+from .adoption import MemoryAdoption
+from .completion import complete
 from .sessions import MemorySessions
 from .state import Conversation, Operation, fingerprint, payload_size
 from .tokens import MemoryTokens
-from .transition import transition
 
 
-class MemoryNavigationRepository(MemoryTokens, MemorySessions):
+class MemoryNavigationRepository(MemoryAdoption, MemoryTokens, MemorySessions):
     """One event loop/process only. No persistence or recovery across restart."""
+
+    @property
+    def atomic_adoption(self) -> bool:
+        # A subclass can explicitly opt in after auditing its public-method hooks.
+        return type(self) is MemoryNavigationRepository
 
     capabilities = frozenset({"conditional_commits", "prepared_actions", "opaque_tokens"})
 
@@ -55,6 +59,7 @@ class MemoryNavigationRepository(MemoryTokens, MemorySessions):
         clock: Clock | None = None,
         config: NavigationConfig | None = None,
         engine: EngineName | None = None,
+        storage_format: int | None = None,
     ) -> None:
         self.clock = clock or SystemClock()
         self.config = config or NavigationConfig()
@@ -65,7 +70,11 @@ class MemoryNavigationRepository(MemoryTokens, MemorySessions):
         self._lock = asyncio.Lock()
         self._records: dict[ConversationKey, Conversation] = {}
         self._sweep_cursor = 0
-        self._storage_format = 1
+        if storage_format is not None and (
+            type(storage_format) is not int or storage_format not in (1, 3)
+        ):
+            raise ConfigurationError("Fresh storage_format must be 1 or 3")
+        self._storage_format = storage_format or 1
         self._format_operations: dict[str, tuple[int, int]] = {}
 
     def bind_coordinator(self, coordinator: Coordinator) -> None:
@@ -115,6 +124,10 @@ class MemoryNavigationRepository(MemoryTokens, MemorySessions):
                 and entry.status in {"completed", "failed"}
                 and entry.retention_until == expiry
             ):
+                if entry.prepared is not None:
+                    pair = entry.prepared.session_id, entry.prepared.view_id
+                    if record.views.get(pair) == operation_id:
+                        record.views.pop(pair, None)
                 del record.operations[operation_id]
         if len(record.expiry_heap) > 2 * len(record.operations) + 128:
             record.expiry_heap = [
@@ -177,79 +190,98 @@ class MemoryNavigationRepository(MemoryTokens, MemorySessions):
         intent: NavigationIntent,
         coordination_scope: object | None = None,
     ) -> PreparedAction:
+        async with self._lock:
+            return self._prepare_locked(
+                key,
+                expected_version=expected_version,
+                intent=intent,
+                coordination_scope=coordination_scope,
+            )
+
+    def _prepare_locked(
+        self,
+        key: ConversationKey,
+        *,
+        expected_version: str | None,
+        intent: NavigationIntent,
+        coordination_scope: object | None = None,
+    ) -> PreparedAction:
         freeze_object(intent.params, max_bytes=self.config.max_params_bytes)
         digest = self._fingerprint(intent)
-        async with self._lock:
-            self._guard_scope(key, coordination_scope)
-            record = self._admit(key)
-            previous = record.operations.get(intent.operation_id)
-            if previous is not None:
-                if previous.fingerprint != digest:
-                    raise OperationIdConflict("Navigation operation ID has different intent")
-                if previous.prepared is None:
-                    raise OperationIdConflict("Operation ID belongs to a state-only mutation")
-                return previous.prepared
-            if len(record.operations) + record.unloaded_operations >= self.config.max_receipts:
-                raise Overloaded("Navigation operation receipt capacity exhausted")
-            if record.pending_id is not None:
-                raise PendingAction("A navigation render must be recovered first")
-            current = self._current(record)
-            if (current.version if current else None) != expected_version:
-                raise VersionConflict("Navigation state changed before prepare")
-            snapshot = current.snapshot if current else None
-            if intent.expected_session_id is not None and (
-                snapshot is None or snapshot.session_id != intent.expected_session_id
-            ):
-                raise SessionExpired("Navigation session generation changed")
-            now = self._now()
-            expiry = (
-                snapshot.expires_at
-                if snapshot
-                else (
-                    record.external_session.absolute_expires_at
-                    if record.external_session
-                    else (intent.expires_at or now + math.ceil(self.config.session_seconds * 1000))
-                )
+        self._guard_scope(key, coordination_scope)
+        record = self._admit(key)
+        previous = record.operations.get(intent.operation_id)
+        if previous is not None:
+            if previous.fingerprint != digest:
+                raise OperationIdConflict("Navigation operation ID has different intent")
+            if previous.prepared is None:
+                raise OperationIdConflict("Operation ID belongs to a state-only mutation")
+            return previous.prepared
+        if len(record.operations) + record.unloaded_operations >= self.config.max_receipts:
+            raise Overloaded("Navigation operation receipt capacity exhausted")
+        if record.pending_id is not None:
+            raise PendingAction("A navigation render must be recovered first")
+        current = self._current(record)
+        if (current.version if current else None) != expected_version:
+            raise VersionConflict("Navigation state changed before prepare")
+        snapshot = current.snapshot if current else None
+        bound = record.host_session
+        if bound is not None and bound[1] <= self._now():
+            raise SessionExpired(
+                "Authoritative host generation expired; replace its generation explicitly"
             )
-            if expiry <= now or (
-                snapshot is not None
-                and intent.expires_at is not None
-                and intent.expires_at != expiry
-            ):
-                raise SessionExpired("Navigation expiry cannot be extended")
-            view_id = getattr(intent, "view_id", None) if intent.action == "track" else None
-            if (
-                view_id is not None
-                and snapshot is not None
-                and (
-                    snapshot.view.view_id == view_id
-                    or any(
-                        item.prepared is not None
-                        and item.prepared.session_id == snapshot.session_id
-                        and item.prepared.view_id == view_id
-                        for item in record.operations.values()
-                    )
-                )
-            ):
-                raise StaleView("Tracking a new action requires a fresh view generation")
-            prepared = PreparedAction(
-                key=key,
-                intent=intent,
-                session_id=snapshot.session_id if snapshot else secrets.token_urlsafe(18),
-                view_id=view_id or secrets.token_urlsafe(18),
-                expected_version=expected_version,
-                expires_at=expiry,
-                prepared_at=now,
-                fingerprint=digest,
+        if (
+            bound is not None
+            and snapshot is not None
+            and (snapshot.session_id != bound[0] or snapshot.expires_at != bound[1])
+        ):
+            raise SessionExpired("Navigation differs from its authoritative host generation")
+        chosen_session = snapshot.session_id if snapshot else bound[0] if bound else None
+        if intent.expected_session_id is not None and (
+            chosen_session != intent.expected_session_id
+        ):
+            raise SessionExpired("Navigation session generation changed")
+        now = self._now()
+        expiry = (
+            snapshot.expires_at
+            if snapshot
+            else (
+                bound[1]
+                if bound is not None
+                else record.external_session.absolute_expires_at
+                if record.external_session
+                else (intent.expires_at or now + math.ceil(self.config.session_seconds * 1000))
             )
-            record.operations[intent.operation_id] = Operation(
-                digest,
-                prepared,
-                retention_until=now + math.ceil(self.config.recovery_seconds * 1000),
-            )
-            record.pending_id = intent.operation_id
-            self._changed(record)
-            return prepared
+        )
+        if expiry <= now or (
+            snapshot is not None and intent.expires_at is not None and intent.expires_at != expiry
+        ):
+            raise SessionExpired("Navigation expiry cannot be extended")
+        view_id = getattr(intent, "view_id", None) if intent.action == "track" else None
+        if view_id is not None and (
+            (snapshot is not None and snapshot.view.view_id == view_id)
+            or (chosen_session is not None and (chosen_session, view_id) in record.views)
+        ):
+            raise StaleView("Tracking a new action requires a fresh view generation")
+        prepared = PreparedAction(
+            key=key,
+            intent=intent,
+            session_id=chosen_session or secrets.token_urlsafe(18),
+            view_id=view_id or secrets.token_urlsafe(18),
+            expected_version=expected_version,
+            expires_at=expiry,
+            prepared_at=now,
+            fingerprint=digest,
+        )
+        record.operations[intent.operation_id] = Operation(
+            digest,
+            prepared,
+            retention_until=now + math.ceil(self.config.recovery_seconds * 1000),
+        )
+        record.pending_id = intent.operation_id
+        record.views[(prepared.session_id, prepared.view_id)] = intent.operation_id
+        self._changed(record)
+        return prepared
 
     async def checkpoint(
         self,
@@ -260,48 +292,58 @@ class MemoryNavigationRepository(MemoryTokens, MemorySessions):
         coordination_scope: object | None = None,
     ) -> PreparedAction:
         async with self._lock:
-            self._guard_scope(key, coordination_scope)
-            record = self._records.get(key)
-            if record is None:
-                raise OwnershipLost("Navigation reservation is absent")
-            entry = self._operation(record, operation_id)
-            prepared = entry.prepared
-            assert prepared is not None
-            if record.pending_id != operation_id or entry.status not in {"prepared", "unknown"}:
-                raise OwnershipLost("Navigation reservation is no longer current")
-            if prepared.expires_at <= self._now() and effect.state == "started":
-                raise SessionExpired("Navigation authorization expired")
-            if isinstance(effect.result, RenderResult) and any(
-                ref.chat_id != key.chat_id for ref in effect.result.messages
-            ):
-                raise StaleView("Effect messages belong to another conversation")
-            previous = prepared.effects.get(effect.stage)
-            if previous is not None and self._fingerprint(previous) == self._fingerprint(effect):
-                return prepared
-            if previous is None and len(prepared.effects) >= self.config.max_receipts:
-                raise Overloaded("Navigation effect stage capacity exhausted")
-            if payload_size(effect.result) > self.config.max_params_bytes:
-                raise Overloaded("Navigation effect receipt exceeds the payload limit")
-            effects = dict(prepared.effects)
-            if previous is not None:
-                if previous.state == "confirmed":
-                    raise OperationIdConflict("Confirmed navigation effect is immutable")
-                if previous.state == "unknown" and effect.state != "confirmed":
-                    raise RenderUnknown("An uncertain effect cannot be blindly repeated")
-                if previous.state == "started" and effect.state == "started":
-                    raise RenderUnknown("A started effect requires recovery evidence")
-            elif effect.state == "confirmed":
-                raise OwnershipLost("Effect intent must precede confirmation")
-            effects[effect.stage] = effect
-            status = (
-                "unknown"
-                if any(item.state == "unknown" for item in effects.values())
-                else "prepared"
+            return self._checkpoint_locked(
+                key, operation_id=operation_id, effect=effect, coordination_scope=coordination_scope
             )
-            prepared = replace(prepared, effects=effects, status=status)
-            entry.prepared, entry.status = prepared, status
-            self._changed(record)
+
+    def _checkpoint_locked(
+        self,
+        key: ConversationKey,
+        *,
+        operation_id: str,
+        effect: EffectCheckpoint,
+        coordination_scope: object | None = None,
+    ) -> PreparedAction:
+        self._guard_scope(key, coordination_scope)
+        record = self._records.get(key)
+        if record is None:
+            raise OwnershipLost("Navigation reservation is absent")
+        entry = self._operation(record, operation_id)
+        prepared = entry.prepared
+        assert prepared is not None
+        if record.pending_id != operation_id or entry.status not in {"prepared", "unknown"}:
+            raise OwnershipLost("Navigation reservation is no longer current")
+        if prepared.expires_at <= self._now() and effect.state == "started":
+            raise SessionExpired("Navigation authorization expired")
+        if isinstance(effect.result, RenderResult) and any(
+            ref.chat_id != key.chat_id for ref in effect.result.messages
+        ):
+            raise StaleView("Effect messages belong to another conversation")
+        previous = prepared.effects.get(effect.stage)
+        if previous is not None and self._fingerprint(previous) == self._fingerprint(effect):
             return prepared
+        if previous is None and len(prepared.effects) >= self.config.max_receipts:
+            raise Overloaded("Navigation effect stage capacity exhausted")
+        if payload_size(effect.result) > self.config.max_params_bytes:
+            raise Overloaded("Navigation effect receipt exceeds the payload limit")
+        effects = dict(prepared.effects)
+        if previous is not None:
+            if previous.state == "confirmed":
+                raise OperationIdConflict("Confirmed navigation effect is immutable")
+            if previous.state == "unknown" and effect.state != "confirmed":
+                raise RenderUnknown("An uncertain effect cannot be blindly repeated")
+            if previous.state == "started" and effect.state == "started":
+                raise RenderUnknown("A started effect requires recovery evidence")
+        elif effect.state == "confirmed":
+            raise OwnershipLost("Effect intent must precede confirmation")
+        effects[effect.stage] = effect
+        status = (
+            "unknown" if any(item.state == "unknown" for item in effects.values()) else "prepared"
+        )
+        prepared = replace(prepared, effects=effects, status=status)
+        entry.prepared, entry.status = prepared, status
+        self._changed(record)
+        return prepared
 
     async def lookup_operation(self, key: ConversationKey, *, operation_id: str) -> ActionStatus:
         async with self._lock:
@@ -314,70 +356,6 @@ class MemoryNavigationRepository(MemoryTokens, MemorySessions):
                 return ActionStatus("not_found")
             return ActionStatus(entry.status, entry.prepared, entry.result)
 
-    def _complete(self, record: Conversation, mutation: NavigationMutation) -> CommitResult:
-        entry = self._operation(record, mutation.operation_id)
-        prepared = entry.prepared
-        assert prepared is not None
-        if record.pending_id != mutation.operation_id:
-            raise OwnershipLost("Navigation reservation was superseded")
-        if mutation.expected_session_id != prepared.session_id:
-            raise SessionExpired("Navigation session generation changed")
-        if prepared.expires_at <= self._now():
-            raise SessionExpired("Navigation authorization expired")
-        rendered = mutation.rendered
-        if rendered is None or rendered.view_id != prepared.view_id:
-            raise StaleView("Rendered view does not match the reservation")
-        if any(ref.chat_id != prepared.key.chat_id for ref in rendered.messages):
-            raise StaleView("Rendered messages belong to another conversation")
-        if isinstance(rendered, ViewState) and rendered.render_status != "complete":
-            raise RenderUnknown("A partial view cannot complete navigation")
-        confirmed_render = prepared.effects.get("render")
-        if (
-            confirmed_render is not None
-            and confirmed_render.state == "confirmed"
-            and self._fingerprint(confirmed_render.result) != self._fingerprint(rendered)
-        ):
-            raise OperationIdConflict("Completion differs from the confirmed rendering receipt")
-        if any(item.state in {"started", "unknown"} for item in prepared.effects.values()):
-            raise RenderUnknown("Navigation effects remain unresolved")
-        current = self._current(record)
-        old = current.snapshot if current else None
-        if old is not None and old.session_id != prepared.session_id:
-            raise SessionExpired("Navigation session generation changed")
-        now = self._now()
-        history, state = transition(
-            old, prepared, mutation, config=self.config, now=now, fingerprint=self._fingerprint
-        )
-        snapshot = NavigationSnapshot(
-            session_id=prepared.session_id,
-            node_id=prepared.node_id,
-            params=prepared.params,
-            nav_revision=state["nav_revision"],
-            activity_revision=state["activity_revision"],
-            entered_at=state["entered_at"],
-            last_activity_at=state["last_activity_at"],
-            expires_at=prepared.expires_at,
-            view=ViewState(
-                rendered.view_id,
-                rendered.messages,
-                rendered.reply_keyboard_key,
-                rendered.locale,
-                rendered.reply_keyboard_locale,
-            ),
-            history=history,
-        )
-        record.pending_id = None
-        self._changed(record)
-        record.current = VersionedSnapshot(snapshot, record.version)
-        result = CommitResult(snapshot, record.version)
-        entry.result, entry.status = result, "completed"
-        entry.completion_fingerprint = self._fingerprint(mutation)
-        entry.prepared = replace(prepared, rendered=rendered, status="completed")
-        entry.retention_until = now + math.ceil(self.config.recovery_seconds * 1000)
-        heapq.heappush(record.expiry_heap, (entry.retention_until, mutation.operation_id))
-        self._prune(record)
-        return result
-
     async def commit(
         self,
         key: ConversationKey,
@@ -387,66 +365,80 @@ class MemoryNavigationRepository(MemoryTokens, MemorySessions):
         coordination_scope: object | None = None,
     ) -> CommitResult:
         async with self._lock:
-            self._guard_scope(key, coordination_scope)
-            record = self._records.get(key)
-            if record is None:
-                raise SessionExpired("Navigation state is absent")
-            self._prune(record)
-            previous = record.operations.get(mutation.operation_id)
-            if previous is not None and previous.status == "completed":
-                if previous.result is None:
-                    raise OwnershipLost("Completed operation has no receipt")
-                if previous.completion_fingerprint != self._fingerprint(mutation):
-                    raise OperationIdConflict("Completion operation ID has different input")
-                # Completion retries must keep the same session and rendered intent.
-                if previous.result.snapshot.session_id != mutation.expected_session_id or (
-                    mutation.rendered is not None
-                    and previous.prepared is not None
-                    and self._fingerprint(previous.prepared.rendered)
-                    != self._fingerprint(mutation.rendered)
-                ):
-                    raise OperationIdConflict("Completion operation ID has different input")
-                return replace(previous.result, duplicate=True)
-            if mutation.kind == "complete":
-                return self._complete(record, mutation)
-            if mutation.kind != "touch":
-                raise ValueError("Unknown navigation mutation kind")
-            if previous is not None:
-                raise OperationIdConflict("Operation ID belongs to another intent")
-            if record.pending_id is not None:
-                raise PendingAction("A navigation render must be recovered first")
-            current = self._current(record)
-            if current is None or current.snapshot.session_id != mutation.expected_session_id:
-                raise SessionExpired("Navigation session is absent or expired")
-            if current.version != expected_version:
-                raise VersionConflict("Navigation state changed")
-            if len(record.operations) + record.unloaded_operations >= self.config.max_receipts:
-                raise Overloaded("Navigation operation receipt capacity exhausted")
-            now = self._now()
-            snapshot = replace(
-                current.snapshot,
-                activity_revision=current.snapshot.activity_revision
-                + int(mutation.accepted_activity),
-                last_activity_at=now
-                if mutation.accepted_activity
-                else current.snapshot.last_activity_at,
+            return self._commit_locked(
+                key,
+                expected_version=expected_version,
+                mutation=mutation,
+                coordination_scope=coordination_scope,
             )
-            self._changed(record)
-            record.current = VersionedSnapshot(snapshot, record.version)
-            result = CommitResult(snapshot, record.version)
-            record.operations[mutation.operation_id] = Operation(
-                self._fingerprint(mutation),
-                None,
-                "completed",
-                result,
-                now + math.ceil(self.config.recovery_seconds * 1000),
-                self._fingerprint(mutation),
-            )
-            heapq.heappush(
-                record.expiry_heap,
-                (record.operations[mutation.operation_id].retention_until, mutation.operation_id),
-            )
-            return result
+
+    def _commit_locked(
+        self,
+        key: ConversationKey,
+        *,
+        expected_version: str | None,
+        mutation: NavigationMutation,
+        coordination_scope: object | None = None,
+    ) -> CommitResult:
+        self._guard_scope(key, coordination_scope)
+        record = self._records.get(key)
+        if record is None:
+            raise SessionExpired("Navigation state is absent")
+        self._prune(record)
+        previous = record.operations.get(mutation.operation_id)
+        if previous is not None and previous.status == "completed":
+            if previous.result is None:
+                raise OwnershipLost("Completed operation has no receipt")
+            if previous.completion_fingerprint != self._fingerprint(mutation):
+                raise OperationIdConflict("Completion operation ID has different input")
+            # Completion retries must keep the same session and rendered intent.
+            if previous.result.snapshot.session_id != mutation.expected_session_id or (
+                mutation.rendered is not None
+                and previous.prepared is not None
+                and self._fingerprint(previous.prepared.rendered)
+                != self._fingerprint(mutation.rendered)
+            ):
+                raise OperationIdConflict("Completion operation ID has different input")
+            return replace(previous.result, duplicate=True)
+        if mutation.kind == "complete":
+            return complete(self, record, mutation)
+        if mutation.kind != "touch":
+            raise ValueError("Unknown navigation mutation kind")
+        if previous is not None:
+            raise OperationIdConflict("Operation ID belongs to another intent")
+        if record.pending_id is not None:
+            raise PendingAction("A navigation render must be recovered first")
+        current = self._current(record)
+        if current is None or current.snapshot.session_id != mutation.expected_session_id:
+            raise SessionExpired("Navigation session is absent or expired")
+        if current.version != expected_version:
+            raise VersionConflict("Navigation state changed")
+        if len(record.operations) + record.unloaded_operations >= self.config.max_receipts:
+            raise Overloaded("Navigation operation receipt capacity exhausted")
+        now = self._now()
+        snapshot = replace(
+            current.snapshot,
+            activity_revision=current.snapshot.activity_revision + int(mutation.accepted_activity),
+            last_activity_at=now
+            if mutation.accepted_activity
+            else current.snapshot.last_activity_at,
+        )
+        self._changed(record)
+        record.current = VersionedSnapshot(snapshot, record.version)
+        result = CommitResult(snapshot, record.version)
+        record.operations[mutation.operation_id] = Operation(
+            self._fingerprint(mutation),
+            None,
+            "completed",
+            result,
+            now + math.ceil(self.config.recovery_seconds * 1000),
+            self._fingerprint(mutation),
+        )
+        heapq.heappush(
+            record.expiry_heap,
+            (record.operations[mutation.operation_id].retention_until, mutation.operation_id),
+        )
+        return result
 
     async def pending(self, key: ConversationKey) -> PreparedAction | None:
         async with self._lock:

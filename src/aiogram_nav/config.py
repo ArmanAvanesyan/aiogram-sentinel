@@ -1,16 +1,17 @@
 """Explicit validated settings; importing navigation reads no environment."""
 
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Literal, cast
 
 from .errors import ConfigurationError
+from .json import identifier
 
 
 @dataclass(frozen=True)
 class NavigationConfig:
     root: str | None = None
-    engine: Literal["python", "rust"] = "python"
+    engine: Literal["python", "rust"] = field(default="python", kw_only=True)
     session_seconds: float = 3600
     history_limit: int = 20
     recovery_seconds: float = 3600
@@ -27,6 +28,11 @@ class NavigationConfig:
             not isinstance(cast(object, self.root), str) or not self.root
         ):
             raise ConfigurationError("root must be a nonempty node ID")
+        if self.root is not None:
+            try:
+                identifier(self.root, "root")
+            except ValueError as error:
+                raise ConfigurationError(str(error)) from error
         for value in (self.session_seconds, self.recovery_seconds):
             try:
                 valid = (

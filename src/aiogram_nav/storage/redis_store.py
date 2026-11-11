@@ -41,6 +41,8 @@ class RedisStore:
         prefix: str,
         config: NavigationConfig,
         deployment: RedisDeploymentAttestation | None = None,
+        *,
+        storage_format: int | None = None,
     ) -> None:
         if (
             not isinstance(cast(object, prefix), str)
@@ -49,10 +51,19 @@ class RedisStore:
             or any(c.isspace() for c in prefix)
         ):
             raise ConfigurationError("Redis prefix must be bounded and contain no whitespace")
+        try:
+            prefix.encode("utf-8")
+        except UnicodeError as error:
+            raise ConfigurationError("Redis prefix must contain valid Unicode scalars") from error
         if deployment is not None and not isinstance(
             cast(object, deployment), RedisDeploymentAttestation
         ):
             raise ConfigurationError("Expected explicit Redis deployment attestation")
+        if storage_format is not None and (
+            type(storage_format) is not int or storage_format not in (1, 3)
+        ):
+            raise ConfigurationError("Fresh storage_format must be 1 or 3")
+        self.requested_storage_format = storage_format
         self.deployment = deployment
         self.storage_format = 1
         self.prefix, self.config = prefix, config
@@ -109,8 +120,28 @@ class RedisStore:
         await self.connection.time()
         self.initialized = True
 
-    async def read(self, key: ConversationKey) -> tuple[str, MemoryNavigationRepository]:
+    async def read(
+        self,
+        key: ConversationKey,
+        *,
+        operation_id: str = "",
+        token: str = "",
+        reservation_id: str = "",
+        view_id: str = "",
+    ) -> tuple[str, MemoryNavigationRepository]:
         await self.initialize()
+        if self.storage_format == 3:
+            from .redis_ledger import read
+
+            raw, projection = await read(
+                self,
+                key,
+                operation_id=operation_id,
+                token=token,
+                reservation_id=reservation_id,
+                view_id=view_id,
+            )
+            return raw, projection.repository
         values = array(
             await self.connection.script(
                 READ, self.keys(key), [self.profile, self.history, self.member(key)], mutation=False
@@ -135,7 +166,27 @@ class RedisStore:
         scope: object | None = None,
         deadline: Callable[[T], int] | None = None,
         prune: bool = False,
+        operation_id: str = "",
+        token: str = "",
+        reservation_id: str = "",
+        view_id: str = "",
     ) -> T:
+        await self.initialize()
+        if self.storage_format == 3:
+            from .redis_ledger import apply
+
+            return await apply(
+                self,
+                key,
+                callback,
+                scope=scope,
+                deadline=deadline,
+                prune=prune,
+                operation_id=operation_id,
+                token=token,
+                reservation_id=reservation_id,
+                view_id=view_id,
+            )
         for _ in range(16):
             raw, memory = await self.read(key)
             if scope is not None and not self.coordinator.scope_matches(key, scope):

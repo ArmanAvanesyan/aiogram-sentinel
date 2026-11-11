@@ -161,13 +161,14 @@ async def test_process_exit_after_partial_render_recovers_without_resend(
 import asyncio, os, sys
 from redis.asyncio import Redis
 from aiogram_nav.errors import RenderUnknown
+from aiogram_nav import NavigationConfig
 from aiogram_nav.storage.redis import RedisNavigationRepository
 from tests.test_redis_recovery import navigation
 from tests.test_redis_backend import KEY
 from tests.test_nav_recovery import StagedPresenter
 async def main():
     client = Redis.from_url(sys.argv[1])
-    repo = RedisNavigationRepository(redis=client, prefix=sys.argv[2])
+    repo = RedisNavigationRepository(redis=client, prefix=sys.argv[2], config=NavigationConfig(engine=os.environ.get("AIOGRAM_NAV_TEST_ENGINE","python")), storage_format=3 if os.environ.get("AIOGRAM_NAV_TEST_STORAGE_FORMAT")=="3" else None)
     await repo.initialize()
     nav = navigation(repo, StagedPresenter())
     try:

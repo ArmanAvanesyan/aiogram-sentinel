@@ -3,9 +3,9 @@
 Install the initial alpha release in your bot environment:
 
 ```sh
-pip install aiogram-nav==0.2.0
+pip install aiogram-nav==0.3.0
 # Optional persistent storage:
-pip install 'aiogram-nav[redis]==0.2.0'
+pip install 'aiogram-nav[redis]==0.3.0'
 ```
 
 The package requires Python 3.10+ and aiogram 3.22 or newer in the 3.x series. It

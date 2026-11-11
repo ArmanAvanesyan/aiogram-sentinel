@@ -7,12 +7,15 @@ no second acknowledgement or duplicate historical snapshot is retained by a host
 
 from __future__ import annotations
 
+import hashlib
+import json
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from types import MappingProxyType
 from typing import cast
 
 from ..errors import ConfigurationError
+from ..json import identifier
 
 
 def _strings(values: Mapping[str, str]) -> Mapping[str, str]:
@@ -23,6 +26,15 @@ def _strings(values: Mapping[str, str]) -> Mapping[str, str]:
     return MappingProxyType(dict(values))
 
 
+def view_index(view_id: str, session_id: str) -> str:
+    identifier(view_id, "view_id")
+    identifier(session_id, "session_id")
+    raw = json.dumps([session_id, view_id], ensure_ascii=False, separators=(",", ":")).encode(
+        "utf-8"
+    )
+    return "v:" + hashlib.sha256(raw).hexdigest()
+
+
 @dataclass(frozen=True)
 class LedgerRead:
     revision: str | None
@@ -31,6 +43,9 @@ class LedgerRead:
     retained_count: int
     operation_expiry: Mapping[str, int]
     expired: tuple[str, ...] = ()
+    indexes: Mapping[str, str | None] = field(
+        default_factory=lambda: dict[str, str | None](), kw_only=True
+    )
 
     def __post_init__(self) -> None:
         if type(self.retained_count) is not int or self.retained_count < len(self.operations):
@@ -40,6 +55,12 @@ class LedgerRead:
             raise ConfigurationError("Canonical operation expiry must be epoch milliseconds")
         object.__setattr__(self, "operation_expiry", MappingProxyType(dict(self.operation_expiry)))
         object.__setattr__(self, "expired", tuple(self.expired))
+        if any(
+            type(key) is not str or (value is not None and (type(value) is not str or not value))
+            for key, value in self.indexes.items()
+        ):
+            raise ConfigurationError("Canonical index proofs must name their optional owner")
+        object.__setattr__(self, "indexes", MappingProxyType(dict(self.indexes)))
 
     @classmethod
     def from_payload(cls, payload: Mapping[str, object]) -> LedgerRead:
@@ -51,7 +72,7 @@ class LedgerRead:
             "operation_expiry",
             "expired",
         }
-        if set(payload) != expected:
+        if set(payload) - {"indexes"} != expected:
             raise ConfigurationError("Canonical ledger read has unsupported fields")
         for name in ("revision", "hot"):
             if payload[name] is not None and type(payload[name]) is not str:
@@ -60,6 +81,8 @@ class LedgerRead:
             payload["operation_expiry"], Mapping
         ):
             raise ConfigurationError("Canonical ledger read indexes must be mappings")
+        if not isinstance(payload.get("indexes", {}), Mapping):
+            raise ConfigurationError("Canonical ledger lookup proofs must be a mapping")
         expired = payload["expired"]
         if not isinstance(expired, (tuple, list)) or any(
             type(item) is not str for item in cast(tuple[object, ...], expired)
@@ -72,6 +95,7 @@ class LedgerRead:
             cast(int, payload["retained_count"]),
             cast(Mapping[str, int], payload["operation_expiry"]),
             tuple(cast(tuple[str, ...], expired)),
+            indexes=cast(Mapping[str, str | None], payload.get("indexes", {})),
         )
 
     def to_payload(self) -> dict[str, object]:
@@ -82,6 +106,7 @@ class LedgerRead:
             retained_count=self.retained_count,
             operation_expiry=dict(self.operation_expiry),
             expired=list(self.expired),
+            indexes=dict(self.indexes),
         )
 
 
@@ -107,8 +132,6 @@ class LedgerDelta:
             raise ConfigurationError("Terminal retention must be positive milliseconds")
         if not self.terminal_retention_ms.keys() <= self.put.keys():
             raise ConfigurationError("Terminal retention requires its canonical row")
-        if set(self.delete) & self.put.keys():
-            raise ConfigurationError("Canonical row cannot be both deleted and written")
         object.__setattr__(
             self, "terminal_retention_ms", MappingProxyType(dict(self.terminal_retention_ms))
         )

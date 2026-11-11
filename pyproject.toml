@@ -40,7 +40,11 @@ dev = [
     "towncrier>=24.8",
     "tomli>=2; python_version<'3.11'",
     "bandit>=1.8",
+    "pyperf>=2.9",
 ]
+
+[tool.hatch.build.targets.sdist]
+exclude = ["/native/target", "/native/.venv", "/native/dist"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/aiogram_nav"]

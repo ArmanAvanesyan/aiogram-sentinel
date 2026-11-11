@@ -272,3 +272,27 @@ def test_newer_snapshot_record_version_is_not_reinterpreted():
     raw["value"]["value"]["schema_version"] = 2
     with pytest.raises(SchemaUnsupported):
         decode(json.dumps(raw))
+
+
+@pytest.mark.parametrize("malformed", ["\ud800", "\ud83d\ude00"])
+def test_persistable_strings_reject_surrogate_code_units_early(malformed):
+    from aiogram_nav import ConversationKey, InvalidParameters, NavigationIntent, Node
+    from aiogram_nav.json import freeze_object
+
+    with pytest.raises(ValueError):
+        Node(malformed)
+    with pytest.raises(ValueError):
+        ConversationKey(malformed, 1, 2, 2)
+    with pytest.raises(ValueError):
+        NavigationIntent(malformed, "main")
+    with pytest.raises(InvalidParameters):
+        freeze_object({"value": malformed})
+    with pytest.raises(InvalidParameters):
+        freeze_object({malformed: "value"})
+
+
+def test_non_bmp_unicode_scalars_survive_strict_codec():
+    from aiogram_nav.codec import decode, encode
+
+    assert decode(encode({"Հայերեն": "😀"})) == {"Հայերեն": "😀"}
+    assert decode('{"schema_version":3,"value":"\\ud83d\\ude00"}') == "😀"
