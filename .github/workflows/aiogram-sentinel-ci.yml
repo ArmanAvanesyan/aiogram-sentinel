@@ -144,7 +144,7 @@ jobs:
       run: uv run --no-sync pip-audit --format json --output pip-audit-report.json
     - name: Upload scan evidence, including failed scans
       if: always()
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: security-reports
         path: 'distribution/bandit-report.json

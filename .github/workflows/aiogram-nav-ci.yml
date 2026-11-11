@@ -44,7 +44,7 @@ jobs:
         \ examples tools \"$target/\"\n  cp pyproject.toml \"$target/\"\n  cd \"$target\"\n  \"$target/env/bin/python\" tools/check_install.py\n\
         \  \"$target/env/bin/python\" tools/check_version.py\n  \"$target/env/bin/python\" -m pytest -q\n  cd \"$GITHUB_WORKSPACE/distribution\"\
         \ndone\n"
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v7
       with:
         name: distributions
         path: distribution/dist/*
@@ -163,7 +163,7 @@ jobs:
         \ tools/check_install.py --redis\n  \"$target/env/bin/python\" -m pytest -q\n  cd \"$GITHUB_WORKSPACE/distribution\"\
         \ndone\n"
     - if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: redis-coverage-${{ matrix.python }}-${{ matrix.redis-client }}-${{ matrix.redis-server }}
         path: distribution/coverage.xml
@@ -199,7 +199,7 @@ jobs:
       if: always()
       run: uv run --no-sync pip-audit --skip-editable --format=json --output=pip-audit-report.json
     - if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: security-reports
         path: 'distribution/bandit-report.json

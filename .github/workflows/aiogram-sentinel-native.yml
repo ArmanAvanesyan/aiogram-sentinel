@@ -62,7 +62,7 @@ jobs:
         n.RateLimiterCore().allow(b"key",1,60,1)''\''''''
 
         '
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v7
       with:
         name: native-${{ matrix.target }}
         path: distribution/wheelhouse/*.whl
@@ -163,7 +163,7 @@ jobs:
         command: sdist
         args: --manifest-path native/Cargo.toml --out wheelhouse
         working-directory: distribution
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v7
       with:
         name: native-source
         path: distribution/wheelhouse/*.tar.gz

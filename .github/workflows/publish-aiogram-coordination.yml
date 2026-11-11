@@ -26,7 +26,7 @@ jobs:
       run: python tools/verify_release.py --package aiogram-coordination --tag "$GITHUB_REF_NAME" --dist dist --manifest-sha256
         "$MANIFEST_SHA256"
     - run: uvx twine check dist/*.whl dist/*.tar.gz
-    - uses: actions/upload-artifact@v6
+    - uses: actions/upload-artifact@v7
       with:
         name: verified-distributions
         path: 'dist/*.whl

@@ -116,7 +116,7 @@ jobs:
         tests/test_canonical_gc.py tests/test_cold_migration.py
     - name: Check optional example without sending Telegram messages
       run: uv run --no-sync python examples/navigation.py --help
-    - uses: actions/upload-artifact@v6
+    - uses: actions/upload-artifact@v7
       if: always()
       with:
         name: combined-profile-${{ matrix.python }}-${{ matrix.redis }}-${{ matrix.idle }}-${{ matrix.nav }}-${{ matrix.aiogram

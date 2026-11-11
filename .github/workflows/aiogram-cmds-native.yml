@@ -55,7 +55,7 @@ jobs:
       shell: bash
       run: "for version in 3.10 3.11 3.12 3.13 3.14; do\n  docker run --rm -v \"$PWD:/work\" -w /work \"python:$version-alpine\"\
         \ sh -c 'pip install native-dist/*.whl && python tools/smoke_native.py'\ndone\n"
-    - uses: actions/upload-artifact@v6
+    - uses: actions/upload-artifact@v7
       with:
         name: native-${{ matrix.os }}-${{ matrix.target }}
         path: distribution/native-dist/*.whl
@@ -155,7 +155,7 @@ jobs:
         command: sdist
         args: --manifest-path native/Cargo.toml --out native-dist
         working-directory: distribution
-    - uses: actions/upload-artifact@v6
+    - uses: actions/upload-artifact@v7
       with:
         name: native-source
         path: distribution/native-dist/*.tar.gz

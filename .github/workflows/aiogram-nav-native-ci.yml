@@ -63,7 +63,7 @@ jobs:
       run: "for version in 3.10 3.11 3.12 3.13 3.14; do\n  docker run --rm -v \"$PWD:/work\" -w /work \"python:$version-alpine\"\
         \ sh -c 'pip install native-dist/*.whl pytest hypothesis pytest-asyncio && python -m pytest -q -c native/pytest.ini\
         \ -o asyncio_mode=auto -o asyncio_default_fixture_loop_scope=function native/tests'\ndone\n"
-    - uses: actions/upload-artifact@v6
+    - uses: actions/upload-artifact@v7
       with:
         name: native-${{ matrix.os }}-${{ matrix.target }}
         path: distribution/native-dist/*.whl
@@ -195,7 +195,7 @@ jobs:
         native/tests
 
         '
-    - uses: actions/upload-artifact@v6
+    - uses: actions/upload-artifact@v7
       with:
         name: native-source
         path: distribution/native-dist/*.tar.gz

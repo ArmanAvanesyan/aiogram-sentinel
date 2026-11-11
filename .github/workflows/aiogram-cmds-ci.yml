@@ -64,7 +64,7 @@ jobs:
     - run: uv sync --frozen --all-extras --all-groups
     - run: uv run --no-sync pytest tests/unit tests/integration --cov=aiogram_cmds --cov-report=xml:reports/coverage/coverage.xml
         --cov-fail-under=80
-    - uses: actions/upload-artifact@v6
+    - uses: actions/upload-artifact@v7
       if: always()
       with:
         name: coverage-${{ matrix.python }}
@@ -165,7 +165,7 @@ jobs:
         uv run --no-sync pip-audit --skip-editable --format json --output reports/security/pip-audit-report.json
 
         '
-    - uses: actions/upload-artifact@v6
+    - uses: actions/upload-artifact@v7
       if: always()
       with:
         name: security-reports
@@ -217,7 +217,7 @@ jobs:
         redis\") is None; assert importlib.util.find_spec(\"aiogram_idle\") is None; assert importlib.util.find_spec(\"aiogram_nav\"\
         ) is None')\n  (cd \"$target\" && \"$target/env/bin/python\" -m pytest tests/unit tests/integration)\n  (cd \"$target\"\
         \ && \"$target/env/bin/python\" examples/application_profiles.py --dry-run)\ndone\n"
-    - uses: actions/upload-artifact@v6
+    - uses: actions/upload-artifact@v7
       with:
         name: distributions-${{ matrix.python }}
         path: distribution/dist/*
@@ -276,7 +276,7 @@ jobs:
         cache-dependency-glob: distribution/uv.lock
     - run: uv sync --frozen --all-extras --all-groups
     - run: uv run --no-sync pytest tests/perf --benchmark-json=reports/benchmark-results.json
-    - uses: actions/upload-artifact@v6
+    - uses: actions/upload-artifact@v7
       if: always()
       with:
         name: performance-results
