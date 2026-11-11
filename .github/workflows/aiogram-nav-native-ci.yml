@@ -113,7 +113,7 @@ jobs:
       run: 'mkdir -p "$GITHUB_WORKSPACE/distribution"
 
         cp -a "$GITHUB_WORKSPACE/monorepo-source/packages/aiogram-nav/." "$GITHUB_WORKSPACE/distribution/"'
-    - uses: actions/setup-python@v6
+    - uses: actions/setup-python@v7
       with:
         python-version: ${{ matrix.python }}
     - uses: astral-sh/setup-uv@v7

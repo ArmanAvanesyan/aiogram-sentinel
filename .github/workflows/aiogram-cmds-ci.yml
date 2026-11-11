@@ -122,7 +122,7 @@ jobs:
       run: 'mkdir -p "$GITHUB_WORKSPACE/distribution"
 
         cp -a "$GITHUB_WORKSPACE/monorepo-source/packages/aiogram-cmds/." "$GITHUB_WORKSPACE/distribution/"'
-    - uses: actions/setup-python@v6
+    - uses: actions/setup-python@v7
       with:
         python-version: pypy3.10
     - uses: astral-sh/setup-uv@v7

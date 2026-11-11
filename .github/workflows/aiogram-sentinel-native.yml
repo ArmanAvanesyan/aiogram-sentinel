@@ -41,7 +41,7 @@ jobs:
       run: 'mkdir -p "$GITHUB_WORKSPACE/distribution"
 
         cp -a "$GITHUB_WORKSPACE/monorepo-source/packages/aiogram-sentinel/." "$GITHUB_WORKSPACE/distribution/"'
-    - uses: actions/setup-python@v5
+    - uses: actions/setup-python@v7
       with:
         python-version: '3.10'
     - uses: PyO3/maturin-action@v1
@@ -129,7 +129,7 @@ jobs:
       run: 'mkdir -p "$GITHUB_WORKSPACE/distribution"
 
         cp -a "$GITHUB_WORKSPACE/monorepo-source/packages/aiogram-sentinel/." "$GITHUB_WORKSPACE/distribution/"'
-    - uses: actions/setup-python@v5
+    - uses: actions/setup-python@v7
       with:
         python-version: ${{ matrix.python }}
     - uses: actions/download-artifact@v4
@@ -155,7 +155,7 @@ jobs:
       run: 'mkdir -p "$GITHUB_WORKSPACE/distribution"
 
         cp -a "$GITHUB_WORKSPACE/monorepo-source/packages/aiogram-sentinel/." "$GITHUB_WORKSPACE/distribution/"'
-    - uses: actions/setup-python@v5
+    - uses: actions/setup-python@v7
       with:
         python-version: '3.12'
     - uses: PyO3/maturin-action@v1
