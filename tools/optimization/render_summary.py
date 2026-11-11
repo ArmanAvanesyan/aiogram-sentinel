@@ -51,13 +51,27 @@ def collect(reports):
     }
 
 
+def save_figure(figure, path, extension):
+    metadata = {"Date": None} if extension == "svg" else None
+    figure.savefig(path, dpi=160, metadata=metadata)
+    if extension == "svg":
+        path.write_text("\n".join(line.rstrip() for line in path.read_text().splitlines()) + "\n")
+
+
 def draw(data, output):
     import matplotlib
 
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
-    plt.rcParams.update({"font.size": 10, "axes.spines.top": False, "axes.spines.right": False})
+    plt.rcParams.update(
+        {
+            "font.size": 10,
+            "axes.spines.top": False,
+            "axes.spines.right": False,
+            "svg.hashsalt": "aiogram-optimization-20261111",
+        }
+    )
     fig, axes = plt.subplots(1, 2, figsize=(11, 4.6), constrained_layout=True)
     for axis, field, title in zip(
         axes,
@@ -85,7 +99,7 @@ def draw(data, output):
         fontsize=9,
     )
     for extension in ("png", "svg"):
-        fig.savefig(output / ("state-growth." + extension), dpi=160)
+        save_figure(fig, output / ("state-growth." + extension), extension)
     plt.close(fig)
 
     labels = []
@@ -114,7 +128,7 @@ def draw(data, output):
         fontsize=9,
     )
     for extension in ("png", "svg"):
-        fig.savefig(output / ("native-gates." + extension), dpi=160)
+        save_figure(fig, output / ("native-gates." + extension), extension)
     plt.close(fig)
 
 
