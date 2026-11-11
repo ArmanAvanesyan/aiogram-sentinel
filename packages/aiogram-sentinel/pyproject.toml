@@ -48,7 +48,7 @@ dev = [
     "packaging>=26.0",
 ]
 redis = [
-    "redis>=5.0.8,<8",
+    "redis>=8.1.0,<9",
 ]
 sentry = [
     "sentry-sdk>=1.40.0",

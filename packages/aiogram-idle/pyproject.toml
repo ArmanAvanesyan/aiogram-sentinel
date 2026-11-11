@@ -22,7 +22,7 @@ Documentation = "https://armanavanesyan.github.io/aiogram-kit/libraries/aiogram-
 Changelog = "https://github.com/ArmanAvanesyan/aiogram-kit/blob/main/packages/aiogram-idle/CHANGELOG.md"
 
 [project.optional-dependencies]
-redis = ["redis>=5.0.8,<8"]
+redis = ["redis>=8.1.0,<9"]
 nav = ["aiogram-nav>=0.3.0,<0.4"]
 
 [dependency-groups]

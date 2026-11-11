@@ -55,7 +55,7 @@ dev = [
     "twine>=5.0.0",
 ]
 redis = [
-    "redis>=5.0.8,<8",
+    "redis>=8.1.0,<9",
 ]
 
 [project.urls]
