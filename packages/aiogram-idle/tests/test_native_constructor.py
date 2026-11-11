@@ -32,7 +32,7 @@ def test_native_skew_precedes_redis_client_inspection(monkeypatch, abi):
     native_core.cache_clear()
     monkeypatch.setattr(
         "aiogram_idle.engines.importlib.import_module",
-        lambda _: SimpleNamespace(API_VERSION=abi, ENGINE_VERSION="0.3.0"),
+        lambda _: SimpleNamespace(API_VERSION=abi, ENGINE_VERSION="0.3.1"),
     )
     with pytest.raises(ConfigurationError):
         RedisIdleBackend(redis=object(), config=IdleConfig(engine="rust"), storage_format=3)

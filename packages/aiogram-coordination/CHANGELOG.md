@@ -2,6 +2,14 @@
 
 <!-- towncrier release notes start -->
 
+## [0.1.1] - 2026-11-11
+
+### Maintenance
+
+- Move development into the aiogram-kit monorepo while retaining this independent distribution, imports and optional dependencies.
+- Update source, documentation and issue URLs; use independently verified package-specific release tags and artifacts.
+
+
 ## 0.1.0 (2026-11-10)
 
 ### Features

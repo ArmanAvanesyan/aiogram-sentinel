@@ -7,7 +7,7 @@ import aiogram_idle_native as native
 
 def test_version_abi_and_independent_metadata():
     dist = distribution("aiogram-idle-native")
-    assert dist.version == native.ENGINE_VERSION == "0.3.0"
+    assert dist.version == native.ENGINE_VERSION == "0.3.1"
     assert native.API_VERSION == 1
     assert not dist.requires
     assert native.DeadlineCore().keys() == []

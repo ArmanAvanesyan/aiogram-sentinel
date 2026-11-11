@@ -42,13 +42,13 @@ jobs:
 
         uv pip install --no-deps "$RUNNER_TEMP/peer-wheels/aiogram-coordination/"*.whl'
     - run: uv run --no-sync ruff check --extend-exclude monorepo-source .
-    - run: uv run --no-sync ruff format --check --extend-exclude monorepo-source .
+    - run: uv run --no-sync ruff format --check --config 'extend-exclude=["monorepo-source"]' .
     - run: uv run --no-sync pyright
     - name: Verify standalone dependency boundary
       run: uv run --no-sync python -c 'import importlib.util; assert importlib.util.find_spec("aiogram_nav") is None'
     - run: uv run --no-sync pytest --cov=aiogram_idle --cov-report=term-missing
     - run: uv run --no-sync python tools/check_version_tag.py
-    - run: uv run --no-sync towncrier build --draft --version 0.3.0
+    - run: uv run --no-sync towncrier build --draft --version 0.3.1
     - run: uv build
     - run: uv run --no-sync twine check dist/*
     - name: Verify artifacts against published dependencies

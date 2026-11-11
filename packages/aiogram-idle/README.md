@@ -2,7 +2,7 @@
 
 Standalone inactivity policies for aiogram 3, with typed session/activity contracts and memory or optional Redis storage. Add Continue/Cancel questions or quiet cleanup to ordinary handlers and FSM conversations without adopting a navigation framework.
 
-Version `0.3.0` supports Python 3.10+ and aiogram 3.22 or newer within the 3.x series.
+Version `0.3.1` supports Python 3.10+ and aiogram 3.22 or newer within the 3.x series.
 
 ## Compatibility
 
@@ -13,7 +13,7 @@ Version `0.3.0` supports Python 3.10+ and aiogram 3.22 or newer within the 3.x s
 | Redis server | 7 and 8, single writable primary, noeviction |
 | redis-py extra | >=5.0.8,<8; minimum/current in CI |
 | aiogram-coordination | >=0.1.0,<0.2; required, Redis optional |
-| aiogram-nav extra | >=0.3.0,<0.4; never installed by the base package |
+| aiogram-nav extra | >=0.3.1,<0.4; never installed by the base package |
 
 Minimum aiogram is tested on Python 3.10–3.13; Python 3.14 uses current
 aiogram because historical dependency wheels do not support it.
@@ -26,7 +26,7 @@ receipt TTLs, bounded recovery and a canonical optional navigation ledger. Exist
 namespaces require drained, verified migration. Python remains the default engine;
 Rust is an explicitly selected, separately built companion with no runtime fallback.
 See [migration, replay retention and engine selection](docs/migration-0.3.md).
-The 0.3.0 native CPU gate failed (Rust used about 6.6% more CPU on the selected
+The 0.3.1 native CPU gate failed (Rust used about 6.6% more CPU on the selected
 representative workload). The native companion remains source-only: no native PyPI
 release, tag or extra is provided. Keep the default Python engine.
 
@@ -43,12 +43,12 @@ manual navigation routing and staged activation.
 ## Install
 
 ```bash
-python -m pip install aiogram-idle==0.3.0
+python -m pip install aiogram-idle==0.3.1
 # Optional standalone Redis backend:
-python -m pip install 'aiogram-idle[redis]==0.3.0'
+python -m pip install 'aiogram-idle[redis]==0.3.1'
 # Optional navigation integration, with or without Redis:
-python -m pip install 'aiogram-idle[nav]==0.3.0'
-python -m pip install 'aiogram-idle[nav,redis]==0.3.0'
+python -m pip install 'aiogram-idle[nav]==0.3.1'
+python -m pip install 'aiogram-idle[nav,redis]==0.3.1'
 ```
 
 The core runtime dependency is aiogram 3. Redis and aiogram-nav are not installed

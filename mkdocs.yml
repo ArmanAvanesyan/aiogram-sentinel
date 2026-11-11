@@ -36,11 +36,24 @@ nav:
       - aiogram-idle: design/aiogram-idle.md
       - Storage and verification: design/storage-and-verification.md
       - Pre-implementation review: design/review.md
-  - Sentinel: https://armanavanesyan.github.io/aiogram-sentinel/
-  - Cmds: https://armanavanesyan.github.io/aiogram-cmds/
+  - Monorepo and releases: monorepo.md
+  - Libraries:
+      - Coordination: libraries/aiogram-coordination/README.md
+      - Sentinel: libraries/aiogram-sentinel/README.md
+      - Cmds: libraries/aiogram-cmds/README.md
+      - Nav: libraries/aiogram-nav/README.md
+      - Idle: libraries/aiogram-idle/README.md
+
+hooks:
+  - tools/docs_hook.py
 
 plugins:
   - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: false
 
 markdown_extensions:
   - admonition

@@ -50,7 +50,7 @@ jobs:
         if: matrix.nav == 'rust'
         with:
           repository: ArmanAvanesyan/aiogram-nav
-          ref: v0.3.0
+          ref: v0.3.1
           path: nav-native-source
           persist-credentials: false
       - uses: astral-sh/setup-uv@v7

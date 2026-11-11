@@ -84,12 +84,13 @@ for pkg in sorted((root / "packages").iterdir()):
                     )
                     continue
                 if "run" in step:
+                    step["run"] = step["run"].replace("uv run --frozen", "uv run --no-sync")
                     step["run"] = (
                         step["run"]
                         .replace("ruff check .", "ruff check --extend-exclude monorepo-source .")
                         .replace(
                             "ruff format --check .",
-                            "ruff format --check --extend-exclude monorepo-source .",
+                            "ruff format --check --config 'extend-exclude=[\"monorepo-source\"]' .",
                         )
                     )
                 steps.append(step)

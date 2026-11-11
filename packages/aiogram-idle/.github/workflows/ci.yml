@@ -42,7 +42,7 @@ jobs:
         run: uv run --no-sync python -c 'import importlib.util; assert importlib.util.find_spec("aiogram_nav") is None'
       - run: uv run --no-sync pytest --cov=aiogram_idle --cov-report=term-missing
       - run: uv run --no-sync python tools/check_version_tag.py
-      - run: uv run --no-sync towncrier build --draft --version 0.3.0
+      - run: uv run --no-sync towncrier build --draft --version 0.3.1
       - run: uv build
       - run: uv run --no-sync twine check dist/*
       - name: Verify artifacts against published dependencies

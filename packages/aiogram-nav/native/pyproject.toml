@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "aiogram-nav-native"
-version = "0.3.0"
+version = "0.3.1"
 description = "Optional deterministic Rust core for aiogram-nav"
 requires-python = ">=3.10"
 license = "MIT"

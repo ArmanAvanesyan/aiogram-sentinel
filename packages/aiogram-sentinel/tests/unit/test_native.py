@@ -23,7 +23,7 @@ def test_missing_extension_fails_before_mutation():
     "capabilities",
     [
         None,
-        ("aiogram-sentinel-native", 2, "1.3.0"),
+        ("aiogram-sentinel-native", 2, "1.3.1"),
         ("aiogram-sentinel-native", 1, "1.2.0"),
     ],
 )
@@ -205,9 +205,9 @@ def test_unloadable_native_extension(error):
 @pytest.mark.parametrize(
     "capabilities",
     [
-        ("aiogram-sentinel-native", True, "1.3.0"),
-        ["aiogram-sentinel-native", 1, "1.3.0"],
-        ("aiogram-sentinel-native", 1.0, "1.3.0"),
+        ("aiogram-sentinel-native", True, "1.3.1"),
+        ["aiogram-sentinel-native", 1, "1.3.1"],
+        ("aiogram-sentinel-native", 1.0, "1.3.1"),
     ],
 )
 def test_capability_types_are_exact(capabilities):
@@ -247,7 +247,7 @@ def test_partial_native_core_rejected_before_any_operation(kind, missing):
     debounce = dict.fromkeys(("seen", "set", "active", "snapshot"), operation)
     (rate if kind == "RateLimiterCore" else debounce)[missing] = None
     module = SimpleNamespace(
-        capabilities=lambda: ("aiogram-sentinel-native", 1, "1.3.0"),
+        capabilities=lambda: ("aiogram-sentinel-native", 1, "1.3.1"),
         RateLimiterCore=lambda: SimpleNamespace(**rate),
         DebounceCore=lambda: SimpleNamespace(**debounce),
     )

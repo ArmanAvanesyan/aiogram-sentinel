@@ -8,7 +8,7 @@ use pyo3::types::PyModule;
 
 pyo3::create_exception!(_aiogram_idle_native, OwnershipLost, PyRuntimeError);
 pub const API_VERSION: u32 = 1;
-pub const ENGINE_VERSION: &str = "0.3.0";
+pub const ENGINE_VERSION: &str = "0.3.1";
 fn invalid(message: impl Into<String>) -> PyErr {
     PyValueError::new_err(message.into())
 }

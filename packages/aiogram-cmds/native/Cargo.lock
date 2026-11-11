@@ -13,7 +13,7 @@ dependencies = [
 
 [[package]]
 name = "aiogram-cmds-native"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "criterion",
  "pyo3",

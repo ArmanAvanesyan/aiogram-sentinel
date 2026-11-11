@@ -55,7 +55,7 @@ def native_engine(engine: Engine = "python") -> NativeModule | None:
             type(abi) is not int
             or abi != 1
             or type(version) is not str
-            or version != "0.3.0"
+            or version != "0.3.1"
             or any(not callable(getattr(module, name, None)) for name in required)
         ):
             raise NativeEngineError(

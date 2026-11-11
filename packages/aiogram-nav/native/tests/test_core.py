@@ -10,7 +10,7 @@ import pytest
 
 def test_versions():
     assert native.API_VERSION == 1
-    assert native.ENGINE_VERSION == "0.3.0"
+    assert native.ENGINE_VERSION == "0.3.1"
 
 
 @pytest.mark.parametrize(

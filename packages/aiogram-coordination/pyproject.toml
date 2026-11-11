@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "aiogram-coordination"
-version = "0.1.0"
+version = "0.1.1"
 description = "Task-scoped ownership, renewable coordination and session authority contracts for aiogram"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -13,9 +13,12 @@ authors = [{name = "aiogram-coordination contributors"}]
 dependencies = ["aiogram>=3.22,<4"]
 classifiers = ["Development Status :: 3 - Alpha", "Framework :: AsyncIO", "Typing :: Typed", "Programming Language :: Python :: 3.10", "Programming Language :: Python :: 3.11", "Programming Language :: Python :: 3.12", "Programming Language :: Python :: 3.13", "Programming Language :: Python :: 3.14"]
 [project.urls]
-Homepage = "https://github.com/ArmanAvanesyan/aiogram-coordination"
-Repository = "https://github.com/ArmanAvanesyan/aiogram-coordination"
-Issues = "https://github.com/ArmanAvanesyan/aiogram-coordination/issues"
+Homepage = "https://github.com/ArmanAvanesyan/aiogram-kit/tree/main/packages/aiogram-coordination"
+Repository = "https://github.com/ArmanAvanesyan/aiogram-kit"
+Issues = "https://github.com/ArmanAvanesyan/aiogram-kit/issues"
+Documentation = "https://armanavanesyan.github.io/aiogram-kit/libraries/aiogram-coordination/"
+Changelog = "https://github.com/ArmanAvanesyan/aiogram-kit/blob/main/packages/aiogram-coordination/CHANGELOG.md"
+
 [project.optional-dependencies]
 redis = ["redis>=5.0.8,<8"]
 [dependency-groups]

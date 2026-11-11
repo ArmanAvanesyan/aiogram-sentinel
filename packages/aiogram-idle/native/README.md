@@ -1,11 +1,11 @@
 # aiogram-idle-native
 
-Optional deterministic Rust implementation for aiogram-idle 0.3.0. Maturin builds a
+Optional deterministic Rust implementation for aiogram-idle 0.3.1. Maturin builds a
 CPython abi3-py310 wheel. This distribution has no dependency on the base library.
-The base defaults to Python; explicitly selecting Rust requires this exact 0.3.0
+The base defaults to Python; explicitly selecting Rust requires this exact 0.3.1
 companion with API_VERSION 1 before mutation, with no fallback after a failure.
 
-**Release status: source-only, not published or tagged for 0.3.0.** The serial
+**Release status: source-only, not published or tagged for 0.3.1.** The serial
 representative CPU gate failed: Rust used about 6.6% more process CPU than Python
 on `memory-activate-touch/50`, instead of the required 20% reduction. Redis tails
 were near parity, and noisy repeated tail measurements do not establish a benefit.

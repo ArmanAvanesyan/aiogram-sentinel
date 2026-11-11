@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "aiogram-kit"
-version = "0.0.1"
+version = "0.0.2"
 description = "Reserved name for the aiogram-kit meta package: community libraries for aiogram v3"
 readme = "README.md"
 license = {text = "MIT"}
@@ -28,10 +28,11 @@ requires-python = ">=3.10"
 dependencies = []
 
 [project.urls]
-Homepage = "https://github.com/ArmanAvanesyan/aiogram-kit"
+Homepage = "https://github.com/ArmanAvanesyan/aiogram-kit/tree/main/packages/aiogram-kit"
 Repository = "https://github.com/ArmanAvanesyan/aiogram-kit"
 Issues = "https://github.com/ArmanAvanesyan/aiogram-kit/issues"
 Documentation = "https://armanavanesyan.github.io/aiogram-kit/"
+Changelog = "https://github.com/ArmanAvanesyan/aiogram-kit/blob/main/packages/aiogram-kit/CHANGELOG.md"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/aiogram_kit"]

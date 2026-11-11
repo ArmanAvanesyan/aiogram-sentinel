@@ -9,7 +9,7 @@ use serde_json::{json, Value};
 use sha2::{Digest, Sha256};
 
 pub const API_VERSION: u32 = 1;
-pub const ENGINE_VERSION: &str = "0.3.0";
+pub const ENGINE_VERSION: &str = "0.3.1";
 fn invalid(error: impl ToString) -> PyErr {
     PyValueError::new_err(error.to_string())
 }

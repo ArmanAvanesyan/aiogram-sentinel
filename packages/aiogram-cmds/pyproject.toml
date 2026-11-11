@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "aiogram-cmds"
-version = "0.3.0"
+version = "0.3.1"
 description = "Command management library for aiogram v3"
 readme = "README.md"
 license = {text = "MIT"}
@@ -59,9 +59,11 @@ redis = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/ArmanAvanesyan/aiogram-cmds"
-Repository = "https://github.com/ArmanAvanesyan/aiogram-cmds"
-Issues = "https://github.com/ArmanAvanesyan/aiogram-cmds/issues"
+Homepage = "https://github.com/ArmanAvanesyan/aiogram-kit/tree/main/packages/aiogram-cmds"
+Repository = "https://github.com/ArmanAvanesyan/aiogram-kit"
+Issues = "https://github.com/ArmanAvanesyan/aiogram-kit/issues"
+Documentation = "https://armanavanesyan.github.io/aiogram-kit/libraries/aiogram-cmds/"
+Changelog = "https://github.com/ArmanAvanesyan/aiogram-kit/blob/main/packages/aiogram-cmds/CHANGELOG.md"
 
 [tool.hatch.build.targets.sdist]
 exclude = ["native/target", "native/dist"]

@@ -24,11 +24,11 @@ jobs:
       with:
         python-version: '3.12'
     - run: uv sync --frozen --all-extras --all-groups
-    - run: uv run --frozen ruff check --extend-exclude monorepo-source .
-    - run: uv run --frozen ruff format --check --extend-exclude monorepo-source .
-    - run: uv run --frozen pyright
-    - run: uv run --frozen python tools/check_version_tag.py
-    - run: uv run --frozen python examples/application_profiles.py --dry-run
+    - run: uv run --no-sync ruff check --extend-exclude monorepo-source .
+    - run: uv run --no-sync ruff format --check --config 'extend-exclude=["monorepo-source"]' .
+    - run: uv run --no-sync pyright
+    - run: uv run --no-sync python tools/check_version_tag.py
+    - run: uv run --no-sync python examples/application_profiles.py --dry-run
   tests:
     name: Python ${{ matrix.python }}
     runs-on: ubuntu-latest
@@ -57,7 +57,7 @@ jobs:
       with:
         python-version: ${{ matrix.python }}
     - run: uv sync --frozen --all-extras --all-groups
-    - run: uv run --frozen pytest tests/unit tests/integration --cov=aiogram_cmds --cov-report=xml:reports/coverage/coverage.xml
+    - run: uv run --no-sync pytest tests/unit tests/integration --cov=aiogram_cmds --cov-report=xml:reports/coverage/coverage.xml
         --cov-fail-under=80
     - uses: actions/upload-artifact@v6
       if: always()
@@ -94,7 +94,7 @@ jobs:
       with:
         python-version: ${{ matrix.python }}
     - run: uv sync --frozen --all-extras --all-groups
-    - run: uv run --frozen pytest tests/unit tests/integration
+    - run: uv run --no-sync pytest tests/unit tests/integration
   pypy-tests:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
@@ -115,7 +115,7 @@ jobs:
         python-version: pypy3.10
     - uses: astral-sh/setup-uv@v7
     - run: uv sync --frozen --all-extras --all-groups --python pypy3.10
-    - run: uv run --frozen pytest tests/unit tests/integration
+    - run: uv run --no-sync pytest tests/unit tests/integration
   security:
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -137,14 +137,14 @@ jobs:
     - name: Static security analysis
       run: 'mkdir -p reports/security
 
-        uv run --frozen bandit -c pyproject.toml -r src -f json -o reports/security/bandit-report.json
+        uv run --no-sync bandit -c pyproject.toml -r src -f json -o reports/security/bandit-report.json
 
         '
     - name: Audit installed dependencies
       if: '!cancelled()'
       run: 'mkdir -p reports/security
 
-        uv run --frozen pip-audit --skip-editable --format json --output reports/security/pip-audit-report.json
+        uv run --no-sync pip-audit --skip-editable --format json --output reports/security/pip-audit-report.json
 
         '
     - uses: actions/upload-artifact@v6
@@ -183,7 +183,7 @@ jobs:
         python-version: ${{ matrix.python }}
     - run: uv sync --frozen --all-extras --all-groups
     - run: uv build
-    - run: uv run --frozen twine check dist/*
+    - run: uv run --no-sync twine check dist/*
     - name: Verify independent wheel and sdist without optional packages
       shell: bash
       run: "for artifact in dist/*.whl dist/*.tar.gz; do\n  target=$(mktemp -d)\n  uv venv \"$target/env\" --python '${{ matrix.python\
@@ -245,7 +245,7 @@ jobs:
       with:
         python-version: '3.12'
     - run: uv sync --frozen --all-extras --all-groups
-    - run: uv run --frozen pytest tests/perf --benchmark-json=reports/benchmark-results.json
+    - run: uv run --no-sync pytest tests/perf --benchmark-json=reports/benchmark-results.json
     - uses: actions/upload-artifact@v6
       if: always()
       with:

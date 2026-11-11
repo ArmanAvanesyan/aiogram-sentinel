@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "aiogram-nav"
-version = "0.3.0"
+version = "0.3.1"
 description = "Standalone navigation and recoverable screen rendering for aiogram 3"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -15,11 +15,11 @@ dependencies = ["aiogram>=3.22,<4", "aiogram-coordination>=0.1.0,<0.2"]
 classifiers = ["Development Status :: 3 - Alpha", "Framework :: AsyncIO", "Typing :: Typed", "Programming Language :: Python :: 3.10", "Programming Language :: Python :: 3.11", "Programming Language :: Python :: 3.12", "Programming Language :: Python :: 3.13", "Programming Language :: Python :: 3.14"]
 
 [project.urls]
-Homepage = "https://github.com/ArmanAvanesyan/aiogram-nav"
-Documentation = "https://github.com/ArmanAvanesyan/aiogram-nav/tree/main/docs"
-Repository = "https://github.com/ArmanAvanesyan/aiogram-nav"
-Issues = "https://github.com/ArmanAvanesyan/aiogram-nav/issues"
-Changelog = "https://github.com/ArmanAvanesyan/aiogram-nav/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/ArmanAvanesyan/aiogram-kit/tree/main/packages/aiogram-nav"
+Repository = "https://github.com/ArmanAvanesyan/aiogram-kit"
+Issues = "https://github.com/ArmanAvanesyan/aiogram-kit/issues"
+Documentation = "https://armanavanesyan.github.io/aiogram-kit/libraries/aiogram-nav/"
+Changelog = "https://github.com/ArmanAvanesyan/aiogram-kit/blob/main/packages/aiogram-nav/CHANGELOG.md"
 
 [project.optional-dependencies]
 redis = ["redis>=5.0.8,<8"]

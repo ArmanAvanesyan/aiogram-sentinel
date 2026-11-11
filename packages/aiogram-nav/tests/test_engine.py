@@ -30,7 +30,7 @@ def test_partial_or_wrong_abi_rejected_before_backend_creation(monkeypatch):
     with monkeypatch.context() as patch:
         patch.setattr(
             "aiogram_nav.engine.importlib.import_module",
-            lambda name: SimpleNamespace(API_VERSION=1, ENGINE_VERSION="0.3.0"),
+            lambda name: SimpleNamespace(API_VERSION=1, ENGINE_VERSION="0.3.1"),
         )
         with pytest.raises(ConfigurationError, match="ABI"):
             MemoryNavigationRepository(config=NavigationConfig(engine="rust"))
@@ -122,7 +122,7 @@ def test_native_shared_library_load_error_is_configuration_error(monkeypatch):
 
     with monkeypatch.context() as patch:
         patch.setattr("aiogram_nav.engine.importlib.import_module", broken)
-        with pytest.raises(ConfigurationError, match="aiogram-nav-native==0.3.0"):
+        with pytest.raises(ConfigurationError, match="aiogram-nav-native==0.3.1"):
             NavigationConfig(engine="rust")
     native_core.cache_clear()
 
@@ -136,7 +136,7 @@ def test_skewed_native_capabilities_reject_before_redis_namespace_io(monkeypatch
     class Version(str):
         pass
 
-    fake = SimpleNamespace(API_VERSION=1, ENGINE_VERSION="0.3.0")
+    fake = SimpleNamespace(API_VERSION=1, ENGINE_VERSION="0.3.1")
     for name in (
         "Registry",
         "strict_loads",
@@ -150,7 +150,7 @@ def test_skewed_native_capabilities_reject_before_redis_namespace_io(monkeypatch
     if failure == "bool-abi":
         fake.API_VERSION = True
     elif failure == "string-subclass-version":
-        fake.ENGINE_VERSION = Version("0.3.0")
+        fake.ENGINE_VERSION = Version("0.3.1")
     else:
         fake.Registry = lambda raw: SimpleNamespace(root_for=lambda node: node)
 

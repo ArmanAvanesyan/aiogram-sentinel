@@ -2,6 +2,15 @@
 
 <!-- towncrier release notes start -->
 
+## [0.3.1] - 2026-11-11
+
+### Maintenance
+
+- Move development into the aiogram-kit monorepo while retaining this independent distribution, imports and optional dependencies.
+- Update source, documentation and issue URLs; use independently verified package-specific release tags and artifacts.
+- Keep the matching native companion source-only and unpublished pending its existing performance and platform gates. Kernel behavior and ABI are unchanged.
+
+
 ## [0.3.0] - Unreleased
 
 - Add explicitly revisioned immutable compiled command profiles and resolved batch

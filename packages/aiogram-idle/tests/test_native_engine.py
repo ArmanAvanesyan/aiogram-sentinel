@@ -45,13 +45,13 @@ def test_missing_native_fails_at_selection_without_fallback(monkeypatch):
         raise ModuleNotFoundError(name)
 
     monkeypatch.setattr("aiogram_idle.engines.importlib.import_module", unavailable)
-    with pytest.raises(ConfigurationError, match="requires aiogram-idle-native==0.3.0"):
+    with pytest.raises(ConfigurationError, match="requires aiogram-idle-native==0.3.1"):
         require_engine("rust")
     require_engine("python")
     native_core.cache_clear()
 
 
-@pytest.mark.parametrize("version,abi", [("0.2.0", 1), ("0.3.0", 2)])
+@pytest.mark.parametrize("version,abi", [("0.2.0", 1), ("0.3.1", 2)])
 def test_incompatible_native_rejected_before_backend_mutation(monkeypatch, version, abi):
     native_core.cache_clear()
     monkeypatch.setattr(
