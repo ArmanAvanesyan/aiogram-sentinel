@@ -270,6 +270,8 @@ async def test_migration_on_unactivated_namespace_does_not_bootstrap_legacy_stat
 async def test_retained_view_generation_cannot_be_reused(nav_redis_client, engine, backend):
     from aiogram_nav import MemoryNavigationRepository, NavigationIntent, RenderResult, StaleView
 
+    if engine == "rust":
+        pytest.importorskip("aiogram_nav_native")
     config = NavigationConfig(engine=engine)
     repo = (
         MemoryNavigationRepository(config=config, storage_format=3)
