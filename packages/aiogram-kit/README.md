@@ -1,22 +1,23 @@
 # aiogram-kit
 
-[![PyPI](https://img.shields.io/pypi/v/aiogram-kit.svg)](https://pypi.org/project/aiogram-kit/)
-[![License](https://img.shields.io/github/license/aiogram-kit/aiogram-kit.svg)](LICENSE)
+Community libraries for aiogram 3, developed in the [aiogram-kit monorepo](https://github.com/ArmanAvanesyan/aiogram-kit).
 
-**Community libraries for aiogram v3.** This package name is reserved for the future
-`aiogram-kit` meta package. It currently installs nothing but a version marker.
+This distribution is a lightweight reserved umbrella: it provides a version marker and installs
+none of the libraries automatically. Install only the distributions you need:
 
-Use the libraries directly:
+| Distribution | Responsibility |
+| --- | --- |
+| aiogram-coordination | Shared application-owned isolation contracts |
+| aiogram-sentinel | Middleware, throttling and error handling |
+| aiogram-cmds | Localized commands and application-selected profiles |
+| aiogram-nav | Standalone navigation and recoverable rendering |
+| aiogram-idle | Standalone inactivity lifecycle and optional Nav integration |
 
-| Library | What it does | Install |
-|---|---|---|
-| [aiogram-sentinel](https://github.com/ArmanAvanesyan/aiogram-sentinel) | Rate limiting, debouncing and error-handling middleware with memory or Redis storage | `pip install aiogram-sentinel` |
-| [aiogram-cmds](https://github.com/ArmanAvanesyan/aiogram-cmds) | Bot command management with i18n, user profiles and Telegram command scopes | `pip install aiogram-cmds` |
+Redis support is optional. Nav does not require Idle, and Idle's base installation does not
+require Nav. Their shared coordination contracts remain a neutral independent package.
 
-Documentation for all libraries: <https://armanavanesyan.github.io/aiogram-kit/>
+See the [documentation](https://armanavanesyan.github.io/aiogram-kit/) for installation,
+standalone examples, optional integration, development and independent release procedures.
+Existing package names and Python imports are unchanged by the repository migration.
 
-aiogram-kit is a community project and is not affiliated with the aiogram maintainers.
-
-## License
-
-MIT
+This community project is not affiliated with the aiogram maintainers.

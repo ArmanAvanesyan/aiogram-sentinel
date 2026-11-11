@@ -1,9 +1,11 @@
 """Import the installed ABI3 wheel and exercise every advertised CPU capability."""
 
+from importlib.metadata import version
+
 import _aiogram_cmds_native as native
 
 assert type(native.abi_version()) is int and native.abi_version() == 1
-assert native.version() == "0.3.0"
+assert native.version() == version("aiogram-cmds-native")
 assert native.resolve_profile(
     ["start", "help", "start"], ["help"], ["start", "help"]
 ) == ["start", "start"]
