@@ -63,3 +63,29 @@ def test_generated_workflows_preserve_staging_and_schedule_rules():
     triggers = cmds.get(True, cmds.get("on"))
     assert triggers["schedule"] == [{"cron": "0 6 * * 1"}]
     assert "github.ref == 'refs/heads/main'" in cmds["jobs"]["platform-tests"]["if"]
+
+
+def test_cmds_pypy_uses_locked_test_dependencies_without_publication_tools():
+    package = ROOT / "packages/aiogram-cmds"
+    result = module.port(package, package / ".github/workflows/ci.yml")
+    runs = "\n".join(s.get("run", "") for s in result["jobs"]["pypy-tests"]["steps"])
+    assert "uv export --frozen" in runs
+    assert "uv venv --python pypy3.10" in runs
+    assert "--prune pydantic" in runs
+    assert "pydantic>=2.12,<2.13" in runs
+    assert "uv pip install --constraint" in runs
+    assert "hypothesis==6.140.3" in runs
+    assert "--prune hypothesis" in runs
+    assert "uv sync --frozen --all-extras" not in runs
+
+
+def test_cmds_timing_probes_report_results_without_an_unused_benchmark_plugin():
+    package = ROOT / "packages/aiogram-cmds"
+    job = module.port(package, package / ".github/workflows/ci.yml")["jobs"]["performance"]
+    runs = "\n".join(s.get("run", "") for s in job["steps"])
+    assert "--benchmark-json" not in runs
+    assert "--junitxml=reports/performance-results.xml" in runs
+    upload = next(
+        s for s in job["steps"] if s.get("uses", "").startswith("actions/upload-artifact@")
+    )
+    assert upload["with"]["path"] == "distribution/reports/performance-results.xml"
