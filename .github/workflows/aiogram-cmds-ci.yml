@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         path: monorepo-source
         persist-credentials: false
@@ -47,7 +47,7 @@ jobs:
         - '3.13'
         - '3.14'
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         path: monorepo-source
         persist-credentials: false
@@ -88,7 +88,7 @@ jobs:
         - '3.10'
         - '3.13'
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         path: monorepo-source
         persist-credentials: false
@@ -112,7 +112,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         path: monorepo-source
         persist-credentials: false
@@ -137,7 +137,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         path: monorepo-source
         persist-credentials: false
@@ -189,7 +189,7 @@ jobs:
           aiogram: aiogram>=3,<4
           asyncio: pytest-asyncio
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         path: monorepo-source
         persist-credentials: false
@@ -235,7 +235,7 @@ jobs:
         - aiogram==3.0.0
         - aiogram>=3,<4
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         path: monorepo-source
         persist-credentials: false
@@ -260,7 +260,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         path: monorepo-source
         persist-credentials: false

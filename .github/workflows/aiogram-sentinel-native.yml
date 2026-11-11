@@ -31,7 +31,7 @@ jobs:
           manylinux: auto
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         path: monorepo-source
         persist-credentials: false
@@ -72,7 +72,7 @@ jobs:
   rust:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         path: monorepo-source
         persist-credentials: false
@@ -119,7 +119,7 @@ jobs:
           target: x86_64-pc-windows-msvc
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         path: monorepo-source
         persist-credentials: false
@@ -145,7 +145,7 @@ jobs:
   source:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         path: monorepo-source
         persist-credentials: false

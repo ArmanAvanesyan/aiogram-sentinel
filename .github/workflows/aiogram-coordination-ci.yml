@@ -9,7 +9,7 @@ jobs:
   quality:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         path: monorepo-source
         persist-credentials: false
@@ -65,7 +65,7 @@ jobs:
         - python: '3.14'
           aiogram: minimum
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         path: monorepo-source
         persist-credentials: false
@@ -115,7 +115,7 @@ jobs:
       AIOGRAM_COORDINATION_REDIS_URL: redis://localhost:6379/0
       AIOGRAM_COORDINATION_REQUIRE_REDIS: '1'
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         path: monorepo-source
         persist-credentials: false
@@ -152,7 +152,7 @@ jobs:
   security:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         path: monorepo-source
         persist-credentials: false

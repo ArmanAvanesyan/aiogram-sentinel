@@ -60,7 +60,7 @@ jobs:
       AIOGRAM_IDLE_REDIS_URL: redis://localhost:6379/0
       AIOGRAM_IDLE_REQUIRE_REDIS: '1'
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         path: monorepo-source
         persist-credentials: false
