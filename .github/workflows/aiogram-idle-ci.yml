@@ -32,7 +32,7 @@ jobs:
       run: 'mkdir -p "$GITHUB_WORKSPACE/aiogram-idle"
 
         cp -a "$GITHUB_WORKSPACE/monorepo-source/packages/aiogram-idle/." "$GITHUB_WORKSPACE/aiogram-idle/"'
-    - uses: astral-sh/setup-uv@v6
+    - uses: astral-sh/setup-uv@v7
       with:
         enable-cache: true
         cache-dependency-glob: aiogram-idle/uv.lock
@@ -82,7 +82,7 @@ jobs:
       run: 'mkdir -p "$GITHUB_WORKSPACE/aiogram-idle"
 
         cp -a "$GITHUB_WORKSPACE/monorepo-source/packages/aiogram-idle/." "$GITHUB_WORKSPACE/aiogram-idle/"'
-    - uses: astral-sh/setup-uv@v6
+    - uses: astral-sh/setup-uv@v7
       with:
         enable-cache: true
         cache-dependency-glob: aiogram-idle/uv.lock
@@ -110,7 +110,7 @@ jobs:
       run: 'mkdir -p "$GITHUB_WORKSPACE/aiogram-idle"
 
         cp -a "$GITHUB_WORKSPACE/monorepo-source/packages/aiogram-idle/." "$GITHUB_WORKSPACE/aiogram-idle/"'
-    - uses: astral-sh/setup-uv@v6
+    - uses: astral-sh/setup-uv@v7
       with:
         enable-cache: true
         cache-dependency-glob: aiogram-idle/uv.lock
@@ -176,7 +176,7 @@ jobs:
       run: 'mkdir -p "$GITHUB_WORKSPACE/aiogram-idle"
 
         cp -a "$GITHUB_WORKSPACE/monorepo-source/packages/aiogram-idle/." "$GITHUB_WORKSPACE/aiogram-idle/"'
-    - uses: astral-sh/setup-uv@v6
+    - uses: astral-sh/setup-uv@v7
       with:
         enable-cache: true
         cache-dependency-glob: aiogram-idle/uv.lock
@@ -227,7 +227,7 @@ jobs:
       run: 'mkdir -p "$GITHUB_WORKSPACE/aiogram-idle"
 
         cp -a "$GITHUB_WORKSPACE/monorepo-source/packages/aiogram-idle/." "$GITHUB_WORKSPACE/aiogram-idle/"'
-    - uses: astral-sh/setup-uv@v6
+    - uses: astral-sh/setup-uv@v7
       with:
         cache-dependency-glob: aiogram-idle/uv.lock
     - run: uv sync --frozen --extra redis --python 3.12
@@ -267,7 +267,7 @@ jobs:
       run: 'mkdir -p "$GITHUB_WORKSPACE/aiogram-idle"
 
         cp -a "$GITHUB_WORKSPACE/monorepo-source/packages/aiogram-idle/." "$GITHUB_WORKSPACE/aiogram-idle/"'
-    - uses: astral-sh/setup-uv@v6
+    - uses: astral-sh/setup-uv@v7
       with:
         enable-cache: true
         cache-dependency-glob: aiogram-idle/uv.lock
