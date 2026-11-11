@@ -65,3 +65,22 @@ publication and a `[native]` extra remain withheld unless its measured benefit
 and realistic p95 gates pass. Existing microbenchmarks are reported honestly in
 `native/BENCHMARKS.md`; a published-old-version improvement does not establish a
 native-over-optimized-Python improvement.
+
+## Independent native qualification verdict
+
+The repeated serial installed-artifact qualification failed the required native
+benefit gate. On the preselected `memory-track/50` workload, Rust/Python process
+CPU was 1.2173843 (Rust 21.7% slower); individual-update p95 was 1.224. Whole Redis
+protected-handler p95 ratios were 1.0014 for no-op and 1.0121 for track. Neither
+near-parity Redis latency nor a published-baseline improvement satisfies the
+required 20% native CPU benefit. Native PyPI publication, a native release tag and
+an advertised `[native]` extra are therefore withheld. Functional Rust source and
+platform/parity CI remain available for future optimization.
+
+The optimized Python whole-handler profile used three library Redis round trips
+for no-op and eight for tracked navigation, below the five/twenty budgets. At age
+50 the tracked update transferred approximately 16.8 KB sent and 21.1 KB received.
+These measurements include client traffic separately from Lua internal commands.
+Independent evidence is maintained in Kit's `nav-serial/native-gate.json`; it used
+the exact base/native artifact hashes above with repeated serial runs. No native
+publication is authorized by this result.

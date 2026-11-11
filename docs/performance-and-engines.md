@@ -175,3 +175,15 @@ index-count witness detects missing reverse-index fields before reads, garbage
 collection or writes. Selected pointers are validated against their canonical
 owner row. Coordinated external modification of both the index and its witness
 is outside the storage corruption model; Redis keys remain library-owned.
+
+### 0.3.0 native qualification result
+
+The independent repeated serial installed-artifact gate did not qualify the
+native companion for publication. Rust consumed 21.7% more process CPU than the
+optimized Python engine on the preselected `memory-track/50` workload; its
+individual-update p95 was 22.4% higher. Whole-handler Redis latency remained near
+parity, which does not satisfy the required 20% CPU benefit. The pure Python
+package can release independently. Native source and platform CI remain, but no
+native PyPI package, release tag or `[native]` extra is published for this result.
+Selecting Rust requires an explicitly built, exact-version local companion;
+ordinary installations continue to use Python.
