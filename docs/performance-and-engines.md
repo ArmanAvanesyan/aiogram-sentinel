@@ -70,7 +70,8 @@ cutoff. Active controls are independent of terminal replay retention, so a still
 current keyboard does not become invalid just because its render receipt expired.
 
 The replay promise is finite: `recovery_seconds` defaults to 3600 seconds from the
-terminal commit. Unexpired receipts and unresolved evidence are never evicted to
+terminal commit. In Nav this setting controls terminal receipt retention only;
+prepared and unknown operations have no automatic expiry. Unexpired receipts and unresolved evidence are never evicted to
 admit another operation. Capacity exhaustion raises `Overloaded`. Expired terminal
 receipts can be reclaimed, allowing paced traffic to exceed lifetime capacity.
 `ActionStatus("not_found")` means **not retained**, not **never executed**. After the

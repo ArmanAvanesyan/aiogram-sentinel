@@ -33,6 +33,8 @@ This is source verification, not publication or performance qualification.
   regressions passed.
 - Minimum base wheel (Python 3.10 / aiogram 3.22): 327 passed, 125 optional tests
   skipped, with Redis/Idle/native absent; installed version and `py.typed` checked.
+- Current base source install (Python 3.12 / aiogram 3.31): 327 passed, 125
+  optional tests skipped, with Redis/Idle/native absent.
 - Native clean extracted-sdist rebuild: 51 parity/property tests passed. Native
   unit/Clippy/Rustfmt and local Python 3.10/3.12/3.14 parity passed separately.
 
