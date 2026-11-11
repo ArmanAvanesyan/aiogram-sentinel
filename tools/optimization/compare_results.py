@@ -76,6 +76,22 @@ def digest(value: object) -> bool:
     return isinstance(value, str) and re.fullmatch(r"[a-f0-9]{64}", value) is not None
 
 
+def peer_artifacts(value: dict) -> bool:
+    if "peer_artifacts_sha256" not in value:
+        return True
+    peers = value["peer_artifacts_sha256"]
+    return (
+        isinstance(peers, dict)
+        and bool(peers)
+        and all(
+            isinstance(name, str)
+            and re.fullmatch(r"[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?", name) is not None
+            and digest(checksum)
+            for name, checksum in peers.items()
+        )
+    )
+
+
 def provenance_failures(runs: list[dict]) -> list[str]:
     failures = []
     for field in ("sha256", "path", "run_id"):
@@ -91,7 +107,17 @@ def provenance_failures(runs: list[dict]) -> list[str]:
         value = item.get("qualification_provenance")
         if (
             not isinstance(value, dict)
-            or set(value) != {"base_artifact_sha256", "native_artifact_sha256", "driver_sha256"}
+            or set(value)
+            not in (
+                {"base_artifact_sha256", "native_artifact_sha256", "driver_sha256"},
+                {
+                    "base_artifact_sha256",
+                    "native_artifact_sha256",
+                    "driver_sha256",
+                    "peer_artifacts_sha256",
+                },
+            )
+            or not peer_artifacts(value)
             or not digest(value.get("base_artifact_sha256"))
             or not digest(value.get("driver_sha256"))
             or (item["engine"] == "python" and value.get("native_artifact_sha256") is not None)
@@ -109,6 +135,9 @@ def provenance_failures(runs: list[dict]) -> list[str]:
             != 1
         ):
             failures.append("Mismatched qualification provenance: native_artifact_sha256")
+        peers = [value.get("peer_artifacts_sha256", {}) for _, value in proven]
+        if any(value != peers[0] for value in peers[1:]):
+            failures.append("Mismatched qualification provenance: peer_artifacts_sha256")
     return failures
 
 

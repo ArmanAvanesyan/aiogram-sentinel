@@ -21,6 +21,8 @@ Build and review the candidate base and native wheels in their owning repository
 Install the exact local artifacts into a fresh environment outside the checkout.
 Keep their SHA256 manifests: qualification provenance uses the installed PEP610
 archive digest and must match those independently reviewed release assets.
+For local uv installs that omit the digest, the controller hashes the local wheel
+only after matching every installed archive member against that wheel.
 An index-only install without an archive digest can still be measured, but its
 results cannot qualify a native release through this gate.
 
@@ -81,3 +83,15 @@ matching project/version/tag, exact wheel-platform allowlist, ABI3, distribution
 metadata, module placement and independent checksums. `publish-native.yml` is the
 reusable workflow template. Functional platform CI, clean wheel/sdist installs,
 independent review and measured qualification remain separate required gates.
+
+## Render the consolidated figures
+
+```sh
+uv run --no-project --with matplotlib python tools/optimization/render_summary.py \
+  --output reports/2026-11-11-optimization-program/figures
+```
+
+This produces PNG/SVG and chart-data.json with input digests. Storage plots show
+measured hot state and total retained JSON separately; old workloads are never
+extrapolated beyond their measured checkpoints. The CPU chart does not substitute
+for the latency, functional or artifact gates.

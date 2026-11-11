@@ -122,3 +122,29 @@ def test_hot_and_cold_key_classification_excludes_indexes():
     assert helper.classify_redis_key(b"fixture:receipt:abc:def", "fixture") == "cold_receipt"
     assert helper.classify_redis_key(b"fixture:result:abc:def", "fixture") == "cold_result"
     assert helper.classify_redis_key(b"fixture:receipt-index:abc", "fixture") == "other"
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "target,staged,expected",
+    [(3, True, [(1, 2), (2, 3)]), (2, True, [(1, 2)]), (3, False, [(1, 3)])],
+)
+async def test_activation_respects_public_idle_stages_and_nav_direct(target, staged, expected):
+    class Store:
+        def __init__(self):
+            self.calls = []
+
+        async def initialize(self):
+            pass
+
+        async def activate_storage_format(self, **kwargs):
+            if staged:
+                assert kwargs["target"] == kwargs["expected"] + 1
+            assert kwargs["old_workers_drained"] is True
+            assert kwargs["dry_run"] is False
+            assert kwargs["operation_id"] == f"benchmark-format-{kwargs['target']}"
+            self.calls.append((kwargs["expected"], kwargs["target"]))
+
+    store = Store()
+    await module.activate_format(store, target, staged=staged)
+    assert store.calls == expected

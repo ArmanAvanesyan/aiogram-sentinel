@@ -19,8 +19,10 @@ from pathlib import Path
 
 PACKAGES = ("aiogram-sentinel", "aiogram-cmds", "aiogram-nav", "aiogram-idle")
 PROBE_COMMON = """
-import hashlib, importlib, importlib.metadata, json, sys
+import hashlib, importlib, importlib.metadata, json, sys, zipfile
 from pathlib import Path
+from urllib.parse import urlsplit
+from urllib.request import url2pathname
 MODULES = {
     'aiogram-sentinel-native': '_aiogram_sentinel_native',
     'aiogram-cmds-native': '_aiogram_cmds_native',
@@ -39,6 +41,23 @@ def installed(name):
     digest = archive.get('hashes', {}).get('sha256')
     if not digest and archive.get('hash', '').startswith('sha256='):
         digest = archive['hash'].split('=', 1)[1]
+    source = urlsplit(direct.get('url', ''))
+    if source.scheme == 'file' and source.netloc in ('', 'localhost'):
+        artifact = Path(url2pathname(source.path))
+        if artifact.suffix == '.whl' and artifact.is_file():
+            actual = hashlib.sha256(artifact.read_bytes()).hexdigest()
+            if digest and actual != digest:
+                raise RuntimeError('Local wheel differs from recorded archive digest')
+            with zipfile.ZipFile(artifact) as wheel:
+                for member in wheel.infolist():
+                    if member.is_dir() or member.filename.endswith('.dist-info/RECORD'):
+                        continue
+                    if '.data/' in member.filename or '..' in Path(member.filename).parts:
+                        raise RuntimeError('Unsupported wheel layout for installed provenance')
+                    target = distribution.locate_file(member.filename)
+                    if not target.is_file() or target.read_bytes() != wheel.read(member):
+                        raise RuntimeError('Installed files differ from the local wheel artifact')
+            digest = actual
     return {'distribution': name, 'version': distribution.version,
             'module': str(package.__file__), 'python': sys.version,
             'module_sha256': hashlib.sha256(Path(package.__file__).read_bytes()).hexdigest(),
@@ -105,6 +124,13 @@ def main() -> int:
     parser.add_argument("--repositories", type=Path, default=Path(__file__).resolve().parents[3])
     parser.add_argument("--output-dir", required=True, type=Path)
     parser.add_argument("--redis-url")
+    parser.add_argument(
+        "--peer-package",
+        action="append",
+        choices=PACKAGES,
+        default=[],
+        help="Verify a combined peer and its matching native core in both engine profiles",
+    )
     parser.add_argument(
         "--driver-arg",
         action="append",
@@ -174,6 +200,26 @@ def main() -> int:
                     if row["native_installed"]["version"] != row["installed"]["version"]:
                         raise ValueError("Native and base versions differ")
                     probes.append(row["native_installed"])
+                peer_probes = []
+                for peer in args.peer_package:
+                    if peer == package:
+                        raise ValueError("A peer must differ from the measured base package")
+                    pair = []
+                    for name in (peer, peer + "-native"):
+                        pair.append(
+                            json.loads(
+                                subprocess.check_output(
+                                    [str(executable), "-I", "-c", PROBE, name],
+                                    cwd=directory,
+                                    text=True,
+                                )
+                            )
+                        )
+                    if pair[0]["version"] != pair[1]["version"]:
+                        raise ValueError("Combined peer base/native versions differ")
+                    peer_probes.extend(pair)
+                row["peer_installed"] = peer_probes
+                probes.extend(peer_probes)
                 environment = dict(os.environ)
                 for variable in ("PYTHONPATH", "PYTHONHOME", "PYTHONUSERBASE"):
                     environment.pop(variable, None)
@@ -233,6 +279,10 @@ def main() -> int:
                         json.dumps(row["driver_files_sha256"], sort_keys=True).encode()
                     ).hexdigest(),
                 }
+                if peer_probes:
+                    document["qualification_provenance"]["peer_artifacts_sha256"] = {
+                        peer["distribution"]: peer["artifact_sha256"] for peer in peer_probes
+                    }
                 result.write_text(json.dumps(document, indent=2) + "\n")
             row["status"] = "completed"
         except (OSError, ValueError, subprocess.SubprocessError) as error:

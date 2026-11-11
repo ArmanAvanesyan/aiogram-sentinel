@@ -75,3 +75,58 @@ def test_reserved_driver_flags_cannot_override_profile(tmp_path):
     ]:
         with pytest.raises(ValueError, match="cannot override"):
             MODULE.benchmark_command("python", [], tmp_path / "run.py", "python", "out", extra)
+
+
+def test_local_uv_wheel_without_recorded_digest_requires_installed_file_parity(
+    tmp_path, monkeypatch
+):
+    import hashlib
+    import json
+    import types
+    import zipfile
+
+    installed = tmp_path / "site-packages"
+    module = installed / "demo_pkg" / "__init__.py"
+    module.parent.mkdir(parents=True)
+    module.write_text("VERSION = '1.0'\n")
+    archive = tmp_path / "demo_pkg-1.0-py3-none-any.whl"
+    with zipfile.ZipFile(archive, "w") as wheel:
+        wheel.writestr("demo_pkg/__init__.py", module.read_bytes())
+        wheel.writestr("demo_pkg-1.0.dist-info/RECORD", "")
+    namespace = {}
+    exec(MODULE.PROBE_COMMON, namespace)
+    importer = namespace["importlib"]
+    original_import = importer.import_module
+    original_distribution = importer.metadata.distribution
+
+    class Distribution:
+        version = "1.0"
+
+        def read_text(self, name):
+            assert name == "direct_url.json"
+            return json.dumps({"url": archive.as_uri(), "archive_info": {}})
+
+        def locate_file(self, name):
+            return installed / name
+
+    monkeypatch.setattr(
+        importer,
+        "import_module",
+        lambda name, *args: (
+            types.SimpleNamespace(__file__=str(module))
+            if name == "demo_pkg"
+            else original_import(name, *args)
+        ),
+    )
+    monkeypatch.setattr(
+        importer.metadata,
+        "distribution",
+        lambda name: Distribution() if name == "demo-pkg" else original_distribution(name),
+    )
+    probe = namespace["installed"]("demo-pkg")
+    assert probe["artifact_sha256"] == hashlib.sha256(archive.read_bytes()).hexdigest()
+    module.write_text("VERSION = 'tampered'\n")
+    import pytest
+
+    with pytest.raises(RuntimeError, match="Installed files differ"):
+        namespace["installed"]("demo-pkg")

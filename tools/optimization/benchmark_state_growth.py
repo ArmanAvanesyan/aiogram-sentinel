@@ -73,16 +73,17 @@ def config(cls, *, engine, **kwargs):
     return cls(**kwargs)
 
 
-async def activate_format(store, target):
+async def activate_format(store, target, *, staged=False):
     if hasattr(store, "initialize"):
         await store.initialize()
-    await store.activate_storage_format(
-        operation_id=f"benchmark-format-{target}",
-        expected=1,
-        target=target,
-        old_workers_drained=True,
-        dry_run=False,
-    )
+    for version in range(2, target + 1) if staged else (target,):
+        await store.activate_storage_format(
+            operation_id=f"benchmark-format-{version}",
+            expected=version - 1 if staged else 1,
+            target=version,
+            old_workers_drained=True,
+            dry_run=False,
+        )
 
 
 class FakeScreens:
@@ -165,7 +166,7 @@ async def fixture(args, client, prefix):
             store = RedisIdleBackend(redis=client, prefix=prefix, config=settings)
         target = 3 if args.storage_format3 else 2 if authority else None
         if target:
-            await activate_format(store, target)
+            await activate_format(store, target, staged=True)
         runtime = IdleRuntime(
             backend=store,
             config=settings,

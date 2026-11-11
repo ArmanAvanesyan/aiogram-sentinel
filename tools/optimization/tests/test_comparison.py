@@ -182,3 +182,51 @@ def test_prespecified_latency_cannot_be_replaced_with_cpu_samples():
     result = module.compare(runs("python"), runs("rust", 0.5), ["core"], ["core"])
     assert not result["qualified"]
     assert "Insufficient individual latency samples: core" in result["failures"]
+
+
+def test_identical_optional_peer_artifacts_qualify():
+    a, b = runs("python"), runs("rust", 0.5)
+    peers = {"aiogram-nav": "d" * 64, "aiogram-nav-native": "e" * 64}
+    for item in a + b:
+        item["qualification_provenance"]["peer_artifacts_sha256"] = dict(peers)
+    assert module.compare(a, b, ["core"])["qualified"]
+
+
+@pytest.mark.parametrize(
+    "peers",
+    [
+        None,
+        {},
+        [],
+        "hash",
+        {"": "d" * 64},
+        {"bad name": "d" * 64},
+        {"../nav": "d" * 64},
+        {1: "d" * 64},
+        {"aiogram-nav": None},
+        {"aiogram-nav": "invalid"},
+        {"aiogram-nav": "D" * 64},
+    ],
+)
+def test_invalid_optional_peer_artifacts_fail_qualification(peers):
+    a, b = runs("python"), runs("rust", 0.5)
+    for item in a + b:
+        item["qualification_provenance"]["peer_artifacts_sha256"] = peers
+    assert not module.compare(a, b, ["core"])["qualified"]
+
+
+@pytest.mark.parametrize("difference", ["missing", "hash", "distribution"])
+def test_peer_artifacts_must_match_across_all_engines(difference):
+    a, b = runs("python"), runs("rust", 0.5)
+    for item in a + b:
+        item["qualification_provenance"]["peer_artifacts_sha256"] = {"aiogram-nav": "d" * 64}
+    changed = b[1]["qualification_provenance"]
+    if difference == "missing":
+        changed.pop("peer_artifacts_sha256")
+    elif difference == "hash":
+        changed["peer_artifacts_sha256"] = {"aiogram-nav": "e" * 64}
+    else:
+        changed["peer_artifacts_sha256"] = {"aiogram-idle": "d" * 64}
+    result = module.compare(a, b, ["core"])
+    assert not result["qualified"]
+    assert "Mismatched qualification provenance: peer_artifacts_sha256" in result["failures"]
