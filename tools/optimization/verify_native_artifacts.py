@@ -1,6 +1,7 @@
 """Validate an exact companion release before Trusted Publishing.
 
-Run with Python 3.11+ against an isolated artifact directory. This tool never
+Run with Python 3.10+ (tomli required on 3.10) against an isolated artifact directory.
+This tool never
 imports a wheel, extracts an archive, rebuilds artifacts or contacts a service.
 """
 
@@ -15,7 +16,11 @@ import tarfile
 import zipfile
 from pathlib import Path, PurePosixPath
 
-import tomllib
+try:
+    import tomllib
+except ModuleNotFoundError:  # Python 3.10 tooling profile
+    import tomli as tomllib
+
 
 TARGETS = frozenset(
     {

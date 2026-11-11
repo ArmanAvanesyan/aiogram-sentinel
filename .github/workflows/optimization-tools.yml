@@ -33,7 +33,7 @@ jobs:
         run: >-
           uv run --no-project --python '${{ matrix.python }}'
           --with 'pytest>=8,<10' --with 'pytest-asyncio>=0.26,<2'
-          --with 'redis>=5,<8' pytest -q
+          --with 'redis>=5,<8' --with 'tomli>=2,<3' pytest -q
           -o asyncio_default_fixture_loop_scope=function tools/optimization/tests
       - name: Lint tool sources
         run: uvx ruff check tools/optimization
