@@ -1,0 +1,27 @@
+name: Changelog
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, reopened, synchronize, labeled, unlabeled]
+
+permissions:
+  contents: read
+
+jobs:
+  changelog:
+    if: '!contains(github.event.pull_request.labels.*.name, ''skip news'')'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: '3.12'
+      - name: Check fragments
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: uvx towncrier check --compare-with "$BASE_SHA"

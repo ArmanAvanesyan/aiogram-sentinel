@@ -1,0 +1,25 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+*.egg-info/
+.env
+.env.*
+!.env.example
+site/
+.mypy_cache/
+.pyright/
+coverage.xml
+bandit-report.json
+pip-audit-report.json
+reports/generated/
+.DS_Store
+
+# Optional native companion build products
+native/target/
+native/.venv/
+native/dist/

@@ -1,8 +1,8 @@
-site_name: aiogram-sentinel
-site_description: Edge hygiene library for aiogram v3
-site_url: https://armanavanesyan.github.io/aiogram-sentinel/
-repo_url: https://github.com/ArmanAvanesyan/aiogram-sentinel
-repo_name: ArmanAvanesyan/aiogram-sentinel
+site_name: aiogram-kit
+site_description: Community libraries for aiogram v3
+site_url: https://armanavanesyan.github.io/aiogram-kit/
+repo_url: https://github.com/ArmanAvanesyan/aiogram-kit
+repo_name: ArmanAvanesyan/aiogram-kit
 
 theme:
   name: material
@@ -21,8 +21,6 @@ theme:
         name: Switch to light mode
   features:
     - navigation.tabs
-    - navigation.sections
-    - navigation.expand
     - navigation.top
     - search.highlight
     - search.suggest
@@ -30,72 +28,47 @@ theme:
 
 nav:
   - Home: index.md
-  - Getting Started:
-    - Quickstart: quickstart.md
-    - Installation: installation.md
-  - Tutorials:
-    - Basic Protection: tutorials/basic-protection.md
-    - Redis Storage: tutorials/redis-storage.md
-    - Advanced Configuration: tutorials/advanced-configuration.md
-    - Policy Patterns: tutorials/policy-patterns.md
-  - Configuration: configuration.md
-  - Application integration: application-integration.md
-  - Migration to 1.2: migration-1.2.md
-  - API Reference:
-    - Core: api/core.md
-    - Policy Registry: api/policy-registry.md
-    - Keys & Scopes: api/keys-scopes.md
-    - Storage: api/storage.md
-  - Architecture:
-    - Overview: ARCHITECTURE.md
-    - Performance: performance.md
-  - Project:
-    - Release Process: releasing.md
-    - Roadmap: ROADMAP.md
-  - Help:
-    - FAQ: faq.md
-    - Troubleshooting: troubleshooting.md
-  - Development:
-    - Contributing: https://github.com/ArmanAvanesyan/aiogram-sentinel/blob/main/CONTRIBUTING.md
-    - Testing: TESTING.md
-    - Changelog: https://github.com/ArmanAvanesyan/aiogram-sentinel/blob/main/CHANGELOG.md
+  - Standalone idle recipe: standalone-idle.md
+  - Standalone navigation recipe: standalone-nav.md
+  - Design plans:
+      - Programme and Kit integration: design/index.md
+      - aiogram-nav: design/aiogram-nav.md
+      - aiogram-idle: design/aiogram-idle.md
+      - Storage and verification: design/storage-and-verification.md
+      - Pre-implementation review: design/review.md
+  - Monorepo and releases: monorepo.md
+  - Libraries:
+      - Coordination: libraries/aiogram-coordination/README.md
+      - Sentinel: libraries/aiogram-sentinel/README.md
+      - Cmds: libraries/aiogram-cmds/README.md
+      - Nav: libraries/aiogram-nav/README.md
+      - Idle: libraries/aiogram-idle/README.md
+
+hooks:
+  - tools/docs_hook.py
 
 plugins:
   - search
   - mkdocstrings:
       handlers:
         python:
-          paths: [src]
           options:
-            docstring_style: google
-            show_source: true
-            show_root_heading: true
-            show_root_toc_entry: false
-            merge_init_into_class: true
-            separate_signature: true
+            show_source: false
 
 markdown_extensions:
   - admonition
-  - pymdownx.details
-  - pymdownx.superfences:
-      custom_fences:
-        - name: mermaid
-          class: mermaid
-          format: !!python/name:pymdownx.superfences.fence_code_format
-  - pymdownx.tabbed:
-      alternate_style: true
-  - pymdownx.highlight:
-      anchor_linenums: true
-  - pymdownx.inlinehilite
-  - pymdownx.snippets
   - attr_list
   - md_in_html
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.superfences
   - toc:
       permalink: true
 
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/ArmanAvanesyan/aiogram-sentinel
+      link: https://github.com/ArmanAvanesyan
     - icon: fontawesome/brands/python
-      link: https://pypi.org/project/aiogram-sentinel/
+      link: https://pypi.org/project/aiogram-kit/

@@ -1,0 +1,33 @@
+{
+  "captured_at": 1794351026.058996,
+  "platform": "macOS-15.8.1-x86_64-i386-64bit-Mach-O",
+  "machine": "x86_64",
+  "cpu_count": 16,
+  "python_driver": "3.14.6 (main, Jun 10 2026, 10:03:53) [Clang 17.0.0 (clang-1700.6.4.2)]",
+  "rustc": "rustc 1.97.1 (8bab26f4f 2026-07-14)",
+  "cargo": "cargo 1.97.1 (c980f4866 2026-06-30)",
+  "published_baselines": {
+    "aiogram-sentinel": {
+      "version": "1.2.0",
+      "tag": "v1.2.0",
+      "commit": "ba4b3ab00a166a3215ab089aec922f0556d0347a"
+    },
+    "aiogram-cmds": {
+      "version": "0.2.0",
+      "tag": "v0.2.0",
+      "commit": "601e9e1dea2468ded11e3abaa8b0de84db6bb752"
+    },
+    "aiogram-nav": {
+      "version": "0.2.0",
+      "tag": "v0.2.0",
+      "commit": "f3c5da7bc5e20699101bbc0d07624ca5ffe7944c"
+    },
+    "aiogram-idle": {
+      "version": "0.2.0",
+      "tag": "v0.2.0",
+      "commit": "abd1b8173c7b6ecbc5a6cc76d4d75325afdfc859"
+    }
+  },
+  "cpu_model": "Intel(R) Core(TM) i9-9880H CPU @ 2.30GHz",
+  "physical_memory_bytes": 17179869184
+}

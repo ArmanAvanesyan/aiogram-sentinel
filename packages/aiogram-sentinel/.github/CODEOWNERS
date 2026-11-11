@@ -1,0 +1,36 @@
+# Global owners
+* @ArmanAvanesyan
+
+# Core package
+/src/aiogram_sentinel/ @ArmanAvanesyan
+
+# Middleware implementations
+/src/aiogram_sentinel/middlewares/ @ArmanAvanesyan
+
+# Storage backends
+/src/aiogram_sentinel/storage/ @ArmanAvanesyan
+
+# Configuration and core functionality
+/src/aiogram_sentinel/config.py @ArmanAvanesyan
+/src/aiogram_sentinel/sentinel.py @ArmanAvanesyan
+/src/aiogram_sentinel/version.py @ArmanAvanesyan
+
+# Documentation
+/docs/ @ArmanAvanesyan
+/README.md @ArmanAvanesyan
+/CONTRIBUTING.md @ArmanAvanesyan
+
+# CI/CD and project configuration
+/.github/ @ArmanAvanesyan
+/pyproject.toml @ArmanAvanesyan
+/uv.lock @ArmanAvanesyan
+
+# Development tools
+/tools/ @ArmanAvanesyan
+/.cursor/ @ArmanAvanesyan
+
+# Examples
+/examples/ @ArmanAvanesyan
+
+# Tests
+/tests/ @ArmanAvanesyan

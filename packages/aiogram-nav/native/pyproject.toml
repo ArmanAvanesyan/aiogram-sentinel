@@ -1,0 +1,24 @@
+[build-system]
+requires = ["maturin>=1.9,<2"]
+build-backend = "maturin"
+
+[project]
+name = "aiogram-nav-native"
+version = "0.3.1"
+description = "Optional deterministic Rust core for aiogram-nav"
+requires-python = ">=3.10"
+license = "MIT"
+readme = "README.md"
+authors = [{name = "Arman Avanesyan"}]
+classifiers = ["Programming Language :: Rust", "Typing :: Typed"]
+
+[tool.maturin]
+python-source = "python"
+module-name = "aiogram_nav_native._aiogram_nav_native"
+python-packages = ["aiogram_nav_native"]
+features = ["pyo3/extension-module"]
+include = [
+    {path = "Cargo.lock", format = "sdist"},
+    {path = "benches/**", format = "sdist"},
+    {path = "tests/**", format = "sdist"},
+]

@@ -1,0 +1,281 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    defaults:
+      run:
+        working-directory: aiogram-idle
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+        options: --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 3s --health-retries 10
+    env:
+      AIOGRAM_IDLE_REDIS_URL: redis://localhost:6379/0
+      AIOGRAM_IDLE_REQUIRE_REDIS: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: aiogram-idle
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --frozen --extra redis --python 3.12
+      - run: uv run --no-sync ruff check .
+      - run: uv run --no-sync ruff format --check .
+      - run: uv run --no-sync pyright
+      - name: Verify standalone dependency boundary
+        run: uv run --no-sync python -c 'import importlib.util; assert importlib.util.find_spec("aiogram_nav") is None'
+      - run: uv run --no-sync pytest --cov=aiogram_idle --cov-report=term-missing
+      - run: uv run --no-sync python tools/check_version_tag.py
+      - run: uv run --no-sync towncrier build --draft --version 0.3.1
+      - run: uv build
+      - run: uv run --no-sync twine check dist/*
+      - name: Verify artifacts against published dependencies
+        run: uv run --no-sync python tools/check_artifacts.py dist/*.whl dist/*.tar.gz
+      - name: Compile examples without sending messages
+        run: uv run --no-sync python -m compileall -q examples
+      - name: Smoke test Redis wheel and sdist independently
+        shell: bash
+        run: |
+          for artifact in dist/*.whl dist/*.tar.gz; do
+            smoke_dir=$(mktemp -d)
+            uv venv --python 3.12 "$smoke_dir/env"
+            uv pip install --python "$smoke_dir/env/bin/python" "${artifact}[redis]"
+            cd "$smoke_dir"
+            "$smoke_dir/env/bin/python" - <<'PYREDIS'
+          import asyncio, importlib.util, os, uuid
+          from aiogram_idle.storage.redis import RedisIdleBackend
+          assert importlib.util.find_spec("aiogram_nav") is None
+          async def check():
+              backend = RedisIdleBackend.from_url(os.environ["AIOGRAM_IDLE_REDIS_URL"], prefix="artifact:" + uuid.uuid4().hex)
+              try:
+                  await backend.initialize()
+              finally:
+                  await backend.close()
+          asyncio.run(check())
+          PYREDIS
+            cd "$GITHUB_WORKSPACE/aiogram-idle"
+          done
+
+  documentation:
+    defaults:
+      run:
+        working-directory: aiogram-idle
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: aiogram-idle
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --frozen --python 3.12
+      - run: uv run --no-sync mkdocs build --strict
+
+  security:
+    defaults:
+      run:
+        working-directory: aiogram-idle
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: aiogram-idle
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --frozen --extra redis --python 3.12
+      - name: Audit source security
+        if: ${{ !cancelled() }}
+        run: uv run --no-sync bandit -r src -f json -o bandit-report.json
+      - name: Audit installed dependencies
+        if: ${{ !cancelled() }}
+        run: uv run --no-sync pip-audit --skip-editable --format json --output pip-audit-report.json
+      - name: Retain security reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-reports
+          path: |
+            aiogram-idle/bandit-report.json
+            aiogram-idle/pip-audit-report.json
+          if-no-files-found: error
+
+  compatibility:
+    defaults:
+      run:
+        working-directory: aiogram-idle
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
+        options: --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 3s --health-retries 10
+    env:
+      AIOGRAM_IDLE_REDIS_URL: redis://localhost:6379/0
+      AIOGRAM_IDLE_REQUIRE_REDIS: '1'
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        aiogram: [minimum, latest]
+        exclude:
+          # aiogram 3.22 pins pydantic before Python 3.14 wheel support.
+          - python: '3.14'
+            aiogram: minimum
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: aiogram-idle
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --frozen --extra redis --python '${{ matrix.python }}'
+      - name: Select aiogram compatibility endpoint
+        shell: bash
+        run: |
+          if [ '${{ matrix.aiogram }}' = minimum ]; then
+            uv pip install 'aiogram==3.22.0'
+          else
+            uv pip install --upgrade 'aiogram>=3.22,<4'
+          fi
+      - run: uv run --no-sync pytest
+      - run: uv run --no-sync python examples/demo.py --help
+
+  redis-compatibility:
+    defaults:
+      run:
+        working-directory: aiogram-idle
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        redis: ['redis:7-alpine', 'redis:8-alpine']
+        client: [minimum, latest]
+    services:
+      redis:
+        image: ${{ matrix.redis }}
+        ports: ['6379:6379']
+        options: --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 3s --health-retries 10
+    env:
+      AIOGRAM_IDLE_REDIS_URL: redis://localhost:6379/0
+      AIOGRAM_IDLE_REQUIRE_REDIS: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: aiogram-idle
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --frozen --extra redis --python 3.12
+      - name: Select Redis client endpoint
+        shell: bash
+        run: |
+          if [ '${{ matrix.client }}' = minimum ]; then
+            uv pip install 'redis==5.0.8'
+          else
+            uv pip install --upgrade 'redis>=5.0.8,<8'
+          fi
+      - run: uv run --no-sync pytest tests/test_redis*.py
+
+  navigation-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: aiogram-idle
+    services:
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
+        options: --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 3s --health-retries 10
+    env:
+      AIOGRAM_IDLE_REDIS_URL: redis://localhost:6379/0
+      AIOGRAM_IDLE_REQUIRE_REDIS: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: aiogram-idle
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: aiogram-idle/uv.lock
+      - run: uv sync --frozen --extra redis --extra nav --python 3.12
+      - run: uv run --no-sync pyright --project pyright-nav.json
+      - run: uv run --no-sync pytest --cov=aiogram_idle --cov-config=coverage-nav.toml
+      - run: uv run --no-sync python examples/navigation.py --help
+
+  format-three:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: aiogram-idle
+    strategy:
+      fail-fast: false
+      matrix:
+        redis: ['7', '8']
+    services:
+      redis:
+        image: redis:${{ matrix.redis }}-alpine
+        ports: ['6379:6379']
+        options: --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 3s --health-retries 10
+    env:
+      AIOGRAM_IDLE_REDIS_URL: redis://localhost:6379/0
+      AIOGRAM_IDLE_REQUIRE_REDIS: '1'
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          path: aiogram-idle
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v7
+      - run: uv sync --frozen --extra redis --python 3.12
+      - name: Require the standalone dependency boundary
+        run: uv run --no-sync python -I -c 'import importlib.util; assert importlib.util.find_spec("aiogram_nav") is None; assert importlib.util.find_spec("aiogram_idle_native") is None'
+      - name: Existing standalone recovery and FSM corpus on format three Python
+        run: uv run --no-sync python -m tests.profile_format3 --engine python --manifest format3-core-profile.json -q
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: format3-core-profile-${{ matrix.redis }}
+          path: aiogram-idle/format3-core-profile.json
+          if-no-files-found: error
+
+  required:
+    if: always()
+    needs: [quality, documentation, security, compatibility, redis-compatibility, navigation-integration, format-three]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Require every verification job to pass
+        env:
+          JOB_RESULTS: ${{ toJSON(needs) }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import sys
+          outcomes = json.loads(os.environ['JOB_RESULTS'])
+          failed = {name: job['result'] for name, job in outcomes.items() if job['result'] != 'success'}
+          if failed:
+              print('Required verification did not pass:', failed)
+              sys.exit(1)
+          print('All required verification passed.')
+          PY

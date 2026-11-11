@@ -1,0 +1,18 @@
+[
+  {
+    "source_repository": "aiogram-sentinel",
+    "number": 66,
+    "kind": "Dependabot GitHub Actions update",
+    "retained_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/66",
+    "state": "open",
+    "disposition": "Preserve in the surviving repository. Its legacy workflow paths need rebasing onto the monorepo; no unrelated dependency changes are implicitly merged."
+  },
+  {
+    "source_repository": "aiogram-cmds",
+    "number": 17,
+    "kind": "Dependabot GitHub Actions update",
+    "retained_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/17",
+    "state": "open",
+    "disposition": "Preserve the PR and branch in the legacy repository and its namespaced history refs. Review or forward-port outstanding dependency changes through the monorepo's active Dependabot configuration; no unrelated dependency changes are implicitly merged."
+  }
+]

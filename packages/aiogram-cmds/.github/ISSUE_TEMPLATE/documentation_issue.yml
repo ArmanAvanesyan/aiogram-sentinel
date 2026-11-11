@@ -1,0 +1,123 @@
+name: Documentation Issue
+description: Report issues with documentation or suggest improvements
+title: "[DOCS] "
+labels: ["documentation"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for helping improve our documentation! Please fill out the form below.
+
+  - type: textarea
+    id: issue-description
+    attributes:
+      label: Issue Description
+      description: A clear and concise description of the documentation issue.
+      placeholder: Describe the documentation issue...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: issue-type
+    attributes:
+      label: Issue Type
+      description: What type of documentation issue is this?
+      options:
+        - "Missing documentation"
+        - "Incorrect information"
+        - "Unclear or confusing"
+        - "Outdated information"
+        - "Broken links"
+        - "Formatting issues"
+        - "Missing examples"
+        - "Other (please specify)"
+    validations:
+      required: true
+
+  - type: input
+    id: affected-docs
+    attributes:
+      label: Affected Documentation
+      description: Which documentation files or sections are affected?
+      placeholder: e.g., README.md, CONTRIBUTING.md, API docs, etc.
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-content
+    attributes:
+      label: Current Content (if applicable)
+      description: Paste the current documentation content that has issues.
+      placeholder: |
+        ```markdown
+        # Current documentation content
+        ```
+      render: markdown
+
+  - type: textarea
+    id: expected-content
+    attributes:
+      label: Expected Content
+      description: Describe what the documentation should say or show.
+      placeholder: |
+        Describe what the documentation should contain or how it should be improved.
+        Include specific examples if applicable.
+
+  - type: textarea
+    id: suggested-fix
+    attributes:
+      label: Suggested Fix
+      description: If you have a specific suggestion for how to fix this, please provide it.
+      placeholder: |
+        ```markdown
+        # Suggested documentation content
+        ```
+      render: markdown
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples or Screenshots
+      description: If applicable, provide examples, screenshots, or code snippets that would help clarify the documentation.
+      placeholder: |
+        Provide examples, screenshots, or code snippets that would help improve the documentation.
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this documentation issue?
+      options:
+        - "Low - Minor improvement"
+        - "Medium - Confusing but workable"
+        - "High - Blocks understanding"
+        - "Critical - Misleading or incorrect"
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context about the documentation issue here.
+      placeholder: |
+        Add any other context, references, or information about the documentation issue.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      description: Please confirm the following
+      options:
+        - label: I have searched existing issues to ensure this is not a duplicate
+          required: true
+        - label: I have clearly described the documentation issue
+          required: true
+        - label: I have identified the affected documentation
+          required: true
+        - label: I have provided the current content (if applicable)
+          required: false
+        - label: I have suggested improvements or fixes
+          required: false

@@ -1,0 +1,64 @@
+version: 2
+updates:
+  # Python dependencies
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Yerevan"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "ArmanAvanesyan"
+    assignees:
+      - "ArmanAvanesyan"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    labels:
+
+
+      - "dependencies"
+      - "python"
+    groups:
+      test-and-quality:
+        patterns:
+          - "pytest*"
+          - "ruff*"
+          - "pyright*"
+          - "bandit*"
+      docs:
+        patterns:
+          - "mkdocs*"
+          - "mkdocstrings*"
+    ignore:
+      # Ignore major version updates for now
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Yerevan"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "ArmanAvanesyan"
+    assignees:
+      - "ArmanAvanesyan"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    groups:
+      core-actions:
+        patterns:
+          - "actions/*"
+          - "astral-sh/*"
+          - "pypa/*"

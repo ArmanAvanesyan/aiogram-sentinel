@@ -1,0 +1,7 @@
+redis 7.4.11
+{"n": 1, "seconds": 0.1484, "commands": 70, "counts": {"SET": 1, "GET": 17, "TIME": 17, "HEXISTS": 13, "EVALSHA": 21, "EVAL": 1}, "bytes": 20964, "receipts": 4, "receipt_bytes": 14965, "max_receipt_bytes": 5717}
+{"n": 2, "seconds": 0.2762, "commands": 70, "counts": {"SET": 1, "GET": 17, "TIME": 17, "HEXISTS": 13, "EVALSHA": 21, "EVAL": 1}, "bytes": 55398, "receipts": 8, "receipt_bytes": 45959, "max_receipt_bytes": 9042}
+{"n": 4, "seconds": 0.5702, "commands": 70, "counts": {"SET": 1, "GET": 17, "TIME": 17, "HEXISTS": 13, "EVALSHA": 21, "EVAL": 1}, "bytes": 165597, "receipts": 16, "receipt_bytes": 148799, "max_receipt_bytes": 16057}
+{"n": 8, "seconds": 1.1939, "commands": 70, "counts": {"SET": 1, "GET": 17, "TIME": 17, "HEXISTS": 13, "EVALSHA": 21, "EVAL": 1}, "bytes": 562985, "receipts": 32, "receipt_bytes": 530169, "max_receipt_bytes": 31387}
+{"n": 12, "seconds": 2.0081, "commands": 70, "counts": {"SET": 1, "GET": 17, "TIME": 17, "HEXISTS": 13, "EVALSHA": 21, "EVAL": 1}, "bytes": 1219882, "receipts": 48, "receipt_bytes": 1169267, "max_receipt_bytes": 48498}
+{"n": 16, "seconds": 3.0626, "commands": 70, "counts": {"SET": 1, "GET": 17, "TIME": 17, "HEXISTS": 13, "EVALSHA": 21, "EVAL": 1}, "bytes": 2164625, "receipts": 64, "receipt_bytes": 2094466, "max_receipt_bytes": 67354}

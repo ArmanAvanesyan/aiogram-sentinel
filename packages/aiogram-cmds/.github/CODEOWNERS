@@ -1,0 +1,40 @@
+# Global owners
+* @ArmanAvanesyan
+
+# Core package
+/src/aiogram_cmds/ @ArmanAvanesyan
+
+# Core functionality modules
+/src/aiogram_cmds/manager.py @ArmanAvanesyan
+/src/aiogram_cmds/builder.py @ArmanAvanesyan
+/src/aiogram_cmds/policy.py @ArmanAvanesyan
+/src/aiogram_cmds/settings.py @ArmanAvanesyan
+/src/aiogram_cmds/customize.py @ArmanAvanesyan
+/src/aiogram_cmds/translator.py @ArmanAvanesyan
+/src/aiogram_cmds/registry.py @ArmanAvanesyan
+/src/aiogram_cmds/apply.py @ArmanAvanesyan
+/src/aiogram_cmds/setters.py @ArmanAvanesyan
+/src/aiogram_cmds/auto_setup.py @ArmanAvanesyan
+/src/aiogram_cmds/dynamic.py @ArmanAvanesyan
+/src/aiogram_cmds/builders_configured.py @ArmanAvanesyan
+/src/aiogram_cmds/version.py @ArmanAvanesyan
+
+# Documentation
+/docs/ @ArmanAvanesyan
+/README.md @ArmanAvanesyan
+/CONTRIBUTING.md @ArmanAvanesyan
+
+# CI/CD and project configuration
+/.github/ @ArmanAvanesyan
+/pyproject.toml @ArmanAvanesyan
+/uv.lock @ArmanAvanesyan
+
+# Development tools
+/tools/ @ArmanAvanesyan
+/.cursor/ @ArmanAvanesyan
+
+# Examples
+/examples/ @ArmanAvanesyan
+
+# Tests
+/tests/ @ArmanAvanesyan

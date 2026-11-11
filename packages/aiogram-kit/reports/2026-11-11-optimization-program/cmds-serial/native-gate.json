@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "qualified": false,
+  "identity": [
+    "aiogram-cmds",
+    "0.3.0",
+    "3.12.13",
+    "macOS-15.8.1-x86_64-i386-64bit",
+    "i386",
+    16,
+    1729
+  ],
+  "cpu_workloads_selected": [
+    "compiled_batch/100/10_profiles/30_targets"
+  ],
+  "inputs": [
+    {
+      "path": "/Users/armanavanesyan/oss/own/aiogram-kit/reports/2026-11-11-optimization-program/cmds-serial/python-a/aiogram-cmds.json",
+      "sha256": "867df7b5365d4568d1472d594d06d10878c5df7299739b3194a48860c3e320f3",
+      "engine": "python"
+    },
+    {
+      "path": "/Users/armanavanesyan/oss/own/aiogram-kit/reports/2026-11-11-optimization-program/cmds-serial/python-b/aiogram-cmds.json",
+      "sha256": "b0a35f8c08d891f26611c34b5d4dabb83585b67679bb77b09c10e3e993b2523d",
+      "engine": "python"
+    },
+    {
+      "path": "/Users/armanavanesyan/oss/own/aiogram-kit/reports/2026-11-11-optimization-program/cmds-serial/rust-a/aiogram-cmds.json",
+      "sha256": "7d7244cd8ae513632bec05b771f7e7010f263f6cf798efe01a70682a2eb155ad",
+      "engine": "rust"
+    },
+    {
+      "path": "/Users/armanavanesyan/oss/own/aiogram-kit/reports/2026-11-11-optimization-program/cmds-serial/rust-b/aiogram-cmds.json",
+      "sha256": "4ecc0c63ca3069590c2601bafb080625fde79b834226b13b3e6d914ba8a65106",
+      "engine": "rust"
+    }
+  ],
+  "comparisons": [
+    {
+      "workload": "compiled_batch/100/10_profiles/30_targets",
+      "rust_over_python_cpu": 1.566661893169125
+    },
+    {
+      "workload": "confirmation_hit/1",
+      "rust_over_python_p95": 1.1578040742959856
+    },
+    {
+      "workload": "confirmation_hit/10",
+      "rust_over_python_p95": 1.2001235637489525
+    },
+    {
+      "workload": "confirmation_hit/100",
+      "rust_over_python_p95": 0.945216870893688
+    },
+    {
+      "workload": "fake_telegram_1ms/1",
+      "rust_over_python_p95": 1.0990921661275634
+    },
+    {
+      "workload": "fake_telegram_1ms/10",
+      "rust_over_python_p95": 1.1854403878315822
+    },
+    {
+      "workload": "fake_telegram_1ms/100",
+      "rust_over_python_p95": 0.9014833524763481
+    }
+  ],
+  "failures": [
+    "CPU improvement below 20%: compiled_batch/100/10_profiles/30_targets",
+    "End-to-end p95 regression exceeds 5%: confirmation_hit/1",
+    "End-to-end p95 regression exceeds 5%: confirmation_hit/10",
+    "Latency repeat spread exceeds 10%: confirmation_hit/10",
+    "Latency repeat spread exceeds 10%: confirmation_hit/100",
+    "End-to-end p95 regression exceeds 5%: fake_telegram_1ms/1",
+    "Latency repeat spread exceeds 10%: fake_telegram_1ms/1",
+    "End-to-end p95 regression exceeds 5%: fake_telegram_1ms/10",
+    "Latency repeat spread exceeds 10%: fake_telegram_1ms/10",
+    "Latency repeat spread exceeds 10%: fake_telegram_1ms/100"
+  ],
+  "scope": "Measured host/workloads only; functional platform CI and independent review remain separate release gates."
+}

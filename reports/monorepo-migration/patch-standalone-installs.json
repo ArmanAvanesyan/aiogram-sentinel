@@ -1,0 +1,50 @@
+[
+  {
+    "artifact": "release-candidates/aiogram-cmds/aiogram_cmds-0.3.1-py3-none-any.whl",
+    "standalone": "passed"
+  },
+  {
+    "artifact": "release-candidates/aiogram-coordination/aiogram_coordination-0.1.1-py3-none-any.whl",
+    "standalone": "passed"
+  },
+  {
+    "artifact": "release-candidates/aiogram-idle/aiogram_idle-0.3.1-py3-none-any.whl",
+    "standalone": "passed"
+  },
+  {
+    "artifact": "release-candidates/aiogram-kit/aiogram_kit-0.0.2-py3-none-any.whl",
+    "standalone": "passed"
+  },
+  {
+    "artifact": "release-candidates/aiogram-nav/aiogram_nav-0.3.1-py3-none-any.whl",
+    "standalone": "passed"
+  },
+  {
+    "artifact": "release-candidates/aiogram-sentinel/aiogram_sentinel-1.3.1-py3-none-any.whl",
+    "standalone": "passed"
+  },
+  {
+    "artifact": "release-candidates/aiogram-cmds/aiogram_cmds-0.3.1.tar.gz",
+    "standalone": "passed"
+  },
+  {
+    "artifact": "release-candidates/aiogram-coordination/aiogram_coordination-0.1.1.tar.gz",
+    "standalone": "passed"
+  },
+  {
+    "artifact": "release-candidates/aiogram-idle/aiogram_idle-0.3.1.tar.gz",
+    "standalone": "passed"
+  },
+  {
+    "artifact": "release-candidates/aiogram-kit/aiogram_kit-0.0.2.tar.gz",
+    "standalone": "passed"
+  },
+  {
+    "artifact": "release-candidates/aiogram-nav/aiogram_nav-0.3.1.tar.gz",
+    "standalone": "passed"
+  },
+  {
+    "artifact": "release-candidates/aiogram-sentinel/aiogram_sentinel-1.3.1.tar.gz",
+    "standalone": "passed"
+  }
+]

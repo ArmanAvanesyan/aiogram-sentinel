@@ -1,0 +1,1418 @@
+[
+  {
+    "source_name": "aiogram-kit",
+    "repository_id": 1424361052,
+    "node_id": "R_kgDOVOYGXA",
+    "source_url": "https://github.com/ArmanAvanesyan/aiogram-kit",
+    "destination_repository": "ArmanAvanesyan/aiogram-kit",
+    "destination_path": "packages/aiogram-kit",
+    "issues": [
+      {
+        "number": 3,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/3",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit-legacy/pull/3",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 2,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/2",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit-legacy/pull/2",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 1,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/1",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit-legacy/pull/1",
+        "migration_status": "planned-retained-record"
+      }
+    ],
+    "releases": [
+      {
+        "id": 416451620,
+        "tag": "v0.0.1",
+        "url": "https://github.com/ArmanAvanesyan/aiogram-kit/releases/tag/v0.0.1",
+        "assets": [
+          {
+            "id": 653497095,
+            "name": "aiogram_kit-0.0.1-py3-none-any.whl",
+            "bytes": 3010,
+            "digest": "sha256:5dc0853eede910e7c42047e68ec4117e0e6bd092b7eafa320141d15382765302"
+          },
+          {
+            "id": 653497096,
+            "name": "aiogram_kit-0.0.1-py3-none-any.whl.publish.attestation",
+            "bytes": 9999,
+            "digest": "sha256:ec058efcaa3006e213003f2331cb7fb4756e8dfb629f8bb274414468b23f9f06"
+          },
+          {
+            "id": 653497098,
+            "name": "aiogram_kit-0.0.1.tar.gz",
+            "bytes": 77024,
+            "digest": "sha256:c3f4fa51750e6eb6509812157201844926c35d93f9bd8da4804e15928b2806f6"
+          },
+          {
+            "id": 653497097,
+            "name": "aiogram_kit-0.0.1.tar.gz.publish.attestation",
+            "bytes": 9987,
+            "digest": "sha256:743c14aa8b61d589f99c410d5c6bfc96cf179733506e15fd8d15a6b391a80b2d"
+          }
+        ],
+        "retained_url": "https://github.com/ArmanAvanesyan/aiogram-kit-legacy/releases/tag/v0.0.1"
+      }
+    ],
+    "inventory_gaps": {
+      "discussions": "gh: Discussions are disabled for this repo (HTTP 410)"
+    },
+    "retained_repository": "ArmanAvanesyan/aiogram-kit-legacy"
+  },
+  {
+    "source_name": "aiogram-coordination",
+    "repository_id": 1452468905,
+    "node_id": "R_kgDOVpLqqQ",
+    "source_url": "https://github.com/ArmanAvanesyan/aiogram-coordination",
+    "destination_repository": "ArmanAvanesyan/aiogram-kit",
+    "destination_path": "packages/aiogram-coordination",
+    "issues": [],
+    "releases": [
+      {
+        "id": 440220517,
+        "tag": "v0.1.0",
+        "url": "https://github.com/ArmanAvanesyan/aiogram-coordination/releases/tag/v0.1.0",
+        "assets": [
+          {
+            "id": 731021349,
+            "name": "aiogram_coordination-0.1.0-py3-none-any.whl",
+            "bytes": 21126,
+            "digest": "sha256:c3b44457924a327adf40963abcb5b6d22618539fe7968216df74b524c99f3da4"
+          },
+          {
+            "id": 731021342,
+            "name": "aiogram_coordination-0.1.0.tar.gz",
+            "bytes": 257488,
+            "digest": "sha256:775ed78a71a51fc862b7394cd00a7ca6ca4a11013bb7c286e57e2b059f5471b1"
+          },
+          {
+            "id": 731021345,
+            "name": "SHA256SUMS",
+            "bytes": 210,
+            "digest": "sha256:8933b5139b9b3a009e0a7e7e9a9f717acf9754ecfffb303c1fd596e5311e6e60"
+          },
+          {
+            "id": 731401582,
+            "name": "VERIFICATION.md",
+            "bytes": 632,
+            "digest": "sha256:e4f748639f9ed57f16c6a60b2ee27b7dfbde043266904b9f9038e566f44c187c"
+          }
+        ],
+        "retained_url": "https://github.com/ArmanAvanesyan/aiogram-coordination/releases/tag/v0.1.0"
+      }
+    ],
+    "inventory_gaps": {
+      "pages": "gh: Not Found (HTTP 404)",
+      "discussions": "gh: Discussions are disabled for this repo (HTTP 410)"
+    },
+    "retained_repository": "ArmanAvanesyan/aiogram-coordination"
+  },
+  {
+    "source_name": "aiogram-sentinel",
+    "repository_id": 1065465593,
+    "node_id": "R_kgDOP4G2-Q",
+    "source_url": "https://github.com/ArmanAvanesyan/aiogram-sentinel",
+    "destination_repository": "ArmanAvanesyan/aiogram-kit",
+    "destination_path": "packages/aiogram-sentinel",
+    "issues": [
+      {
+        "number": 66,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/pull/66",
+        "state": "open",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/66",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 65,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/pull/65",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/65",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 64,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/pull/64",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/64",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 63,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/pull/63",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/63",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 62,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/pull/62",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/62",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 61,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/pull/61",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/61",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 60,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/pull/60",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/60",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 59,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/pull/59",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/59",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 58,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/pull/58",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/58",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 57,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/pull/57",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/57",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 56,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/pull/56",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/56",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 55,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/pull/55",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/55",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 54,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/pull/54",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/54",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 53,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/pull/53",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/53",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 52,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/pull/52",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/52",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 51,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/pull/51",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/51",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 50,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/pull/50",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/50",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 49,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/pull/49",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/49",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 48,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/pull/48",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/48",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 47,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/pull/47",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/47",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 46,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/46",
+        "state": "open",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/46",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 45,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/45",
+        "state": "open",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/45",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 44,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/44",
+        "state": "open",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/44",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 43,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/43",
+        "state": "open",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/43",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 42,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/42",
+        "state": "open",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/42",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 41,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/41",
+        "state": "open",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/41",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 40,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/40",
+        "state": "open",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/40",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 39,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/39",
+        "state": "open",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/39",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 38,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/38",
+        "state": "open",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/38",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 37,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/37",
+        "state": "open",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/37",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 36,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/36",
+        "state": "open",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/36",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 35,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/35",
+        "state": "open",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/35",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 34,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/34",
+        "state": "open",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/34",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 33,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/33",
+        "state": "open",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/33",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 32,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/32",
+        "state": "open",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/32",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 31,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/31",
+        "state": "open",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/31",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 30,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/30",
+        "state": "open",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/30",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 29,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/29",
+        "state": "open",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/29",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 28,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/28",
+        "state": "open",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/28",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 27,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/27",
+        "state": "closed",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/27",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 26,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/26",
+        "state": "closed",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/26",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 25,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/25",
+        "state": "closed",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/25",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 24,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/24",
+        "state": "closed",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/24",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 23,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/pull/23",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/23",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 22,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/pull/22",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/22",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 21,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/pull/21",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/21",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 20,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/pull/20",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/20",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 19,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/pull/19",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/pull/19",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 18,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/18",
+        "state": "closed",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/18",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 17,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/17",
+        "state": "closed",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/17",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 16,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/16",
+        "state": "closed",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/16",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 15,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/15",
+        "state": "closed",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/15",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 14,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/14",
+        "state": "closed",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/14",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 13,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/13",
+        "state": "closed",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/13",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 12,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/12",
+        "state": "closed",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/12",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 11,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/11",
+        "state": "closed",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/11",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 10,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/10",
+        "state": "closed",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/10",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 9,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/9",
+        "state": "closed",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/9",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 8,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/8",
+        "state": "closed",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/8",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 7,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/7",
+        "state": "closed",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/7",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 6,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/6",
+        "state": "closed",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/6",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 5,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/5",
+        "state": "closed",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/5",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 4,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/4",
+        "state": "closed",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/4",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 3,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/3",
+        "state": "closed",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/3",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 2,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/2",
+        "state": "closed",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/2",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 1,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/issues/1",
+        "state": "closed",
+        "kind": "issue",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-kit/issues/1",
+        "migration_status": "planned-retained-record"
+      }
+    ],
+    "releases": [
+      {
+        "id": 254521695,
+        "tag": "v1.1.0",
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/releases/tag/untagged-e943f087cdbb986092eb",
+        "assets": [
+          {
+            "id": 304304227,
+            "name": "aiogram_sentinel-1.1.0-py3-none-any.whl",
+            "bytes": 33773,
+            "digest": "sha256:c3cc205ecf6ab0a0d130dd253dfb19d61f33083244012b1ed38729078ba7f8da"
+          },
+          {
+            "id": 304304228,
+            "name": "aiogram_sentinel-1.1.0-py3-none-any.whl.publish.attestation",
+            "bytes": 9494,
+            "digest": "sha256:9595593f5ea833ea19ac3102a557780677f6970902027b86654dd1ce2d463310"
+          },
+          {
+            "id": 304304226,
+            "name": "aiogram_sentinel-1.1.0.tar.gz",
+            "bytes": 270210,
+            "digest": "sha256:2c13d058a72c13110e6ca5e96f34bb8b95b1e88dfa241a044fca89ddcf7d50f3"
+          },
+          {
+            "id": 304304225,
+            "name": "aiogram_sentinel-1.1.0.tar.gz.publish.attestation",
+            "bytes": 9478,
+            "digest": "sha256:cf214c602a33b9ba3317405f4d37bf90202094ca40e239f37c782e98ab04b170"
+          }
+        ],
+        "retained_url": "https://github.com/ArmanAvanesyan/aiogram-kit/releases/tag/v1.1.0"
+      },
+      {
+        "id": 251868952,
+        "tag": "v0.1.1",
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/releases/tag/untagged-f31149de1d9f4ae09082",
+        "assets": [
+          {
+            "id": 299888418,
+            "name": "aiogram_sentinel-0.1.1-py3-none-any.whl",
+            "bytes": 16974,
+            "digest": "sha256:46b39d6b2b0776eebe394c94d0b41505729736cfdeb8237640356af594c09b34"
+          },
+          {
+            "id": 299888421,
+            "name": "aiogram_sentinel-0.1.1-py3-none-any.whl.publish.attestation",
+            "bytes": 9447,
+            "digest": "sha256:676b1846c33fe8b209caae3b0efbcbe7c595e46f8ef280513c8d4fb15ddb3d9e"
+          },
+          {
+            "id": 299888419,
+            "name": "aiogram_sentinel-0.1.1.tar.gz",
+            "bytes": 234373,
+            "digest": "sha256:75e62e0156a95dfb774c22a71802259c4687736f317bee2390a865f5fd8e4de5"
+          },
+          {
+            "id": 299888417,
+            "name": "aiogram_sentinel-0.1.1.tar.gz.publish.attestation",
+            "bytes": 9384,
+            "digest": "sha256:460e4c19453ab785685424838c8a493258e3e805366c5d796f77e7c0831ada3e"
+          }
+        ],
+        "retained_url": "https://github.com/ArmanAvanesyan/aiogram-kit/releases/tag/v0.1.1"
+      },
+      {
+        "id": 250558522,
+        "tag": "v0.1.0",
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/releases/tag/untagged-7480c27bb0942dd56949",
+        "assets": [],
+        "retained_url": "https://github.com/ArmanAvanesyan/aiogram-kit/releases/tag/v0.1.0"
+      },
+      {
+        "id": 250557281,
+        "tag": "v0.1.0",
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/releases/tag/untagged-755ddd89981853b26adc",
+        "assets": [],
+        "retained_url": "https://github.com/ArmanAvanesyan/aiogram-kit/releases/tag/v0.1.0"
+      },
+      {
+        "id": 250556254,
+        "tag": "v0.1.0",
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/releases/tag/untagged-812359efac38c6e1d00b",
+        "assets": [],
+        "retained_url": "https://github.com/ArmanAvanesyan/aiogram-kit/releases/tag/v0.1.0"
+      },
+      {
+        "id": 250558052,
+        "tag": "v0.1.0",
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/releases/tag/untagged-695b1107ef9ae7ddb948",
+        "assets": [],
+        "retained_url": "https://github.com/ArmanAvanesyan/aiogram-kit/releases/tag/v0.1.0"
+      },
+      {
+        "id": 250566124,
+        "tag": "v0.1.0",
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/releases/tag/untagged-0748e9cbbb50ff33a427",
+        "assets": [],
+        "retained_url": "https://github.com/ArmanAvanesyan/aiogram-kit/releases/tag/v0.1.0"
+      },
+      {
+        "id": 250566378,
+        "tag": "v0.1.0",
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/releases/tag/untagged-4d3a2f6a06df6b364931",
+        "assets": [],
+        "retained_url": "https://github.com/ArmanAvanesyan/aiogram-kit/releases/tag/v0.1.0"
+      },
+      {
+        "id": 441054466,
+        "tag": "v1.3.0",
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/releases/tag/v1.3.0",
+        "assets": [
+          {
+            "id": 733372002,
+            "name": "aiogram_sentinel-1.3.0-py3-none-any.whl",
+            "bytes": 39916,
+            "digest": "sha256:ec9c7422b23e480462e8c4f082056f445335c99d347ab56e15d17342bc2fd4f8"
+          },
+          {
+            "id": 733371997,
+            "name": "aiogram_sentinel-1.3.0.tar.gz",
+            "bytes": 355383,
+            "digest": "sha256:bf0525747279239a5810d717cdb40341d2fe5d2cba371214ee4a63b0afb6405c"
+          },
+          {
+            "id": 733372000,
+            "name": "SHA256SUMS",
+            "bytes": 202,
+            "digest": "sha256:8b0f5067f3a6a2ad0bf8c28211f5a70f24162e7724d8d52e56bbe9501efe22a0"
+          },
+          {
+            "id": 733381667,
+            "name": "VERIFICATION.md",
+            "bytes": 1002,
+            "digest": "sha256:678b973b719482a4c5a5cba6cbf7a4d0da414f03adfe44300324c0249304b8a4"
+          }
+        ],
+        "retained_url": "https://github.com/ArmanAvanesyan/aiogram-kit/releases/tag/v1.3.0"
+      },
+      {
+        "id": 440202523,
+        "tag": "v1.2.0",
+        "url": "https://github.com/ArmanAvanesyan/aiogram-sentinel/releases/tag/v1.2.0",
+        "assets": [
+          {
+            "id": 730967579,
+            "name": "aiogram_sentinel-1.2.0-py3-none-any.whl",
+            "bytes": 37647,
+            "digest": "sha256:ee5851a1a96933db6177fc8309268505eceb689cbc3c9d455be4560c06fa42c8"
+          },
+          {
+            "id": 730967581,
+            "name": "aiogram_sentinel-1.2.0.tar.gz",
+            "bytes": 291338,
+            "digest": "sha256:bc06a19db3718fb5869dcc82cf5699cfd3162478b7929db59afc17ae64b22c36"
+          },
+          {
+            "id": 730967580,
+            "name": "SHA256SUMS",
+            "bytes": 202,
+            "digest": "sha256:1a59193b9d3d889b1410bb40d3deecad5cb0d633a6bb6e22b29b087793248b0a"
+          },
+          {
+            "id": 731002291,
+            "name": "VERIFICATION.md",
+            "bytes": 1248,
+            "digest": "sha256:5b4073469738314b18c9c070875063f377551e2ce4d1fe77496d8ea9eaa8a7af"
+          }
+        ],
+        "retained_url": "https://github.com/ArmanAvanesyan/aiogram-kit/releases/tag/v1.2.0"
+      }
+    ],
+    "inventory_gaps": {},
+    "retained_repository": "ArmanAvanesyan/aiogram-kit"
+  },
+  {
+    "source_name": "aiogram-cmds",
+    "repository_id": 1075781724,
+    "node_id": "R_kgDOQB8gXA",
+    "source_url": "https://github.com/ArmanAvanesyan/aiogram-cmds",
+    "destination_repository": "ArmanAvanesyan/aiogram-kit",
+    "destination_path": "packages/aiogram-cmds",
+    "issues": [
+      {
+        "number": 18,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/18",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/18",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 17,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/17",
+        "state": "open",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/17",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 16,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/16",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/16",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 15,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/15",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/15",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 14,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/14",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/14",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 13,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/13",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/13",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 12,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/12",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/12",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 11,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/11",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/11",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 10,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/10",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/10",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 9,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/9",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/9",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 8,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/8",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/8",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 7,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/7",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/7",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 6,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/6",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/6",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 5,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/5",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/5",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 4,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/4",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/4",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 3,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/3",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/3",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 2,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/2",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/2",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 1,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/1",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/pull/1",
+        "migration_status": "planned-retained-record"
+      }
+    ],
+    "releases": [
+      {
+        "id": 254429599,
+        "tag": "v0.1.1",
+        "url": "https://github.com/ArmanAvanesyan/aiogram-cmds/releases/tag/untagged-132cfd5cd9c7f175740d",
+        "assets": [
+          {
+            "id": 304195796,
+            "name": "aiogram_cmds-0.1.1-py3-none-any.whl",
+            "bytes": 17986,
+            "digest": "sha256:ed12a47fca23ef3e0eb41b5d261c62237268eaf4d9477895c01e822d69bdbf11"
+          },
+          {
+            "id": 304195795,
+            "name": "aiogram_cmds-0.1.1-py3-none-any.whl.publish.attestation",
+            "bytes": 9394,
+            "digest": "sha256:d85472b3bf7837e01c52bb39a40447ba7741fcbb61ca0bf15bdaa0a276f7e370"
+          },
+          {
+            "id": 304195797,
+            "name": "aiogram_cmds-0.1.1.tar.gz",
+            "bytes": 274630,
+            "digest": "sha256:6aa54e8e68d601d54a0075ea2af4355cf76e99194cbf08e8b803c9bf1fda4c1d"
+          },
+          {
+            "id": 304195794,
+            "name": "aiogram_cmds-0.1.1.tar.gz.publish.attestation",
+            "bytes": 9429,
+            "digest": "sha256:0cdbe2633c93d28abfdfdcd38df30eb9922b381ed462a14f32f1b578f08cea19"
+          }
+        ],
+        "retained_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/releases/tag/v0.1.1"
+      },
+      {
+        "id": 441070321,
+        "tag": "v0.3.0",
+        "url": "https://github.com/ArmanAvanesyan/aiogram-cmds/releases/tag/v0.3.0",
+        "assets": [
+          {
+            "id": 733432136,
+            "name": "aiogram_cmds-0.3.0-py3-none-any.whl",
+            "bytes": 30425,
+            "digest": "sha256:a642c475f91808545bf0a33fd52d28b2e28e2f9bc17c18c78fe1cceab23f18db"
+          },
+          {
+            "id": 733432139,
+            "name": "aiogram_cmds-0.3.0.tar.gz",
+            "bytes": 359285,
+            "digest": "sha256:55fa79a1018d429887f8b4fcddb5b1567c1a0848f0f43b661af5b40642abe2dd"
+          },
+          {
+            "id": 733432137,
+            "name": "SHA256SUMS",
+            "bytes": 194,
+            "digest": "sha256:5964509427e61085880072903d282853ee44bd44bfb2c3d31d805354a955ee0c"
+          },
+          {
+            "id": 733453588,
+            "name": "VERIFICATION.md",
+            "bytes": 911,
+            "digest": "sha256:80894cc9cd8b7b12a472791882a3569a87b97f0b79e1a749b9e36b88c160042d"
+          }
+        ],
+        "retained_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/releases/tag/v0.3.0"
+      },
+      {
+        "id": 440196557,
+        "tag": "v0.2.0",
+        "url": "https://github.com/ArmanAvanesyan/aiogram-cmds/releases/tag/v0.2.0",
+        "assets": [
+          {
+            "id": 730950277,
+            "name": "aiogram_cmds-0.2.0-py3-none-any.whl",
+            "bytes": 23527,
+            "digest": "sha256:aa04fe91eb293ee46ad0e0ccd780fd19df7c587c0cb579f4373a14cf93dab2e0"
+          },
+          {
+            "id": 730950271,
+            "name": "aiogram_cmds-0.2.0.tar.gz",
+            "bytes": 300380,
+            "digest": "sha256:5cac1902b709a2336fe901f458dbe71ea5acf8a35ba97979a149d695a87d8ed1"
+          },
+          {
+            "id": 730950273,
+            "name": "SHA256SUMS",
+            "bytes": 194,
+            "digest": "sha256:b314fae99738564175be8392549b217fa839396b990578c2d7a65876693f20af"
+          },
+          {
+            "id": 731002196,
+            "name": "VERIFICATION.md",
+            "bytes": 1212,
+            "digest": "sha256:82c08acef6677447496411cf8c6ffe20d9aa323615f1f08c1f4dc9fff38073a7"
+          }
+        ],
+        "retained_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/releases/tag/v0.2.0"
+      },
+      {
+        "id": 254246993,
+        "tag": "v0.1.0",
+        "url": "https://github.com/ArmanAvanesyan/aiogram-cmds/releases/tag/v0.1.0",
+        "assets": [
+          {
+            "id": 303986520,
+            "name": "aiogram_cmds-0.1.0-py3-none-any.whl",
+            "bytes": 17506,
+            "digest": "sha256:a93c6e4e7457cb3664d3cfb2b1cf76a3e70b4db9d8785512f0daaba6d3aa2901"
+          },
+          {
+            "id": 303986521,
+            "name": "aiogram_cmds-0.1.0-py3-none-any.whl.publish.attestation",
+            "bytes": 9363,
+            "digest": "sha256:0c7ba4381892899b4a4ead26354a6798dbc666c5439a40c350f37dee5d2f7eed"
+          },
+          {
+            "id": 303986519,
+            "name": "aiogram_cmds-0.1.0.tar.gz",
+            "bytes": 265881,
+            "digest": "sha256:0cfdbaffc2350fb92e7cd98fc54df1784aba244d320522fb05c1764abfd43892"
+          },
+          {
+            "id": 303986518,
+            "name": "aiogram_cmds-0.1.0.tar.gz.publish.attestation",
+            "bytes": 9257,
+            "digest": "sha256:7e6b35e6bd77123ded1ac09211533e849464223f6821fe1c7a3dc62972c5bcec"
+          }
+        ],
+        "retained_url": "https://github.com/ArmanAvanesyan/aiogram-cmds/releases/tag/v0.1.0"
+      }
+    ],
+    "inventory_gaps": {},
+    "retained_repository": "ArmanAvanesyan/aiogram-cmds"
+  },
+  {
+    "source_name": "aiogram-nav",
+    "repository_id": 1452215589,
+    "node_id": "R_kgDOVo8NJQ",
+    "source_url": "https://github.com/ArmanAvanesyan/aiogram-nav",
+    "destination_repository": "ArmanAvanesyan/aiogram-kit",
+    "destination_path": "packages/aiogram-nav",
+    "issues": [
+      {
+        "number": 2,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-nav/pull/2",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-nav/pull/2",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 1,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-nav/pull/1",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-nav/pull/1",
+        "migration_status": "planned-retained-record"
+      }
+    ],
+    "releases": [
+      {
+        "id": 441119198,
+        "tag": "v0.3.0",
+        "url": "https://github.com/ArmanAvanesyan/aiogram-nav/releases/tag/v0.3.0",
+        "assets": [
+          {
+            "id": 733610828,
+            "name": "aiogram_nav-0.3.0-py3-none-any.whl",
+            "bytes": 105225,
+            "digest": "sha256:f14220d827755e92547bb9fe37880bc8178c32c1b600f44a15fd6b756ee94ce6"
+          },
+          {
+            "id": 733610825,
+            "name": "aiogram_nav-0.3.0.tar.gz",
+            "bytes": 449508,
+            "digest": "sha256:8204f3d72fee86b483685f01599f9f86605f516ef31515fc77b4e89cc1dab649"
+          },
+          {
+            "id": 733610831,
+            "name": "SHA256SUMS",
+            "bytes": 192,
+            "digest": "sha256:1c0751cbca52ec319a1b320acaab8b5d3680fb2e93aeba4cedea09a08f063582"
+          },
+          {
+            "id": 733638122,
+            "name": "VERIFICATION.md",
+            "bytes": 1771,
+            "digest": "sha256:dfe85ee561eb8b78f091cab52d99bb6f523e89c062bca2f61e20933c385986d2"
+          }
+        ],
+        "retained_url": "https://github.com/ArmanAvanesyan/aiogram-nav/releases/tag/v0.3.0"
+      },
+      {
+        "id": 440355930,
+        "tag": "v0.2.0",
+        "url": "https://github.com/ArmanAvanesyan/aiogram-nav/releases/tag/v0.2.0",
+        "assets": [
+          {
+            "id": 731414868,
+            "name": "aiogram_nav-0.2.0-py3-none-any.whl",
+            "bytes": 79609,
+            "digest": "sha256:f9a4ad682e92d3209e7aace07d4708663a49e1305995757b9a6d1016c26a982b"
+          },
+          {
+            "id": 731414861,
+            "name": "aiogram_nav-0.2.0.tar.gz",
+            "bytes": 380909,
+            "digest": "sha256:6a023108d788f5310cee6a4b5cfe91a3b11098fb833f67f434f7eda8e5a4b149"
+          },
+          {
+            "id": 731414873,
+            "name": "SHA256SUMS",
+            "bytes": 192,
+            "digest": "sha256:782a3c8d854d955f51d5a35a167e57a5ecbac288d75b79e42e65aa675f61858d"
+          },
+          {
+            "id": 731421808,
+            "name": "VERIFICATION.md",
+            "bytes": 1003,
+            "digest": "sha256:aa18f392faf3b1e839708f39c3c9fba9b8c5e02bfa830760fab89f1a20b19377"
+          }
+        ],
+        "retained_url": "https://github.com/ArmanAvanesyan/aiogram-nav/releases/tag/v0.2.0"
+      },
+      {
+        "id": 440104290,
+        "tag": "v0.1.0",
+        "url": "https://github.com/ArmanAvanesyan/aiogram-nav/releases/tag/v0.1.0",
+        "assets": [
+          {
+            "id": 730679846,
+            "name": "aiogram_nav-0.1.0-py3-none-any.whl",
+            "bytes": 71169,
+            "digest": "sha256:a39aa70ce96b6c7c3dd1702100060702b90d6fe0ea8e617a123bec4b1c2f7cd9"
+          },
+          {
+            "id": 730679847,
+            "name": "aiogram_nav-0.1.0.tar.gz",
+            "bytes": 359735,
+            "digest": "sha256:0b725000a43e12ec7e10dc422a9f3d0e02946f69b6751fbc020adb0c2cf4b8fd"
+          },
+          {
+            "id": 730679845,
+            "name": "SHA256SUMS",
+            "bytes": 192,
+            "digest": "sha256:d2af14b3bb108843a93423f8a0da2a2be1f3b40f354e0705113a44cf1d9930cd"
+          },
+          {
+            "id": 730697231,
+            "name": "VERIFICATION.md",
+            "bytes": 1543,
+            "digest": "sha256:6a76d549e91c464cdc825786fc54379763fd0758f9fbba1945da4055a32d4056"
+          }
+        ],
+        "retained_url": "https://github.com/ArmanAvanesyan/aiogram-nav/releases/tag/v0.1.0"
+      }
+    ],
+    "inventory_gaps": {
+      "pages": "gh: Not Found (HTTP 404)",
+      "discussions": "gh: Discussions are disabled for this repo (HTTP 410)"
+    },
+    "retained_repository": "ArmanAvanesyan/aiogram-nav"
+  },
+  {
+    "source_name": "aiogram-idle",
+    "repository_id": 1452215497,
+    "node_id": "R_kgDOVo8MyQ",
+    "source_url": "https://github.com/ArmanAvanesyan/aiogram-idle",
+    "destination_repository": "ArmanAvanesyan/aiogram-kit",
+    "destination_path": "packages/aiogram-idle",
+    "issues": [
+      {
+        "number": 3,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-idle/pull/3",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-idle/pull/3",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 2,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-idle/pull/2",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-idle/pull/2",
+        "migration_status": "planned-retained-record"
+      },
+      {
+        "number": 1,
+        "url": "https://github.com/ArmanAvanesyan/aiogram-idle/pull/1",
+        "state": "closed",
+        "kind": "pull_request",
+        "destination_url": "https://github.com/ArmanAvanesyan/aiogram-idle/pull/1",
+        "migration_status": "planned-retained-record"
+      }
+    ],
+    "releases": [
+      {
+        "id": 441150964,
+        "tag": "v0.3.0",
+        "url": "https://github.com/ArmanAvanesyan/aiogram-idle/releases/tag/v0.3.0",
+        "assets": [
+          {
+            "id": 733745885,
+            "name": "aiogram_idle-0.3.0-py3-none-any.whl",
+            "bytes": 199157,
+            "digest": "sha256:33f1809f8545644982112a7dc596a3463c0df750e36d86fce18acc9e3bb4c90e"
+          },
+          {
+            "id": 733745884,
+            "name": "aiogram_idle-0.3.0.tar.gz",
+            "bytes": 552515,
+            "digest": "sha256:f32c39a66c2fe4c705d5b3a9fe36b848e6e3c5f031054e49be6784943b132d7b"
+          },
+          {
+            "id": 733745882,
+            "name": "SHA256SUMS",
+            "bytes": 194,
+            "digest": "sha256:06a242636dc2fd8f29ad955d3deb6407075c0e42527a4414a5f307edcc99324f"
+          },
+          {
+            "id": 733773036,
+            "name": "VERIFICATION.md",
+            "bytes": 2319,
+            "digest": "sha256:3c7e844d5883c6674fcd3ca1a47e637ed490e2e11ae10bbc8c1a1556ce957518"
+          }
+        ],
+        "retained_url": "https://github.com/ArmanAvanesyan/aiogram-idle/releases/tag/v0.3.0"
+      },
+      {
+        "id": 441033109,
+        "tag": "v0.2.1",
+        "url": "https://github.com/ArmanAvanesyan/aiogram-idle/releases/tag/v0.2.1",
+        "assets": [
+          {
+            "id": 733293912,
+            "name": "aiogram_idle-0.2.1-py3-none-any.whl",
+            "bytes": 126856,
+            "digest": "sha256:02d05bebc398751e4819e5d868bbf0529d7376c5d9e57cc9ddbff25173e2dc1f"
+          },
+          {
+            "id": 733293906,
+            "name": "aiogram_idle-0.2.1.tar.gz",
+            "bytes": 437053,
+            "digest": "sha256:11394d924b44f78daad04a49ff52a83892eb28da401c88300f7fe66f56d7b57f"
+          },
+          {
+            "id": 733293913,
+            "name": "SHA256SUMS",
+            "bytes": 194,
+            "digest": "sha256:19ef21b2647c66ccaa2d8dafba89d84269c69b45ff58711a6b7da1c34398abec"
+          },
+          {
+            "id": 733308431,
+            "name": "VERIFICATION.md",
+            "bytes": 905,
+            "digest": "sha256:338e7f1d9421cd3c297070a8b3babc4b7e809f854e377685a08c5a83ac483983"
+          }
+        ],
+        "retained_url": "https://github.com/ArmanAvanesyan/aiogram-idle/releases/tag/v0.2.1"
+      },
+      {
+        "id": 440369063,
+        "tag": "v0.2.0",
+        "url": "https://github.com/ArmanAvanesyan/aiogram-idle/releases/tag/v0.2.0",
+        "assets": [
+          {
+            "id": 731454419,
+            "name": "aiogram_idle-0.2.0-py3-none-any.whl",
+            "bytes": 125872,
+            "digest": "sha256:4f36297f2468b5cd95d7061881689bb1a6e661165cc3d03f7d6844c3f5e7e334"
+          },
+          {
+            "id": 731454429,
+            "name": "aiogram_idle-0.2.0.tar.gz",
+            "bytes": 432314,
+            "digest": "sha256:a40462ab915fc902a4e8a2d8e4643e7e8d05588127dc85585f1538f3981a569c"
+          },
+          {
+            "id": 731454425,
+            "name": "SHA256SUMS",
+            "bytes": 194,
+            "digest": "sha256:e88e82878b3b515aa5a07ff58ceeb5556c0f9b9ef03837ddf81e292de1e229b2"
+          },
+          {
+            "id": 731462634,
+            "name": "VERIFICATION.md",
+            "bytes": 1201,
+            "digest": "sha256:84122b8301d4eb655f520fef29ea02072bc972a3bda0f2181bd6cc72c6280dec"
+          }
+        ],
+        "retained_url": "https://github.com/ArmanAvanesyan/aiogram-idle/releases/tag/v0.2.0"
+      },
+      {
+        "id": 440106284,
+        "tag": "v0.1.0",
+        "url": "https://github.com/ArmanAvanesyan/aiogram-idle/releases/tag/v0.1.0",
+        "assets": [
+          {
+            "id": 730686511,
+            "name": "aiogram_idle-0.1.0-py3-none-any.whl",
+            "bytes": 115866,
+            "digest": "sha256:c2f0d46165cb9b8a2a707d59182c72e0b98be0ca1652b7d44defa0324384120f"
+          },
+          {
+            "id": 730686513,
+            "name": "aiogram_idle-0.1.0.tar.gz",
+            "bytes": 403688,
+            "digest": "sha256:c3dce80561dc7d35a435edb593b76767f8ba7472ea59a1a8b5becf9c98793d91"
+          },
+          {
+            "id": 730686514,
+            "name": "SHA256SUMS",
+            "bytes": 194,
+            "digest": "sha256:de19e6e5b277e84a65477101f56efc715c54594174565ea02825cf284e29c2a3"
+          },
+          {
+            "id": 730697277,
+            "name": "VERIFICATION.md",
+            "bytes": 1714,
+            "digest": "sha256:fffedc2bebe64b8dffd72d9f60a0fe2888ea1f8e2d18b2900c28194b4179a965"
+          }
+        ],
+        "retained_url": "https://github.com/ArmanAvanesyan/aiogram-idle/releases/tag/v0.1.0"
+      }
+    ],
+    "inventory_gaps": {
+      "pages": "gh: Not Found (HTTP 404)",
+      "discussions": "gh: Discussions are disabled for this repo (HTTP 410)"
+    },
+    "retained_repository": "ArmanAvanesyan/aiogram-idle"
+  }
+]

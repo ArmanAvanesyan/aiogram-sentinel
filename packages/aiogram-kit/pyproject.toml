@@ -1,0 +1,47 @@
+[build-system]
+requires = ["hatchling>=1.0.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "aiogram-kit"
+version = "0.0.2"
+description = "Reserved name for the aiogram-kit meta package: community libraries for aiogram v3"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "aiogram-kit contributors"}
+]
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Communications :: Chat",
+]
+requires-python = ">=3.10"
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/ArmanAvanesyan/aiogram-kit/tree/main/packages/aiogram-kit"
+Repository = "https://github.com/ArmanAvanesyan/aiogram-kit"
+Issues = "https://github.com/ArmanAvanesyan/aiogram-kit/issues"
+Documentation = "https://armanavanesyan.github.io/aiogram-kit/"
+Changelog = "https://github.com/ArmanAvanesyan/aiogram-kit/blob/main/packages/aiogram-kit/CHANGELOG.md"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/aiogram_kit"]
+
+[dependency-groups]
+dev = [
+    "build>=1.0.0",
+    "twine>=5.0.0",
+    "tomli>=2; python_version<'3.11'",
+    "mkdocs>=1.6.1",
+    "mkdocs-material>=9.6.20",
+]

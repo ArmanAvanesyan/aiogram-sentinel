@@ -1,0 +1,190 @@
+{
+  "schema_version": 1,
+  "qualification": false,
+  "metadata": {
+    "driver_sha256": "839b5a1f18089b85b94b1627e0574b0387ec8b1e99c9241952d88134dba9d7ae",
+    "mode": "combined",
+    "engine": "python",
+    "backend": "redis",
+    "external_sessions": false,
+    "idle_operation": "activate",
+    "requested_checkpoints": [
+      1,
+      10,
+      16
+    ],
+    "artifacts": [
+      {
+        "name": "aiogram-idle",
+        "version": "0.2.0",
+        "module": "/private/tmp/aiogram-optimization-published-baseline/lib/python3.12/site-packages/aiogram_idle/__init__.py",
+        "direct_url": {}
+      },
+      {
+        "name": "aiogram-nav",
+        "version": "0.2.0",
+        "module": "/private/tmp/aiogram-optimization-published-baseline/lib/python3.12/site-packages/aiogram_nav/__init__.py",
+        "direct_url": {}
+      },
+      {
+        "name": "aiogram",
+        "version": "3.31.0",
+        "module": "/private/tmp/aiogram-optimization-published-baseline/lib/python3.12/site-packages/aiogram/__init__.py",
+        "direct_url": {}
+      },
+      {
+        "name": "aiogram-coordination",
+        "version": "0.1.0",
+        "module": "/private/tmp/aiogram-optimization-published-baseline/lib/python3.12/site-packages/aiogram_coordination/__init__.py",
+        "direct_url": {}
+      }
+    ],
+    "python": "3.12.13 (main, Apr 14 2026, 14:36:32) [Clang 22.1.3 ]",
+    "executable": "/tmp/aiogram-optimization-published-baseline/bin/python",
+    "platform": "macOS-15.8.1-x86_64-i386-64bit",
+    "cpu": "i386",
+    "cpu_count": 16,
+    "prefix": "aiogram-state-growth:bdb8838a783d4b0aa0040a48e72542c8",
+    "redis_endpoint": {
+      "host": "127.0.0.1",
+      "port": 16650,
+      "db": "/0"
+    },
+    "history_limit": 20,
+    "parameter_payload_bytes": 16,
+    "parameters_json_bytes": 30,
+    "real_telegram": false,
+    "storage_format3": false,
+    "tracemalloc_enabled": true,
+    "timing_excludes_state_inspection": true,
+    "command_measurement": "client invocations and computed RESP2 requests; not TCP round trips, replies, retries or Lua subcommands",
+    "started_at": 1794354400.058035,
+    "config": {
+      "enabled": false,
+      "poll_seconds": 10,
+      "concurrency": 8,
+      "claim_limit": 8,
+      "lease_seconds": 60,
+      "renew_seconds": 15,
+      "operation_timeout_seconds": 45,
+      "lock_wait_seconds": 5,
+      "shutdown_seconds": 10,
+      "retry_max_attempts": 5,
+      "retry_max_age_seconds": 300,
+      "recovery_retention_seconds": 3600,
+      "ambiguous_send": "suppress",
+      "max_conversations": 10000,
+      "max_receipts_per_conversation": 256,
+      "max_tokens_per_conversation": 16,
+      "max_params_bytes": 16384,
+      "max_components_bytes": 8388608
+    },
+    "redis_version": "7.4.11",
+    "finished_at": 1794354487.707634
+  },
+  "checkpoints": [
+    {
+      "operations": 1,
+      "wall_seconds": 0.4445384070277214,
+      "process_cpu_seconds": 0.38057300000000005,
+      "client_commands": {
+        "client_command_calls": 74,
+        "pipeline_execute_calls": 0,
+        "command_argument_bytes": 111013,
+        "computed_resp_request_bytes": 114323,
+        "command_histogram": {
+          "GET": 17,
+          "TIME": 17,
+          "EVALSHA": 23,
+          "SCRIPT": 2,
+          "SET": 1,
+          "HEXISTS": 13,
+          "EVAL": 1
+        }
+      },
+      "event_loop_lag": {
+        "samples": 33,
+        "retained_samples": 33,
+        "maximum_seconds": 0.035737658152356744,
+        "p95_seconds": 0.03271829825825989,
+        "interval_seconds": 0.005
+      },
+      "public_snapshot_json_bytes": 394,
+      "traced_current_bytes": 282715,
+      "traced_peak_bytes": 607187,
+      "redis_keys": 6,
+      "redis_string_payload_bytes": 20849,
+      "redis_memory_usage_bytes": 22920,
+      "redis_record_string_bytes": 20454
+    },
+    {
+      "operations": 10,
+      "wall_seconds": 32.256592311896384,
+      "process_cpu_seconds": 31.107154,
+      "client_commands": {
+        "client_command_calls": 704,
+        "pipeline_execute_calls": 0,
+        "command_argument_bytes": 24015745,
+        "computed_resp_request_bytes": 24045959,
+        "command_histogram": {
+          "GET": 170,
+          "TIME": 170,
+          "EVALSHA": 212,
+          "SCRIPT": 2,
+          "SET": 10,
+          "HEXISTS": 130,
+          "EVAL": 10
+        }
+      },
+      "event_loop_lag": {
+        "samples": 468,
+        "retained_samples": 468,
+        "maximum_seconds": 0.572935410309583,
+        "p95_seconds": 0.36789414123632014,
+        "interval_seconds": 0.005
+      },
+      "public_snapshot_json_bytes": 932,
+      "traced_current_bytes": 1415389,
+      "traced_peak_bytes": 5637287,
+      "redis_keys": 6,
+      "redis_string_payload_bytes": 842094,
+      "redis_memory_usage_bytes": 919944,
+      "redis_record_string_bytes": 841699
+    },
+    {
+      "operations": 16,
+      "wall_seconds": 86.36776507366449,
+      "process_cpu_seconds": 83.55854099999999,
+      "client_commands": {
+        "client_command_calls": 1125,
+        "pipeline_execute_calls": 0,
+        "command_argument_bytes": 93378349,
+        "computed_resp_request_bytes": 93426595,
+        "command_histogram": {
+          "GET": 272,
+          "TIME": 272,
+          "EVALSHA": 338,
+          "SCRIPT": 2,
+          "SET": 16,
+          "HEXISTS": 208,
+          "EVAL": 17
+        }
+      },
+      "event_loop_lag": {
+        "samples": 1064,
+        "retained_samples": 1064,
+        "maximum_seconds": 1.0733801061287522,
+        "p95_seconds": 0.5785883811768144,
+        "interval_seconds": 0.005
+      },
+      "public_snapshot_json_bytes": 1289,
+      "traced_current_bytes": 1559515,
+      "traced_peak_bytes": 12525263,
+      "redis_keys": 6,
+      "redis_string_payload_bytes": 2159856,
+      "redis_memory_usage_bytes": 2623880,
+      "redis_record_string_bytes": 2159461
+    }
+  ],
+  "outcome": "completed"
+}

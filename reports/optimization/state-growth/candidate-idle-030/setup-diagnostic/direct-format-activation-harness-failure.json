@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "qualification": false,
+  "metadata": {
+    "metrics_sha256": "1fd9115d43f5a1bd1e7cd8785bcbcd13cb5493948e6b5400547dbcd253c89153",
+    "driver_sha256": "632fd4ef612cba569f61fe06c6fa8ccd0e8689d24de739b044834b9598106a28",
+    "mode": "idle",
+    "engine": "python",
+    "backend": "memory",
+    "external_sessions": true,
+    "idle_operation": "activate",
+    "receipt_limit_override": null,
+    "requested_checkpoints": [
+      1,
+      10,
+      16
+    ],
+    "artifacts": [
+      {
+        "name": "aiogram-idle",
+        "version": "0.3.0",
+        "module": "/private/tmp/aiogram-idle-030-qualification/lib/python3.12/site-packages/aiogram_idle/__init__.py",
+        "direct_url": {
+          "url": "file:///tmp/idle-030-final-dist/aiogram_idle-0.3.0-py3-none-any.whl",
+          "archive_info": {}
+        }
+      },
+      {
+        "name": "aiogram",
+        "version": "3.31.0",
+        "module": "/private/tmp/aiogram-idle-030-qualification/lib/python3.12/site-packages/aiogram/__init__.py",
+        "direct_url": {}
+      },
+      {
+        "name": "aiogram-coordination",
+        "version": "0.1.0",
+        "module": "/private/tmp/aiogram-idle-030-qualification/lib/python3.12/site-packages/aiogram_coordination/__init__.py",
+        "direct_url": {}
+      }
+    ],
+    "python": "3.12.13 (main, Apr 14 2026, 14:36:32) [Clang 22.1.3 ]",
+    "executable": "/tmp/aiogram-idle-030-qualification/bin/python",
+    "platform": "macOS-15.8.1-x86_64-i386-64bit",
+    "cpu": "i386",
+    "cpu_count": 16,
+    "prefix": "aiogram-state-growth:9ba893dd1d0540b1bea8f488739bcf71",
+    "redis_endpoint": null,
+    "history_limit": 20,
+    "parameter_payload_bytes": 16,
+    "parameters_json_bytes": 30,
+    "real_telegram": false,
+    "storage_format3": true,
+    "tracemalloc_enabled": false,
+    "rss_measurement": "process peak RSS; platform getrusage units normalized to bytes",
+    "timing_excludes_state_inspection": true,
+    "command_measurement": "client invocations and computed RESP2 requests; not TCP round trips, replies, retries or Lua subcommands",
+    "started_at": 1794360494.572582,
+    "finished_at": 1794360494.5763378
+  },
+  "checkpoints": [],
+  "outcome": "setup_failed",
+  "exception_type": "ConfigurationMismatch"
+}

@@ -1,0 +1,22 @@
+name: Bug report
+description: Report reproducible behavior in aiogram-idle.
+body:
+  - type: textarea
+    id: versions
+    attributes:
+      label: Environment
+      description: Python, aiogram-idle, aiogram and optional Redis/server versions.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Minimal code, expected behavior and actual behavior. Remove credentials and message content.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Sanitized diagnostics
+      description: Include storage backend, FSM isolation and worker configuration where relevant.

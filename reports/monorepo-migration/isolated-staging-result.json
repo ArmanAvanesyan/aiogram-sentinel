@@ -1,0 +1,13 @@
+{
+  "package": "aiogram-nav",
+  "result": "passed",
+  "checks": [
+    "frozen standalone lock",
+    "current peer wheel",
+    "namespaced version tag",
+    "ruff lint/format",
+    "strict pyright",
+    "wheel/sdist build",
+    "sibling checkout excluded"
+  ]
+}

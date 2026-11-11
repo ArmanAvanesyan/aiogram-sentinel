@@ -1,0 +1,40 @@
+name: Kit marker distribution artifacts
+on:
+  push:
+    branches: [main]
+    tags: ['aiogram-kit-v*']
+  pull_request:
+    paths: ['packages/aiogram-kit/**', '.github/**', 'pyproject.toml', 'uv.lock']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: kit-artifacts-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  standalone:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.10', '3.11', '3.12', '3.13', '3.14']
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: ${{ matrix.python }}
+      - run: uv build --package aiogram-kit --out-dir kit-dist
+      - name: Verify wheel and source install without library dependencies
+        shell: bash
+        run: |
+          for artifact in kit-dist/*.whl kit-dist/*.tar.gz; do
+            target=$(mktemp -d)
+            uv venv --python '${{ matrix.python }}' "$target/env"
+            uv pip install --python "$target/env/bin/python" "$artifact"
+            (
+              cd "$target"
+              "$target/env/bin/python" -c 'import aiogram_kit, importlib.metadata, importlib.util; assert aiogram_kit.__version__ == importlib.metadata.version("aiogram-kit"); assert importlib.util.find_spec("aiogram") is None; assert importlib.util.find_spec("redis") is None'
+            )
+          done

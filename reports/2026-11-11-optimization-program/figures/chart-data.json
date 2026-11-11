@@ -1,0 +1,386 @@
+{
+  "baseline": [
+    {
+      "operations": 1,
+      "wall_seconds": 0.14960252796299756,
+      "process_cpu_seconds": 0.09918399999999972,
+      "client_commands": {
+        "client_command_calls": 70,
+        "pipeline_execute_calls": 0,
+        "command_argument_bytes": 99189,
+        "computed_resp_request_bytes": 102164,
+        "command_histogram": {
+          "GET": 17,
+          "TIME": 17,
+          "EVALSHA": 21,
+          "SET": 1,
+          "HEXISTS": 13,
+          "EVAL": 1
+        }
+      },
+      "event_loop_lag": {
+        "samples": 21,
+        "retained_samples": 21,
+        "maximum_seconds": 0.006996704963967204,
+        "p95_seconds": 0.006267674965783954,
+        "interval_seconds": 0.005
+      },
+      "public_snapshot_json_bytes": 394,
+      "current_history_size": 0,
+      "traced_current_bytes": null,
+      "traced_peak_bytes": null,
+      "process_peak_rss_bytes": 178552832,
+      "redis_keys": 6,
+      "redis_string_payload_bytes": 20837,
+      "redis_memory_usage_bytes": 22960,
+      "redis_record_string_bytes": 20442
+    },
+    {
+      "operations": 10,
+      "wall_seconds": 7.844075424829498,
+      "process_cpu_seconds": 6.791760000000003,
+      "client_commands": {
+        "client_command_calls": 700,
+        "pipeline_execute_calls": 0,
+        "command_argument_bytes": 23993603,
+        "computed_resp_request_bytes": 24023482,
+        "command_histogram": {
+          "GET": 170,
+          "TIME": 170,
+          "EVALSHA": 210,
+          "SET": 10,
+          "HEXISTS": 130,
+          "EVAL": 10
+        }
+      },
+      "event_loop_lag": {
+        "samples": 363,
+        "retained_samples": 363,
+        "maximum_seconds": 0.1122775471303612,
+        "p95_seconds": 0.08220192603766918,
+        "interval_seconds": 0.005
+      },
+      "public_snapshot_json_bytes": 932,
+      "current_history_size": 9,
+      "traced_current_bytes": null,
+      "traced_peak_bytes": null,
+      "process_peak_rss_bytes": 188583936,
+      "redis_keys": 6,
+      "redis_string_payload_bytes": 841724,
+      "redis_memory_usage_bytes": 919984,
+      "redis_record_string_bytes": 841329
+    },
+    {
+      "operations": 16,
+      "wall_seconds": 22.353042524075136,
+      "process_cpu_seconds": 19.502062,
+      "client_commands": {
+        "client_command_calls": 1120,
+        "pipeline_execute_calls": 0,
+        "command_argument_bytes": 93327829,
+        "computed_resp_request_bytes": 93375695,
+        "command_histogram": {
+          "GET": 272,
+          "TIME": 272,
+          "EVALSHA": 336,
+          "SET": 16,
+          "HEXISTS": 208,
+          "EVAL": 16
+        }
+      },
+      "event_loop_lag": {
+        "samples": 932,
+        "retained_samples": 932,
+        "maximum_seconds": 0.2962052731309086,
+        "p95_seconds": 0.13584939506836236,
+        "interval_seconds": 0.005
+      },
+      "public_snapshot_json_bytes": 1289,
+      "current_history_size": 15,
+      "traced_current_bytes": null,
+      "traced_peak_bytes": null,
+      "process_peak_rss_bytes": 198230016,
+      "redis_keys": 6,
+      "redis_string_payload_bytes": 2159052,
+      "redis_memory_usage_bytes": 2623920,
+      "redis_record_string_bytes": 2158657
+    }
+  ],
+  "candidate": [
+    {
+      "operations": 1,
+      "wall_seconds": 0.046937968116253614,
+      "process_cpu_seconds": 0.03347599999999984,
+      "client_commands": {
+        "client_command_calls": 17,
+        "pipeline_execute_calls": 0,
+        "command_argument_bytes": 31185,
+        "computed_resp_request_bytes": 33001,
+        "command_histogram": {
+          "GET": 3,
+          "TIME": 1,
+          "EVALSHA": 11,
+          "SET": 1,
+          "EVAL": 1
+        }
+      },
+      "event_loop_lag": {
+        "samples": 6,
+        "retained_samples": 6,
+        "maximum_seconds": 0.005656169028952718,
+        "p95_seconds": 0.005656169028952718,
+        "interval_seconds": 0.005
+      },
+      "public_snapshot_json_bytes": 394,
+      "current_history_size": 0,
+      "traced_current_bytes": null,
+      "traced_peak_bytes": null,
+      "process_peak_rss_bytes": 178941952,
+      "redis_keys": 14,
+      "redis_string_payload_bytes": 7261,
+      "redis_memory_usage_bytes": 13608,
+      "redis_record_string_bytes": 3727,
+      "redis_hot_string_bytes": 3727,
+      "redis_cold_receipt_count": 1,
+      "redis_cold_receipt_string_bytes": 2867,
+      "redis_cold_result_string_bytes": 0
+    },
+    {
+      "operations": 10,
+      "wall_seconds": 0.60778554296121,
+      "process_cpu_seconds": 0.4661909999999998,
+      "client_commands": {
+        "client_command_calls": 170,
+        "pipeline_execute_calls": 0,
+        "command_argument_bytes": 583118,
+        "computed_resp_request_bytes": 601656,
+        "command_histogram": {
+          "GET": 30,
+          "TIME": 10,
+          "EVALSHA": 110,
+          "SET": 10,
+          "EVAL": 10
+        }
+      },
+      "event_loop_lag": {
+        "samples": 83,
+        "retained_samples": 83,
+        "maximum_seconds": 0.006376360077410936,
+        "p95_seconds": 0.0054252243135124445,
+        "interval_seconds": 0.005
+      },
+      "public_snapshot_json_bytes": 932,
+      "current_history_size": 9,
+      "traced_current_bytes": null,
+      "traced_peak_bytes": null,
+      "process_peak_rss_bytes": 180006912,
+      "redis_keys": 23,
+      "redis_string_payload_bytes": 40340,
+      "redis_memory_usage_bytes": 58544,
+      "redis_record_string_bytes": 5478,
+      "redis_hot_string_bytes": 5478,
+      "redis_cold_receipt_count": 10,
+      "redis_cold_receipt_string_bytes": 34194,
+      "redis_cold_result_string_bytes": 0
+    },
+    {
+      "operations": 16,
+      "wall_seconds": 0.9938601721078157,
+      "process_cpu_seconds": 0.7708800000000013,
+      "client_commands": {
+        "client_command_calls": 272,
+        "pipeline_execute_calls": 0,
+        "command_argument_bytes": 1024944,
+        "computed_resp_request_bytes": 1054633,
+        "command_histogram": {
+          "GET": 48,
+          "TIME": 16,
+          "EVALSHA": 176,
+          "SET": 16,
+          "EVAL": 16
+        }
+      },
+      "event_loop_lag": {
+        "samples": 140,
+        "retained_samples": 140,
+        "maximum_seconds": 0.006376360077410936,
+        "p95_seconds": 0.0054252243135124445,
+        "interval_seconds": 0.005
+      },
+      "public_snapshot_json_bytes": 1289,
+      "current_history_size": 15,
+      "traced_current_bytes": null,
+      "traced_peak_bytes": null,
+      "process_peak_rss_bytes": 180183040,
+      "redis_keys": 29,
+      "redis_string_payload_bytes": 67719,
+      "redis_memory_usage_bytes": 95424,
+      "redis_record_string_bytes": 6588,
+      "redis_hot_string_bytes": 6588,
+      "redis_cold_receipt_count": 16,
+      "redis_cold_receipt_string_bytes": 60463,
+      "redis_cold_result_string_bytes": 0
+    },
+    {
+      "operations": 50,
+      "wall_seconds": 3.3083218841347843,
+      "process_cpu_seconds": 2.6083689999999953,
+      "client_commands": {
+        "client_command_calls": 850,
+        "pipeline_execute_calls": 0,
+        "command_argument_bytes": 3961261,
+        "computed_resp_request_bytes": 4054156,
+        "command_histogram": {
+          "GET": 150,
+          "TIME": 50,
+          "EVALSHA": 550,
+          "SET": 50,
+          "EVAL": 50
+        }
+      },
+      "event_loop_lag": {
+        "samples": 401,
+        "retained_samples": 401,
+        "maximum_seconds": 0.008134080097079277,
+        "p95_seconds": 0.0075627530459314585,
+        "interval_seconds": 0.005
+      },
+      "public_snapshot_json_bytes": 1587,
+      "current_history_size": 20,
+      "traced_current_bytes": null,
+      "traced_peak_bytes": null,
+      "process_peak_rss_bytes": 180506624,
+      "redis_keys": 63,
+      "redis_string_payload_bytes": 246588,
+      "redis_memory_usage_bytes": 336400,
+      "redis_record_string_bytes": 7510,
+      "redis_hot_string_bytes": 7510,
+      "redis_cold_receipt_count": 50,
+      "redis_cold_receipt_string_bytes": 238410,
+      "redis_cold_result_string_bytes": 0
+    },
+    {
+      "operations": 500,
+      "wall_seconds": 34.449793986044824,
+      "process_cpu_seconds": 27.48546099999997,
+      "client_commands": {
+        "client_command_calls": 8500,
+        "pipeline_execute_calls": 0,
+        "command_argument_bytes": 43141474,
+        "computed_resp_request_bytes": 44070919,
+        "command_histogram": {
+          "GET": 1500,
+          "TIME": 500,
+          "EVALSHA": 5500,
+          "SET": 500,
+          "EVAL": 500
+        }
+      },
+      "event_loop_lag": {
+        "samples": 4030,
+        "retained_samples": 4030,
+        "maximum_seconds": 0.09210095019079745,
+        "p95_seconds": 0.007790922187268734,
+        "interval_seconds": 0.005
+      },
+      "public_snapshot_json_bytes": 1590,
+      "current_history_size": 20,
+      "traced_current_bytes": null,
+      "traced_peak_bytes": null,
+      "process_peak_rss_bytes": 181575680,
+      "redis_keys": 513,
+      "redis_string_payload_bytes": 2621345,
+      "redis_memory_usage_bytes": 3589384,
+      "redis_record_string_bytes": 7519,
+      "redis_hot_string_bytes": 7519,
+      "redis_cold_receipt_count": 500,
+      "redis_cold_receipt_string_bytes": 2613157,
+      "redis_cold_result_string_bytes": 0
+    },
+    {
+      "operations": 5000,
+      "wall_seconds": 349.8937153427396,
+      "process_cpu_seconds": 278.3200100000002,
+      "client_commands": {
+        "client_command_calls": 85000,
+        "pipeline_execute_calls": 0,
+        "command_argument_bytes": 435252206,
+        "computed_resp_request_bytes": 444551152,
+        "command_histogram": {
+          "GET": 15000,
+          "TIME": 5000,
+          "EVALSHA": 55000,
+          "SET": 5000,
+          "EVAL": 5000
+        }
+      },
+      "event_loop_lag": {
+        "samples": 40395,
+        "retained_samples": 40395,
+        "maximum_seconds": 0.09210095019079745,
+        "p95_seconds": 0.007895346032455564,
+        "interval_seconds": 0.005
+      },
+      "public_snapshot_json_bytes": 1593,
+      "current_history_size": 20,
+      "traced_current_bytes": null,
+      "traced_peak_bytes": null,
+      "process_peak_rss_bytes": 183197696,
+      "redis_keys": 5013,
+      "redis_string_payload_bytes": 26413625,
+      "redis_memory_usage_bytes": 36152104,
+      "redis_record_string_bytes": 7524,
+      "redis_hot_string_bytes": 7524,
+      "redis_cold_receipt_count": 5000,
+      "redis_cold_receipt_string_bytes": 26405431,
+      "redis_cold_result_string_bytes": 0
+    }
+  ],
+  "native": [
+    {
+      "package": "aiogram-sentinel",
+      "workload": "debounce_accepted_many",
+      "ratio": 0.9236978592857623,
+      "qualified": false
+    },
+    {
+      "package": "aiogram-sentinel",
+      "workload": "rate_accepted_many",
+      "ratio": 0.8835025558434328,
+      "qualified": false
+    },
+    {
+      "package": "aiogram-cmds",
+      "workload": "compiled_batch/100/10_profiles/30_targets",
+      "ratio": 1.566661893169125,
+      "qualified": false
+    },
+    {
+      "package": "aiogram-nav",
+      "workload": "memory-track/50",
+      "ratio": 1.2173842948558957,
+      "qualified": false
+    },
+    {
+      "package": "aiogram-idle",
+      "workload": "memory-activate-touch/50",
+      "ratio": 1.0662774977392988,
+      "qualified": false
+    }
+  ],
+  "inputs": {
+    "/Users/armanavanesyan/oss/own/aiogram-kit/reports/optimization/state-growth/baseline-20261111/combined-redis.json": "f3a617f433bde05606ede2e4c3a1f0db3ceef4c7247eee160077a3c7e0126322",
+    "/Users/armanavanesyan/oss/own/aiogram-kit/reports/optimization/state-growth/candidate-idle-030/combined-redis-default.json": "323e0403002771bc299d3727052c6f3d315ba946e997a597eae91b95a2790ac1",
+    "/Users/armanavanesyan/oss/own/aiogram-kit/reports/optimization/state-growth/candidate-idle-030/combined-redis-stress.json": "3fd87b8323643061b3d38b774891f3a7b7af15ce0e4f68a65eb449d34501900c",
+    "/Users/armanavanesyan/oss/own/aiogram-kit/reports/2026-11-11-optimization-program/sentinel-serial/native-gate.json": "10ddb5ef83d0fa20b50be79cee4e2307f3106186febcf13d1bde84b815ca97ca",
+    "/Users/armanavanesyan/oss/own/aiogram-kit/reports/2026-11-11-optimization-program/cmds-serial/native-gate.json": "6845c096bc60c6a21752f131dbb0cb3aa36f2c407d6633951fb1d4c327a20ecf",
+    "/Users/armanavanesyan/oss/own/aiogram-kit/reports/2026-11-11-optimization-program/nav-serial/native-gate.json": "c938baa076dfecbe09cc18533aa127810bc09bea11812364f4c9f7e372cf7caa",
+    "/Users/armanavanesyan/oss/own/aiogram-kit/reports/2026-11-11-optimization-program/idle-serial/native-gate.json": "74626100718e72fc21c525c8d31218202406c434f04e0e74a3e905238697df57"
+  },
+  "notes": [
+    "Measured points only; baseline ended at16. No extrapolated old5000 value.",
+    "Candidate5000 explicitly uses10000 receipt slots; default remains256.",
+    "Hot state excludes separately retained cold receipts; total JSON includes both.",
+    "Native CPU ratios are candidate measurements, not production speed claims."
+  ]
+}

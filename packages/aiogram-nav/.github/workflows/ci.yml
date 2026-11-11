@@ -1,0 +1,163 @@
+name: CI
+on: [push, pull_request]
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --frozen --extra redis --python 3.12
+      - run: uv run --no-sync ruff check .
+      - run: uv run --no-sync ruff format --check .
+      - run: uv run --no-sync pyright src examples
+      - run: uv run --no-sync python tools/check_version.py
+      - run: uv run --no-sync towncrier build --draft
+      - run: uv run --no-sync pytest
+      - run: uv run --no-sync mkdocs build --strict
+      - run: uv build
+      - run: uv run --no-sync twine check dist/*
+      - name: Independently install wheel and sdist without optional dependencies
+        shell: bash
+        run: |
+          for artifact in dist/*.whl dist/*.tar.gz; do
+            target=$(mktemp -d)
+            uv venv --python 3.12 "$target/env"
+            uv pip install --python "$target/env/bin/python" "$artifact" pytest pytest-asyncio hypothesis
+            cp -R tests examples tools "$target/"
+            cp pyproject.toml "$target/"
+            cd "$target"
+            "$target/env/bin/python" tools/check_install.py
+            "$target/env/bin/python" tools/check_version.py
+            "$target/env/bin/python" -m pytest -q
+            cd "$GITHUB_WORKSPACE"
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: distributions
+          path: dist/*
+          if-no-files-found: error
+  compatibility:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        aiogram: [minimum, latest]
+        exclude:
+          # aiogram 3.22 pins dependencies released before Python 3.14 support.
+          - python: '3.14'
+            aiogram: minimum
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --frozen --python '${{ matrix.python }}'
+      - shell: bash
+        run: |
+          if [ '${{ matrix.aiogram }}' = minimum ]; then
+            uv pip install 'aiogram==3.22.0'
+          else
+            uv pip install --upgrade 'aiogram>=3.22,<4'
+          fi
+      - run: uv run --no-sync pytest
+      - run: uv run --no-sync python examples/demo.py --help
+  redis:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.10', '3.12', '3.14']
+        redis-client: [minimum, latest]
+        redis-server: ['7']
+        include:
+          - python: '3.12'
+            redis-client: minimum
+            redis-server: '8'
+          - python: '3.12'
+            redis-client: latest
+            redis-server: '8'
+    services:
+      redis:
+        image: redis:${{ matrix.redis-server }}-alpine
+        ports: ['6379:6379']
+        options: --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 3s --health-retries 10
+    env:
+      AIOGRAM_NAV_REDIS_URL: redis://localhost:6379/0
+      AIOGRAM_NAV_REQUIRE_REDIS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --frozen --extra redis --python '${{ matrix.python }}'
+      - if: matrix.redis-client == 'minimum'
+        run: uv pip install 'redis==5.0.8'
+      - run: uv run --no-sync pytest --cov=aiogram_nav --cov-report=term-missing --cov-report=xml --cov-fail-under=80
+      - name: Run existing crash, callback, transport and FSM corpus on format 3
+        run: >-
+          uv run --no-sync python -m pytest -p tests.profile3_plugin --nav-engine=python
+          tests/test_redis_recovery.py tests/test_redis_dispatcher.py tests/test_redis_fsm.py
+          tests/test_redis_review_fsm.py tests/test_redis_review_controls.py
+          tests/test_redis_review_transport.py tests/test_redis_operations.py
+      - name: Verify Redis-enabled installed artifacts against the real server
+        if: matrix.python == '3.12' && matrix.redis-client == 'latest' && matrix.redis-server == '7'
+        shell: bash
+        run: |
+          uv build
+          for artifact in dist/*.whl dist/*.tar.gz; do
+            target=$(mktemp -d)
+            uv venv --python 3.12 "$target/env"
+            uv pip install --python "$target/env/bin/python" "${artifact}[redis]" pytest pytest-asyncio hypothesis
+            cp -R tests examples tools "$target/"
+            cp pyproject.toml "$target/"
+            cd "$target"
+            "$target/env/bin/python" tools/check_install.py --redis
+            "$target/env/bin/python" -m pytest -q
+            cd "$GITHUB_WORKSPACE"
+          done
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: redis-coverage-${{ matrix.python }}-${{ matrix.redis-client }}-${{ matrix.redis-server }}
+          path: coverage.xml
+          if-no-files-found: warn
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --frozen --extra redis --python 3.12
+      # Keep the full low-severity inventory; the following invocation owns the gate.
+      - run: uv run --no-sync bandit -r src -f json -o bandit-report.json --exit-zero
+      - run: uv run --no-sync bandit -r src -ll
+      - name: Audit the resolved environment
+        if: always()
+        run: uv run --no-sync pip-audit --skip-editable --format=json --output=pip-audit-report.json
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-reports
+          path: |
+            bandit-report.json
+            pip-audit-report.json
+          if-no-files-found: warn
+  checks:
+    name: Required checks
+    if: always()
+    needs: [quality, compatibility, redis, security]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require successful jobs
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          results = json.loads(os.environ["RESULTS"])
+          failed = [name for name, job in results.items() if job["result"] != "success"]
+          if failed:
+              raise SystemExit("Required jobs did not pass: " + ", ".join(failed))
+          PY

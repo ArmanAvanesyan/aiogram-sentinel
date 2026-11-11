@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "qualification": false,
+  "metadata": {
+    "metrics_sha256": "1fd9115d43f5a1bd1e7cd8785bcbcd13cb5493948e6b5400547dbcd253c89153",
+    "driver_sha256": "a151be7ea5c550ef3ac127123bcdc05d3e0cac3afa0f38037efc0c356f1d1cc6",
+    "mode": "idle",
+    "engine": "python",
+    "backend": "memory",
+    "external_sessions": true,
+    "idle_operation": "activate",
+    "receipt_limit_override": null,
+    "requested_checkpoints": [
+      1,
+      10,
+      16
+    ],
+    "artifacts": [
+      {
+        "name": "aiogram-idle",
+        "version": "0.3.0",
+        "module": "/private/tmp/aiogram-idle-030-qualification/lib/python3.12/site-packages/aiogram_idle/__init__.py",
+        "direct_url": {
+          "url": "file:///tmp/idle-030-release-dist/aiogram_idle-0.3.0-py3-none-any.whl",
+          "archive_info": {}
+        }
+      },
+      {
+        "name": "aiogram",
+        "version": "3.31.0",
+        "module": "/private/tmp/aiogram-idle-030-qualification/lib/python3.12/site-packages/aiogram/__init__.py",
+        "direct_url": {}
+      },
+      {
+        "name": "aiogram-coordination",
+        "version": "0.1.0",
+        "module": "/private/tmp/aiogram-idle-030-qualification/lib/python3.12/site-packages/aiogram_coordination/__init__.py",
+        "direct_url": {}
+      }
+    ],
+    "python": "3.12.13 (main, Apr 14 2026, 14:36:32) [Clang 22.1.3 ]",
+    "executable": "/tmp/aiogram-idle-030-qualification/bin/python",
+    "platform": "macOS-15.8.1-x86_64-i386-64bit",
+    "cpu": "i386",
+    "cpu_count": 16,
+    "prefix": "aiogram-state-growth:9c3388ac34254da29e06caf7f2d8128d",
+    "redis_endpoint": null,
+    "history_limit": 20,
+    "parameter_payload_bytes": 16,
+    "parameters_json_bytes": 30,
+    "real_telegram": false,
+    "storage_format3": true,
+    "tracemalloc_enabled": false,
+    "rss_measurement": "process peak RSS; platform getrusage units normalized to bytes",
+    "timing_excludes_state_inspection": true,
+    "command_measurement": "client invocations and computed RESP2 requests; not TCP round trips, replies, retries or Lua subcommands",
+    "started_at": 1794360811.148758,
+    "config": {
+      "engine": "python",
+      "enabled": false,
+      "poll_seconds": 10,
+      "concurrency": 8,
+      "claim_limit": 8,
+      "lease_seconds": 60,
+      "renew_seconds": 15,
+      "operation_timeout_seconds": 45,
+      "lock_wait_seconds": 5,
+      "shutdown_seconds": 10,
+      "retry_max_attempts": 5,
+      "retry_max_age_seconds": 300,
+      "recovery_retention_seconds": 3600,
+      "replay_retention_seconds": null,
+      "ambiguous_send": "suppress",
+      "max_conversations": 10000,
+      "max_receipts_per_conversation": 256,
+      "max_tokens_per_conversation": 16,
+      "max_params_bytes": 16384,
+      "max_components_bytes": 8388608
+    },
+    "finished_at": 1794360811.179441
+  },
+  "checkpoints": [
+    {
+      "operations": 1,
+      "wall_seconds": 0.0034567599650472403,
+      "process_cpu_seconds": 0.002942,
+      "client_commands": {
+        "client_command_calls": 0,
+        "pipeline_execute_calls": 0,
+        "command_argument_bytes": 0,
+        "computed_resp_request_bytes": 0,
+        "command_histogram": {}
+      },
+      "event_loop_lag": {
+        "samples": 0,
+        "retained_samples": 0,
+        "maximum_seconds": 0.0,
+        "p95_seconds": null,
+        "interval_seconds": 0.005
+      },
+      "public_snapshot_json_bytes": 310,
+      "current_history_size": 0,
+      "traced_current_bytes": null,
+      "traced_peak_bytes": null,
+      "process_peak_rss_bytes": 175366144
+    },
+    {
+      "operations": 10,
+      "wall_seconds": 0.008094780147075653,
+      "process_cpu_seconds": 0.0074539999999991835,
+      "client_commands": {
+        "client_command_calls": 0,
+        "pipeline_execute_calls": 0,
+        "command_argument_bytes": 0,
+        "computed_resp_request_bytes": 0,
+        "command_histogram": {}
+      },
+      "event_loop_lag": {
+        "samples": 0,
+        "retained_samples": 0,
+        "maximum_seconds": 0.0,
+        "p95_seconds": null,
+        "interval_seconds": 0.005
+      },
+      "public_snapshot_json_bytes": 306,
+      "current_history_size": 0,
+      "traced_current_bytes": null,
+      "traced_peak_bytes": null,
+      "process_peak_rss_bytes": 175370240
+    },
+    {
+      "operations": 16,
+      "wall_seconds": 0.011145506286993623,
+      "process_cpu_seconds": 0.010421999999999265,
+      "client_commands": {
+        "client_command_calls": 0,
+        "pipeline_execute_calls": 0,
+        "command_argument_bytes": 0,
+        "computed_resp_request_bytes": 0,
+        "command_histogram": {}
+      },
+      "event_loop_lag": {
+        "samples": 0,
+        "retained_samples": 0,
+        "maximum_seconds": 0.0,
+        "p95_seconds": null,
+        "interval_seconds": 0.005
+      },
+      "public_snapshot_json_bytes": 310,
+      "current_history_size": 0,
+      "traced_current_bytes": null,
+      "traced_peak_bytes": null,
+      "process_peak_rss_bytes": 175374336
+    }
+  ],
+  "outcome": "completed"
+}

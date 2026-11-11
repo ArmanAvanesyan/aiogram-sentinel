@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "qualified": false,
+  "identity": [
+    "aiogram-sentinel",
+    "1.3.0",
+    "3.12.13",
+    "macOS-15.8.1-x86_64-i386-64bit",
+    "i386",
+    16,
+    137
+  ],
+  "cpu_workloads_selected": [
+    "rate_accepted_many",
+    "debounce_accepted_many"
+  ],
+  "inputs": [
+    {
+      "path": "/Users/armanavanesyan/oss/own/aiogram-kit/reports/2026-11-11-optimization-program/sentinel-serial/python-a/aiogram-sentinel.json",
+      "sha256": "506b4ad7ab02f84af6acc6790b16df6ccca001cdbf8e8bd40b739956bbb955c1",
+      "engine": "python"
+    },
+    {
+      "path": "/Users/armanavanesyan/oss/own/aiogram-kit/reports/2026-11-11-optimization-program/sentinel-serial/python-b/aiogram-sentinel.json",
+      "sha256": "5be990175ec3789efadaee21d97d0cd8d5d7531bbd5e7117614247ba1625f9db",
+      "engine": "python"
+    },
+    {
+      "path": "/Users/armanavanesyan/oss/own/aiogram-kit/reports/2026-11-11-optimization-program/sentinel-serial/rust-a/aiogram-sentinel.json",
+      "sha256": "7b6f67d3ecf58a68b0bb09458576549ee34b6dcaab168bbad986ece0c1e30d6e",
+      "engine": "rust"
+    },
+    {
+      "path": "/Users/armanavanesyan/oss/own/aiogram-kit/reports/2026-11-11-optimization-program/sentinel-serial/rust-b/aiogram-sentinel.json",
+      "sha256": "7e8441b18a7ff3acdaee28e8bb89f7560e630f747c5bea3120590aa68619f1c7",
+      "engine": "rust"
+    }
+  ],
+  "comparisons": [
+    {
+      "workload": "debounce_accepted_many",
+      "rust_over_python_cpu": 0.9236978592857623
+    },
+    {
+      "workload": "middleware_fake_io",
+      "rust_over_python_p95": 0.7122487015587057
+    },
+    {
+      "workload": "rate_accepted_many",
+      "rust_over_python_cpu": 0.8835025558434328
+    }
+  ],
+  "failures": [
+    "CPU improvement below 20%: debounce_accepted_many",
+    "Latency repeat spread exceeds 10%: middleware_fake_io",
+    "CPU improvement below 20%: rate_accepted_many"
+  ],
+  "scope": "Measured host/workloads only; functional platform CI and independent review remain separate release gates."
+}

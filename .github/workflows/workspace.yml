@@ -1,0 +1,33 @@
+name: Workspace preservation and release verification
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: workspace-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: '3.12'
+      - run: uv sync --frozen --all-packages --all-groups --all-extras
+      - run: uv run --no-sync ruff check tools tests/integration
+      - run: uv run --no-sync ruff format --check tools tests/integration
+      - name: Require package-specific news for public changes
+        if: github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'skip news')
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: uv run --no-sync python tools/check_news.py --base "$BASE_SHA"
+      - run: uv run --no-sync pytest tests/integration -q
+      - run: uv run --no-sync python tools/verify_migration.py
+      - run: uv run --no-sync mkdocs build --strict
