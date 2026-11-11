@@ -69,6 +69,14 @@ and bytes. Lua internal commands are not client network round trips.
 Use pyperf and Criterion plus async complete-update workloads. Development timings
 under concurrent compilation/tests are exploratory, not release qualification.
 Final qualification runs matched repeated profiles serially after code freezes.
+Nav's prespecified CPU gate is standalone memory-track/50, accompanied by
+whole protected Dispatcher unchanged/tracked Redis updates at age50 for tail
+checks. Registry compilation is a separate startup diagnostic; fixed-history
+50/500/5000 receipt-age stress runs establish storage/call slopes independently.
+The root evaluator requires unique runs, matching artifact and driver digests,
+finite positive measurements and valid operation/sample counts. Historical failed
+Sentinel/Cmds gates precede this provenance hardening; they authorize no native
+publication and cannot qualify through the newer evaluator without new evidence.
 Deterministic CI gates use call budgets, storage slopes and correctness rather than
 universal millisecond timings. Warm uncontended library budgets: <=5 unchanged
 update and <=20 simple tracked adoption Redis round trips; application FSM,

@@ -194,6 +194,8 @@ def main() -> int:
                     args.driver_arg,
                     quick=args.quick,
                 )
+                if args.redis_url and package in {"aiogram-nav", "aiogram-idle"}:
+                    command.extend(["--redis-url", args.redis_url])
                 row["command"] = command
                 result.unlink(missing_ok=True)
                 with (output / (package + ".log")).open("w") as log:
