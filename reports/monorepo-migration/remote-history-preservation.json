@@ -1,0 +1,579 @@
+{
+  "verified_refs": 95,
+  "all_match": true,
+  "repository": "ArmanAvanesyan/aiogram-kit",
+  "refs": [
+    {
+      "repository": "aiogram-kit",
+      "source_ref": "refs/heads/docs/application-integration-delivery",
+      "destination_ref": "refs/heads/history/aiogram-kit/heads/docs/application-integration-delivery",
+      "object_id": "e9a3a3faa9c6cd70cd09fb49c5e8f6fceaa87ea6"
+    },
+    {
+      "repository": "aiogram-kit",
+      "source_ref": "refs/heads/docs/library-release-completion",
+      "destination_ref": "refs/heads/history/aiogram-kit/heads/docs/library-release-completion",
+      "object_id": "beab76223de1d576d5179af3c604f1d868b78161"
+    },
+    {
+      "repository": "aiogram-kit",
+      "source_ref": "refs/heads/main",
+      "destination_ref": "refs/heads/history/aiogram-kit/heads/main",
+      "object_id": "f279f964371b95133a331b99c385855f8f0ef534"
+    },
+    {
+      "repository": "aiogram-kit",
+      "source_ref": "refs/heads/perf/optimization-evidence",
+      "destination_ref": "refs/heads/history/aiogram-kit/heads/perf/optimization-evidence",
+      "object_id": "fb8ef10b8b1ec910a41684231f2265a31df3e4d5"
+    },
+    {
+      "repository": "aiogram-kit",
+      "source_ref": "refs/remotes/origin/HEAD",
+      "destination_ref": "refs/heads/history/aiogram-kit/remotes/origin/HEAD",
+      "object_id": "f279f964371b95133a331b99c385855f8f0ef534"
+    },
+    {
+      "repository": "aiogram-kit",
+      "source_ref": "refs/remotes/origin/docs/application-integration-delivery",
+      "destination_ref": "refs/heads/history/aiogram-kit/remotes/origin/docs/application-integration-delivery",
+      "object_id": "e9a3a3faa9c6cd70cd09fb49c5e8f6fceaa87ea6"
+    },
+    {
+      "repository": "aiogram-kit",
+      "source_ref": "refs/remotes/origin/docs/library-release-completion",
+      "destination_ref": "refs/heads/history/aiogram-kit/remotes/origin/docs/library-release-completion",
+      "object_id": "beab76223de1d576d5179af3c604f1d868b78161"
+    },
+    {
+      "repository": "aiogram-kit",
+      "source_ref": "refs/remotes/origin/main",
+      "destination_ref": "refs/heads/history/aiogram-kit/remotes/origin/main",
+      "object_id": "f279f964371b95133a331b99c385855f8f0ef534"
+    },
+    {
+      "repository": "aiogram-kit",
+      "source_ref": "refs/remotes/origin/perf/optimization-evidence",
+      "destination_ref": "refs/heads/history/aiogram-kit/remotes/origin/perf/optimization-evidence",
+      "object_id": "fb8ef10b8b1ec910a41684231f2265a31df3e4d5"
+    },
+    {
+      "repository": "aiogram-kit",
+      "source_ref": "refs/tags/v0.0.1",
+      "destination_ref": "refs/tags/history/aiogram-kit/v0.0.1",
+      "object_id": "b88edc819426049cd4eb5421f16d6509bc6571c7"
+    },
+    {
+      "repository": "aiogram-coordination",
+      "source_ref": "refs/heads/main",
+      "destination_ref": "refs/heads/history/aiogram-coordination/heads/main",
+      "object_id": "7dcb06e2e46a57e8b826279c744ab51d368a997d"
+    },
+    {
+      "repository": "aiogram-coordination",
+      "source_ref": "refs/remotes/origin/main",
+      "destination_ref": "refs/heads/history/aiogram-coordination/remotes/origin/main",
+      "object_id": "7dcb06e2e46a57e8b826279c744ab51d368a997d"
+    },
+    {
+      "repository": "aiogram-coordination",
+      "source_ref": "refs/tags/v0.1.0",
+      "destination_ref": "refs/tags/history/aiogram-coordination/v0.1.0",
+      "object_id": "3bb1d6d89e0edd020bd071f981d040f1133c55d6"
+    },
+    {
+      "repository": "aiogram-sentinel",
+      "source_ref": "refs/heads/chore/changelog-tooling-and-contacts",
+      "destination_ref": "refs/heads/history/aiogram-sentinel/heads/chore/changelog-tooling-and-contacts",
+      "object_id": "3b878bc8aefa30c8d1d3ee1e464d76cfd87de494"
+    },
+    {
+      "repository": "aiogram-sentinel",
+      "source_ref": "refs/heads/chore/fix-project-urls",
+      "destination_ref": "refs/heads/history/aiogram-sentinel/heads/chore/fix-project-urls",
+      "object_id": "66d78ecbc10c68496143230d019fa63fe5d37c6d"
+    },
+    {
+      "repository": "aiogram-sentinel",
+      "source_ref": "refs/heads/chore/shared-repository-conventions",
+      "destination_ref": "refs/heads/history/aiogram-sentinel/heads/chore/shared-repository-conventions",
+      "object_id": "8e3db503ae0bb2192da778deda6bb062e774a085"
+    },
+    {
+      "repository": "aiogram-sentinel",
+      "source_ref": "refs/heads/feat/application-owned-integration",
+      "destination_ref": "refs/heads/history/aiogram-sentinel/heads/feat/application-owned-integration",
+      "object_id": "5e4fff32f1bd6e8cffb1d9e042e8b276abb28111"
+    },
+    {
+      "repository": "aiogram-sentinel",
+      "source_ref": "refs/heads/feat/performance-rust-core",
+      "destination_ref": "refs/heads/history/aiogram-sentinel/heads/feat/performance-rust-core",
+      "object_id": "31e48714cb80aff53ceab7d323b8d0778efe619f"
+    },
+    {
+      "repository": "aiogram-sentinel",
+      "source_ref": "refs/heads/main",
+      "destination_ref": "refs/heads/history/aiogram-sentinel/heads/main",
+      "object_id": "3dc8da47f98565cf347dc6666e6632e75f57f431"
+    },
+    {
+      "repository": "aiogram-sentinel",
+      "source_ref": "refs/remotes/origin/HEAD",
+      "destination_ref": "refs/heads/history/aiogram-sentinel/remotes/origin/HEAD",
+      "object_id": "3dc8da47f98565cf347dc6666e6632e75f57f431"
+    },
+    {
+      "repository": "aiogram-sentinel",
+      "source_ref": "refs/remotes/origin/chore/changelog-tooling-and-contacts",
+      "destination_ref": "refs/heads/history/aiogram-sentinel/remotes/origin/chore/changelog-tooling-and-contacts",
+      "object_id": "3b878bc8aefa30c8d1d3ee1e464d76cfd87de494"
+    },
+    {
+      "repository": "aiogram-sentinel",
+      "source_ref": "refs/remotes/origin/chore/fix-project-urls",
+      "destination_ref": "refs/heads/history/aiogram-sentinel/remotes/origin/chore/fix-project-urls",
+      "object_id": "66d78ecbc10c68496143230d019fa63fe5d37c6d"
+    },
+    {
+      "repository": "aiogram-sentinel",
+      "source_ref": "refs/remotes/origin/chore/shared-repository-conventions",
+      "destination_ref": "refs/heads/history/aiogram-sentinel/remotes/origin/chore/shared-repository-conventions",
+      "object_id": "8e3db503ae0bb2192da778deda6bb062e774a085"
+    },
+    {
+      "repository": "aiogram-sentinel",
+      "source_ref": "refs/remotes/origin/dependabot/github_actions/codecov/codecov-action-7",
+      "destination_ref": "refs/heads/history/aiogram-sentinel/remotes/origin/dependabot/github_actions/codecov/codecov-action-7",
+      "object_id": "9a4bae2d81f13108a442514a443211923a4f6348"
+    },
+    {
+      "repository": "aiogram-sentinel",
+      "source_ref": "refs/remotes/origin/dependabot/github_actions/core-actions-91db028fd7",
+      "destination_ref": "refs/heads/history/aiogram-sentinel/remotes/origin/dependabot/github_actions/core-actions-91db028fd7",
+      "object_id": "6f126ed31b23ff5d646c5a4825cc9d9fec54c1ee"
+    },
+    {
+      "repository": "aiogram-sentinel",
+      "source_ref": "refs/remotes/origin/dependabot/github_actions/core-actions-96c7075639",
+      "destination_ref": "refs/heads/history/aiogram-sentinel/remotes/origin/dependabot/github_actions/core-actions-96c7075639",
+      "object_id": "9b776b8b932ff466319762c5a75db8a3b6bb8382"
+    },
+    {
+      "repository": "aiogram-sentinel",
+      "source_ref": "refs/remotes/origin/dependabot/github_actions/core-actions-e403a3a97d",
+      "destination_ref": "refs/heads/history/aiogram-sentinel/remotes/origin/dependabot/github_actions/core-actions-e403a3a97d",
+      "object_id": "5fff8ed5b50d0b23a7621d5cf58fbe74a57ed449"
+    },
+    {
+      "repository": "aiogram-sentinel",
+      "source_ref": "refs/remotes/origin/dependabot/github_actions/core-actions-fd30e4bba3",
+      "destination_ref": "refs/heads/history/aiogram-sentinel/remotes/origin/dependabot/github_actions/core-actions-fd30e4bba3",
+      "object_id": "5f55461886f52a4ca3cba1961da07f8745c1cb53"
+    },
+    {
+      "repository": "aiogram-sentinel",
+      "source_ref": "refs/remotes/origin/dependabot/github_actions/dorny/paths-filter-4",
+      "destination_ref": "refs/heads/history/aiogram-sentinel/remotes/origin/dependabot/github_actions/dorny/paths-filter-4",
+      "object_id": "221956fb5fe4fed16cc5c08c3f23a34adcdb1ef3"
+    },
+    {
+      "repository": "aiogram-sentinel",
+      "source_ref": "refs/remotes/origin/dependabot/github_actions/peter-evans/create-or-update-comment-5",
+      "destination_ref": "refs/heads/history/aiogram-sentinel/remotes/origin/dependabot/github_actions/peter-evans/create-or-update-comment-5",
+      "object_id": "aa236e0656862b97431e4ccb888c367f999da469"
+    },
+    {
+      "repository": "aiogram-sentinel",
+      "source_ref": "refs/remotes/origin/dependabot/github_actions/peter-evans/find-comment-4",
+      "destination_ref": "refs/heads/history/aiogram-sentinel/remotes/origin/dependabot/github_actions/peter-evans/find-comment-4",
+      "object_id": "0ad91ceda81fd59c4233fb621b1ea58895365ed5"
+    },
+    {
+      "repository": "aiogram-sentinel",
+      "source_ref": "refs/remotes/origin/dependabot/github_actions/softprops/action-gh-release-3",
+      "destination_ref": "refs/heads/history/aiogram-sentinel/remotes/origin/dependabot/github_actions/softprops/action-gh-release-3",
+      "object_id": "05cae8a2e79c557ce3df8442558bf3693795a893"
+    },
+    {
+      "repository": "aiogram-sentinel",
+      "source_ref": "refs/remotes/origin/dependabot/github_actions/supercharge/redis-github-action-1.8.1",
+      "destination_ref": "refs/heads/history/aiogram-sentinel/remotes/origin/dependabot/github_actions/supercharge/redis-github-action-1.8.1",
+      "object_id": "da2afe420af914064bfc5ea52bd444f7bfbe84d9"
+    },
+    {
+      "repository": "aiogram-sentinel",
+      "source_ref": "refs/remotes/origin/feat/application-owned-integration",
+      "destination_ref": "refs/heads/history/aiogram-sentinel/remotes/origin/feat/application-owned-integration",
+      "object_id": "5e4fff32f1bd6e8cffb1d9e042e8b276abb28111"
+    },
+    {
+      "repository": "aiogram-sentinel",
+      "source_ref": "refs/remotes/origin/feat/performance-rust-core",
+      "destination_ref": "refs/heads/history/aiogram-sentinel/remotes/origin/feat/performance-rust-core",
+      "object_id": "31e48714cb80aff53ceab7d323b8d0778efe619f"
+    },
+    {
+      "repository": "aiogram-sentinel",
+      "source_ref": "refs/remotes/origin/main",
+      "destination_ref": "refs/heads/history/aiogram-sentinel/remotes/origin/main",
+      "object_id": "3dc8da47f98565cf347dc6666e6632e75f57f431"
+    },
+    {
+      "repository": "aiogram-sentinel",
+      "source_ref": "refs/tags/v1.1.0",
+      "destination_ref": "refs/tags/history/aiogram-sentinel/v1.1.0",
+      "object_id": "c87c9d055e7f1a16ad85d37747330f2c3c87d7cf"
+    },
+    {
+      "repository": "aiogram-sentinel",
+      "source_ref": "refs/tags/v1.2.0",
+      "destination_ref": "refs/tags/history/aiogram-sentinel/v1.2.0",
+      "object_id": "867a7a9855dafb58866fb8c914255b2e77da5c19"
+    },
+    {
+      "repository": "aiogram-sentinel",
+      "source_ref": "refs/tags/v1.3.0",
+      "destination_ref": "refs/tags/history/aiogram-sentinel/v1.3.0",
+      "object_id": "f2ecef9973ac4ea8547859b2102a86c5a98947a9"
+    },
+    {
+      "repository": "aiogram-cmds",
+      "source_ref": "refs/heads/chore/changelog-tooling-and-contacts",
+      "destination_ref": "refs/heads/history/aiogram-cmds/heads/chore/changelog-tooling-and-contacts",
+      "object_id": "4d46d41237fa9315588739dd8a1a82c7fda48828"
+    },
+    {
+      "repository": "aiogram-cmds",
+      "source_ref": "refs/heads/chore/fix-project-urls",
+      "destination_ref": "refs/heads/history/aiogram-cmds/heads/chore/fix-project-urls",
+      "object_id": "fd183a8d4ffdb479770c823b22817c7d4d7075ca"
+    },
+    {
+      "repository": "aiogram-cmds",
+      "source_ref": "refs/heads/chore/shared-repository-conventions",
+      "destination_ref": "refs/heads/history/aiogram-cmds/heads/chore/shared-repository-conventions",
+      "object_id": "b1156da90e80d03302ae79e65a1ce808751b0412"
+    },
+    {
+      "repository": "aiogram-cmds",
+      "source_ref": "refs/heads/feat/application-owned-integration",
+      "destination_ref": "refs/heads/history/aiogram-cmds/heads/feat/application-owned-integration",
+      "object_id": "6066d98233732a0bf29698179edb473057087151"
+    },
+    {
+      "repository": "aiogram-cmds",
+      "source_ref": "refs/heads/feat/performance-rust-core",
+      "destination_ref": "refs/heads/history/aiogram-cmds/heads/feat/performance-rust-core",
+      "object_id": "39aafa17c333d8207776f50d2344d98f9d840a1e"
+    },
+    {
+      "repository": "aiogram-cmds",
+      "source_ref": "refs/heads/main",
+      "destination_ref": "refs/heads/history/aiogram-cmds/heads/main",
+      "object_id": "1457341dca31565335c9d53e22b9ae534dce9031"
+    },
+    {
+      "repository": "aiogram-cmds",
+      "source_ref": "refs/heads/revert-7-fix-project-urls",
+      "destination_ref": "refs/heads/history/aiogram-cmds/heads/revert-7-fix-project-urls",
+      "object_id": "5709371cb0934f36ec69890872f1bb1b50556f5e"
+    },
+    {
+      "repository": "aiogram-cmds",
+      "source_ref": "refs/remotes/origin/HEAD",
+      "destination_ref": "refs/heads/history/aiogram-cmds/remotes/origin/HEAD",
+      "object_id": "1457341dca31565335c9d53e22b9ae534dce9031"
+    },
+    {
+      "repository": "aiogram-cmds",
+      "source_ref": "refs/remotes/origin/chore/changelog-tooling-and-contacts",
+      "destination_ref": "refs/heads/history/aiogram-cmds/remotes/origin/chore/changelog-tooling-and-contacts",
+      "object_id": "4d46d41237fa9315588739dd8a1a82c7fda48828"
+    },
+    {
+      "repository": "aiogram-cmds",
+      "source_ref": "refs/remotes/origin/chore/fix-project-urls",
+      "destination_ref": "refs/heads/history/aiogram-cmds/remotes/origin/chore/fix-project-urls",
+      "object_id": "fd183a8d4ffdb479770c823b22817c7d4d7075ca"
+    },
+    {
+      "repository": "aiogram-cmds",
+      "source_ref": "refs/remotes/origin/chore/shared-repository-conventions",
+      "destination_ref": "refs/heads/history/aiogram-cmds/remotes/origin/chore/shared-repository-conventions",
+      "object_id": "b1156da90e80d03302ae79e65a1ce808751b0412"
+    },
+    {
+      "repository": "aiogram-cmds",
+      "source_ref": "refs/remotes/origin/dependabot/github_actions/codecov/codecov-action-5",
+      "destination_ref": "refs/heads/history/aiogram-cmds/remotes/origin/dependabot/github_actions/codecov/codecov-action-5",
+      "object_id": "1ef6f5128a1dba0890502f0084229facbd542037"
+    },
+    {
+      "repository": "aiogram-cmds",
+      "source_ref": "refs/remotes/origin/dependabot/github_actions/codecov/codecov-action-7",
+      "destination_ref": "refs/heads/history/aiogram-cmds/remotes/origin/dependabot/github_actions/codecov/codecov-action-7",
+      "object_id": "f0a99d934daf107744c73e3c1507127d1b95d242"
+    },
+    {
+      "repository": "aiogram-cmds",
+      "source_ref": "refs/remotes/origin/dependabot/github_actions/core-actions-0fbd758bb9",
+      "destination_ref": "refs/heads/history/aiogram-cmds/remotes/origin/dependabot/github_actions/core-actions-0fbd758bb9",
+      "object_id": "9d96a3a6d52059ef7337abf8a8d67a110d275718"
+    },
+    {
+      "repository": "aiogram-cmds",
+      "source_ref": "refs/remotes/origin/dependabot/github_actions/core-actions-1a31fcc15b",
+      "destination_ref": "refs/heads/history/aiogram-cmds/remotes/origin/dependabot/github_actions/core-actions-1a31fcc15b",
+      "object_id": "82015bb68150647c2980e0eff0f29e639c70ac98"
+    },
+    {
+      "repository": "aiogram-cmds",
+      "source_ref": "refs/remotes/origin/dependabot/github_actions/core-actions-96c7075639",
+      "destination_ref": "refs/heads/history/aiogram-cmds/remotes/origin/dependabot/github_actions/core-actions-96c7075639",
+      "object_id": "8c1742f7d63ff83de0c85c4c0822578e0f055230"
+    },
+    {
+      "repository": "aiogram-cmds",
+      "source_ref": "refs/remotes/origin/dependabot/github_actions/core-actions-fd30e4bba3",
+      "destination_ref": "refs/heads/history/aiogram-cmds/remotes/origin/dependabot/github_actions/core-actions-fd30e4bba3",
+      "object_id": "e7e3dfb2d5ce3b6f084fe4ceb249c1439be6bad7"
+    },
+    {
+      "repository": "aiogram-cmds",
+      "source_ref": "refs/remotes/origin/dependabot/github_actions/dorny/paths-filter-4",
+      "destination_ref": "refs/heads/history/aiogram-cmds/remotes/origin/dependabot/github_actions/dorny/paths-filter-4",
+      "object_id": "cc97b0e8de32c80f37e6953922eecda0cc2c83ca"
+    },
+    {
+      "repository": "aiogram-cmds",
+      "source_ref": "refs/remotes/origin/dependabot/github_actions/peter-evans/create-or-update-comment-5",
+      "destination_ref": "refs/heads/history/aiogram-cmds/remotes/origin/dependabot/github_actions/peter-evans/create-or-update-comment-5",
+      "object_id": "6e4469f31752edaf12e1d279826d3236282e83f7"
+    },
+    {
+      "repository": "aiogram-cmds",
+      "source_ref": "refs/remotes/origin/dependabot/github_actions/peter-evans/find-comment-4",
+      "destination_ref": "refs/heads/history/aiogram-cmds/remotes/origin/dependabot/github_actions/peter-evans/find-comment-4",
+      "object_id": "5bc86d19650c31873a6f42f2178fd47e2d4e80fa"
+    },
+    {
+      "repository": "aiogram-cmds",
+      "source_ref": "refs/remotes/origin/dependabot/github_actions/softprops/action-gh-release-3",
+      "destination_ref": "refs/heads/history/aiogram-cmds/remotes/origin/dependabot/github_actions/softprops/action-gh-release-3",
+      "object_id": "1d5c1cb7ea20c8fd5c4fb4cd27f4cea45dea3752"
+    },
+    {
+      "repository": "aiogram-cmds",
+      "source_ref": "refs/remotes/origin/feat/application-owned-integration",
+      "destination_ref": "refs/heads/history/aiogram-cmds/remotes/origin/feat/application-owned-integration",
+      "object_id": "6066d98233732a0bf29698179edb473057087151"
+    },
+    {
+      "repository": "aiogram-cmds",
+      "source_ref": "refs/remotes/origin/feat/performance-rust-core",
+      "destination_ref": "refs/heads/history/aiogram-cmds/remotes/origin/feat/performance-rust-core",
+      "object_id": "39aafa17c333d8207776f50d2344d98f9d840a1e"
+    },
+    {
+      "repository": "aiogram-cmds",
+      "source_ref": "refs/remotes/origin/main",
+      "destination_ref": "refs/heads/history/aiogram-cmds/remotes/origin/main",
+      "object_id": "1457341dca31565335c9d53e22b9ae534dce9031"
+    },
+    {
+      "repository": "aiogram-cmds",
+      "source_ref": "refs/remotes/origin/revert-7-chore/fix-project-urls",
+      "destination_ref": "refs/heads/history/aiogram-cmds/remotes/origin/revert-7-chore/fix-project-urls",
+      "object_id": "d8ecbb385882894c69e614fbd8a378d57e83db23"
+    },
+    {
+      "repository": "aiogram-cmds",
+      "source_ref": "refs/remotes/origin/revert-7-fix-project-urls",
+      "destination_ref": "refs/heads/history/aiogram-cmds/remotes/origin/revert-7-fix-project-urls",
+      "object_id": "5709371cb0934f36ec69890872f1bb1b50556f5e"
+    },
+    {
+      "repository": "aiogram-cmds",
+      "source_ref": "refs/tags/v0.1.0",
+      "destination_ref": "refs/tags/history/aiogram-cmds/v0.1.0",
+      "object_id": "ab3c000c0b6302936d1a7f04e1f4be26caf5cabb"
+    },
+    {
+      "repository": "aiogram-cmds",
+      "source_ref": "refs/tags/v0.1.1",
+      "destination_ref": "refs/tags/history/aiogram-cmds/v0.1.1",
+      "object_id": "f0e1dfbc612f190c23300a0d079ac0304f11eb3c"
+    },
+    {
+      "repository": "aiogram-cmds",
+      "source_ref": "refs/tags/v0.2.0",
+      "destination_ref": "refs/tags/history/aiogram-cmds/v0.2.0",
+      "object_id": "dcf3daf200fbcddf79654a6f492363e27393765a"
+    },
+    {
+      "repository": "aiogram-cmds",
+      "source_ref": "refs/tags/v0.3.0",
+      "destination_ref": "refs/tags/history/aiogram-cmds/v0.3.0",
+      "object_id": "d709a00fa57c1e8461669c3088243dc34d03e152"
+    },
+    {
+      "repository": "aiogram-nav",
+      "source_ref": "refs/heads/feat/application-owned-integration",
+      "destination_ref": "refs/heads/history/aiogram-nav/heads/feat/application-owned-integration",
+      "object_id": "327715857f61436bb4eae9f4a97e0858a797c99f"
+    },
+    {
+      "repository": "aiogram-nav",
+      "source_ref": "refs/heads/feat/performance-rust-core",
+      "destination_ref": "refs/heads/history/aiogram-nav/heads/feat/performance-rust-core",
+      "object_id": "f9e1ca9780a5573062152307ff3704023a01f81b"
+    },
+    {
+      "repository": "aiogram-nav",
+      "source_ref": "refs/heads/main",
+      "destination_ref": "refs/heads/history/aiogram-nav/heads/main",
+      "object_id": "a5a0696c495b66350446923715de82256f8dfde1"
+    },
+    {
+      "repository": "aiogram-nav",
+      "source_ref": "refs/remotes/origin/HEAD",
+      "destination_ref": "refs/heads/history/aiogram-nav/remotes/origin/HEAD",
+      "object_id": "a5a0696c495b66350446923715de82256f8dfde1"
+    },
+    {
+      "repository": "aiogram-nav",
+      "source_ref": "refs/remotes/origin/feat/application-owned-integration",
+      "destination_ref": "refs/heads/history/aiogram-nav/remotes/origin/feat/application-owned-integration",
+      "object_id": "327715857f61436bb4eae9f4a97e0858a797c99f"
+    },
+    {
+      "repository": "aiogram-nav",
+      "source_ref": "refs/remotes/origin/feat/performance-rust-core",
+      "destination_ref": "refs/heads/history/aiogram-nav/remotes/origin/feat/performance-rust-core",
+      "object_id": "f9e1ca9780a5573062152307ff3704023a01f81b"
+    },
+    {
+      "repository": "aiogram-nav",
+      "source_ref": "refs/remotes/origin/main",
+      "destination_ref": "refs/heads/history/aiogram-nav/remotes/origin/main",
+      "object_id": "a5a0696c495b66350446923715de82256f8dfde1"
+    },
+    {
+      "repository": "aiogram-nav",
+      "source_ref": "refs/tags/v0.1.0",
+      "destination_ref": "refs/tags/history/aiogram-nav/v0.1.0",
+      "object_id": "352df2193cde5fae30613e6b9c08fc7f1479f5f9"
+    },
+    {
+      "repository": "aiogram-nav",
+      "source_ref": "refs/tags/v0.2.0",
+      "destination_ref": "refs/tags/history/aiogram-nav/v0.2.0",
+      "object_id": "ddddc65afe390576186ec6240b051ede12f916f0"
+    },
+    {
+      "repository": "aiogram-nav",
+      "source_ref": "refs/tags/v0.3.0",
+      "destination_ref": "refs/tags/history/aiogram-nav/v0.3.0",
+      "object_id": "cf70a321596362cc0a17c075ab4c0c5cea532980"
+    },
+    {
+      "repository": "aiogram-idle",
+      "source_ref": "refs/heads/feat/application-owned-integration",
+      "destination_ref": "refs/heads/history/aiogram-idle/heads/feat/application-owned-integration",
+      "object_id": "6f9084f86e0ea348f6d2bd9b51024edc4ad57462"
+    },
+    {
+      "repository": "aiogram-idle",
+      "source_ref": "refs/heads/feat/performance-rust-core",
+      "destination_ref": "refs/heads/history/aiogram-idle/heads/feat/performance-rust-core",
+      "object_id": "fd284d8672a32cb5282a590a5aa52bece3739a9a"
+    },
+    {
+      "repository": "aiogram-idle",
+      "source_ref": "refs/heads/fix/0.2.1-correctness",
+      "destination_ref": "refs/heads/history/aiogram-idle/heads/fix/0.2.1-correctness",
+      "object_id": "919d5066a2f7004b36989fe7cd37a0c1de50cf58"
+    },
+    {
+      "repository": "aiogram-idle",
+      "source_ref": "refs/heads/main",
+      "destination_ref": "refs/heads/history/aiogram-idle/heads/main",
+      "object_id": "04a753ab1ce04086d2dabe4f4381cf188553a8e1"
+    },
+    {
+      "repository": "aiogram-idle",
+      "source_ref": "refs/remotes/origin/HEAD",
+      "destination_ref": "refs/heads/history/aiogram-idle/remotes/origin/HEAD",
+      "object_id": "04a753ab1ce04086d2dabe4f4381cf188553a8e1"
+    },
+    {
+      "repository": "aiogram-idle",
+      "source_ref": "refs/remotes/origin/feat/application-owned-integration",
+      "destination_ref": "refs/heads/history/aiogram-idle/remotes/origin/feat/application-owned-integration",
+      "object_id": "6f9084f86e0ea348f6d2bd9b51024edc4ad57462"
+    },
+    {
+      "repository": "aiogram-idle",
+      "source_ref": "refs/remotes/origin/feat/performance-rust-core",
+      "destination_ref": "refs/heads/history/aiogram-idle/remotes/origin/feat/performance-rust-core",
+      "object_id": "fd284d8672a32cb5282a590a5aa52bece3739a9a"
+    },
+    {
+      "repository": "aiogram-idle",
+      "source_ref": "refs/remotes/origin/fix/0.2.1-correctness",
+      "destination_ref": "refs/heads/history/aiogram-idle/remotes/origin/fix/0.2.1-correctness",
+      "object_id": "919d5066a2f7004b36989fe7cd37a0c1de50cf58"
+    },
+    {
+      "repository": "aiogram-idle",
+      "source_ref": "refs/remotes/origin/main",
+      "destination_ref": "refs/heads/history/aiogram-idle/remotes/origin/main",
+      "object_id": "04a753ab1ce04086d2dabe4f4381cf188553a8e1"
+    },
+    {
+      "repository": "aiogram-idle",
+      "source_ref": "refs/tags/v0.1.0",
+      "destination_ref": "refs/tags/history/aiogram-idle/v0.1.0",
+      "object_id": "de2fec9d8200e36637a0c5e749582572025656f4"
+    },
+    {
+      "repository": "aiogram-idle",
+      "source_ref": "refs/tags/v0.2.0",
+      "destination_ref": "refs/tags/history/aiogram-idle/v0.2.0",
+      "object_id": "c194a7ac37d374271dc115784c2174542193bad6"
+    },
+    {
+      "repository": "aiogram-idle",
+      "source_ref": "refs/tags/v0.2.1",
+      "destination_ref": "refs/tags/history/aiogram-idle/v0.2.1",
+      "object_id": "7fb78bd95ea119d1ce8ae296f53c5efc0d17d244"
+    },
+    {
+      "repository": "aiogram-idle",
+      "source_ref": "refs/tags/v0.3.0",
+      "destination_ref": "refs/tags/history/aiogram-idle/v0.3.0",
+      "object_id": "2513eab5aecdbce8e3856a1f29906f9257f9de82"
+    },
+    {
+      "repository": "aiogram-sentinel",
+      "source_ref": "refs/heads/dependabot/github_actions/core-actions-f7cb626f83",
+      "destination_ref": "refs/heads/history/aiogram-sentinel/remote-cutover/dependabot/github_actions/core-actions-f7cb626f83",
+      "object_id": "a9a67748106795462f8d775db94fbd9f57e4b181",
+      "snapshot": "remote-cutover-delta"
+    },
+    {
+      "repository": "aiogram-cmds",
+      "source_ref": "refs/heads/dependabot/github_actions/core-actions-1a31fcc15b",
+      "destination_ref": "refs/heads/history/aiogram-cmds/remote-cutover/dependabot/github_actions/core-actions-1a31fcc15b",
+      "object_id": "128685c703f53141b4ebc3ed22b6af6f4862da78",
+      "snapshot": "remote-cutover-delta"
+    },
+    {
+      "repository": "aiogram-cmds",
+      "source_ref": "refs/heads/revert-7-chore/fix-project-urls",
+      "destination_ref": "refs/heads/history/aiogram-cmds/heads/revert-7-chore/fix-project-urls",
+      "object_id": "d8ecbb385882894c69e614fbd8a378d57e83db23"
+    }
+  ]
+}

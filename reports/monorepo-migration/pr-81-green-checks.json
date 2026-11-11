@@ -1,0 +1,1247 @@
+[
+  {
+    "bucket": "pass",
+    "name": "runtime (3.14, windows-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.14, macos-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.14, macos-15-intel)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.14, ubuntu-24.04-arm)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.14, ubuntu-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.13, windows-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.13, macos-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.13, macos-15-intel)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.13, ubuntu-24.04-arm)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.12, windows-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.13, ubuntu-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.12, macos-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.12, macos-15-intel)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.12, ubuntu-24.04-arm)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.12, ubuntu-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.11, windows-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.11, macos-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.11, macos-15-intel)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.11, ubuntu-24.04-arm)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.11, ubuntu-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.10, ubuntu-24.04-arm)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.10, macos-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.10, macos-15-intel)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.10, ubuntu-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.10, windows-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "wheels (windows-latest, x86_64, auto)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "wheels (macos-latest, aarch64, auto)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "wheels (ubuntu-24.04-arm, aarch64, 2014)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "wheels (ubuntu-24.04-arm, aarch64-unknown-linux-musl, musllinux_1_2)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "wheels (macos-15-intel, x86_64, auto)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "wheels (ubuntu-latest, x86_64-unknown-linux-musl, musllinux_1_2)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "rust",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "wheels (ubuntu-latest, x86_64, 2014)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "source",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.14, windows-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.14, macos-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "required",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.14, macos-15-intel)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.14, ubuntu-24.04-arm)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.14, ubuntu-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.13, macos-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.13, macos-15-intel)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.13, windows-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "Required checks",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.12, macos-15-intel)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.12, macos-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.14, macos-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.13, ubuntu-24.04-arm)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.14, macos-15-intel)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.11, macos-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.13, ubuntu-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.12, windows-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.13, macos-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.13, macos-15-intel)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.14, windows-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.12, ubuntu-24.04-arm)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "quality",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "redis-compatibility (redis:8-alpine, minimum)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "compatibility (3.10, minimum)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.11, macos-15-intel)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "compatibility (3.12, minimum)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "navigation-integration",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.12, ubuntu-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "documentation",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "redis (3.10, minimum, 7)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "Required Checks",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "compatibility (3.10, minimum)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "installed-python-matrix (3.12, macos-15-intel)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.11, windows-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "installed-python-matrix (3.10, macos-15-intel)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "compatibility (3.12, minimum)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "Required checks",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "installed-python-matrix (3.10, ubuntu-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "installed-python-matrix (3.11, ubuntu-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.11, ubuntu-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.10, macos-15-intel)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.14, ubuntu-24.04-arm)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "compatibility (3.14, latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.12, macos-15-intel)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "installed-python-matrix (3.13, ubuntu-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "Tests (Python 3.14, aiogram latest, redis:7-alpine)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "installed-python-matrix (3.12, ubuntu-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.10, ubuntu-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "redis (3.12, latest, 7)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "compatibility (3.11, latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "quality",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "installed-python-matrix (3.11, macos-15-intel)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.14, ubuntu-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "combined (3.13, 7, rust, rust, latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "combined (3.14, 7, rust, rust, latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "installed-python-matrix (3.14, ubuntu-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "installed-python-matrix (3.10, macos-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.11, ubuntu-24.04-arm)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "installed-python-matrix (3.11, macos-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "installed-python-matrix (3.10, windows-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "compatibility (3.10, latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "Quality Checks",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "Tests (Python 3.12, aiogram latest, redis:8-alpine)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "installed-python-matrix (3.14, windows-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "redis (3.12, latest, 7)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.13, windows-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "compatibility (3.11, minimum)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "security",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "redis (3.14, minimum, 7)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "format-three (7)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "installed-python-matrix (3.12, windows-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "installed-python-matrix (3.14, macos-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "compatibility (3.12, minimum)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "compatibility (3.12, latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.13, ubuntu-24.04-arm)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.10, windows-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "compatibility (3.11, minimum)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "installed-python-matrix (3.13, windows-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.10, ubuntu-24.04-arm)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "installed-python-matrix (3.14, macos-15-intel)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.10, macos-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "installed-python-matrix (3.13, macos-15-intel)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "redis-compatibility (redis:8-alpine, latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "redis-compatibility (redis:7-alpine, latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "compatibility (3.11, latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "Tests (Python 3.10, aiogram 3.0.0, redis:7-alpine)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "compatibility (3.13, minimum)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "compatibility (3.10, latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "redis (3.10, latest, 7)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.12, macos-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.11, macos-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "compatibility (3.13, latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "redis (3.12, minimum, 7)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "redis (3.12, latest, 8)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "combined (3.11, 7, python, python, latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "compatibility (3.14, latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.13, ubuntu-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "compatibility (3.11, minimum)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.12, windows-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "compatibility (3.13, minimum)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "redis (3.12, minimum, 7)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "compatibility (3.12, latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "installed-python-matrix (3.12, macos-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "installed-python-matrix (3.12, ubuntu-24.04-arm)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "compatibility (3.13, minimum)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "combined (3.10, 7, python, python, minimum)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "installed-python-matrix (3.11, ubuntu-24.04-arm)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "installed-python-matrix (3.10, ubuntu-24.04-arm)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "installed-python-matrix (3.13, ubuntu-24.04-arm)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "installed-python-matrix (3.13, macos-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "installed-python-matrix (3.11, windows-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "redis (3.12, latest, 8)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "installed-python-matrix (3.14, ubuntu-24.04-arm)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.12, ubuntu-24.04-arm)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.12, ubuntu-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "Tests (Python 3.11, aiogram latest, redis:7-alpine)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "Tests (Python 3.10, aiogram latest, redis:7-alpine)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.11, windows-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "compatibility (3.12, latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "redis (3.12, minimum, 8)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.11, macos-15-intel)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "combined (3.12, 8, rust, rust, latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.11, ubuntu-24.04-arm)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "wheels (ubuntu-latest, x86_64-unknown-linux-musl, musllinux_1_2)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.11, ubuntu-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "compatibility (3.13, latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "compatibility (3.13, latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "combined (3.12, 8, rust, python, latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "parity (3.10, 7)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.10, macos-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "format-three (8)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "Security scans",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.10, ubuntu-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "Tests (Python 3.13, aiogram latest, redis:7-alpine)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "parity (3.12, 7)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "compatibility (3.10, minimum)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "redis (3.10, minimum, 7)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "redis (3.10, latest, 7)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "source",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "wheels (ubuntu-latest, x86_64-unknown-linux-musl, musllinux_1_2)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "compatibility (3.10, latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.10, macos-15-intel)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "Tests (Python 3.12, aiogram latest, redis:7-alpine)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.10, windows-latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "parity (3.12, 8)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "runtime (3.10, ubuntu-24.04-arm)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "redis (3.14, latest, 7)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "compatibility (3.11, latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "Changelog fragment",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "redis-compatibility (redis:7-alpine, minimum)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "source",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "combined (3.12, 8, python, rust, latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "redis (3.14, minimum, 7)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "compatibility (3.14, latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "source",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "parity (3.14, 7)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "Python 3.14",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "wheels (macos-latest, aarch64-apple-darwin, auto)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "combined (3.12, 8, python, python, latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "combined (3.12, 7, rust, python, latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "wheels (macos-15-intel, x86_64, auto)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "redis (3.14, latest, 7)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "parity (3.12, 8)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "parity (3.14, 7)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "combined (3.12, 7, python, rust, latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "wheels (ubuntu-latest, x86_64, 2014)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "quality",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "wheels (ubuntu-latest, x86_64-unknown-linux-gnu, 2_17)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "wheels (macos-15-intel, x86_64, auto)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "quality",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "rust",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "standalone (3.10)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "combined (3.12, 7, python, python, latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "Python 3.12",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "security",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "Distribution and base install",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "aiogram aiogram==3.0.0",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "wheels (ubuntu-latest, x86_64-unknown-linux-musl, musllinux_1_2)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "wheels (macos-latest, aarch64, auto)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "standalone (3.11)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "Python 3.13",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "wheels (windows-latest, x86_64, auto)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "wheels (windows-latest, x86_64, auto)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "standalone (3.12)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "wheels (ubuntu-latest, x86_64, 2014)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "wheels (ubuntu-24.04-arm, aarch64-unknown-linux-musl, musllinux_1_2)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "rust",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "aiogram aiogram>=3,<4",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "standalone (3.13)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "rust",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "security",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "Python 3.10",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "Artifacts Python 3.10",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "wheels (macos-latest, aarch64, auto)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "verify",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "parity (3.12, 7)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "Python 3.11",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "wheels (ubuntu-24.04-arm, aarch64-unknown-linux-gnu, 2_17)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "Artifacts Python 3.12",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "security",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "wheels (windows-latest, x86_64-pc-windows-msvc, auto)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "skipping",
+    "name": "deploy",
+    "state": "SKIPPED"
+  },
+  {
+    "bucket": "pass",
+    "name": "build",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "wheels (ubuntu-24.04-arm, aarch64-unknown-linux-musl, musllinux_1_2)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "combined (3.12, 7, rust, rust, latest)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "wheels (ubuntu-24.04-arm, aarch64, 2014)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "wheels (ubuntu-24.04-arm, aarch64, 2014)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "wheels (ubuntu-24.04-arm, aarch64-unknown-linux-musl, musllinux_1_2)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "parity (3.10, 7)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "skipping",
+    "name": "${{ matrix.os }} / ${{ matrix.python }}",
+    "state": "SKIPPED"
+  },
+  {
+    "bucket": "skipping",
+    "name": "performance",
+    "state": "SKIPPED"
+  },
+  {
+    "bucket": "pass",
+    "name": "wheels (macos-15-intel, x86_64-apple-darwin, auto)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "pass",
+    "name": "standalone (3.14)",
+    "state": "SUCCESS"
+  },
+  {
+    "bucket": "skipping",
+    "name": "pypy-tests",
+    "state": "SKIPPED"
+  }
+]

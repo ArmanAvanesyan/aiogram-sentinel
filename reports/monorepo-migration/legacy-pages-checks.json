@@ -1,0 +1,26 @@
+[
+  {
+    "original_repository": "aiogram-kit",
+    "original_pages_url": "https://armanavanesyan.github.io/aiogram-kit/",
+    "observed_status": 200,
+    "observed_final_url": "https://armanavanesyan.github.io/aiogram-kit/",
+    "maintained_url": "https://armanavanesyan.github.io/aiogram-kit/",
+    "mapping": "explicit migration map; no automatic Pages redirect assumed"
+  },
+  {
+    "original_repository": "aiogram-sentinel",
+    "original_pages_url": "https://armanavanesyan.github.io/aiogram-sentinel/",
+    "observed_status": 404,
+    "observed_final_url": "https://armanavanesyan.github.io/aiogram-sentinel/",
+    "maintained_url": "https://armanavanesyan.github.io/aiogram-kit/libraries/aiogram-sentinel/",
+    "mapping": "explicit migration map; no automatic Pages redirect assumed"
+  },
+  {
+    "original_repository": "aiogram-cmds",
+    "original_pages_url": "https://armanavanesyan.github.io/aiogram-cmds/",
+    "observed_status": 200,
+    "observed_final_url": "https://armanavanesyan.github.io/aiogram-cmds/",
+    "maintained_url": "https://armanavanesyan.github.io/aiogram-kit/libraries/aiogram-cmds/",
+    "mapping": "explicit migration map; no automatic Pages redirect assumed"
+  }
+]

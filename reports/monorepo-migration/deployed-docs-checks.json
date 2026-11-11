@@ -1,0 +1,47 @@
+[
+  {
+    "url": "https://armanavanesyan.github.io/aiogram-kit/",
+    "status": 200,
+    "bytes": 25813
+  },
+  {
+    "url": "https://armanavanesyan.github.io/aiogram-kit/standalone-idle/",
+    "status": 200,
+    "bytes": 31712
+  },
+  {
+    "url": "https://armanavanesyan.github.io/aiogram-kit/standalone-nav/",
+    "status": 200,
+    "bytes": 29064
+  },
+  {
+    "url": "https://armanavanesyan.github.io/aiogram-kit/legacy-links/",
+    "status": 200,
+    "bytes": 26205
+  },
+  {
+    "url": "https://armanavanesyan.github.io/aiogram-kit/libraries/aiogram-sentinel/",
+    "status": 200,
+    "bytes": 37210
+  },
+  {
+    "url": "https://armanavanesyan.github.io/aiogram-kit/libraries/aiogram-cmds/",
+    "status": 200,
+    "bytes": 60817
+  },
+  {
+    "url": "https://armanavanesyan.github.io/aiogram-kit/libraries/aiogram-coordination/",
+    "status": 200,
+    "bytes": 36139
+  },
+  {
+    "url": "https://armanavanesyan.github.io/aiogram-kit/libraries/aiogram-nav/",
+    "status": 200,
+    "bytes": 37554
+  },
+  {
+    "url": "https://armanavanesyan.github.io/aiogram-kit/libraries/aiogram-idle/",
+    "status": 200,
+    "bytes": 41243
+  }
+]

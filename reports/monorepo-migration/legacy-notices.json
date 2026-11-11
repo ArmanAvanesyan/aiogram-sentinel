@@ -1,0 +1,32 @@
+[
+  {
+    "repository": "aiogram-kit-legacy",
+    "id": 1424361052,
+    "package": "aiogram-kit",
+    "notice_applied": true
+  },
+  {
+    "repository": "aiogram-coordination",
+    "id": 1452468905,
+    "package": "aiogram-coordination",
+    "notice_applied": true
+  },
+  {
+    "repository": "aiogram-cmds",
+    "id": 1075781724,
+    "package": "aiogram-cmds",
+    "notice_applied": true
+  },
+  {
+    "repository": "aiogram-nav",
+    "id": 1452215589,
+    "package": "aiogram-nav",
+    "notice_applied": true
+  },
+  {
+    "repository": "aiogram-idle",
+    "id": 1452215497,
+    "package": "aiogram-idle",
+    "notice_applied": true
+  }
+]
