@@ -10,6 +10,7 @@ import argparse
 import hashlib
 import json
 import math
+import re
 import statistics
 from pathlib import Path
 
@@ -52,8 +53,63 @@ def load(path: Path) -> dict:
             metadata["seed"],
         ),
         "engine": metadata["engine"],
+        "run_id": document.get("run_id", metadata.get("run_id")),
+        "qualification_provenance": document.get("qualification_provenance"),
         "rows": rows,
     }
+
+
+def positive_integer(value: object) -> bool:
+    return type(value) is int and value > 0
+
+
+def positive_finite(value: object) -> bool:
+    if type(value) not in (int, float):
+        return False
+    try:
+        return math.isfinite(value) and value > 0
+    except OverflowError:
+        return False
+
+
+def digest(value: object) -> bool:
+    return isinstance(value, str) and re.fullmatch(r"[a-f0-9]{64}", value) is not None
+
+
+def provenance_failures(runs: list[dict]) -> list[str]:
+    failures = []
+    for field in ("sha256", "path", "run_id"):
+        values = [item.get(field) for item in runs]
+        if any(not isinstance(value, str) or not value for value in values):
+            failures.append(f"Missing input identity: {field}")
+        elif len(set(values)) != len(values):
+            failures.append(f"Duplicate input identity: {field}")
+    if any(not digest(item.get("sha256")) for item in runs):
+        failures.append("Invalid input checksum")
+    proven = []
+    for item in runs:
+        value = item.get("qualification_provenance")
+        if (
+            not isinstance(value, dict)
+            or set(value) != {"base_artifact_sha256", "native_artifact_sha256", "driver_sha256"}
+            or not digest(value.get("base_artifact_sha256"))
+            or not digest(value.get("driver_sha256"))
+            or (item["engine"] == "python" and value.get("native_artifact_sha256") is not None)
+            or (item["engine"] == "rust" and not digest(value.get("native_artifact_sha256")))
+        ):
+            failures.append(f"Missing or invalid qualification provenance: {item.get('path')}")
+        else:
+            proven.append((item["engine"], value))
+    if len(proven) == len(runs):
+        for field in ("base_artifact_sha256", "driver_sha256"):
+            if len({value[field] for _, value in proven}) != 1:
+                failures.append(f"Mismatched qualification provenance: {field}")
+        if (
+            len({value["native_artifact_sha256"] for engine, value in proven if engine == "rust"})
+            != 1
+        ):
+            failures.append("Mismatched qualification provenance: native_artifact_sha256")
+    return failures
 
 
 def compare(python: list[dict], rust: list[dict], workloads: list[str]) -> dict:
@@ -68,12 +124,25 @@ def compare(python: list[dict], rust: list[dict], workloads: list[str]) -> dict:
         item["engine"] != "rust" for item in rust
     ):
         raise ValueError("Input engine selection does not match the requested groups")
-    evidence, failures = [], []
+    evidence, failures = [], provenance_failures(all_runs)
+    for item in all_runs:
+        for name, row in item["rows"].items():
+            if (
+                not positive_integer(row["calls"])
+                or not positive_integer(row["cpu_samples"])
+                or not positive_finite(row["cpu_ns"])
+            ):
+                failures.append(f"Invalid CPU evidence or operation counts: {name}")
+            count = row["latency_samples"]
+            if not (type(count) is int and count == 0) and (
+                not positive_integer(count) or not positive_finite(row["p95_ns"])
+            ):
+                failures.append(f"Invalid individual latency evidence: {name}")
     latency_names = {
         name
         for item in all_runs
         for name, row in item["rows"].items()
-        if row["latency_samples"] > 0
+        if not (type(row["latency_samples"]) is int and row["latency_samples"] == 0)
     }
     if not latency_names:
         failures.append("No individual end-to-end operation latency samples")
@@ -86,13 +155,18 @@ def compare(python: list[dict], rust: list[dict], workloads: list[str]) -> dict:
         except KeyError:
             failures.append(f"Missing comparable workload: {name}")
             continue
+        if any(not positive_integer(row["calls"]) for row in a + b):
+            failures.append(f"Invalid operation counts: {name}")
+            continue
         if len({row["calls"] for row in a + b}) != 1:
             failures.append(f"Different operation counts: {name}")
             continue
         row: dict[str, object] = {"workload": name}
         if name in workloads:
             if any(
-                item["cpu_samples"] < 10 or not math.isfinite(item["cpu_ns"]) or item["cpu_ns"] <= 0
+                not positive_integer(item["cpu_samples"])
+                or item["cpu_samples"] < 10
+                or not positive_finite(item["cpu_ns"])
                 for item in a + b
             ):
                 failures.append(f"Insufficient CPU samples: {name}")
@@ -111,9 +185,9 @@ def compare(python: list[dict], rust: list[dict], workloads: list[str]) -> dict:
                     failures.append(f"CPU repeat spread exceeds 10%: {name}")
         if name in latency_names:
             if any(
-                item["latency_samples"] < 100
-                or not math.isfinite(item["p95_ns"])
-                or item["p95_ns"] <= 0
+                not positive_integer(item["latency_samples"])
+                or item["latency_samples"] < 100
+                or not positive_finite(item["p95_ns"])
                 for item in a + b
             ):
                 failures.append(f"Insufficient individual latency samples: {name}")
@@ -137,7 +211,13 @@ def compare(python: list[dict], rust: list[dict], workloads: list[str]) -> dict:
         "identity": all_runs[0]["identity"],
         "cpu_workloads_selected": workloads,
         "inputs": [
-            {"path": item["path"], "sha256": item["sha256"], "engine": item["engine"]}
+            {
+                "path": item["path"],
+                "sha256": item["sha256"],
+                "engine": item["engine"],
+                "run_id": item.get("run_id"),
+                "qualification_provenance": item.get("qualification_provenance"),
+            }
             for item in all_runs
         ],
         "comparisons": evidence,
