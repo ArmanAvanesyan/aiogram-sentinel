@@ -1,0 +1,57 @@
+name: Publish verified aiogram-cmds
+permissions:
+  contents: read
+concurrency:
+  group: publish-aiogram-cmds-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  verify:
+    if: github.ref_type == 'tag' && startsWith(github.ref_name, 'aiogram-cmds-v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        persist-credentials: false
+    - uses: astral-sh/setup-uv@v7
+      with:
+        python-version: '3.12'
+    - name: Download the exact reviewed release artifacts
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: gh release download "$GITHUB_REF_NAME" --pattern '*.whl' --pattern '*.tar.gz' --pattern SHA256SUMS --dir dist
+    - name: Validate tag, distribution names and independently supplied checksums
+      env:
+        MANIFEST_SHA256: ${{ inputs.manifest_sha256 }}
+      run: python tools/verify_release.py --package aiogram-cmds --tag "$GITHUB_REF_NAME" --dist dist --manifest-sha256 "$MANIFEST_SHA256"
+    - run: uvx twine check dist/*.whl dist/*.tar.gz
+    - uses: actions/upload-artifact@v6
+      with:
+        name: verified-distributions
+        path: 'dist/*.whl
+
+          dist/*.tar.gz
+
+          '
+        if-no-files-found: error
+  publish:
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+    - uses: actions/download-artifact@v7
+      with:
+        name: verified-distributions
+        path: dist
+    - name: Publish verified distributions using PyPI Trusted Publishing
+      uses: pypa/gh-action-pypi-publish@release/v1
+'on':
+  workflow_dispatch:
+    inputs:
+      manifest_sha256:
+        description: SHA256 of the independently verified GitHub release SHA256SUMS
+        required: true
+        type: string

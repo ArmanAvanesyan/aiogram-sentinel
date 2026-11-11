@@ -1,0 +1,195 @@
+{
+  "schema_version": 1,
+  "qualification": false,
+  "metadata": {
+    "driver_sha256": "8b541a4f8663ad161ce482778e073e07cd08c9464104e2dcab5ad3b1745f5f1a",
+    "mode": "combined",
+    "engine": "python",
+    "backend": "redis",
+    "external_sessions": false,
+    "idle_operation": "activate",
+    "receipt_limit_override": null,
+    "requested_checkpoints": [
+      1,
+      10,
+      16
+    ],
+    "artifacts": [
+      {
+        "name": "aiogram-idle",
+        "version": "0.2.0",
+        "module": "/private/tmp/aiogram-optimization-published-baseline/lib/python3.12/site-packages/aiogram_idle/__init__.py",
+        "direct_url": {}
+      },
+      {
+        "name": "aiogram-nav",
+        "version": "0.2.0",
+        "module": "/private/tmp/aiogram-optimization-published-baseline/lib/python3.12/site-packages/aiogram_nav/__init__.py",
+        "direct_url": {}
+      },
+      {
+        "name": "aiogram",
+        "version": "3.31.0",
+        "module": "/private/tmp/aiogram-optimization-published-baseline/lib/python3.12/site-packages/aiogram/__init__.py",
+        "direct_url": {}
+      },
+      {
+        "name": "aiogram-coordination",
+        "version": "0.1.0",
+        "module": "/private/tmp/aiogram-optimization-published-baseline/lib/python3.12/site-packages/aiogram_coordination/__init__.py",
+        "direct_url": {}
+      }
+    ],
+    "python": "3.12.13 (main, Apr 14 2026, 14:36:32) [Clang 22.1.3 ]",
+    "executable": "/tmp/aiogram-optimization-published-baseline/bin/python",
+    "platform": "macOS-15.8.1-x86_64-i386-64bit",
+    "cpu": "i386",
+    "cpu_count": 16,
+    "prefix": "aiogram-state-growth:b8b5e07d797a417aae71b5de12249b2e",
+    "redis_endpoint": {
+      "host": "127.0.0.1",
+      "port": 16650,
+      "db": "/0"
+    },
+    "history_limit": 20,
+    "parameter_payload_bytes": 16,
+    "parameters_json_bytes": 30,
+    "real_telegram": false,
+    "storage_format3": false,
+    "tracemalloc_enabled": false,
+    "rss_measurement": "process peak RSS; platform getrusage units normalized to bytes",
+    "timing_excludes_state_inspection": true,
+    "command_measurement": "client invocations and computed RESP2 requests; not TCP round trips, replies, retries or Lua subcommands",
+    "started_at": 1794354591.0025659,
+    "config": {
+      "enabled": false,
+      "poll_seconds": 10,
+      "concurrency": 8,
+      "claim_limit": 8,
+      "lease_seconds": 60,
+      "renew_seconds": 15,
+      "operation_timeout_seconds": 45,
+      "lock_wait_seconds": 5,
+      "shutdown_seconds": 10,
+      "retry_max_attempts": 5,
+      "retry_max_age_seconds": 300,
+      "recovery_retention_seconds": 3600,
+      "ambiguous_send": "suppress",
+      "max_conversations": 10000,
+      "max_receipts_per_conversation": 256,
+      "max_tokens_per_conversation": 16,
+      "max_params_bytes": 16384,
+      "max_components_bytes": 8388608
+    },
+    "redis_version": "7.4.11",
+    "finished_at": 1794354613.742831
+  },
+  "checkpoints": [
+    {
+      "operations": 1,
+      "wall_seconds": 0.14960252796299756,
+      "process_cpu_seconds": 0.09918399999999972,
+      "client_commands": {
+        "client_command_calls": 70,
+        "pipeline_execute_calls": 0,
+        "command_argument_bytes": 99189,
+        "computed_resp_request_bytes": 102164,
+        "command_histogram": {
+          "GET": 17,
+          "TIME": 17,
+          "EVALSHA": 21,
+          "SET": 1,
+          "HEXISTS": 13,
+          "EVAL": 1
+        }
+      },
+      "event_loop_lag": {
+        "samples": 21,
+        "retained_samples": 21,
+        "maximum_seconds": 0.006996704963967204,
+        "p95_seconds": 0.006267674965783954,
+        "interval_seconds": 0.005
+      },
+      "public_snapshot_json_bytes": 394,
+      "current_history_size": 0,
+      "traced_current_bytes": null,
+      "traced_peak_bytes": null,
+      "process_peak_rss_bytes": 178552832,
+      "redis_keys": 6,
+      "redis_string_payload_bytes": 20837,
+      "redis_memory_usage_bytes": 22960,
+      "redis_record_string_bytes": 20442
+    },
+    {
+      "operations": 10,
+      "wall_seconds": 7.844075424829498,
+      "process_cpu_seconds": 6.791760000000003,
+      "client_commands": {
+        "client_command_calls": 700,
+        "pipeline_execute_calls": 0,
+        "command_argument_bytes": 23993603,
+        "computed_resp_request_bytes": 24023482,
+        "command_histogram": {
+          "GET": 170,
+          "TIME": 170,
+          "EVALSHA": 210,
+          "SET": 10,
+          "HEXISTS": 130,
+          "EVAL": 10
+        }
+      },
+      "event_loop_lag": {
+        "samples": 363,
+        "retained_samples": 363,
+        "maximum_seconds": 0.1122775471303612,
+        "p95_seconds": 0.08220192603766918,
+        "interval_seconds": 0.005
+      },
+      "public_snapshot_json_bytes": 932,
+      "current_history_size": 9,
+      "traced_current_bytes": null,
+      "traced_peak_bytes": null,
+      "process_peak_rss_bytes": 188583936,
+      "redis_keys": 6,
+      "redis_string_payload_bytes": 841724,
+      "redis_memory_usage_bytes": 919984,
+      "redis_record_string_bytes": 841329
+    },
+    {
+      "operations": 16,
+      "wall_seconds": 22.353042524075136,
+      "process_cpu_seconds": 19.502062,
+      "client_commands": {
+        "client_command_calls": 1120,
+        "pipeline_execute_calls": 0,
+        "command_argument_bytes": 93327829,
+        "computed_resp_request_bytes": 93375695,
+        "command_histogram": {
+          "GET": 272,
+          "TIME": 272,
+          "EVALSHA": 336,
+          "SET": 16,
+          "HEXISTS": 208,
+          "EVAL": 16
+        }
+      },
+      "event_loop_lag": {
+        "samples": 932,
+        "retained_samples": 932,
+        "maximum_seconds": 0.2962052731309086,
+        "p95_seconds": 0.13584939506836236,
+        "interval_seconds": 0.005
+      },
+      "public_snapshot_json_bytes": 1289,
+      "current_history_size": 15,
+      "traced_current_bytes": null,
+      "traced_peak_bytes": null,
+      "process_peak_rss_bytes": 198230016,
+      "redis_keys": 6,
+      "redis_string_payload_bytes": 2159052,
+      "redis_memory_usage_bytes": 2623920,
+      "redis_record_string_bytes": 2158657
+    }
+  ],
+  "outcome": "completed"
+}

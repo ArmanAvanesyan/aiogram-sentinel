@@ -1,0 +1,66 @@
+[
+  {
+    "path": "docs/design/aiogram-idle.md",
+    "sha256": "dc64cd8c08b7a284257bd07e5512ee16bc278bd0b65e02a5a5aa05c1c20e2552"
+  },
+  {
+    "path": "docs/design/aiogram-nav.md",
+    "sha256": "296b654c87ab50cb742e79d28f2c3bb32248fce66090624c2312098968ff1093"
+  },
+  {
+    "path": "docs/design/index.md",
+    "sha256": "ca378ce62aaf999100a4dc933d5089453748317ea30eab46cde0b0e7d42fa91b"
+  },
+  {
+    "path": "docs/design/performance-and-retention-review.md",
+    "sha256": "d64dc01e57845cb71cf51890ff7aa020e28cdea068fb3521f603b209a39d763f"
+  },
+  {
+    "path": "docs/design/review.md",
+    "sha256": "a922075815681d6ae597e9fed3a1b09c4b56f9920416d9e6353c7d1b47d03581"
+  },
+  {
+    "path": "docs/design/storage-and-verification.md",
+    "sha256": "056f2bf9f5338e7730119b3ca317c5a13176af9e55a98f6880460fa24a403dd5"
+  },
+  {
+    "path": "docs/standalone-idle.md",
+    "sha256": "eab977b56afe7a126360641b78b384ce48d6a8fa4162bc2386c98eb39497aeed"
+  },
+  {
+    "path": "docs/standalone-nav.md",
+    "sha256": "4482b307c13985b98fd3a30ca9b8842508445875a212bc29ae1bd8daca27a86a"
+  },
+  {
+    "path": "reports/2026-11-11-idle-nav-performance/combined-results.jsonl",
+    "sha256": "c48a1e02401753edd7e8f1269026c9cb0a013206d7886807c1c3bbaa0f239d30"
+  },
+  {
+    "path": "reports/2026-11-11-idle-nav-performance/idle_receipt_perf_audit.py",
+    "sha256": "7522e6b111734e9fc1a1c5a77ffa94d480f12d32a2299329e19ce91b20654bf5"
+  },
+  {
+    "path": "reports/2026-11-11-idle-nav-performance/idle_receipt_perf_audit_results.json",
+    "sha256": "6b871fb7ea3e8693f26ed6117bfa01746171241039785c5336ed5ea6b0c8288e"
+  },
+  {
+    "path": "reports/2026-11-11-idle-nav-performance/idle_redis_retention_audit.py",
+    "sha256": "4cac018004c03824c5aab76d5dcc211987e5e042aca0f49e2cbe8ea48f35cf7f"
+  },
+  {
+    "path": "reports/2026-11-11-idle-nav-performance/measure_combined_receipts.py",
+    "sha256": "9f6480c5af55500235b4a58becb820ccbaecf0b8984af27106810ab9f86e2380"
+  },
+  {
+    "path": "reports/2026-11-11-idle-nav-performance/repro_first_abandon.py",
+    "sha256": "21c176b0963ec8d7fbe6c4d8beffaddf068dee038ded3c41bbdad549a77f4a4b"
+  },
+  {
+    "path": "reports/2026-11-11-idle-nav-performance/reproduce-combined.py",
+    "sha256": "edc5cb1695d97890f6f1db088f19f3403d0ff0a8f673c756d12f25d86b3e80e8"
+  },
+  {
+    "path": "mkdocs.yml",
+    "sha256": "6f1dccff90538ff09bc259ae54775e74dd467019dcc15fea7ec667b52d568be0"
+  }
+]

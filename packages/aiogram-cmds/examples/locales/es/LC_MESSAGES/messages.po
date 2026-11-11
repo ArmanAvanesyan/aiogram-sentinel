@@ -1,0 +1,49 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: es\n"
+
+msgid "cmd.start.desc"
+msgstr "Iniciar el bot"
+
+msgid "cmd.help.desc"
+msgstr "Mostrar ayuda"
+
+msgid "cmd.about.desc"
+msgstr "Acerca del bot"
+
+msgid "cmd.language.desc"
+msgstr "Cambiar idioma"
+
+msgid "cmd.info.desc"
+msgstr "Información del bot"
+
+msgid "welcome.message"
+msgstr "👋 ¡Hola {name}!\n\n¡Bienvenido al ejemplo de bot i18n!\n\nEste bot demuestra soporte multiidioma con aiogram-cmds.\n\nUsa /help para ver los comandos disponibles."
+
+msgid "help.message"
+msgstr "📋 Comandos disponibles:\n\n• /start - Iniciar el bot y obtener mensaje de bienvenida\n• /help - Mostrar esta ayuda\n• /about - Acerca del bot\n• /language - Cambiar idioma\n• /info - Información del bot\n\n🌍 ¡Este bot soporta múltiples idiomas!"
+
+msgid "about.message"
+msgstr "ℹ️ Acerca del bot:\n\nEste es un ejemplo de bot i18n construido con aiogram-cmds.\nDemuestra soporte multiidioma con:\n• Inglés (por defecto)\n• Ruso\n• Español\n\n🔧 Construido con aiogram-cmds para gestión de comandos."
+
+msgid "language.message"
+msgstr "🌍 Elige tu idioma:"
+
+msgid "language.changed"
+msgstr "✅ Idioma cambiado a {language}"
+
+msgid "info.message"
+msgstr "ℹ️ Información del bot:\n\n• Nombre del bot: Ejemplo de bot i18n\n• Versión: demo aiogram-cmds\n• Tu ID: {user_id}\n• Tu nombre: {first_name}\n• Nombre de usuario: @{username}\n• Idioma: {language}\n\n🔧 Este bot usa aiogram-cmds para gestión de comandos."
+
+msgid "unknown.message"
+msgstr "🤔 No entiendo ese mensaje.\n\nUsa /help para ver los comandos disponibles."
+
+msgid "user"
+msgstr "usuario"
+
+msgid "unknown"
+msgstr "Desconocido"
+
+msgid "none"
+msgstr "Ninguno"

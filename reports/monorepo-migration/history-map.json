@@ -1,0 +1,32 @@
+[
+  {
+    "repository": "aiogram-coordination",
+    "source_head": "7dcb06e2e46a57e8b826279c744ab51d368a997d",
+    "destination": "packages/aiogram-coordination",
+    "history_ref": "refs/migration/aiogram-coordination/heads/"
+  },
+  {
+    "repository": "aiogram-cmds",
+    "source_head": "1457341dca31565335c9d53e22b9ae534dce9031",
+    "destination": "packages/aiogram-cmds",
+    "history_ref": "refs/migration/aiogram-cmds/heads/"
+  },
+  {
+    "repository": "aiogram-nav",
+    "source_head": "a5a0696c495b66350446923715de82256f8dfde1",
+    "destination": "packages/aiogram-nav",
+    "history_ref": "refs/migration/aiogram-nav/heads/"
+  },
+  {
+    "repository": "aiogram-idle",
+    "source_head": "04a753ab1ce04086d2dabe4f4381cf188553a8e1",
+    "destination": "packages/aiogram-idle",
+    "history_ref": "refs/migration/aiogram-idle/heads/"
+  },
+  {
+    "repository": "aiogram-kit",
+    "source_head": "f279f964371b95133a331b99c385855f8f0ef534",
+    "destination": "packages/aiogram-kit",
+    "history_ref": "refs/migration/aiogram-kit/heads/"
+  }
+]

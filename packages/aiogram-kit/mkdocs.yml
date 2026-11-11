@@ -1,0 +1,61 @@
+site_name: aiogram-kit
+site_description: Community libraries for aiogram v3
+site_url: https://armanavanesyan.github.io/aiogram-kit/
+repo_url: https://github.com/ArmanAvanesyan/aiogram-kit
+repo_name: ArmanAvanesyan/aiogram-kit
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.top
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+
+nav:
+  - Home: index.md
+  - Standalone idle recipe: standalone-idle.md
+  - Standalone navigation recipe: standalone-nav.md
+  - Design plans:
+      - Programme and Kit integration: design/index.md
+      - aiogram-nav: design/aiogram-nav.md
+      - aiogram-idle: design/aiogram-idle.md
+      - Storage and verification: design/storage-and-verification.md
+      - Pre-implementation review: design/review.md
+  - Sentinel: https://armanavanesyan.github.io/aiogram-sentinel/
+  - Cmds: https://armanavanesyan.github.io/aiogram-cmds/
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.superfences
+  - toc:
+      permalink: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/ArmanAvanesyan
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/aiogram-kit/

@@ -1,0 +1,45 @@
+{
+  "scope": "Read-only implementation audit; scratch Engine and fresh isolated Redis prefixes only",
+  "repo": "/Users/armanavanesyan/oss/own/aiogram-idle",
+  "scratch_harness": "/tmp/idle_receipt_perf_audit.py",
+  "redis_harness": "/tmp/idle_redis_retention_audit.py",
+  "scratch_growing_component": {
+    "payload_growth_bytes_per_activation": 128,
+    "transitions_per_activation": 2,
+    "clock": "fixed ManualClock(1000)",
+    "retention_seconds": 2,
+    "points": [
+      {"activations": 8, "bytes": 21812, "receipts": 17, "elapsed_seconds": 0.2113},
+      {"activations": 16, "bytes": 59024, "receipts": 33, "elapsed_seconds": 0.8009},
+      {"activations": 32, "bytes": 182608, "receipts": 65, "elapsed_seconds": 3.116},
+      {"activations": 64, "bytes": 626415, "receipts": 129, "elapsed_seconds": 11.7064}
+    ],
+    "cumulative_serialized_write_bytes_at_64": 29286645
+  },
+  "scratch_fixed_clock_capacity": {"retention_seconds": 2, "overloaded_activation": 128, "stage": "commit", "retained": 256, "wall_elapsed_seconds": 44.98, "backend_time": 1000.0},
+  "scratch_advancing_clock": {"clock_advance_per_transition_seconds": 0.2, "retention_seconds": 2, "activations_completed": 140, "retained": 10, "envelope_bytes": 9190, "elapsed_seconds": 4.6921},
+  "real_redis": {
+    "url": "redis://127.0.0.1:16520/0",
+    "component": "constant one-byte opaque payload",
+    "transitions_per_activation": 2,
+    "initial_session_receipts": 1,
+    "retention_2": {"activations_completed": 140, "overloaded": false, "elapsed_seconds": 20.221, "retained_at_140": 28, "envelope_bytes_at_140": 20153},
+    "retention_2_with_2_1s_pause": {"activations_completed": 140, "overloaded": false, "elapsed_seconds": 21.027, "retained_after_pause_at_100": 2, "retained_at_140": 29},
+    "retention_3600": {
+      "overloaded_activation": 128,
+      "stage": "commit",
+      "error": "Operation receipt capacity is exhausted",
+      "elapsed_seconds": 69.688,
+      "retained": 256,
+      "envelope_bytes": 176941,
+      "points": [
+        {"activations": 32, "receipts": 65, "bytes": 45115, "elapsed_seconds": 5.016},
+        {"activations": 64, "receipts": 129, "bytes": 89232, "elapsed_seconds": 18.397},
+        {"activations": 96, "receipts": 193, "bytes": 133370, "elapsed_seconds": 39.838},
+        {"activations": 128, "receipts": 256, "bytes": 176941, "elapsed_seconds": 69.688}
+      ]
+    },
+    "cleanup": "All three fresh receipt-audit:<uuid> prefixes removed in finally; client closed; no application DB flush"
+  },
+  "interpretation": "Confirmed receipt/full-component amplification. No confirmed backend-2-second expiry bug: real Redis2 completes, default3600 caps, fixed ManualClock never ages. Activation128 vs129 depends on initial seed receipt offset. Runtime config does not change backend constructor storage retention."
+}

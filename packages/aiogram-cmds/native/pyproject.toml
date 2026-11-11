@@ -1,0 +1,17 @@
+[build-system]
+requires = ["maturin>=1.9,<2"]
+build-backend = "maturin"
+
+[project]
+name = "aiogram-cmds-native"
+version = "0.3.0"
+description = "Optional resolved-profile CPU core for aiogram-cmds"
+requires-python = ">=3.10"
+license = "MIT"
+readme = "README.md"
+classifiers = ["Programming Language :: Rust", "Programming Language :: Python :: 3"]
+
+[tool.maturin]
+features = ["pyo3/extension-module"]
+module-name = "_aiogram_cmds_native"
+include = [{ path = "LICENSE", format = "sdist" }, { path = "README.md", format = "sdist" }, { path = "Cargo.lock", format = "sdist" }]

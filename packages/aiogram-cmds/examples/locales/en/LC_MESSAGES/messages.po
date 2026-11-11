@@ -1,0 +1,49 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: en\n"
+
+msgid "cmd.start.desc"
+msgstr "Start the bot"
+
+msgid "cmd.help.desc"
+msgstr "Show help information"
+
+msgid "cmd.about.desc"
+msgstr "About this bot"
+
+msgid "cmd.language.desc"
+msgstr "Change language"
+
+msgid "cmd.info.desc"
+msgstr "Bot information"
+
+msgid "welcome.message"
+msgstr "👋 Hello {name}!\n\nWelcome to the i18n Bot example!\n\nThis bot demonstrates multi-language support with aiogram-cmds.\n\nUse /help to see available commands."
+
+msgid "help.message"
+msgstr "📋 Available commands:\n\n• /start - Start the bot and get welcome message\n• /help - Show this help message\n• /about - About this bot\n• /language - Change language\n• /info - Bot information\n\n🌍 This bot supports multiple languages!"
+
+msgid "about.message"
+msgstr "ℹ️ About this bot:\n\nThis is an i18n bot example built with aiogram-cmds.\nIt demonstrates multi-language support with:\n• English (default)\n• Russian\n• Spanish\n\n🔧 Built with aiogram-cmds for command management."
+
+msgid "language.message"
+msgstr "🌍 Choose your language:"
+
+msgid "language.changed"
+msgstr "✅ Language changed to {language}"
+
+msgid "info.message"
+msgstr "ℹ️ Bot Information:\n\n• Bot Name: i18n Bot Example\n• Version: aiogram-cmds demo\n• Your ID: {user_id}\n• Your Name: {first_name}\n• Username: @{username}\n• Language: {language}\n\n🔧 This bot uses aiogram-cmds for command management."
+
+msgid "unknown.message"
+msgstr "🤔 I don't understand that message.\n\nUse /help to see available commands."
+
+msgid "user"
+msgstr "user"
+
+msgid "unknown"
+msgstr "Unknown"
+
+msgid "none"
+msgstr "None"
