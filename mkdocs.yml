@@ -6,6 +6,7 @@ nav:
   - Concepts: concepts.md
   - Public API: public-api.md
   - Storage: storage.md
+  - Performance and engines: performance-and-engines.md
   - Redis: redis.md
   - Redis audit: redis-audit.md
   - Application ownership: application-integration.md

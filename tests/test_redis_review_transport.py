@@ -1,5 +1,6 @@
 """Transport uncertainty must never be mistaken for a safe script-cache retry."""
 
+import hashlib
 from uuid import uuid4
 
 import pytest
@@ -19,7 +20,7 @@ async def test_network_failure_mentioning_noscript_does_not_retry_committed_muta
 
         async def execute_command(self, *args):
             response = await nav_redis_client.execute_command(*args)
-            if self.armed and args[0] == "EVALSHA" and args[2] == 5:
+            if self.armed and args[0] == "EVALSHA" and args[1] == commit_sha:
                 self.discarded += 1
                 raise ConnectionError("NOSCRIPT was mentioned by an intermediary")
             return response
@@ -30,6 +31,7 @@ async def test_network_failure_mentioning_noscript_does_not_retry_committed_muta
     # Load the real COMMIT script first so the injected failure follows execution.
     from aiogram_nav.storage.redis_scripts import COMMIT
 
+    commit_sha = hashlib.sha1(COMMIT.encode(), usedforsecurity=False).hexdigest()
     await nav_redis_client.script_load(COMMIT)
     wire.armed = True
     with pytest.raises(CommitUnknown):

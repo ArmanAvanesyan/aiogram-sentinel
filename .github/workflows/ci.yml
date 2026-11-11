@@ -95,6 +95,12 @@ jobs:
       - if: matrix.redis-client == 'minimum'
         run: uv pip install 'redis==5.0.8'
       - run: uv run --no-sync pytest --cov=aiogram_nav --cov-report=term-missing --cov-report=xml --cov-fail-under=80
+      - name: Run existing crash, callback, transport and FSM corpus on format 3
+        run: >-
+          uv run --no-sync python -m pytest -p tests.profile3_plugin --nav-engine=python
+          tests/test_redis_recovery.py tests/test_redis_dispatcher.py tests/test_redis_fsm.py
+          tests/test_redis_review_fsm.py tests/test_redis_review_controls.py
+          tests/test_redis_review_transport.py tests/test_redis_operations.py
       - name: Verify Redis-enabled installed artifacts against the real server
         if: matrix.python == '3.12' && matrix.redis-client == 'latest' && matrix.redis-server == '7'
         shell: bash

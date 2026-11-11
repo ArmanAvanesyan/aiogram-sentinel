@@ -49,3 +49,12 @@ unfinished integration extra is installed. Standalone navigation must remain
 usable without a session-idle framework.
 
 Active/prepared controls are bounded by max_tokens. After view replacement, old controls become inert and leave the active table; bounded per-action token receipts preserve retry fingerprints until normal action-receipt retention expires. Effect stage counts are bounded by max_receipts and individual result payloads by max_params_bytes. Admission rejects rather than discarding unresolved recovery evidence.
+
+## Format three
+
+Formats one/two remain readable for compatibility. Explicit format-three activation
+separates hot state from canonical per-operation STRING receipts, gives terminal
+receipts physical server-time TTL, and keeps unresolved rows protected. It also
+allows atomic adoption of application-owned renders. See
+[performance and engines](performance-and-engines.md) for the precise contracts,
+migration path and limitations. Default startup never upgrades existing storage.

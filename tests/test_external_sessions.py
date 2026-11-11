@@ -126,3 +126,33 @@ async def test_activated_memory_accepts_new_read_only_assessment():
     )
     report = await repo.activate_storage_format(operation_id="later-assessment")
     assert report.before == report.after == 2 and not report.applied
+
+
+@pytest.mark.parametrize("callback", ["authorize", "locale"])
+async def test_atomic_track_rechecks_authority_after_application_callbacks(callback):
+    from aiogram_nav import RenderResult
+
+    nav, ctx, _, _ = await activated()
+    authority = Authority(ExternalSession("app", "1", 800000))
+    nav.session_authority = authority
+
+    async def authorize(*args):
+        authority.value = None
+        return True
+
+    async def locale(*args):
+        authority.value = None
+        return "en"
+
+    if callback == "authorize":
+        nav.authorize = authorize
+    else:
+        nav.locale_resolver = locale
+    with pytest.raises(SessionExpired):
+        await ctx.track(
+            "main", rendered=RenderResult("already-rendered"), operation_id="revoked-track"
+        )
+    assert await nav.repository.load(KEY) is None
+    assert (
+        await nav.repository.lookup_operation(KEY, operation_id="revoked-track")
+    ).status == "not_found"

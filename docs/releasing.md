@@ -1,6 +1,6 @@
 # Releasing aiogram-nav
 
-Repository CI verifies changes; a push does not publish a package. Version 0.2.0
+Repository CI verifies changes; a push does not publish a package. Version 0.3.0
 is the initial alpha release.
 Publication requires a separate maintainer decision, working credentials and
 review of the artifacts being released.

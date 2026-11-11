@@ -6,7 +6,7 @@ It is independent of aiogram-idle. No idle worker or navigation-to-idle adapter 
 installed.
 
 ```sh
-pip install 'aiogram-nav[redis]==0.2.0'
+pip install 'aiogram-nav[redis]==0.3.0'
 ```
 
 ```python

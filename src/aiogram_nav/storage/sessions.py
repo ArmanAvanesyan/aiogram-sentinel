@@ -9,6 +9,7 @@ from typing import cast
 from aiogram_coordination import ExternalSession, validate_session_transition
 
 from ..errors import ConfigurationError, OperationIdConflict, PendingAction, SessionExpired
+from ..json import identifier
 from ..models import ConversationKey
 from ..protocols import Coordinator
 from .state import Conversation
@@ -44,7 +45,7 @@ class MemorySessions:
         return self._storage_format
 
     def require_storage_format(self, version: int) -> None:
-        if self.storage_format != version:
+        if type(version) is not int or version not in (1, 2, 3) or self.storage_format < version:
             raise ConfigurationError(
                 "Explicitly activate storage format 2 after draining old workers"
             )
@@ -58,8 +59,14 @@ class MemorySessions:
         old_workers_drained: bool = False,
         dry_run: bool = True,
     ) -> StorageMigrationReport:
-        if type(expected) is not int or expected != 1 or type(target) is not int or target != 2:
-            raise ConfigurationError("Only the explicit format 1 to 2 upgrade is supported")
+        if (
+            type(expected) is not int
+            or type(target) is not int
+            or (expected, target) not in ((1, 2), (1, 3), (2, 3))
+        ):
+            raise ConfigurationError(
+                "Only explicit upgrades to a newer supported format are allowed"
+            )
         if (
             not isinstance(cast(object, operation_id), str)
             or not operation_id
@@ -68,6 +75,10 @@ class MemorySessions:
             or type(old_workers_drained) is not bool
         ):
             raise ConfigurationError("Invalid storage activation arguments")
+        try:
+            identifier(operation_id, "operation_id")
+        except ValueError as error:
+            raise ConfigurationError(str(error)) from error
         async with self._lock:
             previous = self._format_operations.get(operation_id)
             if previous is not None and previous != (expected, target):
@@ -125,6 +136,7 @@ class MemorySessions:
                 raise PendingAction("Resolve the old session's pending effects before rebinding")
             if changed:
                 record.current = None
+                record.host_session = None
                 record.tokens.clear()
             binding = ExternalSession(
                 session.session_id, session.revision, session.absolute_expires_at
