@@ -14,4 +14,7 @@ Measured on CPython3.12.13, macOS15.8.1 Intel, same installed dependencies and s
 
 Native publication is **withheld**: representative accepted-many rate/debounce gains are below20%. Middleware p95 repeat variation exceeds10%; its apparent tail improvement is not qualified. See native-gate.json and raw run manifests; Lua/server commands are not substituted for network round trips.
 
-The measured native hot core is unchanged by the subsequent ABI-loader hardening; no speed qualification is claimed for the native distribution. The Python middleware path used about11% less CPU in this host/workload; other memory paths were near baseline. No universal latency claim is made.
+The measured native hot core is unchanged by the subsequent ABI-loader hardening; no speed qualification is claimed for the native distribution. The middleware aggregate was about11% lower CPU, but its published baseline
+before/after drifted16%; this is a descriptive aggregate rather than a qualified
+improvement estimate. Other memory paths were near baseline. No reliable numerical
+production speedup or universal latency claim is made.

@@ -25,8 +25,13 @@ Python CPU medians to the repeated published baseline is:
 | Confirmed unchanged profile | 0.588 |
 | Fake Telegram delay1ms | 1.019 |
 
-The fake-network path has no material measured CPU benefit. These workloads do
-not imply every application gets the same improvement.
+These ratios are descriptive aggregates, **not stable improvement estimates**.
+The published before/after CPU medians drifted by31%,98%,171% and148% respectively;
+optimized repetitions drifted by6%,3%,10% and11%. Baseline instability prevents a
+qualified numerical claim about the existing API's speedup. The fake-network path
+has no demonstrated CPU benefit. The published implementation provides the new
+compiled API and allocation changes, but these measurements do not establish a
+reliable production performance gain.
 
 The native gate (`native-gate.json`) selected the representative compiled batch
 of100 commands,10 profiles and30 targets. Rust/Python CPU ratio was1.567, so Rust
