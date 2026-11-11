@@ -115,7 +115,8 @@ async def complete(
         ),
     )
     committed_ledger = reducer.record
-    assert committed_ledger is not None
+    if committed_ledger is None:
+        raise OwnershipLost("Canonical navigation completion lost its operation ledger")
     after = save_component(committed_ledger, key, expected_profile=repo.profile)
     retained = max(
         result.snapshot.expires_at / 1000,

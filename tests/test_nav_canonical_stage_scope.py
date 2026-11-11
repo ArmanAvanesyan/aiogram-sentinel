@@ -4,6 +4,8 @@ import asyncio
 
 import pytest
 
+pytest.importorskip("aiogram_nav")
+
 from aiogram_idle import IdleConfig, MemoryIdleBackend
 from aiogram_idle.clock import ManualClock
 from aiogram_idle.errors import EffectUnknown, OwnershipLost

@@ -50,7 +50,8 @@ class CanonicalNavigationEffects:
 
     async def record(self) -> RuntimeSnapshot:
         record = await self.outer.record()
-        assert record.idle.operation is not None
+        if record.idle.operation is None:
+            raise OwnershipLost("Idle operation no longer owns canonical effects")
         prepared = await self._prepared()
         return replace(
             record,

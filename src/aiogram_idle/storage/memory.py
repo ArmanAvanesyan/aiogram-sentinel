@@ -151,7 +151,8 @@ class MemoryIdleBackend(
             raise ActivityConflict("The activity generation or revision changed")
         if failure == "expired":
             raise SessionExpired("The activity expired")
-        assert activity is not None
+        if activity is None:
+            raise ActivityConflict("The activity is absent")
         return activity
 
     def _fingerprint(self, value: object) -> str:

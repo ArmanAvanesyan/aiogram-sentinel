@@ -342,7 +342,8 @@ class CanonicalComponents:
         async with owner._lock:
             revision, _, old_identity = body(owner._records.get(key), component)
             next_revision, hot, identity = body(record, component)
-            assert identity is not None
+            if identity is None:
+                raise ConfigurationError("Canonical transaction requires a component identity")
             delta = delta_payload(
                 ledger_delta, identity=identity, max_bytes=owner.config.max_components_bytes
             )

@@ -1,5 +1,9 @@
 """Canonical combined mode retains one Nav operation plus its original activity."""
 
+import pytest
+
+pytest.importorskip("aiogram_nav")
+
 from aiogram_nav import MessageRef, RenderResult
 
 from aiogram_idle import IdleConfig, MemoryIdleBackend
