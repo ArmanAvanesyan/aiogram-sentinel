@@ -1,0 +1,185 @@
+# .github/labels.yml
+# Run a label sync action (e.g., crazy-max/ghaction-github-labeler) to apply.
+
+# ---------- AREAS (existing) ----------
+- name: area:ci
+  color: BFD4F2
+  description: CI/CD and automation
+- name: area:docs
+  color: BFD4F2
+  description: Documentation
+- name: area:examples
+  color: BFD4F2
+  description: Example code and demos
+- name: area:middleware
+  color: BFD4F2
+  description: Middleware implementations
+- name: area:router
+  color: BFD4F2
+  description: Router and routing logic
+- name: area:setup
+  color: BFD4F2
+  description: Project setup and configuration
+- name: area:storage
+  color: BFD4F2
+  description: Storage backends and data persistence
+- name: area:tests
+  color: BFD4F2
+  description: Testing infrastructure
+
+# ---------- BACKENDS (existing) ----------
+- name: backend:memory
+  color: F9D9C1
+  description: In-memory storage backend
+- name: backend:redis
+  color: F9D9C1
+  description: Redis storage backend
+
+# ---------- INTEGRATIONS (existing) ----------
+- name: integration:aiogram-observer
+  color: F9D0C4
+  description: Hooks for emitting telemetry to aiogram-observer.
+- name: integration:datadog
+  color: F9D0C4
+  description: Datadog APM or metrics support.
+- name: integration:google-analytics
+  color: F9D0C4
+  description: Any lightweight telemetry integration.
+- name: integration:grafana
+  color: F9D0C4
+  description: Grafana dashboards, panels, and examples.
+- name: integration:prometheus
+  color: F9D0C4
+  description: Prometheus metrics exposure.
+- name: integration:sentry
+  color: F9D0C4
+  description: Sentry integration and error capture.
+
+# ---------- META (existing) ----------
+- name: meta:blocked
+  color: D1BCF9
+  description: Waiting for dependencies or other PRs.
+- name: meta:design
+  color: D1BCF9
+  description: Architecture or conceptual design discussion.
+- name: meta:discussion
+  color: D1BCF9
+  description: Community or contributor input threads.
+- name: meta:good-first-issue
+  color: D1BCF9
+  description: Easy starter issue for contributors.
+- name: meta:help-wanted
+  color: D1BCF9
+  description: Assistance needed for completion.
+- name: meta:roadmap
+  color: D1BCF9
+  description: For roadmap tracking and milestone issues.
+
+# ---------- CORE (existing GitHub defaults you already have) ----------
+- name: bug
+  color: d73a4a
+  description: Something isn't working
+- name: documentation
+  color: 0075ca
+  description: Improvements or additions to documentation
+- name: duplicate
+  color: cfd3d7
+  description: This issue or pull request already exists
+- name: enhancement
+  color: a2eeef
+  description: New feature or request
+- name: epic
+  color: 5319e7
+  description: Epic issues that contain multiple sub-issues
+- name: good first issue
+  color: 7057ff
+  description: Good for newcomers
+- name: help wanted
+  color: 008672
+  description: Extra attention is needed
+- name: invalid
+  color: e4e669
+  description: This doesn't seem right
+
+# ---------- TYPES (additions) ----------
+- name: type:ci
+  color: D4C5F9
+  description: CI/CD pipelines and build system work
+- name: type:feature
+  color: D4C5F9
+  description: New capability or API surface
+- name: type:refactor
+  color: D4C5F9
+  description: Internal restructuring without changing behavior
+- name: type:chore
+  color: D4C5F9
+  description: Maintenance tasks and dependency bumps
+- name: type:testing
+  color: D4C5F9
+  description: Unit/integration/e2e tests
+- name: type:benchmark
+  color: D4C5F9
+  description: Performance profiling and load tests
+- name: type:release
+  color: D4C5F9
+  description: Release prep, tagging, changelog
+
+# ---------- PRIORITY (additions; you already use p0) ----------
+- name: priority:p0
+  color: E99695
+  description: Immediate attention required (blockers)
+- name: priority:p1
+  color: E99695
+  description: High priority for current/next milestone
+- name: priority:p2
+  color: E99695
+  description: Medium priority / planned
+- name: priority:p3
+  color: E99695
+  description: Low priority / backlog
+
+# ---------- SEVERITY (additions) ----------
+- name: severity:critical
+  color: d93f0b
+  description: Breaks core functionality or security
+- name: severity:major
+  color: fbca04
+  description: High impact, but with workarounds
+- name: severity:minor
+  color: c2e0c6
+  description: Low impact or cosmetic
+
+# ---------- MODULES (additions for Sentinel roadmap) ----------
+- name: module:throttling
+  color: C2E0C6
+  description: Rate limiting, burst/cooldown policies
+- name: module:debounce
+  color: C2E0C6
+  description: Debouncing and timing windows
+- name: module:dedup
+  color: C2E0C6
+  description: Deduplication / anti-replay protections
+- name: module:concurrency
+  color: C2E0C6
+  description: Concurrency limits and in-flight control
+- name: module:fair-queue
+  color: C2E0C6
+  description: Optional fair queue when at capacity
+- name: module:quota
+  color: C2E0C6
+  description: Hour/day quotas and caps
+- name: module:flood
+  color: C2E0C6
+  description: Flood detection and mitigations
+- name: module:backoff
+  color: C2E0C6
+  description: Progressive backoff responses
+- name: module:error-handling
+  color: C2E0C6
+  description: Error classification and friendly messages
+- name: module:policy
+  color: C2E0C6
+  description: Policies, scopes, and role bypass
+- name: module:retry-after
+  color: C2E0C6
+  description: Sync internal cooldowns with Telegram RetryAfter

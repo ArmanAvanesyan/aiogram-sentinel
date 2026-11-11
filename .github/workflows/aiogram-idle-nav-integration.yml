@@ -66,6 +66,7 @@ jobs:
         persist-credentials: false
     - name: Stage isolated distribution checkout
       working-directory: ${{ github.workspace }}
+      shell: bash
       run: 'mkdir -p "${GITHUB_WORKSPACE}/aiogram-idle"
 
         cp -a "$GITHUB_WORKSPACE/monorepo-source/packages/aiogram-idle/." "${GITHUB_WORKSPACE}/aiogram-idle/"'
@@ -73,6 +74,7 @@ jobs:
       if: matrix.nav == 'rust'
       run: cp -a "$GITHUB_WORKSPACE/monorepo-source/packages/aiogram-nav" "$GITHUB_WORKSPACE/nav-native-source"
       working-directory: ${{ github.workspace }}
+      shell: bash
     - uses: astral-sh/setup-uv@v7
     - uses: dtolnay/rust-toolchain@stable
       if: matrix.idle == 'rust' || matrix.nav == 'rust'

@@ -42,6 +42,7 @@ jobs:
         path: monorepo-source
     - name: Stage isolated distribution checkout
       working-directory: ${{ github.workspace }}
+      shell: bash
       run: 'mkdir -p "${GITHUB_WORKSPACE}"
 
         cp -a "$GITHUB_WORKSPACE/monorepo-source/packages/aiogram-nav/." "${GITHUB_WORKSPACE}/"'
@@ -102,6 +103,7 @@ jobs:
         path: monorepo-source
     - name: Stage isolated distribution checkout
       working-directory: ${{ github.workspace }}
+      shell: bash
       run: 'mkdir -p "${GITHUB_WORKSPACE}"
 
         cp -a "$GITHUB_WORKSPACE/monorepo-source/packages/aiogram-nav/." "${GITHUB_WORKSPACE}/"'
@@ -141,6 +143,7 @@ jobs:
         path: monorepo-source
     - name: Stage isolated distribution checkout
       working-directory: ${{ github.workspace }}
+      shell: bash
       run: 'mkdir -p "${GITHUB_WORKSPACE}"
 
         cp -a "$GITHUB_WORKSPACE/monorepo-source/packages/aiogram-nav/." "${GITHUB_WORKSPACE}/"'
@@ -159,6 +162,7 @@ jobs:
         path: monorepo-source
     - name: Stage isolated distribution checkout
       working-directory: ${{ github.workspace }}
+      shell: bash
       run: 'mkdir -p "${GITHUB_WORKSPACE}"
 
         cp -a "$GITHUB_WORKSPACE/monorepo-source/packages/aiogram-nav/." "${GITHUB_WORKSPACE}/"'
@@ -212,6 +216,7 @@ jobs:
         path: monorepo-source
     - name: Stage isolated distribution checkout
       working-directory: ${{ github.workspace }}
+      shell: bash
       run: 'mkdir -p "${GITHUB_WORKSPACE}"
 
         cp -a "$GITHUB_WORKSPACE/monorepo-source/packages/aiogram-nav/." "${GITHUB_WORKSPACE}/"'

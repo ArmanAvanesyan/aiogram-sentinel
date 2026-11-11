@@ -16,6 +16,7 @@ jobs:
         persist-credentials: false
     - name: Stage isolated distribution checkout
       working-directory: ${{ github.workspace }}
+      shell: bash
       run: 'mkdir -p "${GITHUB_WORKSPACE}"
 
         cp -a "$GITHUB_WORKSPACE/monorepo-source/packages/aiogram-sentinel/." "${GITHUB_WORKSPACE}/"'
@@ -23,7 +24,7 @@ jobs:
       with:
         python-version: '3.12'
     - run: uv sync --frozen --all-extras
-    - run: uv run --no-sync ruff check .
+    - run: uv run --no-sync ruff check --extend-exclude monorepo-source .
     - run: uv run --no-sync black --check src tests
     - run: uv run --no-sync pyright
     - run: uv run --no-sync mkdocs build --strict
@@ -66,6 +67,7 @@ jobs:
         persist-credentials: false
     - name: Stage isolated distribution checkout
       working-directory: ${{ github.workspace }}
+      shell: bash
       run: 'mkdir -p "${GITHUB_WORKSPACE}"
 
         cp -a "$GITHUB_WORKSPACE/monorepo-source/packages/aiogram-sentinel/." "${GITHUB_WORKSPACE}/"'
@@ -92,6 +94,7 @@ jobs:
         persist-credentials: false
     - name: Stage isolated distribution checkout
       working-directory: ${{ github.workspace }}
+      shell: bash
       run: 'mkdir -p "${GITHUB_WORKSPACE}"
 
         cp -a "$GITHUB_WORKSPACE/monorepo-source/packages/aiogram-sentinel/." "${GITHUB_WORKSPACE}/"'
@@ -113,6 +116,7 @@ jobs:
         persist-credentials: false
     - name: Stage isolated distribution checkout
       working-directory: ${{ github.workspace }}
+      shell: bash
       run: 'mkdir -p "${GITHUB_WORKSPACE}"
 
         cp -a "$GITHUB_WORKSPACE/monorepo-source/packages/aiogram-sentinel/." "${GITHUB_WORKSPACE}/"'
@@ -146,6 +150,7 @@ jobs:
         persist-credentials: false
     - name: Stage isolated distribution checkout
       working-directory: ${{ github.workspace }}
+      shell: bash
       run: 'mkdir -p "${GITHUB_WORKSPACE}"
 
         cp -a "$GITHUB_WORKSPACE/monorepo-source/packages/aiogram-sentinel/." "${GITHUB_WORKSPACE}/"'

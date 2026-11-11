@@ -15,6 +15,7 @@ jobs:
         persist-credentials: false
     - name: Stage isolated distribution checkout
       working-directory: ${{ github.workspace }}
+      shell: bash
       run: 'mkdir -p "${GITHUB_WORKSPACE}"
 
         cp -a "$GITHUB_WORKSPACE/monorepo-source/packages/aiogram-nav/." "${GITHUB_WORKSPACE}/"'
@@ -25,8 +26,8 @@ jobs:
         "$RUNNER_TEMP/peer-wheels/aiogram-coordination"
 
         uv pip install --no-deps "$RUNNER_TEMP/peer-wheels/aiogram-coordination/"*.whl'
-    - run: uv run --no-sync ruff check .
-    - run: uv run --no-sync ruff format --check .
+    - run: uv run --no-sync ruff check --extend-exclude monorepo-source .
+    - run: uv run --no-sync ruff format --check --extend-exclude monorepo-source .
     - run: uv run --no-sync pyright src examples
     - run: uv run --no-sync python tools/check_version.py
     - run: uv run --no-sync towncrier build --draft
@@ -70,6 +71,7 @@ jobs:
         persist-credentials: false
     - name: Stage isolated distribution checkout
       working-directory: ${{ github.workspace }}
+      shell: bash
       run: 'mkdir -p "${GITHUB_WORKSPACE}"
 
         cp -a "$GITHUB_WORKSPACE/monorepo-source/packages/aiogram-nav/." "${GITHUB_WORKSPACE}/"'
@@ -122,6 +124,7 @@ jobs:
         persist-credentials: false
     - name: Stage isolated distribution checkout
       working-directory: ${{ github.workspace }}
+      shell: bash
       run: 'mkdir -p "${GITHUB_WORKSPACE}"
 
         cp -a "$GITHUB_WORKSPACE/monorepo-source/packages/aiogram-nav/." "${GITHUB_WORKSPACE}/"'
@@ -161,6 +164,7 @@ jobs:
         persist-credentials: false
     - name: Stage isolated distribution checkout
       working-directory: ${{ github.workspace }}
+      shell: bash
       run: 'mkdir -p "${GITHUB_WORKSPACE}"
 
         cp -a "$GITHUB_WORKSPACE/monorepo-source/packages/aiogram-nav/." "${GITHUB_WORKSPACE}/"'

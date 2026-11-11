@@ -12,7 +12,10 @@ for pkg in sorted((root / "packages").iterdir()):
     for source in (pkg / ".github/workflows").glob("*.yml"):
         data = yaml.safe_load(source.read_text())
         name = source.name
-        if any(word in name for word in ["publish", "release", "docs", "dependabot", "label"]):
+        if any(
+            word in name
+            for word in ["publish", "release", "docs", "dependabot", "label", "pr-management"]
+        ):
             continue
         if "jobs" not in data:
             continue
@@ -54,6 +57,7 @@ for pkg in sorted((root / "packages").iterdir()):
                                 "if": step.get("if", "success()"),
                                 "run": 'cp -a "$GITHUB_WORKSPACE/monorepo-source/packages/aiogram-nav" "$GITHUB_WORKSPACE/nav-native-source"',
                                 "working-directory": "${{ github.workspace }}",
+                                "shell": "bash",
                             }
                         )
                         continue
@@ -74,10 +78,20 @@ for pkg in sorted((root / "packages").iterdir()):
                         {
                             "name": "Stage isolated distribution checkout",
                             "working-directory": "${{ github.workspace }}",
+                            "shell": "bash",
                             "run": f'mkdir -p "{dest}"\ncp -a "$GITHUB_WORKSPACE/monorepo-source/packages/{pkg.name}/." "{dest}/"',
                         }
                     )
                     continue
+                if "run" in step:
+                    step["run"] = (
+                        step["run"]
+                        .replace("ruff check .", "ruff check --extend-exclude monorepo-source .")
+                        .replace(
+                            "ruff format --check .",
+                            "ruff format --check --extend-exclude monorepo-source .",
+                        )
+                    )
                 steps.append(step)
                 if "uv sync" in step.get("run", ""):
                     peers = []

@@ -41,6 +41,7 @@ jobs:
         persist-credentials: false
     - name: Stage isolated distribution checkout
       working-directory: ${{ github.workspace }}
+      shell: bash
       run: 'mkdir -p "${GITHUB_WORKSPACE}"
 
         cp -a "$GITHUB_WORKSPACE/monorepo-source/packages/aiogram-cmds/." "${GITHUB_WORKSPACE}/"'
@@ -94,6 +95,7 @@ jobs:
         persist-credentials: false
     - name: Stage isolated distribution checkout
       working-directory: ${{ github.workspace }}
+      shell: bash
       run: 'mkdir -p "${GITHUB_WORKSPACE}"
 
         cp -a "$GITHUB_WORKSPACE/monorepo-source/packages/aiogram-cmds/." "${GITHUB_WORKSPACE}/"'
@@ -118,6 +120,7 @@ jobs:
         persist-credentials: false
     - name: Stage isolated distribution checkout
       working-directory: ${{ github.workspace }}
+      shell: bash
       run: 'mkdir -p "${GITHUB_WORKSPACE}"
 
         cp -a "$GITHUB_WORKSPACE/monorepo-source/packages/aiogram-cmds/." "${GITHUB_WORKSPACE}/"'
@@ -132,6 +135,7 @@ jobs:
         persist-credentials: false
     - name: Stage isolated distribution checkout
       working-directory: ${{ github.workspace }}
+      shell: bash
       run: 'mkdir -p "${GITHUB_WORKSPACE}"
 
         cp -a "$GITHUB_WORKSPACE/monorepo-source/packages/aiogram-cmds/." "${GITHUB_WORKSPACE}/"'
