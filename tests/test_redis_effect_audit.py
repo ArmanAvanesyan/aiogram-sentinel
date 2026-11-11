@@ -145,7 +145,10 @@ async def test_delegated_effect_checkpoint_is_atomically_fenced(redis_client):
                 args[0] == "EVALSHA"
                 and args[1] == hashlib.sha1(COMMIT.encode(), usedforsecurity=False).hexdigest()
                 and not self.stolen
-                and any(isinstance(arg, str) and '"child-stage"' in arg for arg in args[3:])
+                and any(
+                    isinstance(arg, str) and ('"child-stage"' in arg or '\\"child-stage\\"' in arg)
+                    for arg in args[3:]
+                )
             ):
                 self.stolen = True
                 await redis_client.set(self.lock, "successor", px=30000)

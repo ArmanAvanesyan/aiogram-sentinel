@@ -70,14 +70,14 @@ async def format_manifest(store: RedisStore) -> tuple[int, dict[str, object] | N
     if (
         set(manifest) != {"format", "operation_id", "previous_history", "history"}
         or type(manifest["format"]) is not int
-        or manifest["format"] != 2
+        or manifest["format"] not in (2, 3)
         or any(
             not isinstance(manifest[name], str) or not manifest[name]
             for name in ("operation_id", "previous_history", "history")
         )
     ):
         raise BackendInconsistent("Unsupported storage format marker")
-    return 2, manifest, encoded
+    return cast(int, manifest["format"]), manifest, encoded
 
 
 async def activate(
@@ -98,11 +98,11 @@ async def activate(
         dry_run=dry_run,
     )
     version, manifest, encoded = await format_manifest(store)
-    if manifest is not None:
+    if manifest is not None and version == target:
         if manifest["operation_id"] != operation_id:
             raise OperationIdConflict("Storage format was activated by another operation")
         store.history = cast(str, manifest["history"])
-        store.format_version = 2
+        store.format_version = target
         await store.ready()
         return StorageActivation(expected, target, False, dry_run)
     await store.ready()
@@ -143,10 +143,10 @@ async def activate(
     if active or active_scopes:
         raise ConfigurationMismatch("Protected work must drain before activation")
     old_history = store.history
-    history = old_history.split(":", 1)[0] + ":" + store.storage_profile(version=2)
+    history = old_history.split(":", 1)[0] + ":" + store.storage_profile(version=target)
     body = json.dumps(
         {
-            "format": 2,
+            "format": target,
             "operation_id": operation_id,
             "previous_history": old_history,
             "history": history,
@@ -169,7 +169,7 @@ async def activate(
         raise ConfigurationMismatch("A deadline claim became active during activation")
     if result != "ok":
         raise VersionConflict("Namespace changed during storage activation")
-    store.format_version = 2
+    store.format_version = target
     store.history = history
     return report
 
@@ -182,8 +182,8 @@ async def migrate_records(
     if type(limit) is not int or not 1 <= limit <= 1000 or type(dry_run) is not bool:
         raise ValueError("Migration limit must be between 1 and 1000")
     await store.ready()
-    if store.format_version != 2 and not dry_run:
-        raise ConfigurationMismatch("Activate storage format 2 before migrating records")
+    if store.format_version not in (2, 3) and not dry_run:
+        raise ConfigurationMismatch("Activate storage format 2 or 3 before migrating records")
     escaped = "".join(
         "\\" + character if character in "\\*?[]" else character for character in store.prefix
     )
@@ -224,6 +224,27 @@ async def migrate_records(
             raise ValueError("Migration cursor belongs to another namespace")
         raw = await store.connection.call("GET", name)
         if raw is None:
+            continue
+        if store.format_version == 3:
+            from .cold_migration import migrate
+
+            envelope = json.loads(text(raw))
+            inspected += 1
+            if envelope.get("kind") == "idle-hot":
+                continue
+            legacy = decode(text(raw))
+            if not isinstance(legacy, dict):
+                raise BackendInconsistent("Malformed migration record")
+            previous = cast(dict[str, object], legacy).get("record")
+            if not isinstance(previous, RuntimeSnapshot) or store.keys(previous.key)[0] != text(
+                name
+            ):
+                raise BackendInconsistent("Migration record identity mismatch")
+            progress = await migrate(store, previous.key, limit=min(limit, 32), dry_run=dry_run)
+            if progress.done:
+                migrated += int(not dry_run)
+            elif not dry_run:
+                pending.append(name)
             continue
         payload = decode(text(raw))
         if not isinstance(payload, dict):

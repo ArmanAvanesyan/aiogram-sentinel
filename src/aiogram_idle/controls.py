@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import ClassVar, Literal, Protocol
+from typing import ClassVar, Literal, Protocol, cast
 
 from aiogram import Bot
 from aiogram.exceptions import TelegramAPIError
@@ -81,6 +81,9 @@ class ControlRuntime(Protocol):
     async def cancel_current(self, context: ControlContext) -> ControlResult: ...
 
 
+_UNOBSERVED = object()
+
+
 async def handle_control(
     runtime: ControlRuntime,
     event: Message | CallbackQuery,
@@ -89,13 +92,18 @@ async def handle_control(
     bot: Bot,
     texts: PromptTexts,
     update_id: int,
+    observed_prompt: PromptReceipt | None | object = _UNOBSERVED,
 ) -> bool:
     """Return True only when this update belongs to idle controls.
 
     A bare /cancel without a prompt falls through to the application's cancel
     handler. Ordinary text is reserved only while the active reply tray asks it.
     """
-    prompt = await runtime.current_prompt(key)
+    prompt = (
+        await runtime.current_prompt(key)
+        if observed_prompt is _UNOBSERVED
+        else cast(PromptReceipt | None, observed_prompt)
+    )
     if isinstance(event, CallbackQuery):
         data = event.data or ""
         if not data.startswith("idle:"):

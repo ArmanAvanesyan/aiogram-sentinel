@@ -47,18 +47,25 @@ class Quarantine:
                 previous[1] or await store.connection.call("SISMEMBER", keys[3], store.member(key))
             ):
                 raise BackendInconsistent("Retained runtime is missing")
-            Engine(
-                key=key,
-                raw=raw,
-                job=job,
-                manifest=manifest,
-                now=now,
-                config=store.config,
-                created_at=store.created_at,
-                disarm_epoch=cast(str, store.config_envelope(config)["disarm_epoch"])
-                if config
-                else "",
-            )
+            if store.format_version == 3:
+                # Classify the supported hot/cold envelope, including protected
+                # pending evidence. A repaired snapshot must never be parked by
+                # a delayed failure from its predecessor. PARK still CAS-checks
+                # the exact hot/job bytes observed above.
+                await store.read(key, allow_parked=True)
+            else:
+                Engine(
+                    key=key,
+                    raw=raw,
+                    job=job,
+                    manifest=manifest,
+                    now=now,
+                    config=store.config,
+                    created_at=store.created_at,
+                    disarm_epoch=cast(str, store.config_envelope(config)["disarm_epoch"])
+                    if config
+                    else "",
+                )
         except (BackendInconsistent, SchemaUnsupported):
             pass
         else:

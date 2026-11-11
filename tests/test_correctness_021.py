@@ -139,7 +139,7 @@ async def test_real_time_receipt_expiry_is_pruned_only_at_admission(redis_client
         key, expected=session.guard, lifetime_seconds=30, operation_id="next"
     )
     assert replaced.session_id != session.session_id
-    engine, _, _ = await backend._store.read(key)
+    engine, _, _ = await backend._store.read(key, operation_id="next")
     receipts = engine._receipts.items[key]
     assert set(receipts) == {"next"}
     assert receipts["next"].expires_at > backend.clock.now()

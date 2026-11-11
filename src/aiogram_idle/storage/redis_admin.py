@@ -56,7 +56,20 @@ class IndexRecovery:
             raw = await store.connection.call("GET", record_key)
             if raw is None:
                 continue  # Concurrent retention pruning is harmless.
-            value = decode(text(raw))
+            if store.format_version == 3:
+                from .wire_json import strict
+
+                hot = strict(text(raw))
+                if (
+                    set(hot) != {"schema_version", "kind", "pending_ref", "state"}
+                    or hot.get("schema_version") != 3
+                    or hot.get("kind") != "idle-hot"
+                    or not isinstance(hot.get("state"), str)
+                ):
+                    raise BackendInconsistent("Invalid authoritative cold Redis envelope")
+                value = decode(cast(str, hot["state"]))
+            else:
+                value = decode(text(raw))
             if not isinstance(value, dict):
                 raise BackendInconsistent("Invalid authoritative Redis envelope")
             record = cast("dict[str, object]", value).get("record")

@@ -6,6 +6,8 @@ from collections.abc import Callable, Mapping
 from datetime import datetime
 from typing import Protocol
 
+from aiogram_coordination import ExternalSession
+
 from ..clock import Clock
 from ..config import IdleConfig
 from ..models import (
@@ -19,6 +21,7 @@ from ..models import (
 )
 from ..policies import IdlePolicy
 from ..protocols import Coordinator
+from ..registration import ActivityRegistration
 from .state import Claim, ControlToken, OperationLookup
 
 
@@ -33,6 +36,19 @@ class IdleBackend(Protocol):
     async def require_storage_format(self, version: int) -> None: ...
 
     async def load(self, key: IdleConversationKey) -> RuntimeSnapshot | None: ...
+    async def fused_activate(
+        self,
+        key: IdleConversationKey,
+        registration: ActivityRegistration,
+        *,
+        external: ExternalSession | None,
+        policy: IdlePolicy,
+        operation_id: str,
+        expected: ActivityGuard | None = None,
+        enabled: bool = False,
+        expected_manifest: str | None = None,
+    ) -> ActivitySnapshot: ...
+
     async def bind_external_session(
         self,
         key: IdleConversationKey,

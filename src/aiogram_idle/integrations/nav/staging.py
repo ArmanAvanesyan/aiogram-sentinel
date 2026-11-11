@@ -40,6 +40,12 @@ async def stage(
     operation_id: str,
     disposition: str = "rearm",
 ) -> ActionReceipt:
+    if getattr(repo.idle.backend, "active_storage_format", 1) == 3:
+        from .canonical_completion import stage as canonical_stage
+
+        return await canonical_stage(
+            repo, context, prepared, rendered, operation_id=operation_id, disposition=disposition
+        )
     key = repo.mapping.to_nav(context.key)
     current = await repo.idle.backend.load(context.key)
     if (

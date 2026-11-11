@@ -117,13 +117,15 @@ class Engine(MemoryIdleBackend):
     ) -> None:
         super().__init__(clock=ManualClock(now), config=config)
         self._storage_format = storage_format
+        self.cold_state: object | None = None
+        self.canonical_observation: object | None = None
         self.key = key
         self.original_job = job
         self.disarm_epoch = disarm_epoch
         self.armed_epoch = disarm_epoch
         self._created_at = created_at
         self._manifest = manifest
-        self._receipts.pruned_before = created_at - config.recovery_retention_seconds
+        self._receipts.pruned_before = created_at - config.effective_replay_retention_seconds
         if raw:
             decoded = decode(raw)
             if not isinstance(decoded, dict):
@@ -187,6 +189,10 @@ class Engine(MemoryIdleBackend):
             self._queue._push(key, current)
 
     def envelope(self) -> str:
+        if self._storage_format == 3:
+            from .cold import hot_payload
+
+            return hot_payload(self)[0]
         record = self._records.get(self.key)
         if record is None:
             return ""

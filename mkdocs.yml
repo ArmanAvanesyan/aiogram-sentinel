@@ -20,6 +20,7 @@ nav:
   - Recovery: recovery.md
   - Optional navigation: navigation.md
   - Migrating to 0.2: migration-0.2.md
+  - Format 3 and engines: migration-0.3.md
   - Testing and compatibility: testing.md
   - Verification: verification.md
   - Historical reviews:

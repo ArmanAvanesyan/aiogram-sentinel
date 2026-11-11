@@ -151,7 +151,7 @@ async def test_wrong_control_token_index_fails_closed(seeded):
     await rejected_without_mutation(seeded)
 
 
-@pytest.mark.parametrize("version", [0, 3, True, "1"])
+@pytest.mark.parametrize("version", [0, 4, True, "1"])
 async def test_unsupported_runtime_schema_fails_closed(seeded, version):
     _, client, _, _, keys = seeded
     envelope = json.loads(await client.get(keys[0]))

@@ -24,8 +24,16 @@ class Trigger(str, Enum):
     EXHAUSTED = "exhausted"
 
 
-def reduce_phase(phase: Phase, trigger: Trigger) -> Phase:
+def reduce_phase(phase: Phase, trigger: Trigger, *, engine: str = "python") -> Phase:
     """Return the legal next phase, rejecting invalid stage interleavings."""
+    if engine == "rust":
+        from .engines import phase_transition
+
+        return Phase(phase_transition(phase.value, trigger.value, engine="rust"))
+    if engine != "python":
+        from .errors import ConfigurationError
+
+        raise ConfigurationError("engine must be python or rust")
     if trigger is Trigger.CLEAR:
         return Phase.DISARMED
     if trigger is Trigger.EXHAUSTED:

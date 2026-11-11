@@ -85,6 +85,32 @@ class IdleContext:
             raise TypeError("Expected ActivityRegistration")
         async with self.runtime.coordinator.hold(self.key):
             await self.runtime.initialize()
+            if await self.runtime.backend.storage_format() == 3:
+                external = (
+                    await self.runtime.external_session(self.key)
+                    if self.runtime.session_authority is not None
+                    else None
+                )
+                self.runtime.adapter(registration.adapter_key)
+                policy = self.runtime.policies[registration.policy_id]
+                manifest = await self.runtime.manifest()
+                previous = await self.runtime.current_prompt(self.key)
+                result = await self.runtime.backend.fused_activate(
+                    self.key,
+                    registration,
+                    external=external,
+                    policy=policy,
+                    operation_id=operation_id,
+                    expected=expected,
+                    enabled=manifest.enabled,
+                    expected_manifest=manifest.generation,
+                )
+                if previous is not None:
+                    try:
+                        await self.runtime.presenter.strip(previous)
+                    except Exception:
+                        logger.warning("Superseded prompt cleanup unavailable")
+                return result
             if self.runtime.session_authority is not None:
                 if await self.runtime.backend.storage_format() != 2:
                     raise ConfigurationError("External sessions require activated storage format 2")

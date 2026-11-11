@@ -8,13 +8,14 @@ import secrets
 from collections.abc import Callable, Mapping
 from dataclasses import replace
 from datetime import datetime
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 from ..clock import Clock, SystemClock
 from ..config import IdleConfig
 from ..coordinator import MemoryCoordinator
 from ..errors import (
     ActivityConflict,
+    ConfigurationError,
     ConfigurationMismatch,
     Overloaded,
     OwnershipLost,
@@ -36,65 +37,125 @@ from ..models import (
 )
 from ..policies import ExemptPolicy, PromptPolicy, QuietRestorePolicy
 from ..protocols import Coordinator
+from .canonical import CanonicalComponents, CanonicalRows
 from .component_transaction import ComponentTransactions, component_deadline
 from .control_tokens import reserve, resolve
 from .coordination import bind, check_manifest
 from .format import StorageFormats
+from .fused_activity import FusedActivities
+from .owned_lock import OwnedLock
 from .queue import DeadlineQueue
 from .receipts import Receipts, fingerprint, lookup_operation
 from .retention import ensure_activity_mutable, may_prune
 from .session_bindings import SessionBindings
 from .state import Claim, ControlToken, OperationLookup
 
+if TYPE_CHECKING:
+    from .canonical_memory_migration import MigrationStage
+
+
 Policy = ExemptPolicy | PromptPolicy | QuietRestorePolicy
 
 
-class MemoryIdleBackend(StorageFormats, SessionBindings, ComponentTransactions):
+class MemoryIdleBackend(
+    StorageFormats, SessionBindings, ComponentTransactions, FusedActivities, CanonicalComponents
+):
     """Memory backend. Share one instance within one process only."""
 
     capabilities = frozenset(
         {"opaque_components", "conditional_commits", "leases", "component_transactions"}
     )
 
-    def __init__(self, *, clock: Clock | None = None, config: IdleConfig | None = None) -> None:
-        self.clock = clock or SystemClock()
+    def __init__(
+        self,
+        *,
+        clock: Clock | None = None,
+        config: IdleConfig | None = None,
+        storage_format: int = 1,
+    ) -> None:
+        if type(storage_format) is not int or storage_format not in (1, 3):
+            raise ConfigurationError("Fresh memory storage_format must be 1 or 3")
         self.config = config or IdleConfig()
+        from ..engines import make_queue, require_engine
+
+        require_engine(self.config.engine)
+        self.clock = clock or SystemClock()
         self._created_at = self.clock.now()
-        self._storage_format = 1
+        self._storage_format = storage_format
         self._activation_operation: str | None = None
-        self._lock = asyncio.Lock()
+        self._lock: asyncio.Lock = OwnedLock()
         self.coordinator: Coordinator = MemoryCoordinator()
         self._records: dict[IdleConversationKey, RuntimeSnapshot] = {}
-        self._queue = DeadlineQueue()
+        self._canonical_migrations: dict[tuple[IdleConversationKey, str], MigrationStage] = {}
+        self._canonical_rows: dict[tuple[IdleConversationKey, str], CanonicalRows] = {}
+        self._queue: DeadlineQueue = make_queue(self.config.engine)
         self._receipts = Receipts(
             limit=self.config.max_receipts_per_conversation,
-            retention=self.config.recovery_retention_seconds,
+            retention=self.config.effective_replay_retention_seconds,
+            engine=self.config.engine,
         )
         self._policies: dict[IdleConversationKey, Policy] = {}
         self._tokens: dict[IdleConversationKey, dict[str, ControlToken]] = {}
         self._manifest: ConfigManifest | None = None
         self._config_receipts = Receipts(
             limit=self.config.max_receipts_per_conversation,
-            retention=self.config.recovery_retention_seconds,
+            retention=self.config.effective_replay_retention_seconds,
+            engine=self.config.engine,
         )
         self._reconcile_cursor = 0
+
+    @property
+    def active_storage_format(self) -> int:
+        return self._storage_format
 
     def _now(self) -> float:
         return self.clock.now()
 
     def _get(self, key: IdleConversationKey, *, live: bool = True) -> RuntimeSnapshot:
         record = self._records.get(key)
-        if record is None or (live and record.session.expires_at <= self._now()):
+        if live:
+            from ..engines import session_guard
+
+            failure = session_guard(
+                (record.session.session_id, record.session.revision, record.session.expires_at)
+                if record
+                else None,
+                None,
+                self._now(),
+                engine=self.config.engine,
+            )
+            if failure is not None:
+                raise SessionExpired("No live session exists")
+        if record is None:
             raise SessionExpired("No live session exists")
         return record
 
     def _guard(self, record: RuntimeSnapshot, expected: ActivityGuard) -> ActivitySnapshot:
         activity = record.activity
-        if activity is None or activity.guard != expected:
+        from ..engines import activity_guard
+
+        failure = activity_guard(
+            (
+                activity.session_id,
+                activity.activity_id,
+                activity.activity_revision,
+                activity.expires_at,
+            )
+            if activity
+            else None,
+            (expected.session_id, expected.activity_id, expected.activity_revision),
+            self._now(),
+            engine=self.config.engine,
+        )
+        if failure == "conflict":
             raise ActivityConflict("The activity generation or revision changed")
-        if activity.expires_at <= self._now():
+        if failure == "expired":
             raise SessionExpired("The activity expired")
+        assert activity is not None
         return activity
+
+    def _fingerprint(self, value: object) -> str:
+        return fingerprint(value, engine=self.config.engine)
 
     def _save(self, record: RuntimeSnapshot, *, claim: Claim | None = None) -> RuntimeSnapshot:
         freeze_object(record.components, max_bytes=self.config.max_components_bytes)
@@ -150,7 +211,7 @@ class MemoryIdleBackend(StorageFormats, SessionBindings, ComponentTransactions):
             raise ValueError("Session lifetime must be positive")
         async with self._lock:
             now = self._now()
-            digest = fingerprint(("open", lifetime_seconds))
+            digest = self._fingerprint(("open", lifetime_seconds))
             duplicate = self._receipts.prepare(key, operation_id, digest, now=now)
             if duplicate is not None:
                 return cast(SessionSnapshot, duplicate)
@@ -181,7 +242,7 @@ class MemoryIdleBackend(StorageFormats, SessionBindings, ComponentTransactions):
             raise ValueError("Session lifetime must be positive")
         async with self._lock:
             now = self._now()
-            digest = fingerprint(("replace_session", expected, lifetime_seconds))
+            digest = self._fingerprint(("replace_session", expected, lifetime_seconds))
             duplicate = self._receipts.prepare(key, operation_id, digest, now=now)
             if duplicate is not None:
                 return cast(SessionSnapshot, duplicate)
@@ -213,7 +274,7 @@ class MemoryIdleBackend(StorageFormats, SessionBindings, ComponentTransactions):
         frozen = freeze_object(params, max_bytes=self.config.max_params_bytes)
         async with self._lock:
             now = self._now()
-            digest = fingerprint(
+            digest = self._fingerprint(
                 (
                     "enter",
                     activity_key,
@@ -271,7 +332,7 @@ class MemoryIdleBackend(StorageFormats, SessionBindings, ComponentTransactions):
     ) -> ActivitySnapshot:
         async with self._lock:
             now = self._now()
-            digest = fingerprint(("touch", expected))
+            digest = self._fingerprint(("touch", expected))
             duplicate = self._receipts.prepare(key, operation_id, digest, now=now)
             if duplicate is not None:
                 return cast(ActivitySnapshot, duplicate)
@@ -296,7 +357,7 @@ class MemoryIdleBackend(StorageFormats, SessionBindings, ComponentTransactions):
     ) -> None:
         async with self._lock:
             now = self._now()
-            digest = fingerprint(("clear", expected, reason))
+            digest = self._fingerprint(("clear", expected, reason))
             duplicate = self._receipts.prepare(key, operation_id, digest, now=now)
             if duplicate is not None:
                 return
@@ -442,7 +503,7 @@ class MemoryIdleBackend(StorageFormats, SessionBindings, ComponentTransactions):
         self, *, expected_generation: str, enabled: bool, policies_digest: str, operation_id: str
     ) -> ConfigManifest:
         async with self._lock:
-            digest = fingerprint((expected_generation, enabled, policies_digest))
+            digest = self._fingerprint((expected_generation, enabled, policies_digest))
             duplicate = self._config_receipts.prepare(
                 "configuration", operation_id, digest, now=self._now()
             )
@@ -460,6 +521,32 @@ class MemoryIdleBackend(StorageFormats, SessionBindings, ComponentTransactions):
                         self._save(replace(record, idle=IdleSnapshot()))
             return self._manifest
 
+    async def canonical_component_migrate(
+        self,
+        key: IdleConversationKey,
+        *,
+        component: str,
+        source_component: Mapping[str, object],
+        target_component: Mapping[str, object],
+        ledger_delta: Mapping[str, object],
+        absolute_expiry: Mapping[str, int],
+        limit: int = 32,
+        dry_run: bool = True,
+    ):
+        from .canonical_memory_migration import migrate
+
+        return await migrate(
+            self,
+            key,
+            component=component,
+            source_component=source_component,
+            target_component=target_component,
+            ledger_delta=ledger_delta,
+            absolute_expiry=absolute_expiry,
+            limit=limit,
+            dry_run=dry_run,
+        )
+
     async def reconcile(self, *, limit: int = 100) -> int:
         """Repair missing due jobs and prune bounded expired state."""
         if limit < 1:
@@ -475,12 +562,22 @@ class MemoryIdleBackend(StorageFormats, SessionBindings, ComponentTransactions):
             now = self._now()
             for key in selected:
                 record = self._records[key]
-                if may_prune(record, self._queue.jobs.get(key), now):
+                canonical_retained = any(
+                    any(
+                        operation_id not in rows.expiry or rows.expiry[operation_id] > now * 1000
+                        for operation_id in rows.known_ids
+                    )
+                    for name in record.components
+                    if (rows := self._canonical_rows.get((key, name))) is not None
+                )
+                if not canonical_retained and may_prune(record, self._queue.jobs.get(key), now):
                     self._records.pop(key)
                     self._queue.jobs.pop(key, None)
                     self._policies.pop(key, None)
                     self._tokens.pop(key, None)
                     self._receipts.items.pop(key, None)
+                    for name in record.components:
+                        self._canonical_rows.pop((key, name), None)
                 elif component_deadline(record) is not None and key not in self._queue.jobs:
                     self._queue.schedule(record)
                     repaired += 1

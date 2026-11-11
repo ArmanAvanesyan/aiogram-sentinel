@@ -150,7 +150,20 @@ class NavigationFlowAdapter:
                         ),
                     ),
                 )
-            bridge = NavigationEffects(effects, nav, request)
+            render_effects = effects
+            canonical_mode = getattr(repo.idle.backend, "active_storage_format", 1) == 3
+            if canonical_mode:
+                from ...effects import OperationEffects
+                from .canonical_effects import CanonicalNavigationEffects
+
+                if not isinstance(effects, OperationEffects):
+                    raise ConfigurationError(
+                        "Canonical UI recovery requires the owning idle effect recorder"
+                    )
+                render_effects = CanonicalNavigationEffects(
+                    effects, repo, request.key, prepared.operation_id
+                )
+            bridge = NavigationEffects(render_effects, nav, request)
             request = replace(
                 request,
                 effects=bridge,
@@ -169,15 +182,30 @@ class NavigationFlowAdapter:
                 validate_render(prepared, result)
                 return encode(result)
 
-            raw_rendered = await effects.run(
-                "nav:render",
-                render,
-                replay_safe=getattr(nav.presenter, "replay_safe", False) is True,
-            )
-            if not isinstance(cast(object, raw_rendered), str) or not isinstance(
-                rendered := decode(raw_rendered), RenderResult
-            ):
-                raise EffectUnknown("Integrated render receipt is malformed")
+            if canonical_mode:
+
+                async def canonical_render() -> RenderResult:
+                    result = await nav.presenter.render(request)
+                    from aiogram_nav.actions import validate_render
+
+                    validate_render(prepared, result)
+                    return result
+
+                rendered = await render_effects.run(
+                    "render",
+                    canonical_render,
+                    replay_safe=getattr(nav.presenter, "replay_safe", False) is True,
+                )
+            else:
+                raw_rendered = await effects.run(
+                    "nav:render",
+                    render,
+                    replay_safe=getattr(nav.presenter, "replay_safe", False) is True,
+                )
+                if not isinstance(cast(object, raw_rendered), str) or not isinstance(
+                    rendered := decode(raw_rendered), RenderResult
+                ):
+                    raise EffectUnknown("Integrated render receipt is malformed")
             return await repo.stage(
                 context,
                 prepared,

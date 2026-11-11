@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import contextvars
 import hashlib
+import math
 from collections.abc import Awaitable, Callable
 from dataclasses import replace
 from typing import TYPE_CHECKING, Protocol, TypeVar, cast
@@ -70,6 +71,11 @@ async def apply(
     deadline: Callable[[T], int] | None = None,
     accepted: bool = False,
     restart: bool = False,
+    operation_id: str = "",
+    token: str = "",
+    reservation_id: str = "",
+    index_keys: tuple[str, ...] = (),
+    view_id: str = "",
 ) -> T:
     from .lifecycle import compose
 
@@ -81,12 +87,46 @@ async def apply(
         raise OwnershipLost("Copied staging context does not grant conversation ownership")
     for _ in range(16):
         current = await repo.idle.backend.load(idle_key)
-        memory = reducer(repo, key, current)
         from .sessions import binding, observe, seed
 
         external = await observe(repo, key)
+        source_binding = binding(current)
+        same_source = external is None or (
+            source_binding is not None and source_binding.get("session_id") == external.session_id
+        )
+        authoritative = (
+            current
+            if current is not None
+            and same_source
+            and current.session.expires_at > repo.idle.clock.now()
+            else None
+        )
+        canonical_reducer = None
+        if getattr(repo.idle.backend, "active_storage_format", 1) == 3:
+            from .canonical import read as read_canonical
+
+            canonical_reducer = await read_canonical(
+                repo,
+                key,
+                operation_id=operation_id,
+                token=token,
+                reservation_id=reservation_id,
+                index_keys=index_keys,
+                view_id=view_id,
+                session_id=authoritative.session.session_id if authoritative else None,
+            )
+            memory = canonical_reducer.repository
+        else:
+            memory = reducer(repo, key, current)
         await seed(repo, key, current, memory, external)
-        old_ledger = memory._records.get(key)
+        if canonical_reducer is not None and authoritative is not None:
+            canonical_reducer.bind_session_generation(
+                authoritative.session.session_id,
+                math.floor(authoritative.session.expires_at * 1000),
+            )
+        old_ledger = (
+            canonical_reducer.record if canonical_reducer is not None else memory._records.get(key)
+        )
         old_ids: set[str] = set(old_ledger.operations) if old_ledger else set()
         previous_nav = (
             old_ledger.current.snapshot
@@ -94,12 +134,26 @@ async def apply(
             else None
         )
         old_component = component(current, expected_profile=repo.profile)
-        old_raw = str(old_component["ledger"]) if old_component else None
+        old_raw = (
+            str(
+                old_component.get("hot")
+                if canonical_reducer is not None
+                else old_component["ledger"]
+            )
+            if old_component
+            else None
+        )
         result = await callback(memory)
-        ledger = memory._records.get(key)
+        ledger = (
+            canonical_reducer.record if canonical_reducer is not None else memory._records.get(key)
+        )
         if ledger is None:
             raise ConfigurationError("Integrated navigation cannot discard its recovery ledger")
-        if isinstance(result, PreparedAction) and result.operation_id not in old_ids:
+        if (
+            canonical_reducer is None
+            and isinstance(result, PreparedAction)
+            and result.operation_id not in old_ids
+        ):
             expiry = result.expires_at
             session_id = result.session_id
             source_binding = binding(current)
@@ -122,6 +176,33 @@ async def apply(
             normalized = replace(result, session_id=session_id, expires_at=expiry)
             ledger.operations[normalized.operation_id].prepared = normalized
             result = cast(T, normalized)
+        if (
+            canonical_reducer is None
+            and isinstance(result, CommitResult)
+            and not result.duplicate
+            and current is not None
+            and current.session.expires_at > repo.idle.clock.now()
+            and result.snapshot.session_id != current.session.session_id
+        ):
+            operation = next(
+                (entry for entry in ledger.operations.values() if entry.result is result), None
+            )
+            if operation is None or operation.prepared is None:
+                raise ConfigurationError("Adopted render lost its operation owner")
+            expected_session = operation.prepared.intent.expected_session_id
+            if expected_session not in {None, current.session.session_id}:
+                raise SessionExpired("Navigation session generation changed")
+            expiry = min(result.snapshot.expires_at, round(current.session.expires_at * 1000))
+            normalized_snapshot = replace(
+                result.snapshot, session_id=current.session.session_id, expires_at=expiry
+            )
+            operation.prepared = replace(
+                operation.prepared, session_id=current.session.session_id, expires_at=expiry
+            )
+            normalized_result = replace(result, snapshot=normalized_snapshot)
+            operation.result = normalized_result
+            ledger.current = VersionedSnapshot(normalized_snapshot, ledger.version)
+            result = cast(T, normalized_result)
         if (
             isinstance(result, CommitResult)
             and not result.duplicate
@@ -190,8 +271,19 @@ async def apply(
             reply_overlay = False
         if external is not None:
             ledger.external_session = replace(external, idle_expires_at=None)
-        value = save_component(ledger, key, expected_profile=repo.profile)
-        if old_raw == value["ledger"]:
+        if canonical_reducer is not None:
+            from .canonical import value as canonical_value
+
+            value = canonical_value(repo, key, canonical_reducer)
+            unchanged = (
+                old_raw == value["hot"]
+                and not canonical_reducer.delta().put
+                and not canonical_reducer.delta().delete
+            )
+        else:
+            value = save_component(ledger, key, expected_profile=repo.profile)
+            unchanged = old_raw == value["ledger"]
+        if unchanged:
             if scope is not None and not repo.coordinator.scope_matches(key, scope):
                 from aiogram_nav.errors import OwnershipLost
 
@@ -217,29 +309,57 @@ async def apply(
             restart=restart,
             operation_id=accepted_operation,
             reply_overlay=reply_overlay,
+            canonical=canonical_reducer is not None,
         )
         marker = desired.components[OWNER]
         # Compose creates the component marker.
         assert isinstance(marker, dict) or hasattr(marker, "get")  # nosec B101
-        raw = str(value["ledger"])
+        if (
+            canonical_reducer is not None
+            and accepted_operation is not None
+            and desired.activity is not None
+        ):
+            from .canonical import save_activity
+
+            save_activity(canonical_reducer, accepted_operation, desired.activity)
+        raw = str(value.get("hot") if canonical_reducer is not None else value["ledger"])
         digest = hashlib.sha256((str(current.version if current else 0) + raw).encode()).hexdigest()
         expiry = deadline(result) / 1000 if deadline is not None else None
         # Duplicate navigation receipts are returned without a transaction above.
         try:
-            committed = await cast(ComponentBackend, repo.idle.backend).component_transaction(
-                idle_key,
-                component=COMPONENT,
-                expected_version=current.version if current else None,
-                operation_id="nav:" + digest,
-                fingerprint=digest,
-                record=desired,
-                policy=policy,
-                coordination_scope=scope or repo.coordinator.scope_token(key),
-                expected_manifest=manifest.generation,
-                allow_idle_operation_id=STAGING.get(),
-                expires_at=expiry,
-                claim=STAGING_CLAIM.get(),
-            )
+            if canonical_reducer is not None:
+                from .canonical import CanonicalHost
+
+                committed = await cast(
+                    CanonicalHost, repo.idle.backend
+                ).canonical_component_transaction(
+                    idle_key,
+                    component=COMPONENT,
+                    expected_version=current.version if current else None,
+                    record=desired,
+                    ledger_delta=canonical_reducer.delta().to_payload(),
+                    policy=policy,
+                    coordination_scope=scope or repo.coordinator.scope_token(key),
+                    expected_manifest=manifest.generation,
+                    allow_idle_operation_id=STAGING.get(),
+                    expires_at=expiry,
+                    claim=STAGING_CLAIM.get(),
+                )
+            else:
+                committed = await cast(ComponentBackend, repo.idle.backend).component_transaction(
+                    idle_key,
+                    component=COMPONENT,
+                    expected_version=current.version if current else None,
+                    operation_id="nav:" + digest,
+                    fingerprint=digest,
+                    record=desired,
+                    policy=policy,
+                    coordination_scope=scope or repo.coordinator.scope_token(key),
+                    expected_manifest=manifest.generation,
+                    allow_idle_operation_id=STAGING.get(),
+                    expires_at=expiry,
+                    claim=STAGING_CLAIM.get(),
+                )
             if (
                 effective_accepted
                 and current is not None

@@ -1,13 +1,13 @@
 # Releasing
 
 This maintainer checklist describes deliberate releases. Repository pushes and
-documentation builds do not publish a package. The first release is `0.2.0`.
+documentation builds do not publish a package. The current release candidate is `0.3.0`.
 
 1. Review compatibility, recovery/storage schema changes and dependency boundaries.
    Check the supported Python/aiogram and real-Redis jobs, plus optional navigation
    integration against a compatible peer revision.
 2. Review the fragments in `CHANGES/`. Preview with
-   `uv run --no-sync towncrier build --draft --version 0.2.0`, substituting the
+   `uv run --no-sync towncrier build --draft --version 0.3.0`, substituting the
    intended release version when preparing a future release.
 3. Set the intended version in `pyproject.toml`, the authoritative source. Runtime
    version reporting reads installed distribution metadata. Refresh `uv.lock` and
@@ -30,7 +30,7 @@ documentation builds do not publish a package. The first release is `0.2.0`.
    digest rather than a digest newly downloaded from GitHub:
 
    ```sh
-   gh workflow run publish.yml --ref v0.2.0 -f manifest_sha256=<reviewed-manifest-digest>
+   gh workflow run publish.yml --ref v0.3.0 -f manifest_sha256=<reviewed-manifest-digest>
    ```
 
    The workflow verifies tag/version equality and exact artifact filenames and

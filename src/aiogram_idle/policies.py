@@ -11,6 +11,7 @@ from types import MappingProxyType
 from typing import ClassVar, Literal, TypeAlias, cast
 
 from .errors import ConfigurationError
+from .models import validate_identifier
 
 Controls: TypeAlias = Literal["reply", "inline", "commands", "hybrid"]
 
@@ -61,6 +62,7 @@ class IdlePolicies(Mapping[str, IdlePolicy]):
         if not policies:
             raise ConfigurationError("at least one idle policy is required")
         for key, policy in policies.items():
+            validate_identifier(key, "policy_id")
             if not isinstance(cast(object, key), str) or not key or len(key) > 128:
                 raise ConfigurationError("policy IDs must contain 1 to 128 characters")
             if not isinstance(

@@ -18,9 +18,10 @@ async def external():
     authority = Authority()
     integration, nav, screens, clock, key = make(session_authority=authority)
     await integration.idle.initialize()
-    await integration.idle.backend.activate_storage_format(
-        operation_id="activate", old_workers_drained=True, dry_run=False
-    )
+    if await integration.idle.backend.storage_format() < 2:
+        await integration.idle.backend.activate_storage_format(
+            operation_id="activate", old_workers_drained=True, dry_run=False
+        )
     return integration, nav, screens, clock, key, authority
 
 

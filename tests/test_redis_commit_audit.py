@@ -270,7 +270,12 @@ async def test_quarantine_does_not_park_a_repaired_newer_snapshot(redis_client):
     record_key = backend._store.keys(key)[0]
     original = await redis_client.get(record_key)
     broken = json.loads(original)
-    broken["schema_version"] = 999
+    if backend._store.format_version == 3:
+        state = json.loads(broken["state"])
+        state["schema_version"] = 999
+        broken["state"] = json.dumps(state)
+    else:
+        broken["schema_version"] = 999
     await redis_client.set(record_key, json.dumps(broken))
     with pytest.raises(SchemaUnsupported):
         await backend.load(key)

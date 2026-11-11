@@ -42,7 +42,9 @@ class Authority:
 
 async def build(*, activated=True):
     clock = ManualClock(1000)
-    backend = MemoryIdleBackend(clock=clock, config=IdleConfig(enabled=True))
+    backend = MemoryIdleBackend(
+        clock=clock, config=IdleConfig(enabled=True), **({} if activated else {"storage_format": 1})
+    )
     authority, adapter, presenter = Authority(), Adapter(), Presenter(clock)
     runtime = IdleRuntime(
         backend=backend,
@@ -53,7 +55,7 @@ async def build(*, activated=True):
         session_authority=authority,
     )
     await runtime.initialize()
-    if activated:
+    if activated and await backend.storage_format() < 2:
         await backend.activate_storage_format(
             operation_id="activate-format", old_workers_drained=True, dry_run=False
         )

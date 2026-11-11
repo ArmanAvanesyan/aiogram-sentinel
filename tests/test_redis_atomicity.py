@@ -265,14 +265,22 @@ async def test_unsupported_conversation_is_parked_without_starving_healthy_job(r
     record_key = backend._store.keys(key)[0]
     original = await redis_client.get(record_key)
     newer = json.loads(original)
-    newer["schema_version"] = 999
+    if backend._store.format_version == 3:
+        state = json.loads(newer["state"])
+        state["schema_version"] = 999
+        newer["state"] = json.dumps(state)
+    else:
+        newer["schema_version"] = 999
     await redis_client.set(record_key, json.dumps(newer))
     await asyncio.sleep(0.02)
     claims = await backend.claim_due(limit=2, lease_seconds=5)
     assert [claim.key for claim in claims] == [other]
     _, parked = await backend.inspect_parked()
     assert parked == {key: "SchemaUnsupported"}
-    assert json.loads(await redis_client.get(record_key))["schema_version"] == 999
+    retained = json.loads(await redis_client.get(record_key))
+    if backend._store.format_version == 3:
+        retained = json.loads(retained["state"])
+    assert retained["schema_version"] == 999
     await backend.reconcile(limit=10)
     assert (
         await redis_client.zscore(backend._store.keys(key)[2], backend._store.member(key)) is None
@@ -325,7 +333,9 @@ async def test_admission_rotates_past_128_live_claims_to_prunable_terminal(redis
     # fields to expired values, without waiting a minute in the test suite.
     for key in [*protected, terminal]:
         record_key = backend._store.keys(key)[0]
-        envelope = decode((await redis_client.get(record_key)).decode())
+        persisted = (await redis_client.get(record_key)).decode()
+        hot = json.loads(persisted) if backend._store.format_version == 3 else None
+        envelope = decode(hot["state"] if hot is not None else persisted)
         record = envelope["record"]
         activity = (
             replace(record.activity, entered_at=old - 20, last_activity_at=old - 20, expires_at=old)
@@ -338,7 +348,12 @@ async def test_admission_rotates_past_128_live_claims_to_prunable_terminal(redis
             activity=activity,
             recovery_until=old,
         )
-        await redis_client.set(record_key, encode(envelope))
+        if hot is not None:
+            hot["state"] = encode(envelope, schema_version=3)
+            persisted = json.dumps(hot)
+        else:
+            persisted = encode(envelope)
+        await redis_client.set(record_key, persisted)
         await redis_client.zadd(
             backend._store.prefix + ":expiry",
             {backend._store.member(key): old + (1 if key == terminal else 0)},

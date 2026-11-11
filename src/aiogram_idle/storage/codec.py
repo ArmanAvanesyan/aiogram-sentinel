@@ -51,7 +51,7 @@ def _bad() -> BackendInconsistent:
 
 def encode(value: object, *, schema_version: int = 1) -> str:
     """Encode a supported record or string-keyed envelope, without lossy coercion."""
-    if type(schema_version) is not int or schema_version not in (1, 2):
+    if type(schema_version) is not int or schema_version not in (1, 2, 3):
         raise SchemaUnsupported("unsupported persistence schema")
     body = json.dumps(
         {"schema_version": schema_version, "value": encode_value(value)},
@@ -87,7 +87,7 @@ def decode(text: str) -> object:
         if set(root) != {"schema_version", "value"}:
             raise _bad()
         version = root["schema_version"]
-        if type(version) is not int or version not in (1, 2):
+        if type(version) is not int or version not in (1, 2, 3):
             raise SchemaUnsupported("unsupported persistence schema")
         return decode_value(root["value"])
     except SchemaUnsupported:

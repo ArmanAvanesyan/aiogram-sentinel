@@ -77,12 +77,8 @@ class CombinedMiddleware(NavigationMiddleware):
         if isinstance(self.isolation, (SimpleEventIsolation, TrackedEventIsolation)):
             actual = (
                 coordinator.fsm_isolation
-                if isinstance(coordinator, RedisCoordinator)
-                else (
-                    coordinator.isolation
-                    if isinstance(coordinator, AiogramMemoryCoordinator)
-                    else None
-                )
+                if isinstance(coordinator, BorrowedFsmCoordinator)
+                else None
             )
             if actual is not self.isolation:
                 raise ConfigurationError(
@@ -177,29 +173,34 @@ class CombinedMiddleware(NavigationMiddleware):
                     await nav.reject_callback(payload, bot, "stale")
                     return None
             if isinstance(payload, (Message, CallbackQuery)):
-                prompt = await idle.current_prompt(mapped)
+                decision = await idle.observe(mapped)
+                prompt = decision.prompt
                 presenter = idle.presenter
                 texts = (
                     presenter.texts(prompt.locale if prompt else "en")
                     if isinstance(presenter, TelegramPromptPresenter)
                     else PromptTexts()
                 )
-                nav_pending = await nav.is_busy(key)
+                nav_pending = decision.navigation_pending
                 if nav_pending:
                     # A partial navigation owns recovery. An old prompt must
                     # not reserve a competing idle operation against its view.
-                    if await idle.is_busy(mapped) or not await _is_navigation_input(
-                        nav, payload, context, bot
-                    ):
+                    if decision.busy or not await _is_navigation_input(nav, payload, context, bot):
                         if isinstance(payload, CallbackQuery):
                             await _ack(bot, payload.id, texts.busy)
                         return None
                 else:
                     if await handle_control(
-                        idle, payload, mapped, bot=bot, texts=texts, update_id=event.update_id
+                        idle,
+                        payload,
+                        mapped,
+                        bot=bot,
+                        texts=texts,
+                        update_id=event.update_id,
+                        observed_prompt=prompt,
                     ):
                         return None
-                    if await idle.is_busy(mapped):
+                    if decision.busy:
                         if isinstance(payload, CallbackQuery):
                             await _ack(bot, payload.id, texts.busy)
                         return None

@@ -25,9 +25,23 @@ JsonValue: TypeAlias = JsonScalar | tuple["JsonValue", ...] | Mapping[str, "Json
 JsonObject: TypeAlias = Mapping[str, JsonValue]
 
 
-def _identifier(value: str, name: str) -> None:
+def validate_unicode(value: str, name: str = "JSON string") -> None:
+    try:
+        value.encode("utf-8")
+    except UnicodeError as error:
+        raise ConfigurationError(f"{name} must contain valid UTF-8 Unicode scalars") from error
+
+
+_utf8 = validate_unicode
+
+
+def validate_identifier(value: str, name: str) -> None:
     if not isinstance(cast(object, value), str) or not value or len(value) > 256:
         raise ConfigurationError(f"{name} must contain 1 to 256 characters")
+    _utf8(value, name)
+
+
+_identifier = validate_identifier
 
 
 def _revision(value: int) -> None:
@@ -41,7 +55,10 @@ def freeze_json(value: object, *, max_bytes: int = 16_384) -> JsonValue:
     def freeze(item: object, depth: int) -> JsonValue:
         if depth > 32:
             raise ConfigurationError("JSON nesting exceeds limit")
-        if item is None or isinstance(item, (str, bool, int)):
+        if isinstance(item, str):
+            _utf8(item)
+            return item
+        if item is None or isinstance(item, (bool, int)):
             return item
         if isinstance(item, float):
             if not math.isfinite(item):
@@ -52,6 +69,7 @@ def freeze_json(value: object, *, max_bytes: int = 16_384) -> JsonValue:
             for key, child in cast(Mapping[object, object], item).items():
                 if not isinstance(key, str):
                     raise ConfigurationError("JSON keys must be strings")
+                _utf8(key, "JSON key")
                 result[key] = freeze(child, depth + 1)
             return MappingProxyType(result)
         if isinstance(item, (list, tuple)):
@@ -120,6 +138,11 @@ class IdleConversationKey:
             or len(self.namespace) > 128
         ):
             raise UnsupportedContext("namespace must contain 1 to 128 characters")
+        _utf8(self.namespace, "namespace")
+        if self.tenant_id is not None:
+            if not isinstance(cast(object, self.tenant_id), str):
+                raise UnsupportedContext("invalid tenant scope")
+            _utf8(self.tenant_id, "tenant_id")
         if any(
             isinstance(value, bool) or not isinstance(cast(object, value), int) or value <= 0
             for value in (self.bot_id, self.chat_id, self.user_id)
