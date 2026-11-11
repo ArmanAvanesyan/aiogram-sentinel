@@ -9,6 +9,9 @@
 - Add explicit Python/Rust deterministic engine selection, with a separately built
   `aiogram-idle-native` 0.3.0 ABI 1 companion. Python remains the default; invalid
   native selection fails before initialization and never falls back after mutation.
+  Native publication is withheld: the representative CPU gate was about 6.6%
+  slower than Python. Source and functional CI remain; no native tag, PyPI release
+  or dependency extra is provided for 0.3.0.
 - Add opt-in storage format 3: bounded current state, protected pending evidence,
   server-time anchored physical receipt expiry, immutable original result blocks,
   bounded reconciliation and effect-free staged migration with verified cutover.
