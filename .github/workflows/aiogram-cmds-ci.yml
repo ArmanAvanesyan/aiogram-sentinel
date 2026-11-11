@@ -128,7 +128,12 @@ jobs:
     - uses: astral-sh/setup-uv@v7
       with:
         cache-dependency-glob: distribution/uv.lock
-    - run: uv sync --frozen --all-extras --all-groups --python pypy3.10
+    - run: 'uv export --frozen --all-extras --all-groups --no-hashes --no-emit-project --output-file "$RUNNER_TEMP/cmds-pypy-constraints.txt"
+
+        uv sync --frozen --no-default-groups --python pypy3.10
+
+        uv pip install --constraint "$RUNNER_TEMP/cmds-pypy-constraints.txt" pytest pytest-asyncio pytest-mock pytest-cov
+        hypothesis babel redis'
     - run: uv run --no-sync pytest tests/unit tests/integration
     defaults:
       run:
@@ -275,12 +280,12 @@ jobs:
         python-version: '3.12'
         cache-dependency-glob: distribution/uv.lock
     - run: uv sync --frozen --all-extras --all-groups
-    - run: uv run --no-sync pytest tests/perf --benchmark-json=reports/benchmark-results.json
+    - run: uv run --no-sync pytest tests/perf --junitxml=reports/performance-results.xml
     - uses: actions/upload-artifact@v6
       if: always()
       with:
         name: performance-results
-        path: distribution/reports/benchmark-results.json
+        path: distribution/reports/performance-results.xml
         if-no-files-found: warn
     defaults:
       run:

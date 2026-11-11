@@ -59,7 +59,7 @@ def port(package: pathlib.Path, source: pathlib.Path) -> dict:
         ]
     else:
         data["on"]["push"]["tags"] = [f"{package.name}-v*"]
-    for job in data["jobs"].values():
+    for job_name, job in data["jobs"].items():
         if "github.event_name == 'schedule'" in job.get("if", ""):
             job["if"] = "github.ref == 'refs/heads/main' || " + job["if"]
         original_steps = job.get("steps", [])
@@ -110,6 +110,26 @@ def port(package: pathlib.Path, source: pathlib.Path) -> dict:
                 continue
             if "run" in step:
                 step["run"] = step["run"].replace("uv run --frozen", "uv run --no-sync")
+                if (
+                    package.name == "aiogram-cmds"
+                    and job_name == "pypy-tests"
+                    and "uv sync" in step["run"]
+                ):
+                    # Publishing/documentation tools are not runtime compatibility dependencies.
+                    # Preserve locked test versions without building Twine's cryptography on PyPy.
+                    step["run"] = (
+                        "uv export --frozen --all-extras --all-groups --no-hashes --no-emit-project "
+                        '--output-file "$RUNNER_TEMP/cmds-pypy-constraints.txt"\n'
+                        "uv sync --frozen --no-default-groups --python pypy3.10\n"
+                        'uv pip install --constraint "$RUNNER_TEMP/cmds-pypy-constraints.txt" '
+                        "pytest pytest-asyncio pytest-mock pytest-cov hypothesis babel redis"
+                    )
+                if package.name == "aiogram-cmds" and job_name == "performance":
+                    # These tests use timing probes, not the pytest-benchmark fixture.
+                    step["run"] = step["run"].replace(
+                        "--benchmark-json=reports/benchmark-results.json",
+                        "--junitxml=reports/performance-results.xml",
+                    )
                 step["run"] = re.sub(
                     r"\$(?:GITHUB_WORKSPACE|\{GITHUB_WORKSPACE\})(?!/"
                     + re.escape(destination)
@@ -120,6 +140,10 @@ def port(package: pathlib.Path, source: pathlib.Path) -> dict:
                 if "working-directory" in step:
                     step["working-directory"] = staged_path(step["working-directory"], destination)
             options = step.get("with", {})
+            if package.name == "aiogram-cmds" and job_name == "performance" and "path" in options:
+                options["path"] = options["path"].replace(
+                    "benchmark-results.json", "performance-results.xml"
+                )
             if (
                 action.startswith(
                     ("actions/upload-artifact@", "actions/download-artifact@", "actions/cache@")

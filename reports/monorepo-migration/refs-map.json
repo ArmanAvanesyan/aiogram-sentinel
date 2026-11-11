@@ -550,5 +550,19 @@
     "source_ref": "refs/tags/v0.3.0",
     "destination_ref": "refs/tags/history/aiogram-idle/v0.3.0",
     "object_id": "2513eab5aecdbce8e3856a1f29906f9257f9de82"
+  },
+  {
+    "repository": "aiogram-sentinel",
+    "source_ref": "refs/heads/dependabot/github_actions/core-actions-f7cb626f83",
+    "destination_ref": "refs/heads/history/aiogram-sentinel/remote-cutover/dependabot/github_actions/core-actions-f7cb626f83",
+    "object_id": "a9a67748106795462f8d775db94fbd9f57e4b181",
+    "snapshot": "remote-cutover-delta"
+  },
+  {
+    "repository": "aiogram-cmds",
+    "source_ref": "refs/heads/dependabot/github_actions/core-actions-1a31fcc15b",
+    "destination_ref": "refs/heads/history/aiogram-cmds/remote-cutover/dependabot/github_actions/core-actions-1a31fcc15b",
+    "object_id": "128685c703f53141b4ebc3ed22b6af6f4862da78",
+    "snapshot": "remote-cutover-delta"
   }
 ]
