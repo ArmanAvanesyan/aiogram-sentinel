@@ -26,7 +26,9 @@ receipt TTLs, bounded recovery and a canonical optional navigation ledger. Exist
 namespaces require drained, verified migration. Python remains the default engine;
 Rust is an explicitly selected, separately built companion with no runtime fallback.
 See [migration, replay retention and engine selection](docs/migration-0.3.md).
-Performance qualification and companion publication are separate release gates.
+The 0.3.0 native CPU gate failed (Rust used about 6.6% more CPU on the selected
+representative workload). The native companion remains source-only: no native PyPI
+release, tag or extra is provided. Keep the default Python engine.
 
 ## Application-owned integration in 0.2
 

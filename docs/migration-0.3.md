@@ -9,6 +9,12 @@ The companion performs deterministic computation only; Python retains I/O, locki
 authorization, Telegram delivery and application callbacks. Installing the base
 package does not install Rust, Redis or navigation.
 
+The 0.3.0 native companion is source-only and withheld from PyPI/tags. The serial
+representative CPU gate measured about 6.6% more process CPU for Rust, failing the
+required 20% reduction. Redis tails were near parity; unstable repeated tail
+measurements do not establish an improvement. Keep the default Python engine.
+Native functional CI and source builds remain available for investigation.
+
 The native companion has a separate release workflow. Availability and performance
 qualification are separate gates: a local source build is not evidence of a PyPI
 release or a measured speedup. Development builds can use `uv pip install ./native`
