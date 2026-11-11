@@ -2,6 +2,34 @@
 
 <!-- towncrier release notes start -->
 
+## 0.3.0 (2026-11-11)
+
+### Features
+
+- Add explicit Python/Rust deterministic engines, cached codec and registry
+  indexes, heap-based memory retention and atomic adoption of application renders.
+- Add opt-in Redis format 3 with canonical per-operation receipts, physical
+  terminal TTL anchored at server-time commit, bounded selected reads and scoped
+  view-ownership indexes. Capacity never evicts promised or uncertain evidence.
+- Add drained-writer activation and restart-safe migration preserving original
+  terminal deadlines and protected effects. Existing namespaces retain legacy
+  behavior until explicit activation; fresh namespaces can select format 3.
+- Let canonical component hosts bind a verified session generation before view
+  ownership checks. Fresh navigation uses the host absolute expiry; live legacy
+  shorter deadlines remain immutable. An expired same-id generation cannot reopen
+  or extend: replace its host generation explicitly. Idle integration stays optional.
+- Retain functional Rust source and platform/parity CI, but withhold native PyPI
+  publication, native release tags and a native installation extra: independent
+  serial qualification measured Rust 21.7% slower than optimized Python on the
+  preselected memory-track/50 CPU workload. The optimized Python whole-handler
+  Redis profile uses three round trips for no-op and eight for tracked navigation.
+
+### Bugfixes
+
+- Reject non-UTF-8 identifiers and JSON strings before effects or persistence,
+  preserving valid Unicode and non-BMP scalars. Earlier ephemeral-memory
+  acceptance of surrogate code units is no longer supported.
+
 ## 0.2.0 (2026-11-10)
 
 ### Features
