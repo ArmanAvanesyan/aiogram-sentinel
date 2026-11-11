@@ -35,6 +35,10 @@ This is source verification, not publication or performance qualification.
   skipped, with Redis/Idle/native absent; installed version and `py.typed` checked.
 - Current base source install (Python 3.12 / aiogram 3.31): 327 passed, 125
   optional tests skipped, with Redis/Idle/native absent.
+- Installed minimum wheel with Redis 5 / Redis 7: 452 passed. Installed current
+  source artifact with Redis 7 / Redis 8: 452 passed. Both profiles included the
+  local native companion for cross-engine cases; standalone absence was checked
+  separately above.
 - Native clean extracted-sdist rebuild: 51 parity/property tests passed. Native
   unit/Clippy/Rustfmt and local Python 3.10/3.12/3.14 parity passed separately.
 
