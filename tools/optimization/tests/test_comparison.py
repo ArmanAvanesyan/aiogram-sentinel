@@ -170,3 +170,15 @@ def test_load_preserves_top_level_qualification_provenance(tmp_path):
     historical = module.load(path)
     assert historical["qualification_provenance"] is None
     assert historical["run_id"] is None
+
+
+def test_prespecified_end_to_end_workload_must_be_present():
+    result = module.compare(runs("python"), runs("rust", 0.5), ["core"], ["redis-update"])
+    assert not result["qualified"]
+    assert "Missing comparable workload: redis-update" in result["failures"]
+
+
+def test_prespecified_latency_cannot_be_replaced_with_cpu_samples():
+    result = module.compare(runs("python"), runs("rust", 0.5), ["core"], ["core"])
+    assert not result["qualified"]
+    assert "Insufficient individual latency samples: core" in result["failures"]

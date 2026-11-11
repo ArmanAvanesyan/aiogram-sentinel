@@ -112,7 +112,12 @@ def provenance_failures(runs: list[dict]) -> list[str]:
     return failures
 
 
-def compare(python: list[dict], rust: list[dict], workloads: list[str]) -> dict:
+def compare(
+    python: list[dict],
+    rust: list[dict],
+    workloads: list[str],
+    required_latency: list[str] | None = None,
+) -> dict:
     if not workloads:
         raise ValueError("At least one representative CPU workload is required")
     if len(python) < 2 or len(rust) < 2:
@@ -144,6 +149,7 @@ def compare(python: list[dict], rust: list[dict], workloads: list[str]) -> dict:
         for name, row in item["rows"].items()
         if not (type(row["latency_samples"]) is int and row["latency_samples"] == 0)
     }
+    latency_names.update(required_latency or [])
     if not latency_names:
         failures.append("No individual end-to-end operation latency samples")
     for name in sorted(set(workloads) | latency_names):
@@ -210,6 +216,7 @@ def compare(python: list[dict], rust: list[dict], workloads: list[str]) -> dict:
         "qualified": not failures,
         "identity": all_runs[0]["identity"],
         "cpu_workloads_selected": workloads,
+        "required_latency_workloads": required_latency or [],
         "inputs": [
             {
                 "path": item["path"],
@@ -231,12 +238,14 @@ def main() -> int:
     parser.add_argument("--python", action="append", required=True, type=Path)
     parser.add_argument("--rust", action="append", required=True, type=Path)
     parser.add_argument("--cpu-workload", action="append", required=True)
+    parser.add_argument("--latency-workload", action="append", default=[])
     parser.add_argument("--output", required=True, type=Path)
     args = parser.parse_args()
     result = compare(
         [load(path) for path in args.python],
         [load(path) for path in args.rust],
         args.cpu_workload,
+        args.latency_workload,
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, indent=2) + "\n")

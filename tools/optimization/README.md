@@ -28,6 +28,7 @@ results cannot qualify a native release through this gate.
 python3 tools/optimization/run_benchmarks.py \
   --python /tmp/candidate/bin/python --profile optimized \
   --package aiogram-nav --output-dir /tmp/nav-python-a \
+  --redis-url redis://localhost:6379/0 \
   --driver-arg=--ages --driver-arg=50 --driver-arg=--skip-registry
 ```
 
@@ -52,7 +53,9 @@ python3 tools/optimization/compare_results.py \
   --python /tmp/nav-python-b/aiogram-nav.json \
   --rust /tmp/nav-rust-a/aiogram-nav.json \
   --rust /tmp/nav-rust-b/aiogram-nav.json \
-  --cpu-workload memory-track/50 --output /tmp/nav-native-gate.json
+  --cpu-workload memory-track/50 \
+  --latency-workload redis-dispatch-noop/50 \
+  --latency-workload redis-dispatch-track/50 --output /tmp/nav-native-gate.json
 ```
 
 The comparator requires matching base artifacts, native artifacts within the Rust
