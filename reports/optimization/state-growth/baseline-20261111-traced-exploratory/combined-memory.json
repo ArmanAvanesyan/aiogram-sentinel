@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "qualification": false,
+  "metadata": {
+    "driver_sha256": "839b5a1f18089b85b94b1627e0574b0387ec8b1e99c9241952d88134dba9d7ae",
+    "mode": "combined",
+    "engine": "python",
+    "backend": "memory",
+    "external_sessions": false,
+    "idle_operation": "activate",
+    "requested_checkpoints": [
+      1,
+      10,
+      16
+    ],
+    "artifacts": [
+      {
+        "name": "aiogram-idle",
+        "version": "0.2.0",
+        "module": "/private/tmp/aiogram-optimization-published-baseline/lib/python3.12/site-packages/aiogram_idle/__init__.py",
+        "direct_url": {}
+      },
+      {
+        "name": "aiogram-nav",
+        "version": "0.2.0",
+        "module": "/private/tmp/aiogram-optimization-published-baseline/lib/python3.12/site-packages/aiogram_nav/__init__.py",
+        "direct_url": {}
+      },
+      {
+        "name": "aiogram",
+        "version": "3.31.0",
+        "module": "/private/tmp/aiogram-optimization-published-baseline/lib/python3.12/site-packages/aiogram/__init__.py",
+        "direct_url": {}
+      },
+      {
+        "name": "aiogram-coordination",
+        "version": "0.1.0",
+        "module": "/private/tmp/aiogram-optimization-published-baseline/lib/python3.12/site-packages/aiogram_coordination/__init__.py",
+        "direct_url": {}
+      }
+    ],
+    "python": "3.12.13 (main, Apr 14 2026, 14:36:32) [Clang 22.1.3 ]",
+    "executable": "/tmp/aiogram-optimization-published-baseline/bin/python",
+    "platform": "macOS-15.8.1-x86_64-i386-64bit",
+    "cpu": "i386",
+    "cpu_count": 16,
+    "prefix": "aiogram-state-growth:3431d1a26f8c4f7c9fcb70f4449e8312",
+    "redis_endpoint": null,
+    "history_limit": 20,
+    "parameter_payload_bytes": 16,
+    "parameters_json_bytes": 30,
+    "real_telegram": false,
+    "storage_format3": false,
+    "tracemalloc_enabled": true,
+    "timing_excludes_state_inspection": true,
+    "command_measurement": "client invocations and computed RESP2 requests; not TCP round trips, replies, retries or Lua subcommands",
+    "started_at": 1794354323.4658408,
+    "config": {
+      "enabled": false,
+      "poll_seconds": 10,
+      "concurrency": 8,
+      "claim_limit": 8,
+      "lease_seconds": 60,
+      "renew_seconds": 15,
+      "operation_timeout_seconds": 45,
+      "lock_wait_seconds": 5,
+      "shutdown_seconds": 10,
+      "retry_max_attempts": 5,
+      "retry_max_age_seconds": 300,
+      "recovery_retention_seconds": 3600,
+      "ambiguous_send": "suppress",
+      "max_conversations": 10000,
+      "max_receipts_per_conversation": 256,
+      "max_tokens_per_conversation": 16,
+      "max_params_bytes": 16384,
+      "max_components_bytes": 8388608
+    },
+    "finished_at": 1794354351.688761
+  },
+  "checkpoints": [
+    {
+      "operations": 1,
+      "wall_seconds": 0.10350405890494585,
+      "process_cpu_seconds": 0.10198399999999985,
+      "client_commands": {
+        "client_command_calls": 0,
+        "pipeline_execute_calls": 0,
+        "command_argument_bytes": 0,
+        "computed_resp_request_bytes": 0,
+        "command_histogram": {}
+      },
+      "event_loop_lag": {
+        "samples": 0,
+        "retained_samples": 0,
+        "maximum_seconds": 0.0,
+        "p95_seconds": null,
+        "interval_seconds": 0.005
+      },
+      "public_snapshot_json_bytes": 394,
+      "traced_current_bytes": 199654,
+      "traced_peak_bytes": 248716
+    },
+    {
+      "operations": 10,
+      "wall_seconds": 9.336125782690942,
+      "process_cpu_seconds": 9.331509,
+      "client_commands": {
+        "client_command_calls": 0,
+        "pipeline_execute_calls": 0,
+        "command_argument_bytes": 0,
+        "computed_resp_request_bytes": 0,
+        "command_histogram": {}
+      },
+      "event_loop_lag": {
+        "samples": 2,
+        "retained_samples": 2,
+        "maximum_seconds": 4.223445611074567,
+        "p95_seconds": 4.223445611074567,
+        "interval_seconds": 0.005
+      },
+      "public_snapshot_json_bytes": 932,
+      "traced_current_bytes": 1968458,
+      "traced_peak_bytes": 2206809
+    },
+    {
+      "operations": 16,
+      "wall_seconds": 27.72446771664545,
+      "process_cpu_seconds": 27.694535,
+      "client_commands": {
+        "client_command_calls": 0,
+        "pipeline_execute_calls": 0,
+        "command_argument_bytes": 0,
+        "computed_resp_request_bytes": 0,
+        "command_histogram": {}
+      },
+      "event_loop_lag": {
+        "samples": 3,
+        "retained_samples": 3,
+        "maximum_seconds": 9.616985676111653,
+        "p95_seconds": 9.616985676111653,
+        "interval_seconds": 0.005
+      },
+      "public_snapshot_json_bytes": 1289,
+      "traced_current_bytes": 3168475,
+      "traced_peak_bytes": 3594409
+    }
+  ],
+  "outcome": "completed"
+}

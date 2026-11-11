@@ -1,0 +1,106 @@
+{
+  "package": "aiogram-nav",
+  "installed_version": "0.3.0",
+  "package_version": "0.3.0",
+  "controller_commit": null,
+  "commit": null,
+  "driver_manifest": {
+    "run.py": "6eaf429410093d378a2f62d104639c31d9297bfc6ca8935342c3d942c10d01fe",
+    "redis_workload.py": "fcd4f2f81179d0f6c215dc165d4de134228b4f7bb50e7951e881f95a93863655",
+    "pyperf_codec.py": "45cd01b4f1a75f91b9fb0934dd16228fa89953996ed2de45de2545a2fc79e102",
+    "redis_metrics.py": "faa80eb47d510eecc4126e1284c5ce4876d48fd5f0b8faff4bd8f434929aa851"
+  },
+  "engine": "python",
+  "python": "3.12.13 (main, Apr 14 2026, 14:36:32) [Clang 22.1.3 ]",
+  "os": "macOS-15.8.1-x86_64-i386-64bit",
+  "cpu": "i386",
+  "rust": "rustc 1.97.1 (8bab26f4f 2026-07-14)",
+  "seed": 0,
+  "warmup": "fixture construction outside measured updates",
+  "qualification": false,
+  "qualification_owner": "external serial comparison gate",
+  "exploratory": true,
+  "representative_workload": "memory-track/50",
+  "cpu_count": 16,
+  "rss_peak_bytes": 174329856,
+  "results": [
+    {
+      "scenario": "registry-compile",
+      "workload": "registry-compile/50",
+      "engine": "python",
+      "nodes": 50,
+      "samples": 3,
+      "calls": 3,
+      "cpu_count": 1,
+      "process_cpu_seconds": [
+        0.000221
+      ],
+      "median_process_cpu_seconds": 0.000221,
+      "update_p95_seconds": 8.5184e-05,
+      "update_sample_count": 3,
+      "raw_latency_seconds": [
+        8.5184e-05,
+        6.7566e-05,
+        6.1146e-05
+      ],
+      "fixture_boundary": "prebuilt immutable Node inputs; includes native JSON boundary",
+      "median_cpu_ns": 73666.66666666667,
+      "median_ns": 67566,
+      "p95_ns": 85184
+    },
+    {
+      "scenario": "registry-compile",
+      "workload": "registry-compile/500",
+      "engine": "python",
+      "nodes": 500,
+      "samples": 3,
+      "calls": 3,
+      "cpu_count": 1,
+      "process_cpu_seconds": [
+        0.001575
+      ],
+      "median_process_cpu_seconds": 0.001575,
+      "update_p95_seconds": 0.000541121,
+      "update_sample_count": 3,
+      "raw_latency_seconds": [
+        0.000541121,
+        0.000525796,
+        0.000503014
+      ],
+      "fixture_boundary": "prebuilt immutable Node inputs; includes native JSON boundary",
+      "median_cpu_ns": 525000.0,
+      "median_ns": 525796,
+      "p95_ns": 541121
+    },
+    {
+      "scenario": "registry-compile",
+      "workload": "registry-compile/5000",
+      "engine": "python",
+      "nodes": 5000,
+      "samples": 3,
+      "calls": 3,
+      "cpu_count": 1,
+      "process_cpu_seconds": [
+        0.015786
+      ],
+      "median_process_cpu_seconds": 0.015786,
+      "update_p95_seconds": 0.005437129,
+      "update_sample_count": 3,
+      "raw_latency_seconds": [
+        0.005437129,
+        0.005231054,
+        0.005119194
+      ],
+      "fixture_boundary": "prebuilt immutable Node inputs; includes native JSON boundary",
+      "median_cpu_ns": 5262000.000000001,
+      "median_ns": 5231054,
+      "p95_ns": 5437129
+    }
+  ],
+  "run_id": "09865dd7-bc81-4026-90c0-451cc921e617",
+  "qualification_provenance": {
+    "base_artifact_sha256": "f14220d827755e92547bb9fe37880bc8178c32c1b600f44a15fd6b756ee94ce6",
+    "native_artifact_sha256": null,
+    "driver_sha256": "635f1e0bae355de534b37771e12015565b25d97ee97c05147c4f2173850a3beb"
+  }
+}

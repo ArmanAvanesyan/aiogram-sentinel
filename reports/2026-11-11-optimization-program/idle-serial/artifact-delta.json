@@ -1,0 +1,31 @@
+{
+  "final_wheel_sha256": "33f1809f8545644982112a7dc596a3463c0df750e36d86fce18acc9e3bb4c90e",
+  "comparisons": [
+    {
+      "profile": "native-measured",
+      "wheel_sha256": "a6f5afeea4fda5466ce65c5fe3ace958ff13d7eb34ee2ae7dc3793a17d144504",
+      "changed_members_to_final": [
+        "aiogram_idle-0.3.0.dist-info/METADATA",
+        "aiogram_idle-0.3.0.dist-info/RECORD",
+        "aiogram_idle/integrations/nav/canonical_completion.py",
+        "aiogram_idle/integrations/nav/canonical_effects.py",
+        "aiogram_idle/storage/canonical.py",
+        "aiogram_idle/storage/canonical_memory_migration.py",
+        "aiogram_idle/storage/memory.py"
+      ]
+    },
+    {
+      "profile": "growth-measured",
+      "wheel_sha256": "1992eb01efa73b89f05bfe6b19c078a899ec79450f7e569fcfac2acd2d0ef182",
+      "changed_members_to_final": [
+        "aiogram_idle-0.3.0.dist-info/RECORD",
+        "aiogram_idle/integrations/nav/canonical_completion.py",
+        "aiogram_idle/integrations/nav/canonical_effects.py",
+        "aiogram_idle/storage/canonical.py",
+        "aiogram_idle/storage/memory.py"
+      ]
+    }
+  ],
+  "native_publication": "withheld",
+  "note": "Final changes are README, offline memory migration aggregate-budget preflight, and typed guards replacing runtime assertions. No positive native qualification for final wheel is claimed; successful-path storage shapes remain verified separately."
+}

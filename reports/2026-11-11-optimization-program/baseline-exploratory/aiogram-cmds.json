@@ -1,0 +1,686 @@
+{
+  "metadata": {
+    "package": "aiogram-cmds",
+    "package_version": "0.2.0",
+    "engine": "python",
+    "commit": "published-0.2.0",
+    "installed_module": "/tmp/aiogram-optimization-published-baseline/lib/python3.12/site-packages/aiogram_cmds/__init__.py",
+    "python": "3.12.13",
+    "rust": "rustc 1.97.1 (8bab26f4f 2026-07-14)",
+    "os": "macOS-15.8.1-x86_64-i386-64bit",
+    "cpu": "i386",
+    "cpu_count": 16,
+    "seed": 1729,
+    "protocol": "serial-inprocess-v1",
+    "exploratory": true,
+    "notes": "CPU excludes fake network delay; wall p95 includes it only in separately named fake_telegram workloads. New compiled APIs are not baseline-comparable."
+  },
+  "benchmarks": {
+    "profile_resolution/1": {
+      "individual_latency_ns": {
+        "count": 0,
+        "p95": null
+      },
+      "loops": 200,
+      "samples": 5,
+      "warmups": 1,
+      "wall_ns": {
+        "median": 1164.385,
+        "p95": 1188.485,
+        "values": [
+          1146.645,
+          1172.35,
+          1164.385,
+          1188.485,
+          1159.095
+        ]
+      },
+      "cpu_ns": {
+        "median": 1190.0,
+        "p95": 1205.0,
+        "values": [
+          1190.0,
+          1190.0,
+          1180.0,
+          1205.0,
+          1175.0
+        ]
+      },
+      "rss_bytes": 173707264,
+      "calls": {
+        "translator": 0,
+        "telegram": 0
+      },
+      "new_only": false
+    },
+    "render_and_fingerprint/1": {
+      "individual_latency_ns": {
+        "count": 0,
+        "p95": null
+      },
+      "loops": 30,
+      "samples": 5,
+      "warmups": 1,
+      "wall_ns": {
+        "median": 53323.433333333334,
+        "p95": 709381.1666666666,
+        "values": [
+          53323.433333333334,
+          52676.566666666666,
+          38752.3,
+          709381.1666666666,
+          59161.666666666664
+        ]
+      },
+      "cpu_ns": {
+        "median": 53666.666666666664,
+        "p95": 60333.333333333336,
+        "values": [
+          53666.666666666664,
+          52866.666666666664,
+          38966.666666666664,
+          60333.333333333336,
+          59400.0
+        ]
+      },
+      "rss_bytes": 175099904,
+      "calls": {
+        "translator": 150,
+        "telegram": 0
+      },
+      "new_only": false
+    },
+    "orjson_comparator/1": {
+      "individual_latency_ns": {
+        "count": 0,
+        "p95": null
+      },
+      "loops": 30,
+      "samples": 5,
+      "warmups": 1,
+      "wall_ns": {
+        "median": 31656.6,
+        "p95": 33069.1,
+        "values": [
+          33069.1,
+          29848.433333333334,
+          30377.4,
+          31939.766666666666,
+          31656.6
+        ]
+      },
+      "cpu_ns": {
+        "median": 31800.0,
+        "p95": 33400.0,
+        "values": [
+          33400.0,
+          30033.333333333332,
+          30600.0,
+          32700.0,
+          31800.0
+        ]
+      },
+      "rss_bytes": 175099904,
+      "calls": {
+        "translator": 150,
+        "telegram": 0
+      },
+      "new_only": false
+    },
+    "resolved_fingerprint/1": {
+      "individual_latency_ns": {
+        "count": 0,
+        "p95": null
+      },
+      "loops": 100,
+      "samples": 5,
+      "warmups": 1,
+      "wall_ns": {
+        "median": 15963.87,
+        "p95": 184978.1,
+        "values": [
+          15963.87,
+          16388.96,
+          15847.88,
+          15941.49,
+          184978.1
+        ]
+      },
+      "cpu_ns": {
+        "median": 16020.0,
+        "p95": 16470.0,
+        "values": [
+          16090.0,
+          16470.0,
+          15910.0,
+          16020.0,
+          14060.0
+        ]
+      },
+      "rss_bytes": 175104000,
+      "calls": {
+        "translator": 0,
+        "telegram": 0
+      },
+      "new_only": false
+    },
+    "fake_telegram_1ms/1": {
+      "individual_latency_ns": {
+        "count": 100,
+        "p95": 5344643
+      },
+      "loops": 1,
+      "samples": 5,
+      "warmups": 1,
+      "wall_ns": {
+        "median": 4171553.0,
+        "p95": 4874032.0,
+        "values": [
+          3787830.0,
+          4874032.0,
+          3297053.0,
+          4646631.0,
+          4171553.0
+        ]
+      },
+      "cpu_ns": {
+        "median": 1163000.0,
+        "p95": 1277000.0,
+        "values": [
+          1277000.0,
+          1163000.0,
+          1207000.0,
+          1084000.0,
+          1101000.0
+        ]
+      },
+      "rss_bytes": 175104000,
+      "calls": {
+        "translator": 0,
+        "telegram": 105
+      },
+      "new_only": false
+    },
+    "confirmation_hit/1": {
+      "individual_latency_ns": {
+        "count": 100,
+        "p95": 4234660
+      },
+      "loops": 10,
+      "samples": 5,
+      "warmups": 1,
+      "wall_ns": {
+        "median": 2041303.0,
+        "p95": 5508274.5,
+        "values": [
+          1812980.6,
+          2041303.0,
+          5508274.5,
+          2007893.7,
+          2343857.2
+        ]
+      },
+      "cpu_ns": {
+        "median": 860500.0,
+        "p95": 909100.0,
+        "values": [
+          843000.0,
+          860200.0,
+          909100.0,
+          860500.0,
+          908900.0
+        ]
+      },
+      "rss_bytes": 175104000,
+      "calls": {
+        "translator": 0,
+        "telegram": 0
+      },
+      "new_only": false
+    },
+    "profile_resolution/10": {
+      "individual_latency_ns": {
+        "count": 0,
+        "p95": null
+      },
+      "loops": 200,
+      "samples": 5,
+      "warmups": 1,
+      "wall_ns": {
+        "median": 2599.175,
+        "p95": 3250.39,
+        "values": [
+          2599.175,
+          2543.185,
+          2556.89,
+          3250.39,
+          3046.045
+        ]
+      },
+      "cpu_ns": {
+        "median": 2640.0,
+        "p95": 3060.0,
+        "values": [
+          2640.0,
+          2560.0,
+          2570.0,
+          3025.0,
+          3060.0
+        ]
+      },
+      "rss_bytes": 175104000,
+      "calls": {
+        "translator": 0,
+        "telegram": 0
+      },
+      "new_only": false
+    },
+    "render_and_fingerprint/10": {
+      "individual_latency_ns": {
+        "count": 0,
+        "p95": null
+      },
+      "loops": 30,
+      "samples": 5,
+      "warmups": 1,
+      "wall_ns": {
+        "median": 984756.0666666667,
+        "p95": 1312696.9,
+        "values": [
+          1086560.2333333334,
+          402911.9,
+          284949.8333333333,
+          1312696.9,
+          984756.0666666667
+        ]
+      },
+      "cpu_ns": {
+        "median": 276466.6666666667,
+        "p95": 314400.0,
+        "values": [
+          267533.3333333333,
+          268566.6666666667,
+          276466.6666666667,
+          295533.3333333333,
+          314400.0
+        ]
+      },
+      "rss_bytes": 175104000,
+      "calls": {
+        "translator": 1500,
+        "telegram": 0
+      },
+      "new_only": false
+    },
+    "orjson_comparator/10": {
+      "individual_latency_ns": {
+        "count": 0,
+        "p95": null
+      },
+      "loops": 30,
+      "samples": 5,
+      "warmups": 1,
+      "wall_ns": {
+        "median": 255070.23333333334,
+        "p95": 992747.7333333333,
+        "values": [
+          223842.3,
+          974684.7666666667,
+          228974.56666666668,
+          992747.7333333333,
+          255070.23333333334
+        ]
+      },
+      "cpu_ns": {
+        "median": 232900.0,
+        "p95": 260000.0,
+        "values": [
+          223933.33333333334,
+          232900.0,
+          229233.33333333334,
+          260000.0,
+          251700.0
+        ]
+      },
+      "rss_bytes": 175104000,
+      "calls": {
+        "translator": 1500,
+        "telegram": 0
+      },
+      "new_only": false
+    },
+    "resolved_fingerprint/10": {
+      "individual_latency_ns": {
+        "count": 0,
+        "p95": null
+      },
+      "loops": 100,
+      "samples": 5,
+      "warmups": 1,
+      "wall_ns": {
+        "median": 48844.0,
+        "p95": 246747.42,
+        "values": [
+          40343.97,
+          191072.86,
+          45536.46,
+          246747.42,
+          48844.0
+        ]
+      },
+      "cpu_ns": {
+        "median": 44070.0,
+        "p95": 46010.0,
+        "values": [
+          40480.0,
+          37380.0,
+          44070.0,
+          46010.0,
+          45710.0
+        ]
+      },
+      "rss_bytes": 175104000,
+      "calls": {
+        "translator": 0,
+        "telegram": 0
+      },
+      "new_only": false
+    },
+    "fake_telegram_1ms/10": {
+      "individual_latency_ns": {
+        "count": 100,
+        "p95": 5871358
+      },
+      "loops": 1,
+      "samples": 5,
+      "warmups": 1,
+      "wall_ns": {
+        "median": 4055956.0,
+        "p95": 22814120.0,
+        "values": [
+          4038076.0,
+          5909895.0,
+          2968136.0,
+          4055956.0,
+          22814120.0
+        ]
+      },
+      "cpu_ns": {
+        "median": 1328000.0,
+        "p95": 1513000.0,
+        "values": [
+          1376000.0,
+          1513000.0,
+          1248000.0,
+          1317000.0,
+          1328000.0
+        ]
+      },
+      "rss_bytes": 175104000,
+      "calls": {
+        "translator": 0,
+        "telegram": 105
+      },
+      "new_only": false
+    },
+    "confirmation_hit/10": {
+      "individual_latency_ns": {
+        "count": 100,
+        "p95": 3708103
+      },
+      "loops": 10,
+      "samples": 5,
+      "warmups": 1,
+      "wall_ns": {
+        "median": 2432429.6,
+        "p95": 6471430.1,
+        "values": [
+          2778514.6,
+          2294332.6,
+          2295419.7,
+          6471430.1,
+          2432429.6
+        ]
+      },
+      "cpu_ns": {
+        "median": 1150500.0,
+        "p95": 1265200.0,
+        "values": [
+          1164000.0,
+          1144100.0,
+          1131800.0,
+          1265200.0,
+          1150500.0
+        ]
+      },
+      "rss_bytes": 175104000,
+      "calls": {
+        "translator": 0,
+        "telegram": 0
+      },
+      "new_only": false
+    },
+    "profile_resolution/100": {
+      "individual_latency_ns": {
+        "count": 0,
+        "p95": null
+      },
+      "loops": 200,
+      "samples": 5,
+      "warmups": 1,
+      "wall_ns": {
+        "median": 26079.05,
+        "p95": 103507.075,
+        "values": [
+          19435.04,
+          98909.05,
+          26079.05,
+          103507.075,
+          22690.975
+        ]
+      },
+      "cpu_ns": {
+        "median": 19500.0,
+        "p95": 20835.0,
+        "values": [
+          19500.0,
+          19330.0,
+          20275.0,
+          19445.0,
+          20835.0
+        ]
+      },
+      "rss_bytes": 175116288,
+      "calls": {
+        "translator": 0,
+        "telegram": 0
+      },
+      "new_only": false
+    },
+    "render_and_fingerprint/100": {
+      "individual_latency_ns": {
+        "count": 0,
+        "p95": null
+      },
+      "loops": 30,
+      "samples": 5,
+      "warmups": 1,
+      "wall_ns": {
+        "median": 7282081.2,
+        "p95": 8359166.766666667,
+        "values": [
+          8359166.766666667,
+          7282081.2,
+          7088911.7,
+          8049858.6,
+          6551651.433333334
+        ]
+      },
+      "cpu_ns": {
+        "median": 2469266.6666666665,
+        "p95": 2488200.0,
+        "values": [
+          2469266.6666666665,
+          2488200.0,
+          2481033.3333333335,
+          2429700.0,
+          2447600.0
+        ]
+      },
+      "rss_bytes": 175132672,
+      "calls": {
+        "translator": 15000,
+        "telegram": 0
+      },
+      "new_only": false
+    },
+    "orjson_comparator/100": {
+      "individual_latency_ns": {
+        "count": 0,
+        "p95": null
+      },
+      "loops": 30,
+      "samples": 5,
+      "warmups": 1,
+      "wall_ns": {
+        "median": 6748331.4,
+        "p95": 8620334.066666666,
+        "values": [
+          5809989.433333334,
+          8620334.066666666,
+          6470703.866666666,
+          7901793.433333334,
+          6748331.4
+        ]
+      },
+      "cpu_ns": {
+        "median": 2254166.6666666665,
+        "p95": 2291266.6666666665,
+        "values": [
+          2254166.6666666665,
+          2230466.6666666665,
+          2261366.6666666665,
+          2291266.6666666665,
+          2202266.6666666665
+        ]
+      },
+      "rss_bytes": 175132672,
+      "calls": {
+        "translator": 15000,
+        "telegram": 0
+      },
+      "new_only": false
+    },
+    "resolved_fingerprint/100": {
+      "individual_latency_ns": {
+        "count": 0,
+        "p95": null
+      },
+      "loops": 100,
+      "samples": 5,
+      "warmups": 1,
+      "wall_ns": {
+        "median": 869045.47,
+        "p95": 1093857.78,
+        "values": [
+          871394.87,
+          843755.22,
+          869045.47,
+          718512.37,
+          1093857.78
+        ]
+      },
+      "cpu_ns": {
+        "median": 258200.0,
+        "p95": 262610.0,
+        "values": [
+          258090.0,
+          249220.0,
+          261710.0,
+          262610.0,
+          258200.0
+        ]
+      },
+      "rss_bytes": 175132672,
+      "calls": {
+        "translator": 0,
+        "telegram": 0
+      },
+      "new_only": false
+    },
+    "fake_telegram_1ms/100": {
+      "individual_latency_ns": {
+        "count": 100,
+        "p95": 34837655
+      },
+      "loops": 1,
+      "samples": 5,
+      "warmups": 1,
+      "wall_ns": {
+        "median": 6633562.0,
+        "p95": 34566014.0,
+        "values": [
+          6633562.0,
+          6956388.0,
+          6026715.0,
+          34566014.0,
+          5176412.0
+        ]
+      },
+      "cpu_ns": {
+        "median": 3518000.0,
+        "p95": 3974000.0,
+        "values": [
+          3459000.0,
+          3575000.0,
+          3518000.0,
+          3974000.0,
+          3161000.0
+        ]
+      },
+      "rss_bytes": 175136768,
+      "calls": {
+        "translator": 0,
+        "telegram": 105
+      },
+      "new_only": false
+    },
+    "confirmation_hit/100": {
+      "individual_latency_ns": {
+        "count": 100,
+        "p95": 44922588
+      },
+      "loops": 10,
+      "samples": 5,
+      "warmups": 1,
+      "wall_ns": {
+        "median": 8278113.2,
+        "p95": 16299670.9,
+        "values": [
+          4312314.2,
+          12886916.4,
+          8278113.2,
+          4228469.1,
+          16299670.9
+        ]
+      },
+      "cpu_ns": {
+        "median": 3304900.0,
+        "p95": 3375900.0,
+        "values": [
+          3306800.0,
+          3244000.0,
+          3375900.0,
+          3179700.0,
+          3304900.0
+        ]
+      },
+      "rss_bytes": 175136768,
+      "calls": {
+        "translator": 0,
+        "telegram": 0
+      },
+      "new_only": false
+    }
+  }
+}
