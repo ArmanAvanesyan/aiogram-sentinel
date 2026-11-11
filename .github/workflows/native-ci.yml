@@ -1,0 +1,165 @@
+name: Native companion verification
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: native-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  wheels:
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix:
+        include:
+          - {os: ubuntu-latest, target: x86_64, manylinux: '2014'}
+          - {os: ubuntu-24.04-arm, target: aarch64, manylinux: '2014'}
+          - {os: ubuntu-latest, target: x86_64-unknown-linux-musl, manylinux: musllinux_1_2}
+          - {os: ubuntu-24.04-arm, target: aarch64-unknown-linux-musl, manylinux: musllinux_1_2}
+          - {os: macos-15-intel, target: x86_64, manylinux: auto}
+          - {os: macos-latest, target: aarch64, manylinux: auto}
+          - {os: windows-latest, target: x86_64, manylinux: auto}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: PyO3/maturin-action@v1
+        with:
+          target: ${{ matrix.target }}
+          manylinux: ${{ matrix.manylinux }}
+          args: --release --locked --manifest-path native/Cargo.toml --out native-dist
+      - uses: astral-sh/setup-uv@v7
+      - shell: bash
+        run: uvx abi3audit --strict native-dist/*.whl
+      - name: Exercise actual musl wheels on every supported regular CPython
+        if: matrix.manylinux == 'musllinux_1_2'
+        shell: bash
+        run: |
+          for version in 3.10 3.11 3.12 3.13 3.14; do
+            docker run --rm -v "$PWD:/work" -w /work "python:$version-alpine" sh -c 'pip install native-dist/*.whl pytest hypothesis pytest-asyncio && python -m pytest -q -c native/pytest.ini -o asyncio_mode=auto -o asyncio_default_fixture_loop_scope=function native/tests'
+          done
+      - uses: actions/upload-artifact@v6
+        with:
+          name: native-${{ matrix.os }}-${{ matrix.target }}
+          path: native-dist/*.whl
+          if-no-files-found: error
+  runtime:
+    needs: wheels
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix:
+        python: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        os: [ubuntu-latest, ubuntu-24.04-arm, macos-15-intel, macos-latest, windows-latest]
+        include:
+          - {os: ubuntu-latest, target: x86_64}
+          - {os: ubuntu-24.04-arm, target: aarch64}
+          - {os: macos-15-intel, target: x86_64}
+          - {os: macos-latest, target: aarch64}
+          - {os: windows-latest, target: x86_64}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: astral-sh/setup-uv@v7
+      - uses: actions/download-artifact@v6
+        with:
+          name: native-${{ matrix.os }}-${{ matrix.target }}
+          path: native-dist
+      - name: Install and exercise the downloaded companion independently
+        shell: bash
+        run: |
+          python -m pip install native-dist/*.whl pytest hypothesis pytest-asyncio
+          python -I -c 'import importlib.util; assert importlib.util.find_spec("aiogram_idle") is None; assert importlib.util.find_spec("aiogram_nav") is None; assert importlib.util.find_spec("redis") is None'
+          python -m pytest -q -c native/pytest.ini -o asyncio_mode=auto -o asyncio_default_fixture_loop_scope=function native/tests
+      - name: Build and install the pure Python base wheel
+        shell: bash
+        run: |
+          uv build --wheel --out-dir base-dist --python '${{ matrix.python }}'
+          for artifact in base-dist/*.whl; do
+            python -m pip install "${artifact}[redis]"
+          done
+          python -I -c 'import aiogram_idle as package; assert "site-packages" in package.__file__'
+      - name: Check the installed base/native boundary
+        run: python -m pytest -q -c native/pytest.ini -o asyncio_mode=auto -o asyncio_default_fixture_loop_scope=function tests/test_native_engine.py tests/test_native_backend.py tests/test_native_constructor.py
+  rust:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo fmt --manifest-path native/Cargo.toml --check
+      - run: cargo test --locked --manifest-path native/Cargo.toml
+      - run: cargo clippy --locked --manifest-path native/Cargo.toml --all-targets -- -D warnings
+      - run: cargo bench --locked --manifest-path native/Cargo.toml --no-run
+  source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: '3.12'
+      - uses: dtolnay/rust-toolchain@stable
+      - run: uvx maturin sdist --manifest-path native/Cargo.toml --out native-dist
+      - name: Rebuild the extracted source distribution and test its installed companion
+        run: |
+          uv venv --python 3.12 source-env
+          uv pip install --python source-env/bin/python native-dist/*.tar.gz pytest hypothesis pytest-asyncio
+          source-env/bin/python -m pytest -q -c native/pytest.ini -o asyncio_mode=auto -o asyncio_default_fixture_loop_scope=function native/tests
+      - uses: actions/upload-artifact@v6
+        with:
+          name: native-source
+          path: native-dist/*.tar.gz
+          if-no-files-found: error
+  parity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.10', '3.12', '3.14']
+        redis: ['7']
+        include:
+          - {python: '3.12', redis: '8'}
+    services:
+      redis:
+        image: redis:${{ matrix.redis }}-alpine
+        ports: ['6379:6379']
+        options: --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 3s --health-retries 10
+    env:
+      AIOGRAM_IDLE_REDIS_URL: redis://localhost:6379/0
+      AIOGRAM_IDLE_REQUIRE_REDIS: '1'
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - run: uv sync --frozen --extra redis --python '${{ matrix.python }}'
+      - run: uvx maturin build --manifest-path native/Cargo.toml --release --locked --out native-dist
+      - run: uv pip install native-dist/*.whl
+      - run: uv run --no-sync pytest -q native/tests tests/test_native_engine.py tests/test_native_backend.py tests/test_native_constructor.py tests/test_cold_storage.py tests/test_canonical_components.py tests/test_canonical_redis.py
+      - name: Existing standalone recovery and FSM corpus on format three Rust
+        run: uv run --no-sync python -m tests.profile_format3 --engine rust --manifest native-core-profile.json -q
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: native-core-profile-${{ matrix.python }}-${{ matrix.redis }}
+          path: native-core-profile.json
+          if-no-files-found: error

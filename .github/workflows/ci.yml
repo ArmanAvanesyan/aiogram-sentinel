@@ -37,7 +37,7 @@ jobs:
         run: uv run --no-sync python -c 'import importlib.util; assert importlib.util.find_spec("aiogram_nav") is None'
       - run: uv run --no-sync pytest --cov=aiogram_idle --cov-report=term-missing
       - run: uv run --no-sync python tools/check_version_tag.py
-      - run: uv run --no-sync towncrier build --draft --version 0.2.1
+      - run: uv run --no-sync towncrier build --draft --version 0.3.0
       - run: uv build
       - run: uv run --no-sync twine check dist/*
       - name: Verify artifacts against published dependencies
@@ -214,12 +214,48 @@ jobs:
           cache-dependency-glob: aiogram-idle/uv.lock
       - run: uv sync --frozen --extra redis --extra nav --python 3.12
       - run: uv run --no-sync pyright --project pyright-nav.json
-      - run: uv run --no-sync pytest tests/test_nav*.py tests/test_component*.py tests/test_effect_scope_review.py
+      - run: uv run --no-sync pytest --cov=aiogram_idle --cov-config=coverage-nav.toml
       - run: uv run --no-sync python examples/navigation.py --help
+
+  format-three:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: aiogram-idle
+    strategy:
+      fail-fast: false
+      matrix:
+        redis: ['7', '8']
+    services:
+      redis:
+        image: redis:${{ matrix.redis }}-alpine
+        ports: ['6379:6379']
+        options: --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 3s --health-retries 10
+    env:
+      AIOGRAM_IDLE_REDIS_URL: redis://localhost:6379/0
+      AIOGRAM_IDLE_REQUIRE_REDIS: '1'
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          path: aiogram-idle
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v7
+      - run: uv sync --frozen --extra redis --python 3.12
+      - name: Require the standalone dependency boundary
+        run: uv run --no-sync python -I -c 'import importlib.util; assert importlib.util.find_spec("aiogram_nav") is None; assert importlib.util.find_spec("aiogram_idle_native") is None'
+      - name: Existing standalone recovery and FSM corpus on format three Python
+        run: uv run --no-sync python -m tests.profile_format3 --engine python --manifest format3-core-profile.json -q
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: format3-core-profile-${{ matrix.redis }}
+          path: aiogram-idle/format3-core-profile.json
+          if-no-files-found: error
 
   required:
     if: always()
-    needs: [quality, documentation, security, compatibility, redis-compatibility, navigation-integration]
+    needs: [quality, documentation, security, compatibility, redis-compatibility, navigation-integration, format-three]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
